@@ -1,0 +1,45 @@
+@startuml C4
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "AI Present Finder User", "A user of the finder, with specific needs and preferences")
+
+System_Boundary(c1, "Internet Present Finder System") {
+    Container(single_page, "Single Page Application", "JavaScript, HTML, CSS", "A single page application for the AI Present Finder")
+    Container(web_app, "Web Application", "C#, ASP.NET Core 2.1 MVC", "Allows users to compare multiple Twitter timelines")
+    Container(rest_api_interface, "REST API Interface", "C#, ASP.NET Core 2.1 Web API", "Provides access to the AI Present Finder's functionality")
+    Container(chatbot_api, "Chatbot API", "C#, ASP.NET Core 2.1 Web API", "Provides access to the AI Present Finder's chatbot functionality")
+    Container(stalking_api, "Stalking API", "C#, ASP.NET Core 2.1 Web API", "Provides access to the AI Present Finder's stalking functionality")
+    Container(gift_api_interface, "Gift API Interface", "C#, ASP.NET Core 2.1 Web API", "Provides access to the AI Present Finder's gift functionality")
+    Container(gift_provider_api_1, "Gift Provider API 1", "C#, ASP.NET Core 2.1 Web API", "Provides access to the AI Present Finder's gift provider functionality")
+    Container(gift_provider_api_2, "Gift Provider API 2", "C#, ASP.NET Core 2.1 Web API", "Provides access to the AI Present Finder's gift provider functionality")
+    Container(gift_provider_api_3, "Gift Provider API 3", "C#, ASP.NET Core 2.1 Web API", "Provides access to the AI Present Finder's gift provider functionality")
+}
+
+System_Ext(gift_provider_system_1, "Gift Provider System 1", "Provides gifts from Provider 1")
+System_Ext(gift_provider_system_2, "Gift Provider System 2", "Provides gifts from Provider 2")
+System_Ext(gift_provider_system_3, "Gift Provider System 3", "Provides gifts from Provider 3")
+
+System_Ext(chatbot_system, "Chatbot System", "Provides chatbot functionality")
+
+System_Ext(stalking_system, "Stalking System", "Provides stalking functionality")
+
+Rel(stalking_api, stalking_system, "Stalks person using")
+
+Rel(chatbot_api, chatbot_system, "Chat with user using")
+
+Rel(gift_provider_api_1, gift_provider_system_1, "Provides gifts using")
+Rel(gift_provider_api_2, gift_provider_system_2, "Provides gifts using")
+Rel(gift_provider_api_3, gift_provider_system_3, "Provides gifts using")
+
+Rel(user, single_page, "Uses")
+Rel(web_app, single_page, "Delivers")
+Rel(single_page, rest_api_interface, "Uses")
+Rel(single_page, chatbot_api, "Uses")
+Rel(rest_api_interface, stalking_api, "Uses")
+Rel(rest_api_interface, gift_api_interface, "Uses")
+Rel(gift_api_interface, gift_provider_api_1, "Uses")
+Rel(gift_api_interface, gift_provider_api_2, "Uses")
+Rel(gift_api_interface, gift_provider_api_3, "Uses")
+
+SHOW_LEGEND()
+@enduml

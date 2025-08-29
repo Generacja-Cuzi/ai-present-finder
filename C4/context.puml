@@ -1,45 +1,23 @@
-@startuml C4
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+@startuml C4_Context_MVP
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
-Person(user, "AI Present Finder User", "A user of the finder, with specific needs and preferences")
+Person(user, "User", "Person searching for a gift")
 
-System_Boundary(c1, "Internet Present Finder System") {
-    Container(single_page, "Single Page Application", "JavaScript, HTML, CSS", "A single page application for the AI Present Finder")
-    Container(web_app, "Web Application", "C#, ASP.NET Core 2.1 MVC", "Allows users to compare multiple Twitter timelines")
-    Container(rest_api_interface, "REST API Interface", "C#, ASP.NET Core 2.1 Web API", "Provides access to the AI Present Finder's functionality")
-    Container(chatbot_api, "Chatbot API", "C#, ASP.NET Core 2.1 Web API", "Provides access to the AI Present Finder's chatbot functionality")
-    Container(stalking_api, "Stalking API", "C#, ASP.NET Core 2.1 Web API", "Provides access to the AI Present Finder's stalking functionality")
-    Container(gift_api_interface, "Gift API Interface", "C#, ASP.NET Core 2.1 Web API", "Provides access to the AI Present Finder's gift functionality")
-    Container(gift_provider_api_1, "Gift Provider API 1", "C#, ASP.NET Core 2.1 Web API", "Provides access to the AI Present Finder's gift provider functionality")
-    Container(gift_provider_api_2, "Gift Provider API 2", "C#, ASP.NET Core 2.1 Web API", "Provides access to the AI Present Finder's gift provider functionality")
-    Container(gift_provider_api_3, "Gift Provider API 3", "C#, ASP.NET Core 2.1 Web API", "Provides access to the AI Present Finder's gift provider functionality")
-}
+System(system, "Internet Present Finder System", "Finds gifts using social cues and user input")
 
-System_Ext(gift_provider_system_1, "Gift Provider System 1", "Provides gifts from Provider 1")
-System_Ext(gift_provider_system_2, "Gift Provider System 2", "Provides gifts from Provider 2")
-System_Ext(gift_provider_system_3, "Gift Provider System 3", "Provides gifts from Provider 3")
+System_Ext(temu, "Temu", "External gift provider")
+System_Ext(allegro, "Allegro", "External gift provider")
+System_Ext(aliexpress, "AliExpress", "External gift provider")
 
-System_Ext(chatbot_system, "Chatbot System", "Provides chatbot functionality")
+System_Ext(chatbot_llm, "Chatbot LLM", "External LLM to gather more info if needed")
+System_Ext(vision_llm, "Vision/Keywords LLM", "External model to extract keywords from posts/photos")
 
-System_Ext(stalking_system, "Stalking System", "Provides stalking functionality")
-
-Rel(stalking_api, stalking_system, "Stalks person using")
-
-Rel(chatbot_api, chatbot_system, "Chat with user using")
-
-Rel(gift_provider_api_1, gift_provider_system_1, "Provides gifts using")
-Rel(gift_provider_api_2, gift_provider_system_2, "Provides gifts using")
-Rel(gift_provider_api_3, gift_provider_system_3, "Provides gifts using")
-
-Rel(user, single_page, "Uses")
-Rel(web_app, single_page, "Delivers")
-Rel(single_page, rest_api_interface, "Uses")
-Rel(single_page, chatbot_api, "Uses")
-Rel(rest_api_interface, stalking_api, "Uses")
-Rel(rest_api_interface, gift_api_interface, "Uses")
-Rel(gift_api_interface, gift_provider_api_1, "Uses")
-Rel(gift_api_interface, gift_provider_api_2, "Uses")
-Rel(gift_api_interface, gift_provider_api_3, "Uses")
+Rel(user, system, "Provides social links & preferences", "HTTPS")
+Rel(system, vision_llm, "Sends posts/photos for keyword extraction", "HTTPS/REST")
+Rel(system, chatbot_llm, "Follow-up questions when keywords are sparse", "HTTPS/WebSocket")
+Rel(system, temu, "Searches and retrieves offers", "HTTPS/REST + OAuth/API key")
+Rel(system, allegro, "Searches and retrieves offers", "HTTPS/REST + OAuth")
+Rel(system, aliexpress, "Searches and retrieves offers", "HTTPS/REST + API key")
 
 SHOW_LEGEND()
 @enduml

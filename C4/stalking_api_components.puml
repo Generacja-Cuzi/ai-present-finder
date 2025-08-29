@@ -1,0 +1,25 @@
+@startuml C4_Component_Stalking_MVP
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "User", "Provides social links (through API Gateway)")
+
+Container_Boundary(stalking, "Stalking Service (NestJS, in-memory)") {
+  Component(stalk_controller, "StalkingController", "NestJS Controller", "REST: /stalking/extract")
+  Component(stalk_service, "StalkingService", "NestJS Service", "Orchestrates crawl & normalization")
+  Component(crawler, "Crawler", "Module", "Fetches posts/photos from provided links")
+  Component(normalizer, "Normalizer", "Module", "Cleans/standardizes text and images")
+  Component(vision_client, "VisionLlmClient", "HTTP Client", "Sends content for keyword extraction")
+}
+
+Component_Ext(vision_llm, "Vision/Keywords LLM", "HTTP API", "Extracts keywords")
+
+Rel(user, stalk_controller, "Indirectly via API Gateway", "HTTPS/JSON")
+Rel(stalk_controller, stalk_service, "Delegates")
+Rel(stalk_service, crawler, "Fetch content")
+Rel(stalk_service, normalizer, "Normalize content")
+Rel(stalk_service, vision_client, "Extract keywords", "HTTPS/REST")
+Rel(vision_client, vision_llm, "POST media/posts", "HTTPS/REST")
+Rel(stalk_service, stalk_controller, "Keywords (response)", "In-memory/JSON")
+
+SHOW_LEGEND()
+@enduml

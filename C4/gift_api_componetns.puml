@@ -1,0 +1,31 @@
+@startuml C4_Component_GiftAPI_MVP2
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "User", "Person searching for a gift")
+
+Container_Boundary(gift_api, "Gift API (NestJS)") {
+  Component(gift_controller, "GiftController", "NestJS Controller", "REST: /gifts/recommend")
+  Component(gift_service, "GiftService", "NestJS Service", "Coordinates recommendation flow")
+  Component(llm_client, "LLMClient", "HTTP Client", "Sends keywords to external LLM → gets gift suggestions")
+  Component(provider_search, "ProviderSearch", "Module", "Queries external providers with LLM-suggested gift ideas")
+  Component(ephemeral_ctx, "EphemeralContext", "In-Memory", "Holds keywords & preferences during request")
+}
+
+Component_Ext(vision_llm, "Vision/Keywords LLM", "HTTP API", "Extracts keywords (upstream, via Stalking Service)")
+Component_Ext(recommend_llm, "Gift Suggestion LLM", "HTTP API", "Takes keywords and outputs suggested gift ideas")
+Component_Ext(temu, "Temu API", "HTTP API", "Product offers")
+Component_Ext(allegro, "Allegro API", "HTTP API", "Product offers")
+Component_Ext(aliexpress, "AliExpress API", "HTTP API", "Product offers")
+
+Rel(user, gift_controller, "Calls /gifts/recommend", "HTTPS/JSON")
+Rel(gift_controller, gift_service, "Delegates")
+Rel(gift_service, ephemeral_ctx, "Reads ephemeral keywords/preferences")
+Rel(gift_service, llm_client, "Sends keywords → gets gift suggestions", "HTTPS/REST")
+Rel(llm_client, recommend_llm, "Suggest gifts", "HTTPS/REST")
+Rel(gift_service, provider_search, "Passes LLM suggestions")
+Rel(provider_search, temu, "Search suggested gifts", "HTTPS/REST + OAuth/API key")
+Rel(provider_search, allegro, "Search suggested gifts", "HTTPS/REST + OAuth")
+Rel(provider_search, aliexpress, "Search suggested gifts", "HTTPS/REST + API key")
+
+SHOW_LEGEND()
+@enduml

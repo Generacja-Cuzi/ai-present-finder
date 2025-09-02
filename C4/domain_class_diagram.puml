@@ -1,4 +1,6 @@
 @startuml Klasy domenowe
+skinparam dpi 200
+scale 2
 ' == Istniejace klasy ==
 class Uzytkownik {
   +id: UUID

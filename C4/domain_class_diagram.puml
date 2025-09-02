@@ -1,0 +1,98 @@
+@startuml Klasy domenowe
+' == Istniejace klasy ==
+class Uzytkownik {
+  +id: UUID
+  +email: String
+}
+
+class WyszukanieOsoby {
+  +id: UUID
+  +data: Date
+}
+
+class Osoba {
+  +imie: String
+  +nazwisko: String
+}
+
+class DaneOsoby {
+  ' Agreguje dane z social mediow i wywiadu
+}
+
+class DaneZSocialMediow {
+  +zrodlo: String
+  +znalezioneDane: String
+}
+
+class DaneZWywiadu {
+  +pytanie: String
+  +odpowiedz: String
+}
+
+class Wywiad {
+  +id: UUID
+  +dataRozpoczecia: Date
+}
+
+class Preferencje {
+  +budzetMin: Decimal
+  +budzetMax: Decimal
+  +kategoriePreferowane: String[]
+  +kategorieWykluczone: String[]
+}
+
+class Keyword {
+  +wartosc: String
+  +zrodlo: String  ' vision LLM / user / chatbot
+  +waga: Decimal
+}
+
+class KontekstRekomendacji {
+  +id: UUID
+  +utworzono: DateTime
+  ' Kontekst efemeryczny (in-memory) na czas żądania
+}
+
+class PomyslPrezentu {
+  +nazwa: String
+  +opis: String
+}
+
+class Oferta {
+  +zewnId: String
+  +tytul: String
+  +cena: Decimal
+  +waluta: String
+  +opis: String
+  +link: URL
+}
+
+class Sklep {
+  +nazwa: String
+  +adresApi: URL
+  +typAutoryzacji: String  ' OAuth / API Key
+}
+
+class LinkSpolecznosciowy {
+  +url: URL
+  +typ: String  ' instagram / facebook / etc
+}
+
+' === Relacje ===
+Uzytkownik "1" -- "0..*" WyszukanieOsoby : inicjuje >
+WyszukanieOsoby "1" -- "1" Osoba : dotyczy >
+Osoba "1" -- "0..*" LinkSpolecznosciowy
+WyszukanieOsoby "1" -- "1" DaneOsoby
+DaneOsoby "1" -- "0..*" DaneZSocialMediow
+DaneOsoby "1" -- "0..*" DaneZWywiadu
+WyszukanieOsoby "1" -- "0..1" Wywiad
+Wywiad "1" -- "0..*" DaneZWywiadu
+
+WyszukanieOsoby "1" -- "1" KontekstRekomendacji
+KontekstRekomendacji "1" -- "0..*" Keyword
+KontekstRekomendacji "1" -- "0..1" Preferencje
+KontekstRekomendacji "1" -- "0..*" PomyslPrezentu
+PomyslPrezentu "1" -- "0..*" Oferta
+Oferta "0..*" -- "1" Sklep
+
+@enduml

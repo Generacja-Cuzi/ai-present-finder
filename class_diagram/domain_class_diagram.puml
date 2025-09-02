@@ -1,98 +1,97 @@
-@startuml Klasy domenowe
-' == Istniejace klasy ==
-class Uzytkownik {
+@startuml Domain Classes
+
+' == Existing classes ==
+class User {
+}
+
+class PersonSearch {
   +id: UUID
-  +email: String
+  +createdAt: Date
 }
 
-class WyszukanieOsoby {
+class Person {
+  +firstName: String
+  +lastName: String
+}
+
+class PersonData {
+  ' Aggregates social media and interview data
+}
+
+class SocialMediaData {
+  +source: String
+  +content: String
+}
+
+class InterviewAnswer {
+  +question: String
+  +answer: String
+}
+
+class Interview {
   +id: UUID
-  +data: Date
+  +startedAt: Date
 }
 
-class Osoba {
-  +imie: String
-  +nazwisko: String
-}
-
-class DaneOsoby {
-  ' Agreguje dane z social mediow i wywiadu
-}
-
-class DaneZSocialMediow {
-  +zrodlo: String
-  +znalezioneDane: String
-}
-
-class DaneZWywiadu {
-  +pytanie: String
-  +odpowiedz: String
-}
-
-class Wywiad {
-  +id: UUID
-  +dataRozpoczecia: Date
-}
-
-class Preferencje {
-  +budzetMin: Decimal
-  +budzetMax: Decimal
-  +kategoriePreferowane: String[]
-  +kategorieWykluczone: String[]
+class Preferences {
+  +budgetMin: Decimal
+  +budgetMax: Decimal
+  +preferredCategories: String[]
+  +excludedCategories: String[]
 }
 
 class Keyword {
-  +wartosc: String
-  +zrodlo: String  ' vision LLM / user / chatbot
-  +waga: Decimal
+  +value: String
+  +source: String  ' vision LLM / user / chatbot
+  +weight: Decimal
 }
 
-class KontekstRekomendacji {
+class RecommendationContext {
   +id: UUID
-  +utworzono: DateTime
-  ' Kontekst efemeryczny (in-memory) na czas żądania
+  +createdAt: DateTime
+  ' Ephemeral (in-memory) per request
 }
 
-class PomyslPrezentu {
-  +nazwa: String
-  +opis: String
+class GiftIdea {
+  +name: String
+  +description: String
 }
 
-class Oferta {
-  +zewnId: String
-  +tytul: String
-  +cena: Decimal
-  +waluta: String
-  +opis: String
-  +link: URL
-}
-
-class Sklep {
-  +nazwa: String
-  +adresApi: URL
-  +typAutoryzacji: String  ' OAuth / API Key
-}
-
-class LinkSpolecznosciowy {
+class Offer {
+  +externalId: String
+  +title: String
+  +price: Decimal
+  +currency: String
+  +description: String
   +url: URL
-  +typ: String  ' instagram / facebook / etc
 }
 
-' === Relacje ===
-Uzytkownik "1" -- "0..*" WyszukanieOsoby : inicjuje >
-WyszukanieOsoby "1" -- "1" Osoba : dotyczy >
-Osoba "1" -- "0..*" LinkSpolecznosciowy
-WyszukanieOsoby "1" -- "1" DaneOsoby
-DaneOsoby "1" -- "0..*" DaneZSocialMediow
-DaneOsoby "1" -- "0..*" DaneZWywiadu
-WyszukanieOsoby "1" -- "0..1" Wywiad
-Wywiad "1" -- "0..*" DaneZWywiadu
+class Provider {
+  +name: String
+  +apiUrl: URL
+  +authType: String  ' OAuth / API Key
+}
 
-WyszukanieOsoby "1" -- "1" KontekstRekomendacji
-KontekstRekomendacji "1" -- "0..*" Keyword
-KontekstRekomendacji "1" -- "0..1" Preferencje
-KontekstRekomendacji "1" -- "0..*" PomyslPrezentu
-PomyslPrezentu "1" -- "0..*" Oferta
-Oferta "0..*" -- "1" Sklep
+class SocialLink {
+  +url: URL
+  +type: String  ' instagram / facebook / etc
+}
+
+' === Relationships ===
+User "1" -- "0..*" PersonSearch : initiates >
+PersonSearch "1" -- "1" Person : subject >
+Person "1" -- "0..*" SocialLink
+PersonSearch "1" -- "1" PersonData
+PersonData "1" -- "0..*" SocialMediaData
+PersonData "1" -- "0..*" InterviewAnswer
+PersonSearch "1" -- "0..1" Interview
+Interview "1" -- "0..*" InterviewAnswer
+
+PersonSearch "1" -- "1" RecommendationContext
+RecommendationContext "1" -- "0..*" Keyword
+RecommendationContext "1" -- "0..1" Preferences
+RecommendationContext "1" -- "0..*" GiftIdea
+GiftIdea "1" -- "0..*" Offer
+Offer "0..*" -- "1" Provider
 
 @enduml

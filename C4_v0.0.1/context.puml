@@ -1,0 +1,23 @@
+@startuml C4_Context_MVP
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(user, "User", "Person searching for a gift")
+
+System(system, "Internet Present Finder System", "Finds gifts using social cues and user input")
+
+System_Ext(temu, "Temu", "External gift provider")
+System_Ext(allegro, "Allegro", "External gift provider")
+System_Ext(aliexpress, "AliExpress", "External gift provider")
+
+System_Ext(chatbot_llm, "Chatbot LLM", "External LLM to gather more info if needed")
+System_Ext(vision_llm, "Vision/Keywords LLM", "External model to extract keywords from posts/photos")
+
+Rel(user, system, "Provides social links & preferences", "HTTPS")
+Rel(system, vision_llm, "Sends posts/photos for keyword extraction", "HTTPS/REST")
+Rel(system, chatbot_llm, "Follow-up questions when keywords are sparse", "HTTPS/WebSocket")
+Rel(system, temu, "Searches and retrieves offers", "HTTPS/REST + OAuth/API key")
+Rel(system, allegro, "Searches and retrieves offers", "HTTPS/REST + OAuth")
+Rel(system, aliexpress, "Searches and retrieves offers", "HTTPS/REST + API key")
+
+SHOW_LEGEND()
+@enduml

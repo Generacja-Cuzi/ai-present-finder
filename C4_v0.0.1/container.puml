@@ -1,0 +1,40 @@
+@startuml C4_Container_MVP
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "User", "Person searching for a gift")
+
+System_Boundary(sys, "Internet Present Finder System") {
+  Container(frontend, "Web Frontend", "React + Next.js", "User interface (SSR/SPA)")
+  Container(api_gateway, "REST API Interface", "NestJS", "Entry point, sync orchestration, simple auth")
+  Container(stalking_svc, "Stalking Service", "NestJS + Crawlers", "Crawls social links and prepares media/posts")
+  Container(gift_api, "Gift API", "NestJS", "In-memory recommendation using keywords & preferences")
+  Container(chatbot_api, "Chatbot Orchestrator", "NestJS", "Conversational fallback via external LLM")
+}
+
+System_Ext(vision_llm, "Vision/Keywords LLM", "External LLM for keyword extraction")
+System_Ext(chatbot_llm, "Chatbot LLM", "External LLM for dialogue")
+System_Ext(temu, "Temu", "Gift provider")
+System_Ext(allegro, "Allegro", "Gift provider")
+System_Ext(aliexpress, "AliExpress", "Gift provider")
+
+Rel(user, frontend, "Uses", "HTTPS")
+Rel(frontend, api_gateway, "Calls REST API", "HTTPS/JSON")
+
+' Synchronous MVP flow:
+Rel(api_gateway, stalking_svc, "Fetch posts/photos from social links", "HTTPS/REST")
+Rel(stalking_svc, vision_llm, "Extract keywords from content", "HTTPS/REST")
+Rel(vision_llm, stalking_svc, "Keywords", "HTTPS/JSON")
+Rel(stalking_svc, api_gateway, "Keywords", "HTTPS/JSON")
+
+Rel(api_gateway, gift_api, "Request recommendations (keywords + prefs)", "HTTPS/REST")
+Rel(gift_api, temu, "Search products", "HTTPS/REST + OAuth/API key")
+Rel(gift_api, allegro, "Search products", "HTTPS/REST + OAuth")
+Rel(gift_api, aliexpress, "Search products", "HTTPS/REST + API key")
+
+' Optional fallback when keywords are sparse:
+Rel(api_gateway, chatbot_api, "Initiate conversation", "HTTPS/REST")
+Rel(chatbot_api, chatbot_llm, "Dialogue to enrich preferences", "HTTPS/WebSocket")
+Rel(chatbot_api, api_gateway, "Answers/preferences", "HTTPS/JSON")
+
+SHOW_LEGEND()
+@enduml

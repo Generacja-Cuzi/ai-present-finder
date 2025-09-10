@@ -1,0 +1,56 @@
+@startuml C4_Context_MVP
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(user, "User", "Person searching for a gift")
+
+System(system_rest_api, "REST API Macroservice", "Main entry point for users and integrations")
+System(system_gift_microservice, "Gift Microservice", "Provides gift suggestions based on input data")
+System(system_spying_microservice, "Stalking Microservice", "Collects and analyzes social media data based on provided links")
+System(system_chat_microservice, "Chat Microservice", "Handles user conversations and ask follow-up questions when not enough context is available")
+
+
+
+System_Ext(temu, "Temu", "External gift provider")
+System_Ext(allegro, "Allegro", "External gift provider")
+System_Ext(aliexpress, "AliExpress", "External gift provider")
+
+System_Ext(chatbot_llm, "Chatbot LLM", "External LLM to process user conversations and ask follow-up questions")
+System_Ext(vision_llm, "Vision/Keywords LLM", "External model to extract keywords from posts/photos")
+System_Ext(gift_llm, "Gift suggestions LLM", "External model to suggest gift ideas based on keywords")
+System_Ext(fb_ext, "Facebook", "Facebook external data source")
+System_Ext(ig_ext, "Instagram", "Instagram external data source")
+System_Ext(x_ext, "X", "X external data source")
+System_Ext(tiktok_ext, "TikTok", "TikTok external data source")
+System_Ext(youtube_ext, "YouTube", "YouTube external data source")
+System_Ext(linkedin_ext, "LinkedIn", "LinkedIn external data source")
+System_Ext(threads_ext, "Threads", "Threads external data source")
+
+
+Rel(system_spying_microservice, fb_ext, "Crawl and extract data")
+Rel(system_spying_microservice, ig_ext, "Crawl and extract data")
+Rel(system_spying_microservice, x_ext, "Crawl and extract data")
+Rel(system_spying_microservice, tiktok_ext, "Crawl and extract data")
+Rel(system_spying_microservice, youtube_ext, "Crawl and extract data")
+Rel(system_spying_microservice, linkedin_ext, "Crawl and extract data")
+Rel(system_spying_microservice, threads_ext, "Crawl and extract data")
+
+
+
+
+
+Rel(user, system_rest_api, "Provides social links & preferences")
+Rel(system_rest_api, system_spying_microservice, "Sends social links for data extraction")
+Rel(system_spying_microservice, vision_llm, "Sends posts/photos for keyword extraction")
+Rel(system_chat_microservice, chatbot_llm, "Processes user conversations")
+Rel(chatbot_llm, system_chat_microservice, "Asks follow-ups and provide chat messages")
+
+Rel(system_rest_api, system_gift_microservice, "Requests gift suggestions")
+Rel(system_gift_microservice, temu, "Searches and retrieves offers")
+Rel(system_gift_microservice, allegro, "Searches and retrieves offers")
+Rel(system_gift_microservice, aliexpress, "Searches and retrieves offers")
+Rel(system_rest_api, system_chat_microservice, "Initiaties user conversations")
+Rel(system_chat_microservice, system_rest_api, "Asks follow-up questions for more context about the gift recipient")
+Rel(system_gift_microservice, gift_llm, "Sends extracted keywords & retreviews suggested gift ideas")
+
+SHOW_LEGEND()
+@enduml

@@ -1,0 +1,97 @@
+@startuml Domain Classes
+
+' == Existing classes ==
+class User {
+}
+
+class PersonSearch {
+  +id: UUID
+  +createdAt: Date
+}
+
+class Person {
+  +firstName: String
+  +lastName: String
+}
+
+class PersonData {
+  ' Aggregates social media and interview data
+}
+
+class SocialMediaData {
+  +source: String
+  +content: String
+}
+
+class InterviewAnswer {
+  +question: String
+  +answer: String
+}
+
+class Interview {
+  +id: UUID
+  +startedAt: Date
+}
+
+class Preferences {
+  +budgetMin: Decimal
+  +budgetMax: Decimal
+  +preferredCategories: String[]
+  +excludedCategories: String[]
+}
+
+class Keyword {
+  +value: String
+  +source: String  ' vision LLM / user / chatbot
+  +weight: Decimal
+}
+
+class RecommendationContext {
+  +id: UUID
+  +createdAt: DateTime
+  ' Ephemeral (in-memory) per request
+}
+
+class GiftIdea {
+  +name: String
+  +description: String
+}
+
+class Offer {
+  +externalId: String
+  +title: String
+  +price: Decimal
+  +currency: String
+  +description: String
+  +url: URL
+}
+
+class Provider {
+  +name: String
+  +apiUrl: URL
+  +authType: String  ' OAuth / API Key
+}
+
+class SocialLink {
+  +url: URL
+  +type: String  ' instagram / facebook / etc
+}
+
+' === Relationships ===
+User "1" -- "0..*" PersonSearch : initiates >
+PersonSearch "1" -- "1" Person : subject >
+Person "1" -- "0..*" SocialLink
+PersonSearch "1" -- "1" PersonData
+PersonData "1" -- "0..*" SocialMediaData
+PersonData "1" -- "0..*" InterviewAnswer
+PersonSearch "1" -- "0..1" Interview
+Interview "1" -- "0..*" InterviewAnswer
+
+PersonSearch "1" -- "1" RecommendationContext
+RecommendationContext "1" -- "0..*" Keyword
+RecommendationContext "1" -- "0..1" Preferences
+RecommendationContext "1" -- "0..*" GiftIdea
+GiftIdea "1" -- "0..*" Offer
+Offer "0..*" -- "1" Provider
+
+@enduml

@@ -1,5 +1,5 @@
 // src/webapi/modules/order.module.ts
-import { Module, Res } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { GiftController } from '../controllers/gift.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
@@ -18,7 +18,9 @@ import { GiftGenerateRequestedHandler } from 'src/app/handlers/gift-generate-req
         name: 'GIFT_READY_EVENT',
         transport: Transport.RMQ,
         options: {
-          urls: [process.env.CLOUDAMQP_URL || ''],
+          urls: [
+            process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672',
+          ],
           queue: GiftReadyEvent.name,
           queueOptions: {
             durable: false,

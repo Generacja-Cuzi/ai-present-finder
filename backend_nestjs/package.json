@@ -3,12 +3,6 @@
   "version": "1.0.0",
   "description": "Backend NestJS microservices workspace",
   "private": true,
-  "workspaces": [
-    "chat-microservice",
-    "gift-microservice",
-    "restapi-macroservice",
-    "stalking-microservice"
-  ],
   "scripts": {
     "build": "pnpm -r build",
     "start": "pnpm -r start",

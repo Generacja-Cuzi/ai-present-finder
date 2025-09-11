@@ -1,5 +1,5 @@
 // src/webapi/modules/order.module.ts
-import { Module, Res } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { RestApiController } from '../controllers/restapi.controller';
 import { StalkingAnalyzeRequestHandler } from 'src/app/handlers/stalking-analyze-request.handler';
@@ -26,7 +26,9 @@ import { GiftReadyHandler } from 'src/app/handlers/gift-ready.handler';
         name: 'STALKING_ANALYZE_REQUESTED_EVENT',
         transport: Transport.RMQ,
         options: {
-          urls: [process.env.CLOUDAMQP_URL || ''],
+          urls: [
+            process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672',
+          ],
           queue: StalkingAnalyzeRequestedEvent.name,
           queueOptions: {
             durable: false,
@@ -37,7 +39,9 @@ import { GiftReadyHandler } from 'src/app/handlers/gift-ready.handler';
         name: 'CHAT_ASK_QUESTION_EVENT',
         transport: Transport.RMQ,
         options: {
-          urls: [process.env.CLOUDAMQP_URL || ''],
+          urls: [
+            process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672',
+          ],
           queue: ChatAskQuestionEvent.name,
           queueOptions: {
             durable: false,
@@ -48,7 +52,9 @@ import { GiftReadyHandler } from 'src/app/handlers/gift-ready.handler';
         name: 'CHAT_USER_ANSWERED_EVENT',
         transport: Transport.RMQ,
         options: {
-          urls: [process.env.CLOUDAMQP_URL || ''],
+          urls: [
+            process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672',
+          ],
           queue: ChatUserAnsweredEvent.name,
           queueOptions: {
             durable: false,
@@ -59,7 +65,9 @@ import { GiftReadyHandler } from 'src/app/handlers/gift-ready.handler';
         name: 'GIFT_GENERATE_REQUESTED_EVENT',
         transport: Transport.RMQ,
         options: {
-          urls: [process.env.CLOUDAMQP_URL || ''],
+          urls: [
+            process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672',
+          ],
           queue: GiftGenerateRequestedEvent.name,
           queueOptions: {
             durable: false,

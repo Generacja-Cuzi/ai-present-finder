@@ -13,7 +13,7 @@ async function bootstrap() {
   const microserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || ''],
+      urls: [process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672'],
       queue: StalkingAnalyzeRequestedEvent.name,
       queueOptions: {
         durable: false,
@@ -25,10 +25,8 @@ async function bootstrap() {
 
   await app.startAllMicroservices();
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3010);
 
   logger.log('Microservice is listening');
-  logger.log('App is running on: http://localhost:3020');
-  logger.log('Microservice is running on: amqp://localhost:5672');
 }
-bootstrap();
+void bootstrap();

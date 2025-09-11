@@ -13,22 +13,18 @@ REST -> STALK: stalking.requested {links}
 
 STALK --> REST: stalking.completed {keywords}
 
-alt Brakuje kontekstu (REST ocenia)
-  REST -> CHAT: chat.session.started
+REST -> REST: eval.context {context: preferences + keywords}
+
+alt Brakuje kontekstu
+  REST -> CHAT: chat.ask.question {chat context: chat history + context}
   loop Zbieranie kontekstu
     CHAT --> REST: chat.question.asked (pytanie)
     REST -> U: Wyświetl pytanie
     U -> REST: Odpowiedź użytkownika
     REST -> CHAT: chat.user.answered (odpowiedź)
     CHAT --> REST: chat.answer.processed {keywords}
-    REST --> REST: ocena kontekstu
+    REST -> REST: eval.context {context: preferences + keywords}
   end
-  REST --> REST: rest.context.ready {context}
-  REST -> CHAT: chat.session.ended {reason: context.ready}
-  REST -> REST: context.updated {preferences + keywords + chat}
-else Kontekstu dość
-  REST -> REST: rest.context.ready {context}
-  REST -> REST: context.updated {preferences + keywords}
 end
 
 REST -> GIFT: gift.generate.requested {context}

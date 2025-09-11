@@ -1,0 +1,5 @@
+packages:
+  - "chat-microservice"
+  - "gift-microservice"
+  - "restapi-macroservice"
+  - "stalking-microservice"

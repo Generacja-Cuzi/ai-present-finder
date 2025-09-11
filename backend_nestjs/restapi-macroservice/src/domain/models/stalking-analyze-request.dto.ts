@@ -1,4 +1,4 @@
-export class AnalyzeRequestDto {
+export class StalkingAnalyzeRequestDto {
   facebookUrl: string;
   instagramUrl: string
   tiktokUrl: string;

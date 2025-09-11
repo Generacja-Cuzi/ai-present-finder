@@ -1,10 +1,11 @@
 import { CommandHandler, ICommandHandler, EventBus } from '@nestjs/cqrs';
-import { AnalyzeRequestCommand } from '../../domain/commands/analyze-request.command';
-import { AnalyzeRequestedEvent } from '../../domain/events/analyze-request.event';
+import { StalkingAnalyzeRequestCommand } from '../../domain/commands/stalking-analyze-request.command';
+import { StalkingAnalyzeRequestedEvent } from '../../domain/events/stalking-analyze-request.event';
 import { Inject, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { EvaluateContextCommand } from 'src/domain/commands/evaluate-context.command';
 import { ChatAskQuestionEvent } from 'src/domain/events/chat-ask-question.event';
+import { GiftGenerateRequestedEvent } from 'src/domain/events/gift-generate-requested.event';
 
 @CommandHandler(EvaluateContextCommand)
 export class EvaluateContextHandler
@@ -16,7 +17,10 @@ export class EvaluateContextHandler
   private enoughContext = false;
 
   constructor(
-    @Inject('ASK_QUESTION_EVENT') private readonly eventBus: ClientProxy,
+    @Inject('CHAT_ASK_QUESTION_EVENT')
+    private readonly chatEventBus: ClientProxy,
+    @Inject('GIFT_GENERATE_REQUESTED_EVENT')
+    private readonly giftEventBus: ClientProxy,
   ) {}
 
   async execute(command: EvaluateContextCommand) {
@@ -32,10 +36,17 @@ export class EvaluateContextHandler
 
     if (!this.enoughContext) {
       const event = new ChatAskQuestionEvent(context, history);
-      this.eventBus.emit(ChatAskQuestionEvent.name, event);
+      this.chatEventBus.emit(ChatAskQuestionEvent.name, event);
       this.logger.log(`Published event: ${event}`);
       return event;
     }
+
+    const { keywords } = context;
+
+    const giftEvent = new GiftGenerateRequestedEvent(keywords);
+    this.giftEventBus.emit(GiftGenerateRequestedEvent.name, giftEvent);
+
+    this.logger.log(`Published event: ${giftEvent}`);
 
     this.logger.log(`Evaluation completed`);
 

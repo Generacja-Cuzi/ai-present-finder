@@ -1,4 +1,4 @@
-export class AnalyzeRequestedEvent {
+export class StalkingAnalyzeRequestedEvent {
   constructor(
     public readonly facebookUrl: string,
     public readonly instagramUrl: string,

@@ -1,12 +1,11 @@
 // src/webapi/modules/order.module.ts
 import { Module, Res } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { StalkingController } from '../controllers/stalking.controller';
-import { StalkingAnalyzeRequestHandler } from 'src/app/handlers/stalking-analyze-request.handler';
+import { GiftController } from '../controllers/gift.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule } from '@nestjs/config';
-import { StalkingCompletedEvent } from 'src/domain/events/stalking-completed.event';
-import { StalkingAnalyzeHandler } from 'src/app/handlers/stalking-analyze.handler';
+import { GiftReadyEvent } from 'src/domain/events/gift-ready.event';
+import { GiftGenerateRequestedHandler } from 'src/app/handlers/gift-generate-requested.handler';
 
 @Module({
   imports: [
@@ -16,11 +15,11 @@ import { StalkingAnalyzeHandler } from 'src/app/handlers/stalking-analyze.handle
     }),
     ClientsModule.register([
       {
-        name: 'STALKING_COMPLETED_EVENT',
+        name: 'GIFT_READY_EVENT',
         transport: Transport.RMQ,
         options: {
           urls: [process.env.CLOUDAMQP_URL || ''],
-          queue: StalkingCompletedEvent.name,
+          queue: GiftReadyEvent.name,
           queueOptions: {
             durable: false,
           },
@@ -28,7 +27,7 @@ import { StalkingAnalyzeHandler } from 'src/app/handlers/stalking-analyze.handle
       },
     ]),
   ],
-  controllers: [StalkingController, StalkingAnalyzeRequestHandler],
-  providers: [StalkingAnalyzeHandler],
+  controllers: [GiftController, GiftGenerateRequestedHandler],
+  providers: [],
 })
 export class StalkingModule {}

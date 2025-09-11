@@ -6,6 +6,7 @@ import { Logger } from '@nestjs/common';
 import { StalkingCompletedEvent } from './domain/events/stalking-completed.event';
 import { ChatQuestionAskedEvent } from './domain/events/chat-question-asked.event';
 import { ChatAnswerProcessedEvent } from './domain/events/chat-answer-processed.event';
+import { GiftReadyEvent } from './domain/events/gift-ready.event';
 
 async function bootstrap() {
 
@@ -46,10 +47,22 @@ async function bootstrap() {
       },
   };
 
+  const giftReadyMicroserviceOptions = {
+    transport: Transport.RMQ,
+      options: {
+        urls: [process.env.CLOUDAMQP_URL || ''],  
+        queue: GiftReadyEvent.name,
+        queueOptions: {
+          durable: false,
+        },
+      },
+  };  
+
 
   app.connectMicroservice(stalkingCompletedMicroserviceOptions);
   app.connectMicroservice(chatQuestionAskedMicroserviceOptions);
   app.connectMicroservice(chatAnswerProcessedMicroserviceOptions);
+  app.connectMicroservice(giftReadyMicroserviceOptions);
 
   await app.startAllMicroservices();
 

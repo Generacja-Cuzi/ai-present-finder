@@ -1,8 +1,8 @@
 // src/webapi/controllers/order.controller.ts
 import { Controller, Post, Body, Get } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { AnalyzeRequestCommand } from 'src/domain/commands/analyze-request.command';
-import { AnalyzeRequestDto } from 'src/domain/models/analyze-request.dto';
+import { StalkingAnalyzeRequestCommand } from 'src/domain/commands/stalking-analyze-request.command';
+import { StalkingAnalyzeRequestDto } from 'src/domain/models/stalking-analyze-request.dto';
 
 @Controller('restapi')
 export class RestApiController {
@@ -12,9 +12,9 @@ export class RestApiController {
   ) {}
 
   @Post()
-  async create(@Body() analyzeRequestedDto: AnalyzeRequestDto) {
+  async create(@Body() analyzeRequestedDto: StalkingAnalyzeRequestDto) {
     return this.commandBus.execute(
-      new AnalyzeRequestCommand(analyzeRequestedDto),
+      new StalkingAnalyzeRequestCommand(analyzeRequestedDto),
     );
   }
 }

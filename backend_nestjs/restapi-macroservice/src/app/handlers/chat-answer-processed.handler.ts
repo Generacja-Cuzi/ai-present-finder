@@ -4,7 +4,6 @@ import {
   EventBus,
   CommandBus,
 } from '@nestjs/cqrs';
-import { AnalyzeRequestedEvent } from '../../domain/events/analyze-request.event';
 import { Controller, Inject, Logger } from '@nestjs/common';
 import { ClientProxy, EventPattern } from '@nestjs/microservices';
 import { StalkingCompletedEvent } from 'src/domain/events/stalking-completed.event';
@@ -21,12 +20,12 @@ export class ChatAnswerProcessedHandler {
 
   @EventPattern(ChatAnswerProcessedEvent.name)
   async handle(event: ChatAnswerProcessedEvent) {
-    
     this.logger.log(`Uzyskano keywords`);
-    
-    this.commandBus.execute(new EvaluateContextCommand(event.context, event.history));
+
+    this.commandBus.execute(
+      new EvaluateContextCommand(event.context, event.history),
+    );
 
     return event;
-    
   }
 }

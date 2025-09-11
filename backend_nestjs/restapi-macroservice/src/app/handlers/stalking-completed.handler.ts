@@ -4,7 +4,7 @@ import {
   EventBus,
   CommandBus,
 } from '@nestjs/cqrs';
-import { AnalyzeRequestedEvent } from '../../domain/events/analyze-request.event';
+
 import { Controller, Inject, Logger } from '@nestjs/common';
 import { ClientProxy, EventPattern } from '@nestjs/microservices';
 import { StalkingCompletedEvent } from 'src/domain/events/stalking-completed.event';

@@ -1,21 +1,21 @@
 import { CommandHandler, ICommandHandler, EventBus } from '@nestjs/cqrs';
-import { AnalyzeRequestedEvent } from '../../domain/events/analyze-request.event';
+import { StalkingAnalyzeRequestedEvent } from '../../domain/events/stalking-analyze-request.event';
 import { Inject, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { StalkingAnalyzeRequestedCommand } from 'src/domain/commands/stalking-analyze-requested.command';
+import { StalkingAnalyzeCommand } from 'src/domain/commands/stalking-analyze.command';
 import { log } from 'console';
 import { StalkingCompletedEvent } from 'src/domain/events/stalking-completed.event';
 
-@CommandHandler(StalkingAnalyzeRequestedCommand)
-export class StalkingAnalyzeRequestHandler
-  implements ICommandHandler<StalkingAnalyzeRequestedCommand>
+@CommandHandler(StalkingAnalyzeCommand)
+export class StalkingAnalyzeHandler
+  implements ICommandHandler<StalkingAnalyzeCommand>
 {
-  private readonly logger = new Logger(StalkingAnalyzeRequestHandler.name);
+  private readonly logger = new Logger(StalkingAnalyzeHandler.name);
   constructor(
     @Inject('STALKING_COMPLETED_EVENT') private readonly eventBus: ClientProxy,
   ) {}
 
-  async execute(command: StalkingAnalyzeRequestedCommand) {
+  async execute(command: StalkingAnalyzeCommand) {
     this.logger.log('Starting stalking analysis...');
     this.logger.log('Stalking completed.');
 

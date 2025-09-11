@@ -11,25 +11,21 @@ import { ContextDto } from 'src/domain/models/context.dto';
 import { EvaluateContextCommand } from 'src/domain/commands/evaluate-context.command';
 import { ChatQuestionAskedEvent } from 'src/domain/events/chat-question-asked.event';
 import { ChatUserAnsweredEvent } from 'src/domain/events/chat-user-answered.event';
+import { GiftReadyEvent } from 'src/domain/events/gift-ready.event';
 
 @Controller()
-export class ChatQuestionAskedHandler {
-  private readonly logger = new Logger(ChatQuestionAskedHandler.name);
-  constructor(
-    @Inject('CHAT_USER_ANSWERED_EVENT') private readonly eventBus: ClientProxy,
-  ) {}
+export class GiftReadyHandler {
+  private readonly logger = new Logger(GiftReadyHandler.name);
+  constructor() {}
 
-  @EventPattern(ChatQuestionAskedEvent.name)
-  async handle(event: ChatQuestionAskedEvent) {
-    this.logger.log(`Uzyskano odpowiedz`);
+  @EventPattern(GiftReadyEvent.name)
+  async handle(event: GiftReadyEvent) {
 
-    const eventToEmit: ChatUserAnsweredEvent = {
-      context: event.context,
-      history: [...event.history, event.question],
-      answer: 'Odpowiedz na pytanie',
-    };
+    this.logger.log(`Uzyskano gotowe pomysly na prezenty`);
 
-    this.eventBus.emit(ChatUserAnsweredEvent.name, eventToEmit);
+    const giftIdeas = event.giftIdeas;
+
+    this.logger.log(`Pomysly na prezenty: ${giftIdeas.join('; ')}`);
 
     return event;
   }

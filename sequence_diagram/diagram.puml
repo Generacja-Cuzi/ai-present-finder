@@ -1,0 +1,34 @@
+@startuml sequence_diagram
+title Flow eventów (hub-and-spoke, REST jako koordynator)
+
+actor User as U
+participant "REST API" as REST
+participant "Stalking Service" as STALK
+participant "Chat Service" as CHAT
+participant "Gift Service" as GIFT
+
+== Start sesji ==
+U -> REST: start sesji + linki/preferencje
+REST -> STALK: stalking.requested {links}
+
+STALK --> REST: stalking.completed {keywords}
+
+REST -> REST: eval.context {context: preferences + keywords}
+
+alt Brakuje kontekstu
+  REST -> CHAT: chat.ask.question {chat context: chat history + context}
+  loop Zbieranie kontekstu
+    CHAT --> REST: chat.question.asked (pytanie)
+    REST -> U: Wyświetl pytanie
+    U -> REST: Odpowiedź użytkownika
+    REST -> CHAT: chat.user.answered (odpowiedź)
+    CHAT --> REST: chat.answer.processed {keywords}
+    REST -> REST: eval.context {context: preferences + keywords}
+  end
+end
+
+REST -> GIFT: gift.generate.requested {context}
+GIFT --> REST: gift.ready {propozycje}
+REST -> U: Wyświetl propozycje
+
+@enduml

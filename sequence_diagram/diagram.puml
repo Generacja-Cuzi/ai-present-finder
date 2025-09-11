@@ -16,16 +16,19 @@ STALK --> REST: stalking.completed {keywords, evidence}
 
 alt Brakuje kontekstu (REST ocenia)
   REST -> CHAT: chat.session.started
-  loop Dialog o kontekst
+  loop Zbieranie kontekstu
     CHAT --> REST: chat.question.asked (pytanie)
     REST -> U: Wyświetl pytanie
     U -> REST: Odpowiedź użytkownika
     REST -> CHAT: chat.user.answered (odpowiedź)
-    REST --> REST: rest.context.ready {kontekst}
+    CHAT --> REST: chat.answer.processed {keywords}
+    REST --> REST: ocena kontekstu
   end
-  
+  REST --> REST: rest.context.ready {kontekst}
+  REST -> CHAT: chat.session.ended {reason: context.ready}
   REST -> REST: context.updated {preferencje + keywords + chat}
 else Kontekstu dość
+  REST -> REST: rest.context.ready {kontekst}
   REST -> REST: context.updated {preferencje + keywords}
 end
 

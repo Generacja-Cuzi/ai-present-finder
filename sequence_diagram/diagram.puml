@@ -9,10 +9,9 @@ participant "Gift Service" as GIFT
 
 == Start sesji ==
 U -> REST: start sesji + linki/preferencje
-REST -> STALK: session.created
-REST -> STALK: analyze.requested
+REST -> STALK: stalking.requested {links}
 
-STALK --> REST: stalking.completed {keywords, evidence}
+STALK --> REST: stalking.completed {keywords}
 
 alt Brakuje kontekstu (REST ocenia)
   REST -> CHAT: chat.session.started
@@ -24,15 +23,15 @@ alt Brakuje kontekstu (REST ocenia)
     CHAT --> REST: chat.answer.processed {keywords}
     REST --> REST: ocena kontekstu
   end
-  REST --> REST: rest.context.ready {kontekst}
+  REST --> REST: rest.context.ready {context}
   REST -> CHAT: chat.session.ended {reason: context.ready}
-  REST -> REST: context.updated {preferencje + keywords + chat}
+  REST -> REST: context.updated {preferences + keywords + chat}
 else Kontekstu dość
-  REST -> REST: rest.context.ready {kontekst}
-  REST -> REST: context.updated {preferencje + keywords}
+  REST -> REST: rest.context.ready {context}
+  REST -> REST: context.updated {preferences + keywords}
 end
 
-REST -> GIFT: gift.generate.requested {kontekst}
+REST -> GIFT: gift.generate.requested {context}
 GIFT --> REST: gift.ready {propozycje}
 REST -> U: Wyświetl propozycje
 

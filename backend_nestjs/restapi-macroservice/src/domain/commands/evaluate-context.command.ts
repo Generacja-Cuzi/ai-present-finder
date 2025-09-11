@@ -1,5 +1,5 @@
 import { ContextDto } from "../models/context.dto";
 
 export class EvaluateContextCommand {
-  constructor(public readonly context: ContextDto) {}
+  constructor(public readonly context: ContextDto, public readonly history?: string[]) {}
 }

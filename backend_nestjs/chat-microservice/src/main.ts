@@ -3,9 +3,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Transport } from '@nestjs/microservices';
 import { Logger } from '@nestjs/common';
-import { StalkingCompletedEvent } from './domain/events/stalking-completed.event';
-import { ChatQuestionAskedEvent } from './domain/events/chat-question-asked.event';
-import { ChatAnswerProcessedEvent } from './domain/events/chat-answer-processed.event';
+import { ChatAskQuestionEvent } from './domain/events/chat-ask-question.event';
+import { ChatUserAnsweredEvent } from './domain/events/chat-user-answered.event';
 
 async function bootstrap() {
 
@@ -13,43 +12,30 @@ async function bootstrap() {
 
   const logger = new Logger('AppLogger');
 
-  const stalkingCompletedMicroserviceOptions = {
+  const chatAskQuestionMicroserviceOptions = {
     transport: Transport.RMQ,
       options: {
         urls: [process.env.CLOUDAMQP_URL || ''],
-        queue: StalkingCompletedEvent.name,
+        queue: ChatAskQuestionEvent.name,
         queueOptions: {
           durable: false,
         },
       },
   };
 
-  const chatQuestionAskedMicroserviceOptions = {
+  const chatUserAnsweredMicroserviceOptions = {
     transport: Transport.RMQ,
       options: {
         urls: [process.env.CLOUDAMQP_URL || ''],
-        queue: ChatQuestionAskedEvent.name,
+        queue: ChatUserAnsweredEvent.name,
         queueOptions: {
           durable: false,
         },
       },
   };
 
-  const chatAnswerProcessedMicroserviceOptions = { 
-    transport: Transport.RMQ,
-      options: {
-        urls: [process.env.CLOUDAMQP_URL || ''],
-        queue: ChatAnswerProcessedEvent.name,
-        queueOptions: {
-          durable: false,
-        },
-      },
-  };
-
-
-  app.connectMicroservice(stalkingCompletedMicroserviceOptions);
-  app.connectMicroservice(chatQuestionAskedMicroserviceOptions);
-  app.connectMicroservice(chatAnswerProcessedMicroserviceOptions);
+  app.connectMicroservice(chatAskQuestionMicroserviceOptions);
+  app.connectMicroservice(chatUserAnsweredMicroserviceOptions);
 
   await app.startAllMicroservices();
 

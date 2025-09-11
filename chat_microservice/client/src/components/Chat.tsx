@@ -1,6 +1,7 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { useSendMessageOnInit } from "../hooks/use-send-message-on-init";
 
 export default function Chat() {
   const { messages, status, sendMessage } = useChat({
@@ -9,23 +10,22 @@ export default function Chat() {
       credentials: "include",
     }),
     generateId: () => crypto.randomUUID(),
-    messages: [
-      {
-        role: "user",
-        parts: [{ type: "text", text: "Hi there!" }],
-        id: "1",
-      },
-    ],
+    messages: [],
     // id: chatId, // This will reset the chat when chatId changes
   });
 
   const [input, setInput] = useState("");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    sendMessage({ role: "user", parts: [{ type: "text", text: input }] });
-    setInput("");
-  };
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      sendMessage({ role: "user", parts: [{ type: "text", text: input }] });
+      setInput("");
+    },
+    [sendMessage, input]
+  );
+
+  useSendMessageOnInit(sendMessage);
 
   const isThinking = status === "streaming" || status === "submitted";
   return (
@@ -33,21 +33,31 @@ export default function Chat() {
       <h1 className="text-2xl font-bold mb-4">AI Chat</h1>
 
       <div className="flex-1 overflow-y-auto mb-4 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`p-3 rounded-lg ${
-              message.role === "user"
-                ? "bg-blue-500 text-white ml-12"
-                : "bg-gray-200 text-gray-800 mr-12"
-            }`}
-          >
-            <div className="font-semibold text-sm mb-1">
-              {message.role === "user" ? "You" : "AI"}
-            </div>
-            <div>{message.parts.map((part) => part.text).join("")}</div>
-          </div>
-        ))}
+        {messages.map(
+          (message) =>
+            message.id !== "DEFAULT_HIDE_THIS_MESSAGE" && (
+              <div
+                key={message.id}
+                className={`p-3 rounded-lg ${
+                  message.role === "user"
+                    ? "bg-blue-500 text-white ml-12"
+                    : "bg-gray-200 text-gray-800 mr-12"
+                }`}
+              >
+                <div className="font-semibold text-sm mb-1">
+                  {message.role === "user" ? "You" : "AI"}
+                </div>
+                <div>
+                  {message.parts.map((part) => {
+                    if (part.type === "text") {
+                      return part.text;
+                    }
+                    return null;
+                  })}
+                </div>
+              </div>
+            )
+        )}
 
         {isThinking && (
           <div className="bg-gray-200 text-gray-800 mr-12 p-3 rounded-lg">

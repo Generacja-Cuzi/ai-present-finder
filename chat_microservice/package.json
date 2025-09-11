@@ -1,0 +1,23 @@
+{
+  "name": "chat-microservice",
+  "version": "1.0.0",
+  "description": "Chat microservice with NestJS backend and React frontend",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel run dev",
+    "dev:server": "pnpm --filter server run start:dev",
+    "dev:client": "pnpm --filter client run dev",
+    "build": "pnpm --recursive run build",
+    "build:server": "pnpm --filter server run build",
+    "build:client": "pnpm --filter client run build",
+    "start": "pnpm --parallel run start",
+    "start:server": "pnpm --filter server run start",
+    "start:client": "pnpm --filter client run preview",
+    "lint": "pnpm --recursive run lint",
+    "test": "pnpm --recursive run test",
+    "clean": "pnpm --recursive run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

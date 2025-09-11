@@ -19,7 +19,9 @@ import { StalkingAnalyzeHandler } from 'src/app/handlers/stalking-analyze.handle
         name: 'STALKING_COMPLETED_EVENT',
         transport: Transport.RMQ,
         options: {
-          urls: [process.env.CLOUDAMQP_URL || 'amqp://localhost:5672'],
+          urls: [
+            process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672',
+          ],
           queue: StalkingCompletedEvent.name,
           queueOptions: {
             durable: false,

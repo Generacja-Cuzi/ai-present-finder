@@ -16,7 +16,7 @@ async function bootstrap() {
   const stalkingCompletedMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || 'amqp://localhost:5672'],
+      urls: [process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672'],
       queue: StalkingCompletedEvent.name,
       queueOptions: {
         durable: false,
@@ -27,7 +27,7 @@ async function bootstrap() {
   const chatQuestionAskedMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || 'amqp://localhost:5672'],
+      urls: [process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672'],
       queue: ChatQuestionAskedEvent.name,
       queueOptions: {
         durable: false,
@@ -38,7 +38,7 @@ async function bootstrap() {
   const chatAnswerProcessedMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || 'amqp://localhost:5672'],
+      urls: [process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672'],
       queue: ChatAnswerProcessedEvent.name,
       queueOptions: {
         durable: false,
@@ -49,7 +49,7 @@ async function bootstrap() {
   const giftReadyMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || 'amqp://localhost:5672'],
+      urls: [process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672'],
       queue: GiftReadyEvent.name,
       queueOptions: {
         durable: false,
@@ -67,8 +67,6 @@ async function bootstrap() {
   await app.listen(process.env.PORT ?? 3000);
 
   logger.log('Microservice is listening');
-  logger.log('App is running on: http://localhost:3020');
-  logger.log('Microservice is running on: amqp://localhost:5672');
 }
 
 void bootstrap();

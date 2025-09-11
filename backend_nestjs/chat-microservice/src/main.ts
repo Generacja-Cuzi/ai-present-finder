@@ -14,7 +14,7 @@ async function bootstrap() {
   const chatAskQuestionMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || 'amqp://localhost:5672'],
+      urls: [process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672'],
       queue: ChatAskQuestionEvent.name,
       queueOptions: {
         durable: false,
@@ -25,7 +25,7 @@ async function bootstrap() {
   const chatUserAnsweredMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || 'amqp://localhost:5672'],
+      urls: [process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672'],
       queue: ChatUserAnsweredEvent.name,
       queueOptions: {
         durable: false,
@@ -38,10 +38,8 @@ async function bootstrap() {
 
   await app.startAllMicroservices();
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3020);
 
   logger.log('Microservice is listening');
-  logger.log('App is running on: http://localhost:3020');
-  logger.log('Microservice is running on: amqp://localhost:5672');
 }
 void bootstrap();

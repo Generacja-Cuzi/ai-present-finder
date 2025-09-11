@@ -21,7 +21,9 @@ import { ChatUserAnsweredHandler } from 'src/app/handlers/chat-user-answered.han
         name: 'CHAT_QUESTION_ASKED_EVENT',
         transport: Transport.RMQ,
         options: {
-          urls: [process.env.CLOUDAMQP_URL || 'amqp://localhost:5672'],
+          urls: [
+            process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672',
+          ],
           queue: ChatQuestionAskedEvent.name,
           queueOptions: {
             durable: false,
@@ -32,7 +34,9 @@ import { ChatUserAnsweredHandler } from 'src/app/handlers/chat-user-answered.han
         name: 'CHAT_ANSWER_PROCESSED_EVENT',
         transport: Transport.RMQ,
         options: {
-          urls: [process.env.CLOUDAMQP_URL || 'amqp://localhost:5672'],
+          urls: [
+            process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672',
+          ],
           queue: ChatAnswerProcessedEvent.name,
           queueOptions: {
             durable: false,

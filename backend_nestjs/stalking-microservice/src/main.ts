@@ -13,7 +13,7 @@ async function bootstrap() {
   const microserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || ''],
+      urls: [process.env.CLOUDAMQP_URL || 'amqp://localhost:5672'],
       queue: StalkingAnalyzeRequestedEvent.name,
       queueOptions: {
         durable: false,

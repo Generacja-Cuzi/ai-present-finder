@@ -26,7 +26,7 @@ import { GiftReadyHandler } from 'src/app/handlers/gift-ready.handler';
         name: 'STALKING_ANALYZE_REQUESTED_EVENT',
         transport: Transport.RMQ,
         options: {
-          urls: [process.env.CLOUDAMQP_URL || ''],
+          urls: [process.env.CLOUDAMQP_URL || 'amqp://localhost:5672'],
           queue: StalkingAnalyzeRequestedEvent.name,
           queueOptions: {
             durable: false,
@@ -37,7 +37,7 @@ import { GiftReadyHandler } from 'src/app/handlers/gift-ready.handler';
         name: 'CHAT_ASK_QUESTION_EVENT',
         transport: Transport.RMQ,
         options: {
-          urls: [process.env.CLOUDAMQP_URL || ''],
+          urls: [process.env.CLOUDAMQP_URL || 'amqp://localhost:5672'],
           queue: ChatAskQuestionEvent.name,
           queueOptions: {
             durable: false,
@@ -48,7 +48,7 @@ import { GiftReadyHandler } from 'src/app/handlers/gift-ready.handler';
         name: 'CHAT_USER_ANSWERED_EVENT',
         transport: Transport.RMQ,
         options: {
-          urls: [process.env.CLOUDAMQP_URL || ''],
+          urls: [process.env.CLOUDAMQP_URL || 'amqp://localhost:5672'],
           queue: ChatUserAnsweredEvent.name,
           queueOptions: {
             durable: false,
@@ -59,7 +59,7 @@ import { GiftReadyHandler } from 'src/app/handlers/gift-ready.handler';
         name: 'GIFT_GENERATE_REQUESTED_EVENT',
         transport: Transport.RMQ,
         options: {
-          urls: [process.env.CLOUDAMQP_URL || ''],
+          urls: [process.env.CLOUDAMQP_URL || 'amqp://localhost:5672'],
           queue: GiftGenerateRequestedEvent.name,
           queueOptions: {
             durable: false,

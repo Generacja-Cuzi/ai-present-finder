@@ -18,7 +18,7 @@ import { GiftGenerateRequestedHandler } from 'src/app/handlers/gift-generate-req
         name: 'GIFT_READY_EVENT',
         transport: Transport.RMQ,
         options: {
-          urls: [process.env.CLOUDAMQP_URL || ''],
+          urls: [process.env.CLOUDAMQP_URL || 'amqp://localhost:5672'],
           queue: GiftReadyEvent.name,
           queueOptions: {
             durable: false,

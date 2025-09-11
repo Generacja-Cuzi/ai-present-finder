@@ -7,31 +7,30 @@ import { ChatAskQuestionEvent } from './domain/events/chat-ask-question.event';
 import { ChatUserAnsweredEvent } from './domain/events/chat-user-answered.event';
 
 async function bootstrap() {
-
   const app = await NestFactory.create(AppModule);
 
   const logger = new Logger('AppLogger');
 
   const chatAskQuestionMicroserviceOptions = {
     transport: Transport.RMQ,
-      options: {
-        urls: [process.env.CLOUDAMQP_URL || ''],
-        queue: ChatAskQuestionEvent.name,
-        queueOptions: {
-          durable: false,
-        },
+    options: {
+      urls: [process.env.CLOUDAMQP_URL || 'amqp://localhost:5672'],
+      queue: ChatAskQuestionEvent.name,
+      queueOptions: {
+        durable: false,
       },
+    },
   };
 
   const chatUserAnsweredMicroserviceOptions = {
     transport: Transport.RMQ,
-      options: {
-        urls: [process.env.CLOUDAMQP_URL || ''],
-        queue: ChatUserAnsweredEvent.name,
-        queueOptions: {
-          durable: false,
-        },
+    options: {
+      urls: [process.env.CLOUDAMQP_URL || 'amqp://localhost:5672'],
+      queue: ChatUserAnsweredEvent.name,
+      queueOptions: {
+        durable: false,
       },
+    },
   };
 
   app.connectMicroservice(chatAskQuestionMicroserviceOptions);
@@ -45,4 +44,4 @@ async function bootstrap() {
   logger.log('App is running on: http://localhost:3020');
   logger.log('Microservice is running on: amqp://localhost:5672');
 }
-bootstrap();
+void bootstrap();

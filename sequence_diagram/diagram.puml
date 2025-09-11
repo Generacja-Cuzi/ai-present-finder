@@ -21,7 +21,7 @@ alt Brakuje kontekstu (REST ocenia)
     REST -> U: Wyświetl pytanie
     U -> REST: Odpowiedź użytkownika
     REST -> CHAT: chat.user.answered (odpowiedź)
-    REST --> REST: chat.context.ready {kontekst}
+    REST --> REST: rest.context.ready {kontekst}
   end
   
   REST -> REST: context.updated {preferencje + keywords + chat}

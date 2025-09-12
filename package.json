@@ -1,0 +1,16 @@
+{
+  "name": "ai-present-finder",
+  "version": "1.0.0",
+  "description": "AI Present Finder - Full-stack application with microservices backend and React frontend",
+  "private": true,
+  "scripts": {
+    "build": "pnpm -r --parallel build",
+    "start": "pnpm -r --parallel start",
+    "dev": "pnpm -r --parallel dev",
+    "test": "pnpm -r --parallel test",
+    "lint": "pnpm -r --parallel lint",
+    "format": "pnpm -r --parallel format",
+    "clean": "pnpm -r --parallel clean && rm -rf node_modules",
+    "install:all": "pnpm install"
+  }
+}

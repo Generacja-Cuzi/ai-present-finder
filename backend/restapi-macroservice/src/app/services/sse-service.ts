@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Subject } from 'rxjs';
 
 type EventObject = {
@@ -9,16 +9,21 @@ type EventObject = {
 @Injectable()
 export class SseService {
   private readonly allSubscribedUsers: Map<string, EventObject> = new Map();
-
+  private readonly logger = new Logger(SseService.name);
   sendEvent(notification: { userId: string; message: string }) {
+    this.logger.log('elo zelo' + JSON.stringify(notification));
+
     if (this.allSubscribedUsers.has(notification.userId)) {
       const connection = this.allSubscribedUsers.get(notification.userId);
       if (!connection) {
         throw new Error('this should not happen');
       }
-      connection.eventSubject.next({
-        data: notification.message,
-      } as MessageEvent);
+      this.logger.log('Sending message' + JSON.stringify(notification));
+      connection.eventSubject.next(
+        new MessageEvent('message', {
+          data: notification.message,
+        }),
+      );
     }
   }
 
@@ -31,6 +36,7 @@ export class SseService {
   }
 
   addUser(id: string): void {
+    this.logger.log('adding user ' + id);
     if (this.allSubscribedUsers.has(id)) {
       const existing = this.allSubscribedUsers.get(id);
       if (!existing) {

@@ -14,6 +14,9 @@ import { ChatAnswerProcessedHandler } from 'src/app/handlers/chat-answer-process
 import { EvaluateContextHandler } from 'src/app/handlers/evaluate-context.handler';
 import { GiftGenerateRequestedEvent } from 'src/domain/events/gift-generate-requested.event';
 import { GiftReadyHandler } from 'src/app/handlers/gift-ready.handler';
+import { SseController } from '../controllers/sse.controller';
+import { SseService } from 'src/app/services/sse-service';
+import { NotifyUserSseHandler } from 'src/app/handlers/notify-user-sse.command';
 
 @Module({
   imports: [
@@ -82,7 +85,13 @@ import { GiftReadyHandler } from 'src/app/handlers/gift-ready.handler';
     ChatQuestionAskedHandler,
     ChatAnswerProcessedHandler,
     GiftReadyHandler,
+    SseController,
   ],
-  providers: [StalkingAnalyzeRequestHandler, EvaluateContextHandler],
+  providers: [
+    StalkingAnalyzeRequestHandler,
+    EvaluateContextHandler,
+    NotifyUserSseHandler,
+    SseService,
+  ],
 })
 export class RestApiModule {}

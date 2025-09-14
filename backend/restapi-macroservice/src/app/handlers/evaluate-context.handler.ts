@@ -1,6 +1,4 @@
-import { CommandHandler, ICommandHandler, EventBus } from '@nestjs/cqrs';
-import { StalkingAnalyzeRequestCommand } from '../../domain/commands/stalking-analyze-request.command';
-import { StalkingAnalyzeRequestedEvent } from '../../domain/events/stalking-analyze-request.event';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { EvaluateContextCommand } from 'src/domain/commands/evaluate-context.command';
@@ -37,8 +35,8 @@ export class EvaluateContextHandler
     if (!this.enoughContext) {
       const event = new ChatAskQuestionEvent(context, history);
       this.chatEventBus.emit(ChatAskQuestionEvent.name, event);
-      this.logger.log(`Published event: ${event}`);
-      return event;
+      this.logger.log(`Published event: ${JSON.stringify(event)}`);
+      return Promise.resolve();
     }
 
     const { keywords } = context;
@@ -46,10 +44,10 @@ export class EvaluateContextHandler
     const giftEvent = new GiftGenerateRequestedEvent(keywords);
     this.giftEventBus.emit(GiftGenerateRequestedEvent.name, giftEvent);
 
-    this.logger.log(`Published event: ${giftEvent}`);
+    this.logger.log(`Published event: ${JSON.stringify(giftEvent)}`);
 
     this.logger.log(`Evaluation completed`);
 
-    return null;
+    return Promise.resolve();
   }
 }

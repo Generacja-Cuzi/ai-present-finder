@@ -23,6 +23,8 @@ export class SseController {
     @Query() query: RegisterSseUserDto,
     @Res() response: Response,
   ): Observable<MessageEvent> {
+    if (!query.clientId) throw new Error('query.clientId is required');
+
     this.sseService.addUser(query.clientId);
     response.on('close', () => {
       this.sseService.removeUser(query.clientId);

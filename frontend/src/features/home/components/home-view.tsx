@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
+import { v7 as uuidv7 } from 'uuid'
 import { useStalkingRequestMutation } from '../api/stalking-request'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,6 +17,9 @@ export function HomeView() {
 
   const handleStart = async () => {
     try {
+      // Generate a unique client ID for this session
+      const clientId = uuidv7()
+
       // TODO(simon-the-shark): someone needs to add this later
       await stalkingRequestMutation.mutateAsync(
         {
@@ -28,7 +32,7 @@ export function HomeView() {
         },
         {
           onSuccess: () => {
-            navigate({ to: '/chat' })
+            navigate({ to: '/chat/$id', params: { id: clientId } })
           },
         },
       )

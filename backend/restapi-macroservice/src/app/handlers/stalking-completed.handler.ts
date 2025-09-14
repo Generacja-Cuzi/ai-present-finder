@@ -5,6 +5,7 @@ import { EventPattern } from '@nestjs/microservices';
 import { StalkingCompletedEvent } from 'src/domain/events/stalking-completed.event';
 import { ContextDto } from 'src/domain/models/context.dto';
 import { EvaluateContextCommand } from 'src/domain/commands/evaluate-context.command';
+import { NotifyUserSseCommand } from 'src/domain/commands/notify-user-sse.command';
 
 @Controller()
 export class StalkingCompletedHandler {
@@ -18,6 +19,11 @@ export class StalkingCompletedHandler {
       keywords: keywords,
       chatId: event.chatId,
     };
+    await this.commandBus.execute(
+      new NotifyUserSseCommand(event.chatId, {
+        type: 'stalking-completed',
+      }),
+    );
     await this.commandBus.execute(new EvaluateContextCommand(context));
   }
 }

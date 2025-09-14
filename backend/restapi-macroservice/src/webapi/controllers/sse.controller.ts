@@ -2,17 +2,8 @@ import { Controller, Query, Res, Sse } from '@nestjs/common';
 import { Response } from 'express';
 import { Observable } from 'rxjs';
 import { SseService } from 'src/app/services/sse-service';
-
-interface MessageEvent {
-  data: any;
-  id?: string;
-  type?: string;
-  retry?: number;
-}
-
-interface RegisterSseUserDto {
-  clientId: string;
-}
+import { RegisterUserSseDto } from 'src/domain/models/register-user-sse.dto';
+import { SseMessageDto } from 'src/domain/models/sse-message.dto';
 
 @Controller()
 export class SseController {
@@ -20,9 +11,9 @@ export class SseController {
 
   @Sse('sse')
   sse(
-    @Query() query: RegisterSseUserDto,
+    @Query() query: RegisterUserSseDto,
     @Res() response: Response,
-  ): Observable<MessageEvent> {
+  ): Observable<MessageEvent<SseMessageDto>> {
     if (!query.clientId) throw new Error('query.clientId is required');
 
     this.sseService.addUser(query.clientId);

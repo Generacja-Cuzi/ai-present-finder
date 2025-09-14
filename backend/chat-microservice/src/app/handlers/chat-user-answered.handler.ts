@@ -1,33 +1,31 @@
-import { Controller, Inject } from '@nestjs/common';
-import { ClientProxy, EventPattern } from '@nestjs/microservices';
+import { Controller } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
+import { EventPattern } from '@nestjs/microservices';
+import { GenerateQuestionCommand } from 'src/domain/commands/generate-question.command';
 
 import { ChatUserAnsweredEvent } from 'src/domain/events/chat-user-answered.event';
-import { ChatAnswerProcessedEvent } from 'src/domain/events/chat-answer-processed.event';
 
 @Controller()
 export class ChatUserAnsweredHandler {
   constructor(
-    @Inject('CHAT_ANSWER_PROCESSED_EVENT')
-    private readonly eventBus: ClientProxy,
+    //  @Inject('CHAT_INTERVIEW_COMPLETED_EVENT')
+    // private readonly chatInterviewCompletedEventBus: ClientProxy,
+
+    private readonly commandBus: CommandBus,
   ) {}
 
   @EventPattern(ChatUserAnsweredEvent.name)
   async handle(event: ChatUserAnsweredEvent) {
-    const keywords = ['simon', 'the', 'shark'];
+    // TODO(simon-the-shark): call ai and anwser or end interview
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { context, history, answer: _answer } = event;
+    await this.commandBus.execute(
+      new GenerateQuestionCommand(event.context, event.messages),
+    );
 
-    const answerProcessed: ChatAnswerProcessedEvent =
-      new ChatAnswerProcessedEvent(
-        {
-          keywords: [...context.keywords, ...keywords],
-          chatId: context.chatId,
-        },
-        history,
-      );
-
-    this.eventBus.emit(ChatAnswerProcessedEvent.name, answerProcessed);
+    // this.chatInterviewCompletedEventBus.emit(
+    //   ChatInterviewCompletedEvent.name,
+    //   chatInterviewCompletedEvent,
+    // );
 
     return Promise.resolve();
   }

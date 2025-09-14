@@ -6,17 +6,18 @@ import { StalkingAnalyzeRequestHandler } from 'src/app/handlers/stalking-analyze
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { StalkingAnalyzeRequestedEvent } from 'src/domain/events/stalking-analyze-request.event';
 import { ConfigModule } from '@nestjs/config';
-import { ChatAskQuestionEvent } from 'src/domain/events/chat-ask-question.event';
+import { ChatStartInterviewEvent } from 'src/domain/events/chat-start-interview.event';
 import { ChatUserAnsweredEvent } from 'src/domain/events/chat-user-answered.event';
 import { StalkingCompletedHandler } from 'src/app/handlers/stalking-completed.handler';
 import { ChatQuestionAskedHandler } from 'src/app/handlers/chat-question-asked.handler';
-import { ChatAnswerProcessedHandler } from 'src/app/handlers/chat-answer-processed.handler';
+import { ChatInterviewCompletedHandler } from 'src/app/handlers/chat-interview-completed.handler';
 import { EvaluateContextHandler } from 'src/app/handlers/evaluate-context.handler';
 import { GiftGenerateRequestedEvent } from 'src/domain/events/gift-generate-requested.event';
 import { GiftReadyHandler } from 'src/app/handlers/gift-ready.handler';
 import { SseController } from '../controllers/sse.controller';
 import { SseService } from 'src/app/services/sse-service';
-import { NotifyUserSseHandler } from 'src/app/handlers/notify-user-sse.command';
+import { NotifyUserSseHandler } from 'src/app/handlers/notify-user-sse.handler';
+import { SendUserMessageHandler } from 'src/app/handlers/send-user-message.handler';
 
 @Module({
   imports: [
@@ -39,13 +40,13 @@ import { NotifyUserSseHandler } from 'src/app/handlers/notify-user-sse.command';
         },
       },
       {
-        name: 'CHAT_ASK_QUESTION_EVENT',
+        name: 'CHAT_START_INTERVIEW_EVENT',
         transport: Transport.RMQ,
         options: {
           urls: [
             process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672',
           ],
-          queue: ChatAskQuestionEvent.name,
+          queue: ChatStartInterviewEvent.name,
           queueOptions: {
             durable: false,
           },
@@ -83,7 +84,7 @@ import { NotifyUserSseHandler } from 'src/app/handlers/notify-user-sse.command';
     RestApiController,
     StalkingCompletedHandler,
     ChatQuestionAskedHandler,
-    ChatAnswerProcessedHandler,
+    ChatInterviewCompletedHandler,
     GiftReadyHandler,
     SseController,
   ],
@@ -91,6 +92,7 @@ import { NotifyUserSseHandler } from 'src/app/handlers/notify-user-sse.command';
     StalkingAnalyzeRequestHandler,
     EvaluateContextHandler,
     NotifyUserSseHandler,
+    SendUserMessageHandler,
     SseService,
   ],
 })

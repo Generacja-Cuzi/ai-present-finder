@@ -1,26 +1,29 @@
-import { Controller, Inject, Logger } from '@nestjs/common';
-import { ClientProxy, EventPattern } from '@nestjs/microservices';
+import { Controller, Logger } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
+import { EventPattern } from '@nestjs/microservices';
+import { NotifyUserSseCommand } from 'src/domain/commands/notify-user-sse.command';
 import { ChatQuestionAskedEvent } from 'src/domain/events/chat-question-asked.event';
-import { ChatUserAnsweredEvent } from 'src/domain/events/chat-user-answered.event';
+import { v4 as uuidv4 } from 'uuid';
 
 @Controller()
 export class ChatQuestionAskedHandler {
   private readonly logger = new Logger(ChatQuestionAskedHandler.name);
-  constructor(
-    @Inject('CHAT_USER_ANSWERED_EVENT') private readonly eventBus: ClientProxy,
-  ) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   @EventPattern(ChatQuestionAskedEvent.name)
   async handle(event: ChatQuestionAskedEvent) {
-    this.logger.log(`Uzyskano odpowiedz`);
+    this.logger.log(`sending assistant message to user`);
 
-    const eventToEmit: ChatUserAnsweredEvent = {
-      context: event.context,
-      history: [...event.history, event.question],
-      answer: 'Odpowiedz na pytanie',
-    };
-
-    this.eventBus.emit(ChatUserAnsweredEvent.name, eventToEmit);
+    await this.commandBus.execute(
+      new NotifyUserSseCommand(event.context.chatId, {
+        type: 'chatbot-message',
+        message: {
+          id: uuidv4(),
+          content: event.question,
+          sender: 'assistant',
+        },
+      }),
+    );
 
     return Promise.resolve();
   }

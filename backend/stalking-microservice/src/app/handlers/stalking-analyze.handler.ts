@@ -15,9 +15,14 @@ export class StalkingAnalyzeHandler
 
   async execute(command: StalkingAnalyzeCommand) {
     this.logger.log('Starting stalking analysis...');
+
+    // TODO(simon-the-sharp): Remove this after proper implementation. this is just for testing
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
     this.logger.log('Stalking completed.');
 
     const keywords = ['example', 'keywords', 'from', 'stalking'];
+
     const completedAt = new Date();
 
     const event = new StalkingCompletedEvent(

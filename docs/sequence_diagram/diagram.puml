@@ -16,15 +16,15 @@ STALK --> REST: stalking.completed {keywords}
 REST -> REST: eval.context {context: preferences + keywords}
 
 alt Brakuje kontekstu
-  REST -> CHAT: chat.ask.question {chat context: chat history + context}
-  loop Zbieranie kontekstu
+  REST -> CHAT: chat.start.interview {context}
+  loop Dopóki agent nie uzna, że zebrał wystarczająco kontekstu
+    CHAT -> CHAT: GenerateQuestionCommand
     CHAT --> REST: chat.question.asked (pytanie)
     REST -> U: Wyświetl pytanie
     U -> REST: Odpowiedź użytkownika
     REST -> CHAT: chat.user.answered (odpowiedź)
-    CHAT --> REST: chat.answer.processed {keywords}
-    REST -> REST: eval.context {context: preferences + keywords}
   end
+  CHAT -> REST: chat.interview.completed {profile}
 end
 
 REST -> GIFT: gift.generate.requested {context}

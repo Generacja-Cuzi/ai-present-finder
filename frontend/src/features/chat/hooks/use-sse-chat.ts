@@ -1,30 +1,53 @@
 import { useSSE } from 'react-hooks-sse'
 import { useMemo } from 'react'
+import { uiUpdateEvent } from '../types'
+import type { ChatState, SseMessageDto } from '../types'
 
-type SseState = string | null
+export const useSseChat = ({ clientId }: { clientId: string }) => {
+  const initialState: ChatState = useMemo(
+    () => ({ type: 'stalking-started' }),
+    [],
+  )
 
-type SseAction = string
+  const state = useSSE<ChatState, SseMessageDto>(
+    uiUpdateEvent,
+    initialState,
 
-export const useSseChat = ({
-  clientId,
-  eventName = 'message',
-}: {
-  clientId: string
-  eventName: string
-}) => {
-  const initialState: SseState = useMemo(() => null, [])
-
-  const state = useSSE<SseState, SseAction>(eventName, initialState, {
-    parser: (data: string) => {
-      return data
+    {
+      stateReducer: (prevState, action) => {
+        switch (action.data.type) {
+          case 'stalking-started':
+            return { type: 'stalking-started' }
+          case 'stalking-completed':
+            return { type: 'stalking-completed' }
+          case 'chatbot-message': {
+            if (prevState.type !== 'chatting') {
+              return {
+                type: 'chatting',
+                data: {
+                  messages: [action.data.message],
+                },
+              }
+            }
+            return {
+              type: 'chatting',
+              data: {
+                messages: [...prevState.data.messages, action.data.message],
+              },
+            }
+          }
+          case 'gift-ready':
+            return {
+              type: 'gift-ready',
+              data: { giftIdeas: action.data.data.giftIdeas },
+            }
+        }
+      },
     },
-    stateReducer: (_, action) => {
-      return action.data
-    },
-  })
+  )
 
   return {
-    message: state,
+    state,
     clientId,
   }
 }

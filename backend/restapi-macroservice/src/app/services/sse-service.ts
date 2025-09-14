@@ -1,29 +1,33 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Subject } from 'rxjs';
+import {
+  SseMessageDto,
+  uiUpdateEvent,
+} from 'src/domain/models/sse-message.dto';
 
 type EventObject = {
   count: number;
-  eventSubject: Subject<MessageEvent>;
+  eventSubject: Subject<MessageEvent<SseMessageDto>>;
 };
 
 @Injectable()
 export class SseService {
   private readonly allSubscribedUsers: Map<string, EventObject> = new Map();
   private readonly logger = new Logger(SseService.name);
-  sendEvent(notification: { userId: string; message: string }) {
-    this.logger.log('elo zelo' + JSON.stringify(notification));
-
+  sendEvent(notification: { userId: string; message: SseMessageDto }) {
     if (this.allSubscribedUsers.has(notification.userId)) {
       const connection = this.allSubscribedUsers.get(notification.userId);
       if (!connection) {
         throw new Error('this should not happen');
       }
-      this.logger.log('Sending message' + JSON.stringify(notification));
+      this.logger.log('Sending message ' + JSON.stringify(notification));
       connection.eventSubject.next(
-        new MessageEvent('message', {
+        new MessageEvent(uiUpdateEvent, {
           data: notification.message,
         }),
       );
+    } else {
+      this.logger.warn('User not found: ' + notification.userId);
     }
   }
 
@@ -49,7 +53,7 @@ export class SseService {
     } else {
       this.allSubscribedUsers.set(id, {
         count: 1,
-        eventSubject: new Subject<MessageEvent>(),
+        eventSubject: new Subject<MessageEvent<SseMessageDto>>(),
       });
     }
   }

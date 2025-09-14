@@ -9,7 +9,7 @@ export function ChatView({ clientId }: { clientId: string }) {
           AI Present Finder - Chat
         </h1>
         <SseProviderWrapper clientId={clientId}>
-          <ChatUI />
+          <ChatUI clientId={clientId} />
         </SseProviderWrapper>
       </div>
     </div>

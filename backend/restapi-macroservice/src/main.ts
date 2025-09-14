@@ -11,6 +11,14 @@ import { GiftReadyEvent } from './domain/events/gift-ready.event';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Enable CORS for frontend access
+  app.enableCors({
+    origin: ['http://localhost:5713', 'http://localhost:5173'], // Vite dev server ports
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control'],
+  });
+
   const logger = new Logger('AppLogger');
 
   const stalkingCompletedMicroserviceOptions = {

@@ -1,12 +1,7 @@
-import {
-  CommandHandler,
-  ICommandHandler,
-  EventBus,
-  CommandBus,
-} from '@nestjs/cqrs';
+import { CommandBus } from '@nestjs/cqrs';
 
-import { Controller, Inject, Logger } from '@nestjs/common';
-import { ClientProxy, EventPattern } from '@nestjs/microservices';
+import { Controller, Logger } from '@nestjs/common';
+import { EventPattern } from '@nestjs/microservices';
 import { StalkingCompletedEvent } from 'src/domain/events/stalking-completed.event';
 import { ContextDto } from 'src/domain/models/context.dto';
 import { EvaluateContextCommand } from 'src/domain/commands/evaluate-context.command';
@@ -23,7 +18,7 @@ export class StalkingCompletedHandler {
     const context: ContextDto = {
       keywords: keywords,
     };
-    this.commandBus.execute(new EvaluateContextCommand(context));
+    await this.commandBus.execute(new EvaluateContextCommand(context));
     return event;
   }
 }

@@ -1,4 +1,4 @@
-import { CommandHandler, ICommandHandler, EventBus } from '@nestjs/cqrs';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { StalkingAnalyzeRequestCommand } from '../../domain/commands/stalking-analyze-request.command';
 import { StalkingAnalyzeRequestedEvent } from '../../domain/events/stalking-analyze-request.event';
 import { Inject, Logger } from '@nestjs/common';
@@ -28,8 +28,8 @@ export class StalkingAnalyzeRequestHandler
 
     this.eventBus.emit(StalkingAnalyzeRequestedEvent.name, event);
 
-    this.logger.log(`Published event: ${event}`);
+    this.logger.log(`Published event: ${JSON.stringify(event)}`);
 
-    return event;
+    return Promise.resolve();
   }
 }

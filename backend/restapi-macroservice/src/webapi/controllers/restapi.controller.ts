@@ -10,7 +10,7 @@ export class RestApiController {
   private readonly logger = new Logger(RestApiController.name);
   constructor(private readonly commandBus: CommandBus) {}
 
-  @Post()
+  @Post('stalking-request')
   async create(@Body() analyzeRequestedDto: StalkingAnalyzeRequestDto) {
     await this.commandBus.execute(
       new StalkingAnalyzeRequestCommand(analyzeRequestedDto),

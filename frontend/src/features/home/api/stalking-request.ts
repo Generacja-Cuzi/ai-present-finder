@@ -8,6 +8,7 @@ interface StalkingRequestData {
   youtubeUrl: string
   xUrl: string
   linkedinUrl: string
+  chatId: string
 }
 
 async function createStalkingRequest(data: StalkingRequestData): Promise<void> {

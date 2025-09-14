@@ -29,6 +29,7 @@ export function HomeView() {
           youtubeUrl: '',
           xUrl: '',
           linkedinUrl: '',
+          chatId: clientId,
         },
         {
           onSuccess: () => {

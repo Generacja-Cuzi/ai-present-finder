@@ -24,6 +24,7 @@ export class StalkingAnalyzeRequestHandler
       analyzeRequestedDto.youtubeUrl,
       analyzeRequestedDto.xUrl,
       analyzeRequestedDto.linkedinUrl,
+      analyzeRequestedDto.chatId,
     );
 
     this.eventBus.emit(StalkingAnalyzeRequestedEvent.name, event);

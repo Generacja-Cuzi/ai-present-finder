@@ -10,9 +10,6 @@ export class EvaluateContextHandler
   implements ICommandHandler<EvaluateContextCommand>
 {
   private readonly logger = new Logger(EvaluateContextHandler.name);
-  private readonly chatIterations = 3;
-  private iteration = 0;
-  private enoughContext = false;
 
   constructor(
     @Inject('CHAT_ASK_QUESTION_EVENT')
@@ -24,15 +21,11 @@ export class EvaluateContextHandler
   async execute(command: EvaluateContextCommand) {
     const { context } = command;
 
-    const history = command.history || [];
+    const history = command.history ?? [];
 
-    this.iteration++;
+    const enoughContext = false; // TODO(simon-the-sharp): Implement this
 
-    if (this.iteration == this.chatIterations) {
-      this.enoughContext = true;
-    }
-
-    if (!this.enoughContext) {
+    if (!enoughContext) {
       const event = new ChatAskQuestionEvent(context, history);
       this.chatEventBus.emit(ChatAskQuestionEvent.name, event);
       this.logger.log(`Published event: ${JSON.stringify(event)}`);
@@ -41,7 +34,7 @@ export class EvaluateContextHandler
 
     const { keywords } = context;
 
-    const giftEvent = new GiftGenerateRequestedEvent(keywords);
+    const giftEvent = new GiftGenerateRequestedEvent(keywords, context.chatId);
     this.giftEventBus.emit(GiftGenerateRequestedEvent.name, giftEvent);
 
     this.logger.log(`Published event: ${JSON.stringify(giftEvent)}`);

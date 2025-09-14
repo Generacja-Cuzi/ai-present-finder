@@ -1,6 +1,6 @@
 import { CommandBus } from '@nestjs/cqrs';
 
-import { Controller, Logger } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { EventPattern } from '@nestjs/microservices';
 import { StalkingCompletedEvent } from 'src/domain/events/stalking-completed.event';
 import { ContextDto } from 'src/domain/models/context.dto';
@@ -8,7 +8,6 @@ import { EvaluateContextCommand } from 'src/domain/commands/evaluate-context.com
 
 @Controller()
 export class StalkingCompletedHandler {
-  private readonly logger = new Logger(StalkingCompletedHandler.name);
   constructor(private readonly commandBus: CommandBus) {}
 
   @EventPattern(StalkingCompletedEvent.name)
@@ -17,8 +16,8 @@ export class StalkingCompletedHandler {
 
     const context: ContextDto = {
       keywords: keywords,
+      chatId: event.chatId,
     };
     await this.commandBus.execute(new EvaluateContextCommand(context));
-    return event;
   }
 }

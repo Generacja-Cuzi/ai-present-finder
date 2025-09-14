@@ -1,9 +1,3 @@
-import {
-  CommandHandler,
-  ICommandHandler,
-  EventBus,
-  CommandBus,
-} from '@nestjs/cqrs';
 import { Controller, Inject, Logger } from '@nestjs/common';
 import { ClientProxy, EventPattern } from '@nestjs/microservices';
 import { GiftGenerateRequestedEvent } from 'src/domain/events/gift-generate-requested.event';
@@ -28,7 +22,9 @@ export class GiftGenerateRequestedHandler {
 
     this.logger.log(`Generated gift ideas: ${giftIdeas.join('; ')}`);
 
-    const giftReadyEvent = new GiftReadyEvent(giftIdeas);
+    const giftReadyEvent = new GiftReadyEvent(giftIdeas, event.chatId);
     this.eventBus.emit(GiftReadyEvent.name, giftReadyEvent);
+
+    return Promise.resolve();
   }
 }

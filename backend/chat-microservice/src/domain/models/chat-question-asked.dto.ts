@@ -1,4 +1,4 @@
-import { ContextDto } from "./context.dto";
+import { ContextDto } from './context.dto';
 
 export class ChatQuestionAskedDto {
   context: ContextDto;

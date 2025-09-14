@@ -1,16 +1,8 @@
-import {
-  CommandHandler,
-  ICommandHandler,
-  EventBus,
-  CommandBus,
-} from '@nestjs/cqrs';
-import { Controller, Inject, Logger } from '@nestjs/common';
-import { ClientProxy, EventPattern } from '@nestjs/microservices';
-import { StalkingCompletedEvent } from 'src/domain/events/stalking-completed.event';
-import { ContextDto } from 'src/domain/models/context.dto';
+import { CommandBus } from '@nestjs/cqrs';
+import { Controller, Logger } from '@nestjs/common';
+import { EventPattern } from '@nestjs/microservices';
+
 import { EvaluateContextCommand } from 'src/domain/commands/evaluate-context.command';
-import { ChatQuestionAskedEvent } from 'src/domain/events/chat-question-asked.event';
-import { ChatUserAnsweredEvent } from 'src/domain/events/chat-user-answered.event';
 import { ChatAnswerProcessedEvent } from 'src/domain/events/chat-answer-processed.event';
 
 @Controller()
@@ -22,10 +14,8 @@ export class ChatAnswerProcessedHandler {
   async handle(event: ChatAnswerProcessedEvent) {
     this.logger.log(`Uzyskano keywords`);
 
-    this.commandBus.execute(
+    await this.commandBus.execute(
       new EvaluateContextCommand(event.context, event.history),
     );
-
-    return event;
   }
 }

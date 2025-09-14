@@ -1,3 +1,6 @@
 export class GiftReadyEvent {
-    constructor(public readonly giftIdeas: string[]) {}
+  constructor(
+    public readonly giftIdeas: string[],
+    public readonly chatId: string,
+  ) {}
 }

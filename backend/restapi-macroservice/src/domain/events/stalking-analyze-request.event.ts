@@ -6,5 +6,6 @@ export class StalkingAnalyzeRequestedEvent {
     public readonly youtubeUrl: string,
     public readonly xUrl: string,
     public readonly linkedinUrl: string,
+    public readonly chatId: string,
   ) {}
 }

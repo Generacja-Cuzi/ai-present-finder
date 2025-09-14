@@ -12,7 +12,7 @@ interface Message {
   timestamp: Date
 }
 
-export function ChatUI() {
+export function ChatView() {
   const [messages, setMessages] = useState<Array<Message>>([
     {
       id: '1',

@@ -5,7 +5,7 @@ type SseState = string | null
 
 type SseAction = string
 
-export const useSseConnection = ({
+export const useSseChat = ({
   clientId,
   eventName = 'message',
 }: {

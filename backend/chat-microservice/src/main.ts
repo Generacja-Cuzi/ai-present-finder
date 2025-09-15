@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Transport } from '@nestjs/microservices';
 import { Logger } from '@nestjs/common';
-import { ChatAskQuestionEvent } from './domain/events/chat-ask-question.event';
+import { ChatStartInterviewEvent } from './domain/events/chat-start-interview.event';
 import { ChatUserAnsweredEvent } from './domain/events/chat-user-answered.event';
 
 async function bootstrap() {
@@ -15,7 +15,7 @@ async function bootstrap() {
     transport: Transport.RMQ,
     options: {
       urls: [process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672'],
-      queue: ChatAskQuestionEvent.name,
+      queue: ChatStartInterviewEvent.name,
       queueOptions: {
         durable: false,
       },

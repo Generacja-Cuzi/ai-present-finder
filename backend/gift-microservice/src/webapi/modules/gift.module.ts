@@ -32,4 +32,4 @@ import { GiftGenerateRequestedHandler } from 'src/app/handlers/gift-generate-req
   controllers: [GiftController, GiftGenerateRequestedHandler],
   providers: [],
 })
-export class StalkingModule {}
+export class GiftModule {}

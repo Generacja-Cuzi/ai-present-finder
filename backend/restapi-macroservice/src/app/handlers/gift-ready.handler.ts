@@ -1,32 +1,31 @@
-import {
-  CommandHandler,
-  ICommandHandler,
-  EventBus,
-  CommandBus,
-} from '@nestjs/cqrs';
-import { Controller, Inject, Logger } from '@nestjs/common';
-import { ClientProxy, EventPattern } from '@nestjs/microservices';
-import { StalkingCompletedEvent } from 'src/domain/events/stalking-completed.event';
-import { ContextDto } from 'src/domain/models/context.dto';
-import { EvaluateContextCommand } from 'src/domain/commands/evaluate-context.command';
-import { ChatQuestionAskedEvent } from 'src/domain/events/chat-question-asked.event';
-import { ChatUserAnsweredEvent } from 'src/domain/events/chat-user-answered.event';
+import { Controller, Logger } from '@nestjs/common';
+import { EventPattern } from '@nestjs/microservices';
 import { GiftReadyEvent } from 'src/domain/events/gift-ready.event';
+import { NotifyUserSseCommand } from 'src/domain/commands/notify-user-sse.command';
+import { CommandBus } from '@nestjs/cqrs';
 
 @Controller()
 export class GiftReadyHandler {
   private readonly logger = new Logger(GiftReadyHandler.name);
-  constructor() {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   @EventPattern(GiftReadyEvent.name)
   async handle(event: GiftReadyEvent) {
-
     this.logger.log(`Uzyskano gotowe pomysly na prezenty`);
 
     const giftIdeas = event.giftIdeas;
 
     this.logger.log(`Pomysly na prezenty: ${giftIdeas.join('; ')}`);
 
-    return event;
+    await this.commandBus.execute(
+      new NotifyUserSseCommand(event.chatId, {
+        type: 'gift-ready',
+        data: {
+          giftIdeas,
+        },
+      }),
+    );
+
+    return Promise.resolve();
   }
 }

@@ -1,4 +1,4 @@
-import { EndConversationOutput } from '../../../../chat-microservice/src/app/ai/types';
+import { EndConversationOutput } from '../models/end-converstion-ai-output';
 import { ContextDto } from '../models/context.dto';
 
 export class EndInterviewCommand {

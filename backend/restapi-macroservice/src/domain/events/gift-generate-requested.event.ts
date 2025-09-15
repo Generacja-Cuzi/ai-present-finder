@@ -1,4 +1,4 @@
-import { EndConversationOutput } from '../../../../chat-microservice/src/app/ai/types';
+import { EndConversationOutput } from '../models/end-converstion-ai-output';
 
 export class GiftGenerateRequestedEvent {
   constructor(

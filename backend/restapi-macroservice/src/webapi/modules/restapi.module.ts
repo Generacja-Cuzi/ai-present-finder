@@ -19,6 +19,7 @@ import { SseService } from 'src/app/services/sse-service';
 import { NotifyUserSseHandler } from 'src/app/handlers/notify-user-sse.handler';
 import { SendUserMessageHandler } from 'src/app/handlers/send-user-message.handler';
 import { ChatInappropriateRequestHandler } from 'src/app/handlers/chat-inappropriate-request.handler';
+import { EndInterviewCommandHandler } from 'src/app/handlers/end-interview-command.handler';
 
 @Module({
   imports: [
@@ -95,6 +96,7 @@ import { ChatInappropriateRequestHandler } from 'src/app/handlers/chat-inappropr
     EvaluateContextHandler,
     NotifyUserSseHandler,
     SendUserMessageHandler,
+    EndInterviewCommandHandler,
     SseService,
   ],
 })

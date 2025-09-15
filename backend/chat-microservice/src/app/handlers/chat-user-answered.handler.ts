@@ -7,26 +7,13 @@ import { ChatUserAnsweredEvent } from 'src/domain/events/chat-user-answered.even
 
 @Controller()
 export class ChatUserAnsweredHandler {
-  constructor(
-    //  @Inject('CHAT_INTERVIEW_COMPLETED_EVENT')
-    // private readonly chatInterviewCompletedEventBus: ClientProxy,
-
-    private readonly commandBus: CommandBus,
-  ) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   @EventPattern(ChatUserAnsweredEvent.name)
   async handle(event: ChatUserAnsweredEvent) {
-    // TODO(simon-the-shark): call ai and anwser or end interview
-
     await this.commandBus.execute(
       new GenerateQuestionCommand(event.context, event.messages),
     );
-
-    // this.chatInterviewCompletedEventBus.emit(
-    //   ChatInterviewCompletedEvent.name,
-    //   chatInterviewCompletedEvent,
-    // );
-
     return Promise.resolve();
   }
 }

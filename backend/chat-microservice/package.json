@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^2.0.30",
     "@nestjs/common": "^11.0.13",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.13",
@@ -27,6 +28,7 @@
     "@nestjs/microservices": "^11.0.13",
     "@nestjs/platform-express": "^11.0.13",
     "@supabase/supabase-js": "^2.49.4",
+    "ai": "^5.0.44",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.7",
     "dotenv": "^16.5.0",

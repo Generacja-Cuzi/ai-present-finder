@@ -20,6 +20,14 @@ export const useSseChat = ({ clientId }: { clientId: string }) => {
             return { type: 'stalking-started' }
           case 'stalking-completed':
             return { type: 'stalking-completed' }
+          case 'chat-interview-completed':
+            return { type: 'chat-interview-completed' }
+          case 'chat-inappropriate-request': {
+            return {
+              type: 'chat-inappropriate-request',
+              data: { reason: action.data.reason },
+            }
+          }
           case 'chatbot-message': {
             if (prevState.type !== 'chatting') {
               return {

@@ -1,9 +1,9 @@
 import { ContextDto } from '../models/context.dto';
-import { ChatMessage } from '../models/chat-message';
+import { EndConversationOutput } from 'src/app/ai/types';
 
-export class ChatInterviewCompleted {
+export class ChatInterviewCompletedEvent {
   constructor(
     public readonly context: ContextDto,
-    public readonly messages: ChatMessage[],
+    public readonly profile: EndConversationOutput,
   ) {}
 }

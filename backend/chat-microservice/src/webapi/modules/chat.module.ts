@@ -7,7 +7,8 @@ import { ConfigModule } from '@nestjs/config';
 import { ChatQuestionAskedEvent } from 'src/domain/events/chat-question-asked.event';
 import { ChatStartInterviewHandler } from 'src/app/handlers/chat-start-interview.handler';
 import { GenerateQuestionHandler } from 'src/app/handlers/generate-question.handler';
-import { ChatInterviewCompleted } from 'src/domain/events/chat-interview-completed.event';
+import { ChatInterviewCompletedEvent } from 'src/domain/events/chat-interview-completed.event';
+import { ChatInappropriateRequestEvent } from 'src/domain/events/chat-innapropriate-request.event';
 import { ChatUserAnsweredHandler } from 'src/app/handlers/chat-user-answered.handler';
 
 @Module({
@@ -37,7 +38,20 @@ import { ChatUserAnsweredHandler } from 'src/app/handlers/chat-user-answered.han
           urls: [
             process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672',
           ],
-          queue: ChatInterviewCompleted.name,
+          queue: ChatInterviewCompletedEvent.name,
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
+      {
+        name: 'CHAT_INNAPPROPRIATE_REQUEST_EVENT',
+        transport: Transport.RMQ,
+        options: {
+          urls: [
+            process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672',
+          ],
+          queue: ChatInappropriateRequestEvent.name,
           queueOptions: {
             durable: false,
           },

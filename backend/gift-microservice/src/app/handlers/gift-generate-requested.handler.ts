@@ -18,6 +18,7 @@ export class GiftGenerateRequestedHandler {
       `Gift idea 1 for keywords: ${event.keywords.join(', ')}`,
       `Gift idea 2 for keywords: ${event.keywords.join(', ')}`,
       `Gift idea 3 for keywords: ${event.keywords.join(', ')}`,
+      ...(event.profile?.gift_recommendations ?? []),
     ];
 
     this.logger.log(`Generated gift ideas: ${giftIdeas.join('; ')}`);

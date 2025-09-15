@@ -14,6 +14,14 @@ export const SseMessageDto = z.discriminatedUnion('type', [
     type: z.literal('chatbot-message'),
     message: chatMessageSchema,
   }),
+
+  z.object({
+    type: z.literal('chat-interview-completed'),
+  }),
+  z.object({
+    type: z.literal('chat-inappropriate-request'),
+    reason: z.string(),
+  }),
   z.object({
     type: z.literal('gift-ready'),
     data: z.object({

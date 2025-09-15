@@ -19,8 +19,10 @@ export function ChatUI({ clientId }: { clientId: string }) {
   const { state: chatState } = useSseChat({
     clientId,
   })
-  const [inputValue, setInputValue] = useState('')
   const sendMessage = useSendMessage()
+
+  const [inputValue, setInputValue] = useState('')
+
   const handleSendMessage = async () => {
     if (!inputValue.trim() || sendMessage.isPending) return
 

@@ -18,6 +18,7 @@ import { SseController } from '../controllers/sse.controller';
 import { SseService } from 'src/app/services/sse-service';
 import { NotifyUserSseHandler } from 'src/app/handlers/notify-user-sse.handler';
 import { SendUserMessageHandler } from 'src/app/handlers/send-user-message.handler';
+import { ChatInappropriateRequestHandler } from 'src/app/handlers/chat-inappropriate-request.handler';
 
 @Module({
   imports: [
@@ -85,6 +86,7 @@ import { SendUserMessageHandler } from 'src/app/handlers/send-user-message.handl
     StalkingCompletedHandler,
     ChatQuestionAskedHandler,
     ChatInterviewCompletedHandler,
+    ChatInappropriateRequestHandler,
     GiftReadyHandler,
     SseController,
   ],

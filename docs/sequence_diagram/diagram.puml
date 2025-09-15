@@ -17,7 +17,7 @@ REST -> REST: eval.context {context: preferences + keywords}
 
 alt Brakuje kontekstu
   REST -> CHAT: chat.start.interview {context}
-  loop Dopóki agent nie uzna, że zebrał wystarczająco kontekstu
+  loop Dopóki agent nie uzna, że zebrał wystarczająco kontekstu lub user zachowuje się nieodpowiednio
     CHAT -> CHAT: GenerateQuestionCommand
     CHAT --> REST: chat.question.asked (pytanie)
     REST -> U: Wyświetl pytanie
@@ -25,6 +25,9 @@ alt Brakuje kontekstu
     REST -> CHAT: chat.user.answered (odpowiedź)
   end
   CHAT -> REST: chat.interview.completed {profile}
+  alt User zachowuje się nieodpowiednio
+    CHAT -> REST: chat.inappropriate.request {reason}
+  end
 end
 
 REST -> GIFT: gift.generate.requested {context}

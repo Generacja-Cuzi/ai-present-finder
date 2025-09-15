@@ -1,9 +1,9 @@
-import { ContextDto } from '../models/context.dto';
 import { EndConversationOutput } from '../../../../chat-microservice/src/app/ai/types';
+import { ContextDto } from '../models/context.dto';
 
-export class ChatInterviewCompletedEvent {
+export class EndInterviewCommand {
   constructor(
     public readonly context: ContextDto,
-    public readonly profile: EndConversationOutput,
+    public readonly profile: EndConversationOutput | null,
   ) {}
 }

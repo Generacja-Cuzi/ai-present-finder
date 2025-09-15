@@ -13,5 +13,6 @@ export type ChatState =
   | { type: 'stalking-completed' }
   | { type: 'chatting'; data: { messages: Array<UIChatMessage> } }
   | { type: 'gift-ready'; data: { giftIdeas: Array<string> } }
-
+  | { type: 'chat-interview-completed' }
+  | { type: 'chat-inappropriate-request'; data: { reason: string } }
 export { type SseMessageDto }

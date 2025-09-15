@@ -1,9 +1,9 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { EvaluateContextCommand } from 'src/domain/commands/evaluate-context.command';
 import { ChatStartInterviewEvent } from 'src/domain/events/chat-start-interview.event';
-import { GiftGenerateRequestedEvent } from 'src/domain/events/gift-generate-requested.event';
+import { EndInterviewCommand } from 'src/domain/commands/end-interview.command';
 
 @CommandHandler(EvaluateContextCommand)
 export class EvaluateContextHandler
@@ -14,8 +14,7 @@ export class EvaluateContextHandler
   constructor(
     @Inject('CHAT_START_INTERVIEW_EVENT')
     private readonly chatEventBus: ClientProxy,
-    @Inject('GIFT_GENERATE_REQUESTED_EVENT')
-    private readonly giftEventBus: ClientProxy,
+    private readonly commandBus: CommandBus,
   ) {}
 
   async execute(command: EvaluateContextCommand) {
@@ -32,14 +31,7 @@ export class EvaluateContextHandler
       return Promise.resolve();
     }
 
-    const { keywords } = context;
-
-    const giftEvent = new GiftGenerateRequestedEvent(keywords, context.chatId);
-    this.giftEventBus.emit(GiftGenerateRequestedEvent.name, giftEvent);
-
-    this.logger.log(`Published event: ${JSON.stringify(giftEvent)}`);
-
-    this.logger.log(`Evaluation completed`);
+    await this.commandBus.execute(new EndInterviewCommand(context, null));
 
     return Promise.resolve();
   }

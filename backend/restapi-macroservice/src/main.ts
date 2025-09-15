@@ -5,8 +5,9 @@ import { Transport } from '@nestjs/microservices';
 import { Logger } from '@nestjs/common';
 import { StalkingCompletedEvent } from './domain/events/stalking-completed.event';
 import { ChatQuestionAskedEvent } from './domain/events/chat-question-asked.event';
-import { ChatInterviewCompleted } from './domain/events/chat-interview-completed.event';
+import { ChatInterviewCompletedEvent } from './domain/events/chat-interview-completed.event';
 import { GiftReadyEvent } from './domain/events/gift-ready.event';
+import { ChatInappropriateRequestEvent } from './domain/events/chat-innapropriate-request.event';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -47,7 +48,7 @@ async function bootstrap() {
     transport: Transport.RMQ,
     options: {
       urls: [process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672'],
-      queue: ChatInterviewCompleted.name,
+      queue: ChatInterviewCompletedEvent.name,
       queueOptions: {
         durable: false,
       },
@@ -65,10 +66,22 @@ async function bootstrap() {
     },
   };
 
+  const chatInappropriateRequestMicroserviceOptions = {
+    transport: Transport.RMQ,
+    options: {
+      urls: [process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672'],
+      queue: ChatInappropriateRequestEvent.name,
+      queueOptions: {
+        durable: false,
+      },
+    },
+  };
+
   app.connectMicroservice(stalkingCompletedMicroserviceOptions);
   app.connectMicroservice(chatQuestionAskedMicroserviceOptions);
   app.connectMicroservice(chatAnswerProcessedMicroserviceOptions);
   app.connectMicroservice(giftReadyMicroserviceOptions);
+  app.connectMicroservice(chatInappropriateRequestMicroserviceOptions);
 
   await app.startAllMicroservices();
 

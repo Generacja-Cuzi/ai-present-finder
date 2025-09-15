@@ -7,6 +7,7 @@ import { Message } from './message'
 import { ChatInput } from './chat-input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { ThinkingBadge } from './thinking-badge'
 
 interface Message {
   id: string
@@ -23,8 +24,14 @@ export function ChatUI({ clientId }: { clientId: string }) {
 
   const [inputValue, setInputValue] = useState('')
 
+  const isChatbotProcessing =
+    sendMessage.isPending ||
+    chatState.type === 'stalking-completed' ||
+    (chatState.type === 'chatting' &&
+      chatState.data.messages.at(-1)?.sender === 'user')
+
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || sendMessage.isPending) return
+    if (!inputValue.trim() || isChatbotProcessing) return
 
     setInputValue('')
     if (chatState.type !== 'chatting') {
@@ -39,11 +46,14 @@ export function ChatUI({ clientId }: { clientId: string }) {
     })
   }
 
-  if (chatState.type !== 'chatting') {
+  if (
+    chatState.type !== 'chatting' &&
+    chatState.type !== 'stalking-completed'
+  ) {
     return <NonChatIndicator state={chatState} />
   }
 
-  const messages = chatState.data.messages
+  const messages = chatState.type === 'chatting' ? chatState.data.messages : []
 
   return (
     <Card className="w-full max-w-2xl mx-auto h-[600px] flex flex-col">
@@ -56,13 +66,14 @@ export function ChatUI({ clientId }: { clientId: string }) {
             {messages.map((message) => (
               <Message key={message.id} message={message} />
             ))}
+            {isChatbotProcessing && <ThinkingBadge />}
           </div>
         </ScrollArea>
         <ChatInput
           inputValue={inputValue}
           setInputValue={setInputValue}
           handleSendMessage={handleSendMessage}
-          isLoading={sendMessage.isPending}
+          isLoading={isChatbotProcessing}
         />
       </CardContent>
     </Card>

@@ -11,15 +11,18 @@ function sleep(ms: number) {
 }
 
 @QueryHandler(FetchOlxQuery)
-export class FetchOlxHandler implements IQueryHandler<FetchOlxQuery, ListingDto[]> {
+export class FetchOlxHandler
+  implements IQueryHandler<FetchOlxQuery, ListingDto[]>
+{
   private readonly logger = new Logger(FetchOlxHandler.name);
 
   constructor() {}
 
   async execute(queryTemp: FetchOlxQuery): Promise<ListingDto[]> {
-    const { query, limit, offset, clientHeaders } = queryTemp as FetchOlxQuery & {
-      clientHeaders?: ClientHeaders;
-    };
+    const { query, limit, offset, clientHeaders } =
+      queryTemp as FetchOlxQuery & {
+        clientHeaders?: ClientHeaders;
+      };
 
     const graphqlBody = {
       query: `
@@ -65,23 +68,22 @@ export class FetchOlxHandler implements IQueryHandler<FetchOlxQuery, ListingDto[
 
     const baseHeaders: Record<string, string> = {
       'content-type': 'application/json',
-      'accept': 'application/json',
-      'origin': 'https://www.olx.pl',
-      'referer': 'https://www.olx.pl/',
+      accept: 'application/json',
+      origin: 'https://www.olx.pl',
+      referer: 'https://www.olx.pl/',
       'x-client': 'DESKTOP',
       'user-agent':
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     };
 
-    const envCookie = process.env.OLX_COOKIE;
-    if (envCookie) baseHeaders['cookie'] = envCookie;
-
     const fwd = (clientHeaders ?? {}) as Record<string, string>;
     const headers: Record<string, string> = {
       ...baseHeaders,
       ...(fwd['user-agent'] ? { 'user-agent': fwd['user-agent'] } : {}),
-      ...(fwd['accept-language'] ? { 'accept-language': fwd['accept-language'] } : {}),
-      ...(fwd['cookie'] ? { 'cookie': fwd['cookie'] } : {}),
+      ...(fwd['accept-language']
+        ? { 'accept-language': fwd['accept-language'] }
+        : {}),
+      ...(fwd['cookie'] ? { cookie: fwd['cookie'] } : {}),
     };
 
     const maxRetries = 4;
@@ -105,7 +107,9 @@ export class FetchOlxHandler implements IQueryHandler<FetchOlxQuery, ListingDto[
           const base = Math.min(4000, 500 * Math.pow(2, attempt - 1));
           const jitter = Math.floor(Math.random() * 300);
           const delayMs = base + jitter;
-          this.logger.warn(`OLX transport error, retry #${attempt} in ${delayMs}ms`);
+          this.logger.warn(
+            `OLX transport error, retry #${attempt} in ${delayMs}ms`,
+          );
           await sleep(delayMs);
           continue;
         }
@@ -119,7 +123,9 @@ export class FetchOlxHandler implements IQueryHandler<FetchOlxQuery, ListingDto[
         if (!ctype.includes('application/json')) {
           const text = await res.text().catch(() => '');
           const snippet = text.slice(0, 300) + (text.length > 300 ? '…' : '');
-          this.logger.warn(`OLX 2xx but non-JSON content-type (${ctype}). Body[0..300]: ${snippet}`);
+          this.logger.warn(
+            `OLX 2xx but non-JSON content-type (${ctype}). Body[0..300]: ${snippet}`,
+          );
           throw new Error('Unexpected OLX response structure');
         }
 
@@ -166,7 +172,9 @@ export class FetchOlxHandler implements IQueryHandler<FetchOlxQuery, ListingDto[
               ? raw.replace('{width}', '1200').replace('{height}', '800')
               : null;
 
-          const priceParam = (item?.params ?? []).find((p: any) => p?.key === 'price');
+          const priceParam = (item?.params ?? []).find(
+            (p: any) => p?.key === 'price',
+          );
           const priceValue = priceParam?.value ?? null;
 
           return {
@@ -175,10 +183,14 @@ export class FetchOlxHandler implements IQueryHandler<FetchOlxQuery, ListingDto[
             description: item?.description ?? '',
             link: item?.url ?? '',
             price: {
-              value: typeof priceValue?.value === 'number' ? priceValue.value : null,
+              value:
+                typeof priceValue?.value === 'number' ? priceValue.value : null,
               label: priceValue?.label ?? null,
               currency: priceValue?.currency ?? null,
-              negotiable: typeof priceValue?.negotiable === 'boolean' ? priceValue.negotiable : null,
+              negotiable:
+                typeof priceValue?.negotiable === 'boolean'
+                  ? priceValue.negotiable
+                  : null,
             },
           } as ListingDto;
         });
@@ -197,13 +209,17 @@ export class FetchOlxHandler implements IQueryHandler<FetchOlxQuery, ListingDto[
         } catch {
           bodySnippet = '<no-body>';
         }
-        this.logger.warn(`OLX non-2xx (${status}). Body[0..300]: ${bodySnippet}`);
+        this.logger.warn(
+          `OLX non-2xx (${status}). Body[0..300]: ${bodySnippet}`,
+        );
 
         if (attempt <= maxRetries) {
           const base = Math.min(4000, 500 * Math.pow(2, attempt - 1));
           const jitter = Math.floor(Math.random() * 300);
           const delayMs = base + jitter;
-          this.logger.warn(`OLX retry #${attempt} in ${delayMs}ms (anti-bot/throttle)`);
+          this.logger.warn(
+            `OLX retry #${attempt} in ${delayMs}ms (anti-bot/throttle)`,
+          );
           await sleep(delayMs);
           continue;
         }

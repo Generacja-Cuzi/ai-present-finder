@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { GiftReadyEvent } from 'src/domain/events/gift-ready.event';
 import { GiftGenerateRequestedHandler } from 'src/app/handlers/gift-generate-requested.handler';
 import { FetchOlxHandler } from 'src/app/handlers/fetch-olx.handler';
+import { FetchEbayHandler } from 'src/app/handlers/fetch-ebay.handler';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
@@ -33,6 +34,6 @@ import { HttpModule } from '@nestjs/axios';
     ]),
   ],
   controllers: [GiftController, GiftGenerateRequestedHandler],
-  providers: [FetchOlxHandler],
+  providers: [FetchOlxHandler, FetchEbayHandler],
 })
 export class GiftModule {}

@@ -30,7 +30,6 @@
     "@supabase/supabase-js": "^2.49.4",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.7",
-    "axios": "^1.12.2",
     "dotenv": "^16.5.0",
     "pg": "^8.14.1",
     "reflect-metadata": "^0.2.2",

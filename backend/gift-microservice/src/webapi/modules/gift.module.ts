@@ -6,10 +6,13 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule } from '@nestjs/config';
 import { GiftReadyEvent } from 'src/domain/events/gift-ready.event';
 import { GiftGenerateRequestedHandler } from 'src/app/handlers/gift-generate-requested.handler';
+import { FetchOlxHandler } from 'src/app/handlers/fetch-olx.handler';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
     CqrsModule,
+    HttpModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -30,6 +33,6 @@ import { GiftGenerateRequestedHandler } from 'src/app/handlers/gift-generate-req
     ]),
   ],
   controllers: [GiftController, GiftGenerateRequestedHandler],
-  providers: [],
+  providers: [FetchOlxHandler],
 })
 export class GiftModule {}

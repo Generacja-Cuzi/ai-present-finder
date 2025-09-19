@@ -14,13 +14,20 @@ export class FetchEbayHandler
 {
   private readonly logger = new Logger(FetchEbayHandler.name);
 
-  private readonly CLIENT_ID = process.env.EBAY_CLIENT_ID;
-  private readonly CLIENT_SECRET = process.env.EBAY_CLIENT_SECRET;
+  private readonly CLIENT_ID = process.env.EBAY_CLIENT_ID || '';
+  private readonly CLIENT_SECRET = process.env.EBAY_CLIENT_SECRET || '';
+  private readonly TOKEN_URL = process.env.EBAY_TOKEN_URL || '';
+  private readonly SEARCH_URL = process.env.EBAY_SEARCH_URL || '';
+  private readonly OAUTH_SCOPE = process.env.EBAY_OAUTH_SCOPE || '';
+  private readonly MARKETPLACE_ID =
+    process.env.EBAY_MARKETPLACE_ID || 'EBAY_PL';
+  private readonly MAX_RETRIES = parseInt(process.env.EBAY_MAX_RETRIES || '3');
+  private readonly TOKEN_BUFFER_SECONDS = parseInt(
+    process.env.EBAY_TOKEN_BUFFER_SECONDS || '300',
+  );
 
   // Cache for access token
   private cachedToken: { token: string; expiresAt: number } | null = null;
-
-  constructor() {}
 
   // Helper: get application access token using client credentials grant
   private async getAppAccessToken(): Promise<string> {
@@ -29,17 +36,16 @@ export class FetchEbayHandler
       return this.cachedToken.token;
     }
 
-    const tokenUrl = 'https://api.ebay.com/identity/v1/oauth2/token';
     const basicAuth = Buffer.from(
       `${this.CLIENT_ID}:${this.CLIENT_SECRET}`,
     ).toString('base64');
 
     const body = new URLSearchParams({
       grant_type: 'client_credentials',
-      scope: 'https://api.ebay.com/oauth/api_scope',
+      scope: this.OAUTH_SCOPE,
     });
 
-    const response = await fetch(tokenUrl, {
+    const response = await fetch(this.TOKEN_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -64,7 +70,8 @@ export class FetchEbayHandler
     // Cache the token (eBay tokens typically last 2 hours, cache for 1.5 hours to be safe)
     this.cachedToken = {
       token: data.access_token,
-      expiresAt: Date.now() + (data.expires_in - 300) * 1000, // 5 minutes buffer
+      expiresAt:
+        Date.now() + (data.expires_in - this.TOKEN_BUFFER_SECONDS) * 1000,
     };
 
     return data.access_token;
@@ -73,7 +80,6 @@ export class FetchEbayHandler
   async execute(query: FetchEbayQuery): Promise<ListingDto[]> {
     const { query: searchQuery, limit, offset } = query;
 
-    const maxRetries = 3;
     let attempt = 0;
 
     while (true) {
@@ -84,8 +90,6 @@ export class FetchEbayHandler
         const token = await this.getAppAccessToken();
 
         // Build search URL with parameters
-        const endpoint =
-          'https://api.ebay.com/buy/browse/v1/item_summary/search';
         const searchParams = new URLSearchParams({
           q: searchQuery,
           limit: limit.toString(),
@@ -94,14 +98,14 @@ export class FetchEbayHandler
           // filter: 'conditionIds:{1000|1500|2000|2500|3000|4000|5000}', // New, Used, etc.
         });
 
-        const searchUrl = `${endpoint}?${searchParams.toString()}`;
+        const searchUrl = `${this.SEARCH_URL}?${searchParams.toString()}`;
 
         const response = await fetch(searchUrl, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
-            'X-EBAY-C-MARKETPLACE-ID': 'EBAY_PL', // or EBAY_PL for Poland
+            'X-EBAY-C-MARKETPLACE-ID': this.MARKETPLACE_ID,
           },
         });
 
@@ -161,7 +165,7 @@ export class FetchEbayHandler
           const errorText = await response.text().catch(() => '');
           this.logger.warn(`eBay API error ${response.status}: ${errorText}`);
 
-          if (attempt <= maxRetries) {
+          if (attempt <= this.MAX_RETRIES) {
             const base = Math.min(4000, 1000 * Math.pow(2, attempt - 1));
             const jitter = Math.floor(Math.random() * 500);
             const delayMs = base + jitter;
@@ -184,7 +188,7 @@ export class FetchEbayHandler
       } catch (error: unknown) {
         const errorObj = error as { code?: string; message?: string };
         if (
-          attempt <= maxRetries &&
+          attempt <= this.MAX_RETRIES &&
           (errorObj.code === 'ENOTFOUND' || errorObj.code === 'ECONNRESET')
         ) {
           const base = Math.min(4000, 1000 * Math.pow(2, attempt - 1));

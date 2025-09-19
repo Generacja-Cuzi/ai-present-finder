@@ -21,7 +21,7 @@ export class StalkingAnalyzeHandler
 
     this.logger.log('Stalking completed.');
 
-    const keywords = ['example', 'keywords', 'from', 'stalking'];
+    const keywords = ['klapki', 'czerwone', 'nike'];
 
     const completedAt = new Date();
 

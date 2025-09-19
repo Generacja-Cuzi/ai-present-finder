@@ -2,7 +2,7 @@
 import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
 import { Logger } from '@nestjs/common';
 import { FetchOlxQuery } from '../../domain/queries/fetch-olx.query';
-import { OlxListingDto } from 'src/domain/models/olx-listing.dto';
+import { ListingDto } from 'src/domain/models/listing.dto';
 
 type ClientHeaders = Partial<Record<string, string>>;
 
@@ -11,12 +11,12 @@ function sleep(ms: number) {
 }
 
 @QueryHandler(FetchOlxQuery)
-export class FetchOlxHandler implements IQueryHandler<FetchOlxQuery, OlxListingDto[]> {
+export class FetchOlxHandler implements IQueryHandler<FetchOlxQuery, ListingDto[]> {
   private readonly logger = new Logger(FetchOlxHandler.name);
 
   constructor() {}
 
-  async execute(queryTemp: FetchOlxQuery): Promise<OlxListingDto[]> {
+  async execute(queryTemp: FetchOlxQuery): Promise<ListingDto[]> {
     const { query, limit, offset, clientHeaders } = queryTemp as FetchOlxQuery & {
       clientHeaders?: ClientHeaders;
     };
@@ -159,7 +159,7 @@ export class FetchOlxHandler implements IQueryHandler<FetchOlxQuery, OlxListingD
 
         const items = Array.isArray(payload.data) ? payload.data : [];
 
-        const listings: OlxListingDto[] = items.map((item: any) => {
+        const listings: ListingDto[] = items.map((item: any) => {
           const raw = item?.photos?.[0]?.link ?? null;
           const image =
             typeof raw === 'string'
@@ -180,7 +180,7 @@ export class FetchOlxHandler implements IQueryHandler<FetchOlxQuery, OlxListingD
               currency: priceValue?.currency ?? null,
               negotiable: typeof priceValue?.negotiable === 'boolean' ? priceValue.negotiable : null,
             },
-          } as OlxListingDto;
+          } as ListingDto;
         });
 
         this.logger.log(

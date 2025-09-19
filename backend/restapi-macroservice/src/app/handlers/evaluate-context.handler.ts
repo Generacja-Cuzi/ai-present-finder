@@ -22,7 +22,7 @@ export class EvaluateContextHandler
 
     const history = command.messages ?? [];
 
-    const enoughContext = false; // TODO(simon-the-sharp): Implement this
+    const enoughContext = true; // TODO(simon-the-sharp): Implement this
 
     if (!enoughContext) {
       const event = new ChatStartInterviewEvent(context, history);

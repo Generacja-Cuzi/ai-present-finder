@@ -14,4 +14,3 @@ export const ListingDto = z.object({
 });
 
 export type ListingDto = z.infer<typeof ListingDto>;
-

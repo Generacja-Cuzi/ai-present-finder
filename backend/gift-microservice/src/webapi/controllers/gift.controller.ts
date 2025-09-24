@@ -5,6 +5,8 @@ import { FetchOlxQuery } from 'src/domain/queries/fetch-olx.query';
 import { FetchOlxDto } from 'src/domain/models/fetch-olx.dto';
 import { FetchEbayQuery } from 'src/domain/queries/fetch-ebay.query';
 import { FetchEbayDto } from 'src/domain/models/fetch-ebay.dto';
+import { FetchAmazonQuery } from 'src/domain/queries/fetch-amazon.query';
+import { FetchAmazonDto } from 'src/domain/models/fetch-amazon.dto';
 import { ListingDto } from 'src/domain/models/listing.dto';
 
 @Controller('gift')
@@ -36,6 +38,32 @@ export class GiftController {
   async fetchEbayPost(@Body() body: FetchEbayDto): Promise<ListingDto[]> {
     return this.queryBus.execute(
       new FetchEbayQuery(body.query, body.limit ?? 20, body.offset ?? 0),
+    );
+  }
+
+  @Get('amazon')
+  async fetchAmazonGet(@Query() q: FetchAmazonDto): Promise<ListingDto[]> {
+    return this.queryBus.execute(
+      new FetchAmazonQuery(
+        q.query,
+        q.limit ?? 20,
+        q.offset ?? 0,
+        q.country ?? 'PL',
+        q.page ?? 1,
+      ),
+    );
+  }
+
+  @Post('amazon')
+  async fetchAmazonPost(@Body() body: FetchAmazonDto): Promise<ListingDto[]> {
+    return this.queryBus.execute(
+      new FetchAmazonQuery(
+        body.query,
+        body.limit ?? 20,
+        body.offset ?? 0,
+        body.country ?? 'PL',
+        body.page ?? 1,
+      ),
     );
   }
 }

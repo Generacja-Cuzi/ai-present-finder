@@ -1,0 +1,107 @@
+asyncapi: "2.6.0"
+id: "urn:ai-present-finder:gift"
+defaultContentType: application/json
+
+info:
+  title: Gift Microservice AsyncAPI
+  version: "1.0.0"
+  description: |
+    AsyncAPI for the gift microservice. Uses RabbitMQ queues as configured in code.
+  contact:
+    name: AI Present Finder
+    email: dev@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+tags:
+  - name: gift
+
+servers:
+  rabbitmq:
+    url: "${CLOUDAMQP_URL:///amqp://admin:admin@localhost:5672}"
+    protocol: amqp
+    description: RabbitMQ broker (env CLOUDAMQP_URL supported)
+
+channels:
+  GiftGenerateRequestedEvent:
+    description: Queue the service subscribes to in order to start gift generation.
+    subscribe:
+      operationId: handleGiftGenerateRequested
+      summary: Consume requests to generate gift ideas
+      message:
+        $ref: "#/components/messages/GiftGenerateRequested"
+
+  GiftReadyEvent:
+    description: Queue the service emits to notify ready gift ideas (service publishes).
+    publish:
+      operationId: publishGiftReady
+      summary: Publish generated gift ideas
+      message:
+        $ref: "#/components/messages/GiftReady"
+
+components:
+  messages:
+    GiftGenerateRequested:
+      messageId: GiftGenerateRequested
+      name: GiftGenerateRequestedEvent
+      title: GiftGenerateRequested
+      summary: Request to generate gift ideas.
+      contentType: application/json
+      payload:
+        type: object
+        required: [chatId]
+        properties:
+          keywords:
+            type: array
+            items:
+              type: string
+          chatId:
+            type: string
+          profile:
+            type: object
+            nullable: true
+
+    GiftReady:
+      messageId: GiftReady
+      name: GiftReadyEvent
+      title: GiftReady
+      summary: Generated gift ideas ready to consume.
+      contentType: application/json
+      payload:
+        type: object
+        required: [chatId, giftIdeas]
+        properties:
+          giftIdeas:
+            type: array
+            items:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: uri
+                  nullable: true
+                title:
+                  type: string
+                description:
+                  type: string
+                link:
+                  type: string
+                  format: uri
+                price:
+                  type: object
+                  properties:
+                    value:
+                      type: number
+                      nullable: true
+                    label:
+                      type: string
+                      nullable: true
+                    currency:
+                      type: string
+                      nullable: true
+                    negotiable:
+                      type: boolean
+                      nullable: true
+          chatId:
+            type: string

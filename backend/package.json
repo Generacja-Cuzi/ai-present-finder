@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "docs:asyncapi:chat": "pnpm --package=@asyncapi/generator dlx asyncapi-generator docs/asyncapi/chat-microservice.asyncapi.yml @asyncapi/html-template -o docs/asyncapi/html/chat -p singleFile=true --force-write",
+    "docs:asyncapi:gift": "pnpm --package=@asyncapi/generator dlx asyncapi-generator docs/asyncapi/gift-microservice.asyncapi.yml @asyncapi/html-template -o docs/asyncapi/html/gift -p singleFile=true --force-write",
+    "docs:asyncapi:restapi": "pnpm --package=@asyncapi/generator dlx asyncapi-generator docs/asyncapi/restapi-macroservice.asyncapi.yml @asyncapi/html-template -o docs/asyncapi/html/restapi -p singleFile=true --force-write",
+    "docs:asyncapi:stalking": "pnpm --package=@asyncapi/generator dlx asyncapi-generator docs/asyncapi/stalking-microservice.asyncapi.yml @asyncapi/html-template -o docs/asyncapi/html/stalking -p singleFile=true --force-write",
+
+    "docs:asyncapi:all": "bash -lc 'for f in docs/asyncapi/*.asyncapi.yml; do name=$(basename \"$f\" .asyncapi.yml); out=docs/asyncapi/html/$name; pnpm --package=@asyncapi/generator dlx asyncapi-generator \"$f\" @asyncapi/html-template -o \"$out\" -p singleFile=true --force-write; done'"
+  }
+}

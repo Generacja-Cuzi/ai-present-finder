@@ -1,0 +1,102 @@
+asyncapi: "2.6.0"
+id: "urn:ai-present-finder:chat"
+defaultContentType: application/json
+
+info:
+  title: Chat Microservice AsyncAPI
+  version: "1.0.0"
+  description: |
+    AsyncAPI for the chat microservice. Transport: RabbitMQ (AMQP).
+    The service subscribes to events produced by other services.
+  contact:
+    name: AI Present Finder
+    url: https://example.com
+    email: dev@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+tags:
+  - name: chat
+
+servers:
+  rabbitmq:
+    url: amqp://admin:admin@localhost:5672
+    protocol: amqp
+    description: Local RabbitMQ broker
+
+channels:
+  ChatQuestionAskedEvent:
+    description: Queue with questions asked by the chat flow.
+    subscribe:
+      operationId: handleChatQuestionAsked
+      summary: Handle incoming question events
+      message:
+        $ref: "#/components/messages/ChatQuestionAsked"
+  ChatInterviewCompletedEvent:
+    description: Queue with interview completed events.
+    subscribe:
+      operationId: handleChatInterviewCompleted
+      summary: Handle interview completion
+      message:
+        $ref: "#/components/messages/ChatInterviewCompleted"
+  ChatInappropriateRequestEvent:
+    description: Queue with inappropriate request notifications.
+    subscribe:
+      operationId: handleChatInappropriateRequest
+      summary: Handle inappropriate requests
+      message:
+        $ref: "#/components/messages/ChatInappropriateRequest"
+
+components:
+  messages:
+    ChatQuestionAsked:
+      messageId: ChatQuestionAsked
+      name: ChatQuestionAskedEvent
+      title: ChatQuestionAsked
+      summary: Question asked by the user during chat.
+      contentType: application/json
+      payload:
+        type: object
+        required: [question, context]
+        properties:
+          question:
+            type: string
+          context:
+            type: object
+            properties:
+              keywords:
+                type: array
+                items:
+                  type: string
+              chatId:
+                type: string
+
+    ChatInterviewCompleted:
+      messageId: ChatInterviewCompleted
+      name: ChatInterviewCompletedEvent
+      title: ChatInterviewCompleted
+      summary: Interview flow finished with computed profile.
+      contentType: application/json
+      payload:
+        type: object
+        required: [context, profile]
+        properties:
+          context:
+            type: object
+          profile:
+            type: object
+
+    ChatInappropriateRequest:
+      messageId: ChatInappropriateRequest
+      name: ChatInappropriateRequestEvent
+      title: ChatInappropriateRequest
+      summary: The request was flagged as inappropriate.
+      contentType: application/json
+      payload:
+        type: object
+        required: [reason, chatId]
+        properties:
+          reason:
+            type: string
+          chatId:
+            type: string

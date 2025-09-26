@@ -1,0 +1,251 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/restapi/stalking-request": {
+      "post": {
+        "operationId": "RestApiController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StalkingAnalyzeRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Analysis requested"
+          }
+        },
+        "summary": "Request stalking analysis for provided social profiles",
+        "tags": [
+          "restapi"
+        ]
+      }
+    },
+    "/restapi/send-message": {
+      "post": {
+        "operationId": "RestApiController_sendMessage",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Message accepted"
+          }
+        },
+        "summary": "Send chat messages to the system",
+        "tags": [
+          "restapi"
+        ]
+      }
+    },
+    "/sse": {
+      "get": {
+        "operationId": "SseController_sse",
+        "parameters": [
+          {
+            "name": "clientId",
+            "required": true,
+            "in": "query",
+            "description": "Client identifier to register for SSE",
+            "schema": {
+              "example": "client-123",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event stream of SSE messages"
+          }
+        },
+        "summary": "Subscribe to server-sent events stream",
+        "tags": [
+          "sse"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "AI Present Finder - REST API",
+    "description": "REST API for interacting with microservices: stalking requests, sending chat messages and streaming events via SSE.",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "http://localhost:3002"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "SendMessageDtoDoc": {
+        "type": "object",
+        "properties": {
+          "messages": {
+            "description": "Messages in the conversation",
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "chatId": {
+            "type": "string",
+            "description": "Chat identifier",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          }
+        },
+        "required": [
+          "messages",
+          "chatId"
+        ]
+      },
+      "StalkingAnalyzeRequestDto": {
+        "type": "object",
+        "properties": {
+          "facebookUrl": {
+            "type": "string",
+            "description": "Facebook profile URL",
+            "example": "https://facebook.com/example"
+          },
+          "instagramUrl": {
+            "type": "string",
+            "description": "Instagram profile URL",
+            "example": "https://instagram.com/example"
+          },
+          "tiktokUrl": {
+            "type": "string",
+            "description": "TikTok profile URL",
+            "example": "https://tiktok.com/@example"
+          },
+          "youtubeUrl": {
+            "type": "string",
+            "description": "YouTube channel URL",
+            "example": "https://youtube.com/channel/ABC"
+          },
+          "xUrl": {
+            "type": "string",
+            "description": "X (Twitter) profile URL",
+            "example": "https://x.com/example"
+          },
+          "linkedinUrl": {
+            "type": "string",
+            "description": "LinkedIn profile URL",
+            "example": "https://linkedin.com/in/example"
+          },
+          "chatId": {
+            "type": "string",
+            "description": "Chat identifier",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          }
+        },
+        "required": [
+          "chatId"
+        ]
+      },
+      "SseStalkingStartedDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "stalking-started"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "SseStalkingCompletedDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "stalking-completed"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "SseChatbotMessageDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "chatbot-message"
+          },
+          "message": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "type",
+          "message"
+        ]
+      },
+      "SseChatInterviewCompletedDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "chat-interview-completed"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "SseChatInappropriateRequestDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "chat-inappropriate-request"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Reason why the request was inappropriate",
+            "example": "inappropriate content"
+          }
+        },
+        "required": [
+          "type",
+          "reason"
+        ]
+      },
+      "SseGiftReadyDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "gift-ready"
+          },
+          "data": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "type",
+          "data"
+        ]
+      }
+    }
+  }
+}

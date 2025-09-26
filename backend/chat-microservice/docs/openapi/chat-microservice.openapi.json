@@ -1,0 +1,127 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "AI Present Finder - Chat Microservice",
+    "description": "Chat message endpoints and webhook-style endpoints used by the chat service.",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "http://localhost:3001"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "ChatMessageDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          },
+          "content": {
+            "type": "string",
+            "example": "Hello, how can I help?"
+          },
+          "sender": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant"
+            ],
+            "example": "user"
+          }
+        },
+        "required": [
+          "id",
+          "content",
+          "sender"
+        ]
+      },
+      "ContextDto": {
+        "type": "object",
+        "properties": {
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Keywords that describe the context",
+            "example": [
+              "books",
+              "programming"
+            ]
+          },
+          "chatId": {
+            "type": "string",
+            "description": "Unique chat identifier",
+            "example": "b3d9f9f0-3c2b-4f9a-9c2a-0d1e2f3a4b5c"
+          }
+        },
+        "required": [
+          "keywords",
+          "chatId"
+        ]
+      },
+      "EndConversationOutputDto": {
+        "type": "object",
+        "properties": {
+          "recipient_profile": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "engineer",
+              "book lover"
+            ]
+          },
+          "key_themes_and_keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "programming",
+              "reading"
+            ]
+          },
+          "gift_recommendations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "kindle",
+              "mechanical keyboard"
+            ]
+          }
+        },
+        "required": [
+          "recipient_profile",
+          "key_themes_and_keywords",
+          "gift_recommendations"
+        ]
+      }
+    }
+  }
+}

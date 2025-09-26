@@ -1,0 +1,78 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "AI Present Finder - Stalking Microservice",
+    "description": "Endpoints for requesting stalking/analyze jobs and retrieving status.",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "http://localhost:3004"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "StalkingAnalyzeRequestDto": {
+        "type": "object",
+        "properties": {
+          "facebookUrl": {
+            "type": "string",
+            "description": "Facebook profile URL",
+            "example": "https://facebook.com/example"
+          },
+          "instagramUrl": {
+            "type": "string",
+            "description": "Instagram profile URL",
+            "example": "https://instagram.com/example"
+          },
+          "tiktokUrl": {
+            "type": "string",
+            "description": "TikTok profile URL",
+            "example": "https://tiktok.com/@example"
+          },
+          "youtubeUrl": {
+            "type": "string",
+            "description": "YouTube channel URL",
+            "example": "https://youtube.com/channel/ABC"
+          },
+          "xUrl": {
+            "type": "string",
+            "description": "X (Twitter) profile URL",
+            "example": "https://x.com/example"
+          },
+          "linkedinUrl": {
+            "type": "string",
+            "description": "LinkedIn profile URL",
+            "example": "https://linkedin.com/in/example"
+          },
+          "chatId": {
+            "type": "string",
+            "description": "Chat identifier",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          }
+        },
+        "required": [
+          "chatId"
+        ]
+      }
+    }
+  }
+}

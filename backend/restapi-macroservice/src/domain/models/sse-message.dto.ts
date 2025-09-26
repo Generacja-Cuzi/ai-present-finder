@@ -31,5 +31,56 @@ export const sseMessageDtoSchema = z.discriminatedUnion("type", [
   }),
 ]);
 
+<<<<<<< HEAD
 export type SseMessageDto = z.infer<typeof sseMessageDtoSchema>;
 export type SseMessageType = SseMessageDto["type"];
+=======
+export type SseMessageDto = z.infer<typeof SseMessageDto>;
+export type SseMessageType = SseMessageDto['type'];
+
+import { ApiProperty } from '@nestjs/swagger';
+
+export class SseStalkingStartedDto {
+  @ApiProperty({ example: 'stalking-started' })
+  type: 'stalking-started';
+}
+
+export class SseStalkingCompletedDto {
+  @ApiProperty({ example: 'stalking-completed' })
+  type: 'stalking-completed';
+}
+
+export class SseChatbotMessageDto {
+  @ApiProperty({ example: 'chatbot-message' })
+  type: 'chatbot-message';
+
+  @ApiProperty({ type: () => Object })
+  message: any;
+}
+
+export class SseChatInterviewCompletedDto {
+  @ApiProperty({ example: 'chat-interview-completed' })
+  type: 'chat-interview-completed';
+}
+
+export class SseChatInappropriateRequestDto {
+  @ApiProperty({ example: 'chat-inappropriate-request' })
+  type: 'chat-inappropriate-request';
+
+  @ApiProperty({
+    description: 'Reason why the request was inappropriate',
+    example: 'inappropriate content',
+  })
+  reason: string;
+}
+
+export class SseGiftReadyDto {
+  @ApiProperty({ example: 'gift-ready' })
+  type: 'gift-ready';
+
+  @ApiProperty({ type: Object })
+  data: {
+    giftIdeas: string[];
+  };
+}
+>>>>>>> b8c32b6 (docs(backend): add swager + openapi)

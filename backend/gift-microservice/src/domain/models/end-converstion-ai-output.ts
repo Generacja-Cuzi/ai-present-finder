@@ -6,4 +6,17 @@ export const endConversationOuputSchema = z.object({
   gift_recommendations: z.array(z.string()),
 });
 
-export type EndConversationOuput = z.infer<typeof endConversationOuputSchema>;
+export type EndConversationOutput = z.infer<typeof endConversationOuputSchema>;
+
+import { ApiProperty } from '@nestjs/swagger';
+
+export class EndConversationOutputDoc implements EndConversationOutput {
+  @ApiProperty({ type: [String] })
+  recipient_profile: string[];
+
+  @ApiProperty({ type: [String] })
+  key_themes_and_keywords: string[];
+
+  @ApiProperty({ type: [String] })
+  gift_recommendations: string[];
+}

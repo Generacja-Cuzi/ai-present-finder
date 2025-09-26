@@ -1,0 +1,195 @@
+asyncapi: "2.6.0"
+id: "urn:ai-present-finder:restapi"
+defaultContentType: application/json
+
+info:
+  title: REST API Macroservice AsyncAPI
+  version: "1.0.0"
+  description: |
+    AsyncAPI for the REST API macroservice. This service both publishes and subscribes to several events
+    and also exposes Server-Sent Events (SSE) to the frontend (HTTP-based push).
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+tags:
+  - name: restapi
+  - name: sse
+    description: Server-Sent Events delivered over HTTP to frontend clients (see SseService in code).
+
+servers:
+  rabbitmq:
+    url: "${CLOUDAMQP_URL:///amqp://admin:admin@localhost:5672}"
+    protocol: amqp
+    description: RabbitMQ broker (env CLOUDAMQP_URL supported)
+
+channels:
+  StalkingAnalyzeRequestedEvent:
+    description: Queue published when a stalking analysis is requested (service publishes).
+    publish:
+      operationId: publishStalkingAnalyzeRequested
+      summary: Publish request to start stalking analysis
+      message:
+        $ref: "#/components/messages/StalkingAnalyzeRequested"
+
+  ChatStartInterviewEvent:
+    description: Queue published when chat interview starts (service publishes).
+    publish:
+      operationId: publishChatStartInterview
+      summary: Publish start of chat interview
+      message:
+        $ref: "#/components/messages/ChatStartInterview"
+
+  ChatUserAnsweredEvent:
+    description: Queue published when user answers in chat (service publishes).
+    publish:
+      operationId: publishChatUserAnswered
+      summary: Publish user's chat answer
+      message:
+        $ref: "#/components/messages/ChatUserAnswered"
+
+  GiftGenerateRequestedEvent:
+    description: Queue published to request gift generation (service publishes).
+    publish:
+      operationId: publishGiftGenerateRequested
+      summary: Publish request to generate gift ideas
+      message:
+        $ref: "#/components/messages/GiftGenerateRequested"
+
+  StalkingCompletedEvent:
+    description: Queue the service subscribes to when stalking is completed.
+    subscribe:
+      operationId: handleStalkingCompleted
+      summary: Consume stalking completed events
+      message:
+        $ref: "#/components/messages/StalkingCompleted"
+
+  ChatQuestionAskedEvent:
+    description: Queue the service subscribes to for question asked notifications.
+    subscribe:
+      operationId: handleChatQuestionAsked
+      summary: Consume chat question asked
+      message:
+        $ref: "#/components/messages/ChatQuestionAsked"
+
+  ChatInterviewCompletedEvent:
+    description: Queue the service subscribes to for interview completion.
+    subscribe:
+      operationId: handleChatInterviewCompleted
+      summary: Consume chat interview completed
+      message:
+        $ref: "#/components/messages/ChatInterviewCompleted"
+
+  GiftReadyEvent:
+    description: Queue the service subscribes to to receive generated gift ideas.
+    subscribe:
+      operationId: handleGiftReady
+      summary: Consume generated gift ideas
+      message:
+        $ref: "#/components/messages/GiftReady"
+
+  ChatInappropriateRequestEvent:
+    description: Queue the service subscribes to for inappropriate requests.
+    subscribe:
+      operationId: handleChatInappropriateRequest
+      summary: Consume inappropriate requests
+      message:
+        $ref: "#/components/messages/ChatInappropriateRequest"
+
+components:
+  messages:
+    StalkingAnalyzeRequested:
+      messageId: StalkingAnalyzeRequested
+      name: StalkingAnalyzeRequestedEvent
+      title: StalkingAnalyzeRequested
+      summary: Request to start stalking analysis for given social URLs.
+      contentType: application/json
+      payload:
+        type: object
+        required: [chatId]
+        properties:
+          facebookUrl: { type: string }
+          instagramUrl: { type: string }
+          tiktokUrl: { type: string }
+          youtubeUrl: { type: string }
+          xUrl: { type: string }
+          linkedinUrl: { type: string }
+          chatId: { type: string }
+
+    ChatStartInterview:
+      messageId: ChatStartInterview
+      name: ChatStartInterviewEvent
+      title: ChatStartInterview
+      summary: Start of the chat interview flow.
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          context:
+            type: object
+          history:
+            type: array
+            items:
+              type: object
+
+    ChatUserAnswered:
+      messageId: ChatUserAnswered
+      name: ChatUserAnsweredEvent
+      title: ChatUserAnswered
+      summary: User answered during chat interview.
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          context:
+            type: object
+          messages:
+            type: array
+            items:
+              type: object
+
+    GiftGenerateRequested:
+      messageId: GiftGenerateRequested
+      name: GiftGenerateRequestedEvent
+      title: GiftGenerateRequested
+      summary: Request to generate gift ideas.
+      contentType: application/json
+      payload:
+        type: object
+        required: [chatId]
+        properties:
+          keywords:
+            type: array
+            items: { type: string }
+          chatId: { type: string }
+          profile:
+            type: object
+            nullable: true
+
+    StalkingCompleted:
+      messageId: StalkingCompleted
+      name: StalkingCompletedEvent
+      title: StalkingCompleted
+      summary: Stalking analysis completed with extracted keywords.
+      contentType: application/json
+      payload:
+        type: object
+        required: [chatId, completedAt]
+        properties:
+          keywords:
+            type: array
+            items: { type: string }
+          completedAt:
+            type: string
+            format: date-time
+          chatId: { type: string }
+
+    # zewnętrzne komunikaty z innych speców (PLIKI W TYM SAMYM KATALOGU!)
+    ChatQuestionAsked:
+      $ref: "./chat-microservice.asyncapi.yml#/components/messages/ChatQuestionAsked"
+    ChatInterviewCompleted:
+      $ref: "./chat-microservice.asyncapi.yml#/components/messages/ChatInterviewCompleted"
+    GiftReady:
+      $ref: "./gift-microservice.asyncapi.yml#/components/messages/GiftReady"
+    ChatInappropriateRequest:
+      $ref: "./chat-microservice.asyncapi.yml#/components/messages/ChatInappropriateRequest"

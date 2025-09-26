@@ -1,0 +1,47 @@
+asyncapi: "2.6.0"
+info:
+  title: Stalking Microservice AsyncAPI
+  version: "1.0.0"
+  description: |
+    AsyncAPI for the stalking microservice. Uses RabbitMQ queues as configured in code.
+servers:
+  rabbitmq:
+    url: "${CLOUDAMQP_URL:///amqp://admin:admin@localhost:5672}"
+    protocol: amqp
+channels:
+  StalkingAnalyzeRequestedEvent:
+    description: Queue the service subscribes to when an analysis is requested.
+    subscribe:
+      message:
+        $ref: "#/components/messages/StalkingAnalyzeRequested"
+  StalkingCompletedEvent:
+    description: Queue the service publishes when analysis completes.
+    publish:
+      message:
+        $ref: "#/components/messages/StalkingCompleted"
+components:
+  messages:
+    StalkingAnalyzeRequested:
+      name: StalkingAnalyzeRequestedEvent
+      payload:
+        type: object
+        properties:
+          facebookUrl: { type: string }
+          instagramUrl: { type: string }
+          tiktokUrl: { type: string }
+          youtubeUrl: { type: string }
+          xUrl: { type: string }
+          linkedinUrl: { type: string }
+          chatId: { type: string }
+    StalkingCompleted:
+      name: StalkingCompletedEvent
+      payload:
+        type: object
+        properties:
+          keywords:
+            type: array
+            items: { type: string }
+          completedAt:
+            type: string
+            format: date-time
+          chatId: { type: string }

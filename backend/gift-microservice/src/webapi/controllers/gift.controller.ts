@@ -7,6 +7,8 @@ import { FetchEbayQuery } from 'src/domain/queries/fetch-ebay.query';
 import { FetchEbayDto } from 'src/domain/models/fetch-ebay.dto';
 import { FetchAmazonQuery } from 'src/domain/queries/fetch-amazon.query';
 import { FetchAmazonDto } from 'src/domain/models/fetch-amazon.dto';
+import { FetchAllegroQuery } from 'src/domain/queries/fetch-allegro.query';
+import { FetchAllegroDto } from 'src/domain/models/fetch-allegro.dto';
 import { ListingDto } from 'src/domain/models/listing.dto';
 
 @Controller('gift')
@@ -64,6 +66,20 @@ export class GiftController {
         body.country ?? 'PL',
         body.page ?? 1,
       ),
+    );
+  }
+
+  @Get('allegro')
+  async fetchAllegroGet(@Query() q: FetchAllegroDto): Promise<ListingDto[]> {
+    return this.queryBus.execute(
+      new FetchAllegroQuery(q.query, q.limit ?? 20, q.offset ?? 0),
+    );
+  }
+
+  @Post('allegro')
+  async fetchAllegroPost(@Body() body: FetchAllegroDto): Promise<ListingDto[]> {
+    return this.queryBus.execute(
+      new FetchAllegroQuery(body.query, body.limit ?? 20, body.offset ?? 0),
     );
   }
 }

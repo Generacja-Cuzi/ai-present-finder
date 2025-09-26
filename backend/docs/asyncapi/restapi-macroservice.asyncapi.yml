@@ -8,9 +8,6 @@ info:
   description: |
     AsyncAPI for the REST API macroservice. This service both publishes and subscribes to several events
     and also exposes Server-Sent Events (SSE) to the frontend (HTTP-based push).
-  contact:
-    name: AI Present Finder
-    email: dev@example.com
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT

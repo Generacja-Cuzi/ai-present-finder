@@ -8,10 +8,6 @@ info:
   description: |
     AsyncAPI for the chat microservice. Transport: RabbitMQ (AMQP).
     The service subscribes to events produced by other services.
-  contact:
-    name: AI Present Finder
-    url: https://example.com
-    email: dev@example.com
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT

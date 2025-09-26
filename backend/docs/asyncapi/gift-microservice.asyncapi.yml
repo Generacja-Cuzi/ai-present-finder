@@ -7,9 +7,6 @@ info:
   version: "1.0.0"
   description: |
     AsyncAPI for the gift microservice. Uses RabbitMQ queues as configured in code.
-  contact:
-    name: AI Present Finder
-    email: dev@example.com
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT

@@ -59,14 +59,12 @@ export class FetchAllegroHandler
     process.env.ALLEGRO_MAX_RETRIES || '3',
   );
 
-  // Cache for access token
   private tokenCache: {
     token: string;
     expiresAt: number;
   } | null = null;
 
   private async getAppToken(): Promise<string> {
-    // Check if we have a valid cached token
     if (this.tokenCache && Date.now() < this.tokenCache.expiresAt) {
       return this.tokenCache.token;
     }
@@ -97,10 +95,9 @@ export class FetchAllegroHandler
 
     const json = (await response.json()) as AllegroTokenResponse;
 
-    // Cache the token (expires_in is in seconds)
     this.tokenCache = {
       token: json.access_token,
-      expiresAt: Date.now() + (json.expires_in - 60) * 1000, // 60s buffer
+      expiresAt: Date.now() + (json.expires_in - 60) * 1000,
     };
 
     return json.access_token;
@@ -145,28 +142,21 @@ export class FetchAllegroHandler
   private parsePrice(priceString: string): number | null {
     if (!priceString) return null;
 
-    // Remove all non-digit and non-decimal characters, keep only digits and . or ,
     const cleanPrice = priceString.replace(/[^\d.,]/g, '');
 
     if (!cleanPrice) return null;
 
-    // Handle Polish number format (65,99) vs international (65.99)
     if (cleanPrice.includes(',') && cleanPrice.includes('.')) {
-      // Format like 1.234,56 (European with thousands separator)
       const parsed = cleanPrice.replace(/\./g, '').replace(/,/g, '.');
       return parseFloat(parsed);
     } else if (cleanPrice.includes(',')) {
-      // Could be 65,99 (European decimal) or 1,234 (thousands separator)
       const parts = cleanPrice.split(',');
       if (parts.length === 2 && parts[1].length <= 2) {
-        // Likely decimal: 65,99
         return parseFloat(cleanPrice.replace(',', '.'));
       } else {
-        // Likely thousands separator: 1,234
         return parseFloat(cleanPrice.replace(/,/g, ''));
       }
     } else {
-      // Only dots or no separators
       return parseFloat(cleanPrice);
     }
   }
@@ -186,7 +176,6 @@ export class FetchAllegroHandler
 
         const results = await this.searchOffers(searchQuery, { limit, offset });
 
-        // Combine promoted and regular offers
         const offers = [
           ...(results.items?.promoted || []),
           ...(results.items?.regular || []),
@@ -199,13 +188,13 @@ export class FetchAllegroHandler
           return {
             image: offer.images?.[0]?.url || null,
             title: offer.name || '',
-            description: offer.name || '', // Allegro listing doesn't include full description
+            description: offer.name || '',
             link: `${this.BASE_OFFER_URL}/${offer.id}`,
             price: {
               value: priceAmount ? this.parsePrice(priceAmount) : null,
               label: priceAmount ? `${priceAmount} ${priceCurrency}` : null,
               currency: priceCurrency,
-              negotiable: false, // Allegro typically doesn't support price negotiation
+              negotiable: false,
             },
           } as ListingDto;
         });
@@ -218,7 +207,6 @@ export class FetchAllegroHandler
       } catch (error: unknown) {
         const errorObj = error as { code?: string; message?: string };
 
-        // Handle retryable errors
         if (
           attempt < this.MAX_RETRIES &&
           (errorObj.code === 'ENOTFOUND' ||
@@ -241,7 +229,6 @@ export class FetchAllegroHandler
           continue;
         }
 
-        // Handle authentication errors
         if (
           errorObj.message?.includes('401') ||
           errorObj.message?.includes('403')
@@ -250,7 +237,6 @@ export class FetchAllegroHandler
             `Allegro API authentication error: ${errorObj.message}. Check ALLEGRO_CLIENT_ID and ALLEGRO_CLIENT_SECRET.`,
           );
 
-          // Clear token cache on auth errors
           this.tokenCache = null;
 
           throw new Error(

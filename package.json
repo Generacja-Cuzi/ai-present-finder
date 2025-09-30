@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "AI Present Finder - Full-stack application with microservices backend and React frontend",
+  "type": "module",
   "scripts": {
     "build": "pnpm -r build",
     "clean": "pnpm -r clean && rm -rf node_modules",

@@ -1,6 +1,7 @@
-import { Loader2, Send } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Loader2, Send } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export function ChatInput({
   inputValue,
@@ -8,23 +9,23 @@ export function ChatInput({
   handleSendMessage,
   isLoading = false,
 }: {
-  inputValue: string
-  setInputValue: (value: string) => void
-  handleSendMessage: () => void
-  isLoading?: boolean
+  inputValue: string;
+  setInputValue: (value: string) => void;
+  handleSendMessage: () => void;
+  isLoading?: boolean;
 }) {
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey && !isLoading) {
-      e.preventDefault()
-      handleSendMessage()
+    if (e.key === "Enter" && !e.shiftKey && !isLoading) {
+      e.preventDefault();
+      handleSendMessage();
     }
-  }
+  };
   return (
-    <div className="p-4 border-t">
+    <div className="border-t p-4">
       <div className="flex gap-2">
         <Input
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={(e) => { setInputValue(e.target.value); }}
           onKeyDown={handleKeyPress}
           placeholder="Type your message..."
           className="flex-1"
@@ -39,5 +40,5 @@ export function ChatInput({
         </Button>
       </div>
     </div>
-  )
+  );
 }

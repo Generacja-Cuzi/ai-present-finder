@@ -1,6 +1,9 @@
 packages:
-  - "backend/chat-microservice"
-  - "backend/gift-microservice"
-  - "backend/restapi-macroservice"
-  - "backend/stalking-microservice"
-  - "frontend"
+  - backend/chat-microservice
+  - backend/gift-microservice
+  - backend/restapi-macroservice
+  - backend/stalking-microservice
+  - frontend
+
+onlyBuiltDependencies:
+  - '@nestjs/core'

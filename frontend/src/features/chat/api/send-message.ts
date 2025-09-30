@@ -1,19 +1,21 @@
-import { useMutation } from '@tanstack/react-query'
-import type { SendMessageDto } from '../../../../../backend/restapi-macroservice/src/domain/models/send-message.dto'
-import { getBackendUrl } from '@/lib/backend-url'
+import { useMutation } from "@tanstack/react-query";
 
-export function sendMessage(data: SendMessageDto) {
+import { getBackendUrl } from "@/lib/backend-url";
+
+import type { SendMessageDto } from "../../../../../backend/restapi-macroservice/src/domain/models/send-message.dto";
+
+export async function sendMessage(data: SendMessageDto) {
   return fetch(`${getBackendUrl()}/restapi/send-message`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
-  })
+  });
 }
 
 export function useSendMessage() {
   return useMutation({
     mutationFn: sendMessage,
-  })
+  });
 }

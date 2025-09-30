@@ -73,14 +73,14 @@ export class GiftController {
   @Get("allegro")
   async fetchAllegroGet(@Query() q: FetchAllegroDto): Promise<ListingDto[]> {
     return this.queryBus.execute(
-      new FetchAllegroQuery(q.query, q.limit ?? 20, q.offset ?? 0),
+      new FetchAllegroQuery(q.query, q.limit, q.offset),
     );
   }
 
   @Post("allegro")
   async fetchAllegroPost(@Body() body: FetchAllegroDto): Promise<ListingDto[]> {
     return this.queryBus.execute(
-      new FetchAllegroQuery(body.query, body.limit ?? 20, body.offset ?? 0),
+      new FetchAllegroQuery(body.query, body.limit, body.offset),
     );
   }
 }

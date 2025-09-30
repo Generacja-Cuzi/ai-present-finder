@@ -22,7 +22,7 @@ import { StalkingController } from "../controllers/stalking.controller";
         transport: Transport.RMQ,
         options: {
           urls: [
-            process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672",
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
           ],
           queue: StalkingCompletedEvent.name,
           queueOptions: {

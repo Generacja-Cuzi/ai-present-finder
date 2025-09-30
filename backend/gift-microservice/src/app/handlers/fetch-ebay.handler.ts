@@ -6,7 +6,7 @@ import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 
 import { FetchEbayQuery } from "../../domain/queries/fetch-ebay.query";
 
-function sleep(ms: number) {
+async function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
@@ -16,16 +16,18 @@ export class FetchEbayHandler
 {
   private readonly logger = new Logger(FetchEbayHandler.name);
 
-  private readonly CLIENT_ID = process.env.EBAY_CLIENT_ID || "";
-  private readonly CLIENT_SECRET = process.env.EBAY_CLIENT_SECRET || "";
-  private readonly TOKEN_URL = process.env.EBAY_TOKEN_URL || "";
-  private readonly SEARCH_URL = process.env.EBAY_SEARCH_URL || "";
-  private readonly OAUTH_SCOPE = process.env.EBAY_OAUTH_SCOPE || "";
+  private readonly CLIENT_ID = process.env.EBAY_CLIENT_ID ?? "";
+  private readonly CLIENT_SECRET = process.env.EBAY_CLIENT_SECRET ?? "";
+  private readonly TOKEN_URL = process.env.EBAY_TOKEN_URL ?? "";
+  private readonly SEARCH_URL = process.env.EBAY_SEARCH_URL ?? "";
+  private readonly OAUTH_SCOPE = process.env.EBAY_OAUTH_SCOPE ?? "";
   private readonly MARKETPLACE_ID =
-    process.env.EBAY_MARKETPLACE_ID || "EBAY_PL";
-  private readonly MAX_RETRIES = parseInt(process.env.EBAY_MAX_RETRIES || "3");
-  private readonly TOKEN_BUFFER_SECONDS = parseInt(
-    process.env.EBAY_TOKEN_BUFFER_SECONDS || "300",
+    process.env.EBAY_MARKETPLACE_ID ?? "EBAY_PL";
+  private readonly MAX_RETRIES = Number.parseInt(
+    process.env.EBAY_MAX_RETRIES ?? "3",
+  );
+  private readonly TOKEN_BUFFER_SECONDS = Number.parseInt(
+    process.env.EBAY_TOKEN_BUFFER_SECONDS ?? "300",
   );
 
   // Cache for access token
@@ -34,7 +36,7 @@ export class FetchEbayHandler
   // Helper: get application access token using client credentials grant
   private async getAppAccessToken(): Promise<string> {
     // Check if we have a valid cached token
-    if (this.cachedToken && Date.now() < this.cachedToken.expiresAt) {
+    if (this.cachedToken != null && Date.now() < this.cachedToken.expiresAt) {
       return this.cachedToken.token;
     }
 
@@ -59,9 +61,11 @@ export class FetchEbayHandler
     if (!response.ok) {
       const errorText = await response.text();
       this.logger.error(
-        `eBay token request failed: ${response.status} ${errorText}`,
+        `eBay token request failed: ${response.status.toString()} ${errorText}`,
       );
-      throw new Error(`Failed to get eBay access token: ${response.status}`);
+      throw new Error(
+        `Failed to get eBay access token: ${response.status.toString()}`,
+      );
     }
 
     const data = (await response.json()) as {
@@ -84,6 +88,7 @@ export class FetchEbayHandler
 
     let attempt = 0;
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     while (true) {
       attempt++;
 
@@ -92,7 +97,7 @@ export class FetchEbayHandler
         const token = await this.getAppAccessToken();
 
         // Build search URL with parameters
-        const searchParams = new URLSearchParams({
+        const searchParameters = new URLSearchParams({
           q: searchQuery,
           limit: limit.toString(),
           offset: offset.toString(),
@@ -100,7 +105,7 @@ export class FetchEbayHandler
           // filter: 'conditionIds:{1000|1500|2000|2500|3000|4000|5000}', // New, Used, etc.
         });
 
-        const searchUrl = `${this.SEARCH_URL}?${searchParams.toString()}`;
+        const searchUrl = `${this.SEARCH_URL}?${searchParameters.toString()}`;
 
         const response = await fetch(searchUrl, {
           method: "GET",
@@ -113,50 +118,52 @@ export class FetchEbayHandler
 
         if (response.ok) {
           const data = (await response.json()) as {
-            itemSummaries?: Array<{
+            itemSummaries?: {
               title?: string;
               shortDescription?: string;
               itemWebUrl?: string;
               itemHref?: string;
               image?: { imageUrl?: string };
-              thumbnailImages?: Array<{ imageUrl?: string }>;
+              thumbnailImages?: { imageUrl?: string }[];
               price?: { value?: string; currency?: string };
-            }>;
+            }[];
           };
 
-          const items = data.itemSummaries || [];
+          const items = data.itemSummaries ?? [];
 
           const listings: ListingDto[] = items.map((item) => {
             // Get the first image or null
             const image =
-              item.image?.imageUrl ||
-              item.thumbnailImages?.[0]?.imageUrl ||
+              item.image?.imageUrl ??
+              item.thumbnailImages?.[0]?.imageUrl ??
               null;
 
             // Extract price information
-            const priceInfo = item.price || {};
-            const priceValue = priceInfo.value
-              ? parseFloat(priceInfo.value)
-              : null;
+            const priceInfo = item.price ?? {};
+            const priceValue =
+              priceInfo.value == null
+                ? null
+                : Number.parseFloat(priceInfo.value);
 
             return {
               image,
-              title: item.title || "",
-              description: item.shortDescription || item.title || "",
-              link: item.itemWebUrl || item.itemHref || "",
+              title: item.title ?? "",
+              description: item.shortDescription ?? item.title ?? "",
+              link: item.itemWebUrl ?? item.itemHref ?? "",
               price: {
                 value: priceValue,
-                label: priceInfo.value
-                  ? `${priceInfo.value} ${priceInfo.currency || ""}`
-                  : null,
-                currency: priceInfo.currency || null,
+                label:
+                  priceInfo.value == null
+                    ? null
+                    : `${priceInfo.value} ${priceInfo.currency ?? ""}`,
+                currency: priceInfo.currency ?? null,
                 negotiable: false, // eBay prices are typically fixed
               },
             } as ListingDto;
           });
 
           this.logger.log(
-            `Fetched ${listings.length} eBay listings for query="${searchQuery}" (limit=${limit}, offset=${offset})`,
+            `Fetched ${listings.length.toString()} eBay listings for query="${searchQuery}" (limit=${limit.toString()}, offset=${offset.toString()})`,
           );
 
           return listings;
@@ -165,13 +172,17 @@ export class FetchEbayHandler
         // Handle rate limiting and server errors
         if ([429, 500, 502, 503, 504].includes(response.status)) {
           const errorText = await response.text().catch(() => "");
-          this.logger.warn(`eBay API error ${response.status}: ${errorText}`);
+          this.logger.warn(
+            `eBay API error ${response.status.toString()}: ${errorText}`,
+          );
 
           if (attempt <= this.MAX_RETRIES) {
-            const base = Math.min(4000, 1000 * Math.pow(2, attempt - 1));
+            const base = Math.min(4000, 1000 * 2 ** (attempt - 1));
             const jitter = Math.floor(Math.random() * 500);
             const delayMs = base + jitter;
-            this.logger.warn(`eBay retry #${attempt} in ${delayMs}ms`);
+            this.logger.warn(
+              `eBay retry #${attempt.toString()} in ${delayMs.toString()}ms`,
+            );
             await sleep(delayMs);
             continue;
           }
@@ -186,25 +197,28 @@ export class FetchEbayHandler
 
         // For other errors, throw immediately
         const errorText = await response.text().catch(() => "");
-        throw new Error(`eBay API error ${response.status}: ${errorText}`);
+        throw new Error(
+          `eBay API error ${response.status.toString()}: ${errorText}`,
+        );
       } catch (error: unknown) {
-        const errorObj = error as { code?: string; message?: string };
+        const errorObject = error as { code?: string; message?: string };
         if (
           attempt <= this.MAX_RETRIES &&
-          (errorObj.code === "ENOTFOUND" || errorObj.code === "ECONNRESET")
+          (errorObject.code === "ENOTFOUND" ||
+            errorObject.code === "ECONNRESET")
         ) {
-          const base = Math.min(4000, 1000 * Math.pow(2, attempt - 1));
+          const base = Math.min(4000, 1000 * 2 ** (attempt - 1));
           const jitter = Math.floor(Math.random() * 500);
           const delayMs = base + jitter;
           this.logger.warn(
-            `eBay network error, retry #${attempt} in ${delayMs}ms: ${errorObj.message || "Unknown error"}`,
+            `eBay network error, retry #${attempt.toString()} in ${delayMs.toString()}ms: ${errorObject.message ?? "Unknown error"}`,
           );
           await sleep(delayMs);
           continue;
         }
 
         this.logger.error(
-          `eBay search failed: ${errorObj.message || "Unknown error"}`,
+          `eBay search failed: ${errorObject.message ?? "Unknown error"}`,
         );
         throw error;
       }

@@ -35,7 +35,7 @@ export function HomeView() {
         },
         {
           onSuccess: () => {
-            navigate({ to: "/chat/$id", params: { id: clientId } });
+            void navigate({ to: "/chat/$id", params: { id: clientId } });
           },
         },
       );
@@ -61,7 +61,7 @@ export function HomeView() {
         </CardHeader>
         <CardContent className="text-center">
           <p className="mb-6 text-gray-600 dark:text-gray-300">
-            Let's help you find the perfect gift for your loved ones!
+            Let&apos;s help you find the perfect gift for your loved ones!
           </p>
           <Button
             size="lg"

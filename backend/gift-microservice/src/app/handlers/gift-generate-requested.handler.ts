@@ -3,7 +3,7 @@ import { GiftReadyEvent } from "src/domain/events/gift-ready.event";
 import { FetchOlxQuery } from "src/domain/queries/fetch-olx.query";
 
 import { Controller, Inject, Logger } from "@nestjs/common";
-import { CommandBus, QueryBus } from "@nestjs/cqrs";
+import { QueryBus } from "@nestjs/cqrs";
 import { ClientProxy, EventPattern } from "@nestjs/microservices";
 
 @Controller()
@@ -19,7 +19,7 @@ export class GiftGenerateRequestedHandler {
     this.logger.log("Handling gift generate requested event");
 
     const giftIdeas = await this.queryBus.execute(
-      new FetchOlxQuery("" + event.keywords.join(" "), 5, 0),
+      new FetchOlxQuery(event.keywords.join(" "), 5, 0),
     );
 
     this.logger.log(`Generated gift ideas: ${JSON.stringify(giftIdeas)}`);
@@ -27,6 +27,6 @@ export class GiftGenerateRequestedHandler {
     const giftReadyEvent = new GiftReadyEvent(giftIdeas, event.chatId);
     this.eventBus.emit(GiftReadyEvent.name, giftReadyEvent);
 
-    return Promise.resolve();
+    
   }
 }

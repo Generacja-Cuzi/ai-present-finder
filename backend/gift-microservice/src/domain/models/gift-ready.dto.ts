@@ -1,9 +1,9 @@
-import z from "zod";
+import { z } from "zod";
 
-import { ListingDto } from "./listing.dto";
+import { listingDtoSchema } from "./listing.dto";
 
-export const GiftReadyDto = z.object({
-  giftIdeas: z.array(ListingDto),
+export const giftReadyDtoSchema = z.object({
+  giftIdeas: z.array(listingDtoSchema),
 });
 
-export type GiftReadyDto = z.infer<typeof GiftReadyDto>;
+export type GiftReadyDto = z.infer<typeof giftReadyDtoSchema>;

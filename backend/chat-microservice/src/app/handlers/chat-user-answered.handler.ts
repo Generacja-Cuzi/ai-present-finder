@@ -14,6 +14,6 @@ export class ChatUserAnsweredHandler {
     await this.commandBus.execute(
       new GenerateQuestionCommand(event.context, event.messages),
     );
-    return Promise.resolve();
+    
   }
 }

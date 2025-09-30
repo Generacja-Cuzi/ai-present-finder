@@ -14,7 +14,7 @@ async function bootstrap() {
   const microserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672"],
+      urls: [process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672"],
       queue: GiftGenerateRequestedEvent.name,
       queueOptions: {
         durable: false,

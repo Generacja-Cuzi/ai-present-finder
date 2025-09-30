@@ -1,9 +1,9 @@
 export class FetchAmazonQuery {
   constructor(
     public readonly query: string,
-    public readonly limit: number = 20,
-    public readonly offset: number = 0,
-    public readonly country: string = "PL",
-    public readonly page: number = 1,
+    public readonly limit = 20,
+    public readonly offset = 0,
+    public readonly country = "PL",
+    public readonly page = 1,
   ) {}
 }

@@ -1,11 +1,5 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-export function getContext() {
-  const queryClient = new QueryClient();
-  return {
-    queryClient,
-  };
-}
+import type { QueryClient } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 
 export function Provider({
   children,

@@ -35,6 +35,6 @@ export class StalkingAnalyzeHandler
     this.eventBus.emit(StalkingCompletedEvent.name, event);
     this.logger.log(`Published event: ${JSON.stringify(event)}`);
 
-    return Promise.resolve();
+    
   }
 }

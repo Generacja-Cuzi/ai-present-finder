@@ -1,5 +1,5 @@
 // src/webapi/controllers/order.controller.ts
-import { Body, Controller } from "@nestjs/common";
+import { Controller } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 
 @Controller("chat")

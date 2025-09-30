@@ -14,9 +14,9 @@ export function ChatInput({
   handleSendMessage: () => void;
   isLoading?: boolean;
 }) {
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey && !isLoading) {
-      e.preventDefault();
+  const handleKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" && !event.shiftKey && !isLoading) {
+      event.preventDefault();
       handleSendMessage();
     }
   };
@@ -25,8 +25,8 @@ export function ChatInput({
       <div className="flex gap-2">
         <Input
           value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
+          onChange={(event) => {
+            setInputValue(event.target.value);
           }}
           onKeyDown={handleKeyPress}
           placeholder="Type your message..."

@@ -1,17 +1,19 @@
 import { openai } from "@ai-sdk/openai";
-import {
+import type {
   ModelMessage,
   UIDataTypes,
-  UIMessage,
+  UIMessage} from "ai";
+import {
   generateText,
   stepCountIs,
 } from "ai";
 
 import { giftConsultantPrompt } from "./prompt";
-import { MyUITools, getTools } from "./tools";
-import { EndConversationOutput } from "./types";
+import type { MyUITools} from "./tools";
+import { getTools } from "./tools";
+import type { EndConversationOutput } from "./types";
 
-export function giftInterviewFlow({
+export async function giftInterviewFlow({
   messages,
   closeInterview,
   flagInappropriateRequest,

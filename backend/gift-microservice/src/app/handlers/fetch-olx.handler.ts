@@ -8,7 +8,7 @@ import { FetchOlxQuery } from "../../domain/queries/fetch-olx.query";
 
 type ClientHeaders = Partial<Record<string, string>>;
 
-function sleep(ms: number) {
+async function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
@@ -18,11 +18,9 @@ export class FetchOlxHandler
 {
   private readonly logger = new Logger(FetchOlxHandler.name);
 
-  constructor() {}
-
-  async execute(queryTemp: FetchOlxQuery): Promise<ListingDto[]> {
+  async execute(queryTemporary: FetchOlxQuery): Promise<ListingDto[]> {
     const { query, limit, offset, clientHeaders } =
-      queryTemp as FetchOlxQuery & {
+      queryTemporary as FetchOlxQuery & {
         clientHeaders?: ClientHeaders;
       };
 
@@ -85,18 +83,19 @@ export class FetchOlxHandler
       ...(fwd["accept-language"]
         ? { "accept-language": fwd["accept-language"] }
         : {}),
-      ...(fwd["cookie"] ? { cookie: fwd["cookie"] } : {}),
+      ...(fwd.cookie ? { cookie: fwd.cookie } : {}),
     };
 
     const maxRetries = 4;
     let attempt = 0;
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     while (true) {
       attempt++;
 
-      let res: Response;
+      let response: Response;
       try {
-        res = await fetch("https://www.olx.pl/apigateway/graphql", {
+        response = await fetch("https://www.olx.pl/apigateway/graphql", {
           method: "POST",
           body: JSON.stringify(graphqlBody),
           headers,
@@ -104,26 +103,26 @@ export class FetchOlxHandler
           referrer: "https://www.olx.pl/",
           referrerPolicy: "strict-origin-when-cross-origin",
         });
-      } catch (e: any) {
+      } catch (error) {
         if (attempt <= maxRetries) {
-          const base = Math.min(4000, 500 * Math.pow(2, attempt - 1));
+          const base = Math.min(4000, 500 * 2 ** (attempt - 1));
           const jitter = Math.floor(Math.random() * 300);
           const delayMs = base + jitter;
           this.logger.warn(
-            `OLX transport error, retry #${attempt} in ${delayMs}ms`,
+            `OLX transport error, retry #${attempt.toString()} in ${delayMs.toString()}ms`,
           );
           await sleep(delayMs);
           continue;
         }
-        throw e;
+        throw error;
       }
 
-      const status = res.status;
+      const status = response.status;
 
       if (status >= 200 && status < 300) {
-        const ctype = res.headers.get("content-type") || "";
+        const ctype = response.headers.get("content-type") ?? "";
         if (!ctype.includes("application/json")) {
-          const text = await res.text().catch(() => "");
+          const text = await response.text().catch(() => "");
           const snippet = text.slice(0, 300) + (text.length > 300 ? "…" : "");
           this.logger.warn(
             `OLX 2xx but non-JSON content-type (${ctype}). Body[0..300]: ${snippet}`,
@@ -131,19 +130,19 @@ export class FetchOlxHandler
           throw new Error("Unexpected OLX response structure");
         }
 
-        const json: any = await res.json().catch(() => ({}));
+        const json = await response.json().catch(() => ({}))
 
         const payload =
           json?.data?.clientCompatibleListings ??
           json?.clientCompatibleListings ??
           null;
 
-        if (Array.isArray(json?.errors) && json.errors.length) {
-          const firstErr = json.errors[0];
-          const msg =
-            firstErr?.message ||
-            `GraphQL error (${firstErr?.extensions?.code ?? "UNKNOWN"})`;
-          throw new Error(msg);
+        if (Array.isArray(json?.errors) && json.errors.length > 0) {
+          const firstError = json.errors[0];
+          const message =
+            firstError?.message ||
+            `GraphQL error (${firstError?.extensions?.code ?? "UNKNOWN"})`;
+          throw new Error(message);
         }
 
         if (!payload || typeof payload !== "object") {
@@ -158,26 +157,26 @@ export class FetchOlxHandler
         }
 
         if (payload.__typename !== "ListingSuccess") {
-          const err = (payload as any)?.error;
-          const msg = err
-            ? `OLX error: ${err?.status ?? ""} ${err?.code ?? ""} ${err?.title ?? ""} ${err?.detail ?? ""}`.trim()
+          const error = payload?.error;
+          const message = error
+            ? `OLX error: ${error?.status ?? ""} ${error?.code ?? ""} ${error?.title ?? ""} ${error?.detail ?? ""}`.trim()
             : "OLX ListingError";
-          throw new Error(msg);
+          throw new Error(message);
         }
 
         const items = Array.isArray(payload.data) ? payload.data : [];
 
-        const listings: ListingDto[] = items.map((item: any) => {
+        const listings: ListingDto[] = items.map((item) => {
           const raw = item?.photos?.[0]?.link ?? null;
           const image =
             typeof raw === "string"
               ? raw.replace("{width}", "1200").replace("{height}", "800")
               : null;
 
-          const priceParam = (item?.params ?? []).find(
+          const priceParameter = (item?.params ?? []).find(
             (p: any) => p?.key === "price",
           );
-          const priceValue = priceParam?.value ?? null;
+          const priceValue = priceParameter?.value ?? null;
 
           return {
             image,
@@ -206,7 +205,7 @@ export class FetchOlxHandler
       if ([403, 429].includes(status) || status >= 500) {
         let bodySnippet = "";
         try {
-          const text = await res.text();
+          const text = await response.text();
           bodySnippet = text.slice(0, 300) + (text.length > 300 ? "…" : "");
         } catch {
           bodySnippet = "<no-body>";
@@ -216,7 +215,7 @@ export class FetchOlxHandler
         );
 
         if (attempt <= maxRetries) {
-          const base = Math.min(4000, 500 * Math.pow(2, attempt - 1));
+          const base = Math.min(4000, 500 * 2 ** (attempt - 1));
           const jitter = Math.floor(Math.random() * 300);
           const delayMs = base + jitter;
           this.logger.warn(

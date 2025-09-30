@@ -1,9 +1,9 @@
-import { EndConversationOutput } from "../models/end-converstion-ai-output";
+import type { EndConversationOuput } from "../models/end-converstion-ai-output";
 
 export class GiftGenerateRequestedEvent {
   constructor(
     public readonly keywords: string[],
     public readonly chatId: string,
-    public readonly profile: EndConversationOutput | null,
+    public readonly profile: EndConversationOuput | null,
   ) {}
 }

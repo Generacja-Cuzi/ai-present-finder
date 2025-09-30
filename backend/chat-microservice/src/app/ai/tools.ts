@@ -1,4 +1,5 @@
-import { InferUITools, tool } from "ai";
+import type { InferUITools} from "ai";
+import { tool } from "ai";
 import z from "zod";
 
 import { EndConversationOutput } from "./types";

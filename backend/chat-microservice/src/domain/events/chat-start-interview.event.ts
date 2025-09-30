@@ -1,5 +1,5 @@
-import { ChatMessage } from "../models/chat-message";
-import { ContextDto } from "../models/context.dto";
+import type { ChatMessage } from "../models/chat-message";
+import type { ContextDto } from "../models/context.dto";
 
 export class ChatStartInterviewEvent {
   constructor(

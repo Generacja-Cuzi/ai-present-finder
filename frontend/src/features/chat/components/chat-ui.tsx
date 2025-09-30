@@ -11,13 +11,6 @@ import { Message } from "./message";
 import { NonChatIndicator } from "./non-chat-indicator";
 import { ThinkingBadge } from "./thinking-badge";
 
-interface Message {
-  id: string;
-  content: string;
-  sender: "user" | "assistant";
-  timestamp: Date;
-}
-
 export function ChatUI({ clientId }: { clientId: string }) {
   const { state: chatState } = useSseChat({
     clientId,

@@ -27,9 +27,9 @@ export class GenerateQuestionHandler
     let shouldStop = false;
 
     const result = await giftInterviewFlow({
-      messages: history.map((msg) => ({
-        ...msg,
-        role: msg.sender,
+      messages: history.map((message) => ({
+        ...message,
+        role: message.sender,
       })),
       closeInterview: (output) => {
         const event = new ChatInterviewCompletedEvent(context, output);

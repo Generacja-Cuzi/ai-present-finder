@@ -27,7 +27,7 @@ import { GiftController } from "../controllers/gift.controller";
         transport: Transport.RMQ,
         options: {
           urls: [
-            process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672",
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
           ],
           queue: GiftReadyEvent.name,
           queueOptions: {

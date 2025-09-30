@@ -10,11 +10,10 @@ export class NotifyUserSseHandler
 {
   constructor(private readonly sseService: SseService) {}
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async execute(command: NotifyUserSseCommand) {
     const { userId, message } = command;
 
     this.sseService.sendEvent({ userId, message });
-
-    return Promise.resolve();
   }
 }

@@ -16,7 +16,7 @@ export class StalkingCompletedHandler {
     const { keywords } = event;
 
     const context: ContextDto = {
-      keywords: keywords,
+      keywords,
       chatId: event.chatId,
     };
     await this.commandBus.execute(

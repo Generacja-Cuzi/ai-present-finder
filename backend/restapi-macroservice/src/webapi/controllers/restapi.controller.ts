@@ -16,7 +16,6 @@ export class RestApiController {
 
   @Post("stalking-request")
   async create(@Body() analyzeRequestedDto: StalkingAnalyzeRequestDto) {
-    // TODO(simon-the-shark): validate the dto
     await this.commandBus.execute(
       new StalkingAnalyzeRequestCommand(analyzeRequestedDto),
     );

@@ -35,7 +35,7 @@ import { SseController } from "../controllers/sse.controller";
         transport: Transport.RMQ,
         options: {
           urls: [
-            process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672",
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
           ],
           queue: StalkingAnalyzeRequestedEvent.name,
           queueOptions: {
@@ -48,7 +48,7 @@ import { SseController } from "../controllers/sse.controller";
         transport: Transport.RMQ,
         options: {
           urls: [
-            process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672",
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
           ],
           queue: ChatStartInterviewEvent.name,
           queueOptions: {
@@ -61,7 +61,7 @@ import { SseController } from "../controllers/sse.controller";
         transport: Transport.RMQ,
         options: {
           urls: [
-            process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672",
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
           ],
           queue: ChatUserAnsweredEvent.name,
           queueOptions: {
@@ -74,7 +74,7 @@ import { SseController } from "../controllers/sse.controller";
         transport: Transport.RMQ,
         options: {
           urls: [
-            process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672",
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
           ],
           queue: GiftGenerateRequestedEvent.name,
           queueOptions: {

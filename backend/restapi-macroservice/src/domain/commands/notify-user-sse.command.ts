@@ -1,6 +1,6 @@
 import { Command } from "@nestjs/cqrs";
 
-import { SseMessageDto } from "../models/sse-message.dto";
+import type { SseMessageDto } from "../models/sse-message.dto";
 
 export class NotifyUserSseCommand extends Command<void> {
   constructor(

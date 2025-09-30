@@ -8,6 +8,60 @@ import { FetchOlxQuery } from "../../domain/queries/fetch-olx.query";
 
 type ClientHeaders = Partial<Record<string, string>>;
 
+interface OlxPriceParameter {
+  __typename?: "PriceParam";
+  value?: number | null;
+  label?: string | null;
+  currency?: string | null;
+  negotiable?: boolean | null;
+  [key: string]: unknown;
+}
+
+interface OlxListingParameter {
+  key?: string | null;
+  value?: OlxPriceParameter | Record<string, unknown> | null;
+}
+
+interface OlxListingItem {
+  title?: string | null;
+  url?: string | null;
+  description?: string | null;
+  photos?: ({ link?: string | null } | null)[] | null;
+  params?: (OlxListingParameter | null | undefined)[] | null;
+}
+
+interface OlxListingSuccess {
+  __typename: "ListingSuccess";
+  data?: (OlxListingItem | null | undefined)[] | null;
+}
+
+interface OlxListingError {
+  __typename: "ListingError";
+  error?: {
+    code?: string | null;
+    title?: string | null;
+    status?: string | number | null;
+    detail?: string | null;
+  } | null;
+}
+
+type OlxListingPayload = OlxListingSuccess | OlxListingError | null | undefined;
+
+interface OlxGraphQLError {
+  message?: string | null;
+  extensions?: {
+    code?: string | null;
+  } | null;
+}
+
+interface OlxGraphQLResponse {
+  data?: {
+    clientCompatibleListings?: OlxListingPayload;
+  } | null;
+  clientCompatibleListings?: OlxListingPayload;
+  errors?: (OlxGraphQLError | null | undefined)[] | null;
+}
+
 async function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
@@ -130,24 +184,40 @@ export class FetchOlxHandler
           throw new Error("Unexpected OLX response structure");
         }
 
-        const json = await response.json().catch(() => ({}))
-
-        const payload =
-          json?.data?.clientCompatibleListings ??
-          json?.clientCompatibleListings ??
-          null;
-
-        if (Array.isArray(json?.errors) && json.errors.length > 0) {
-          const firstError = json.errors[0];
-          const message =
-            firstError?.message ||
-            `GraphQL error (${firstError?.extensions?.code ?? "UNKNOWN"})`;
-          throw new Error(message);
+        let json: OlxGraphQLResponse = {};
+        try {
+          const parsed: unknown = await response.json();
+          if (typeof parsed === "object" && parsed !== null) {
+            json = parsed as OlxGraphQLResponse;
+          }
+        } catch {
+          json = {};
         }
 
-        if (!payload || typeof payload !== "object") {
-          const keys = Object.keys(json || {});
-          const dataKeys = Object.keys(json?.data || {});
+        const payload =
+          json.data?.clientCompatibleListings ??
+          json.clientCompatibleListings ??
+          null;
+
+        if (Array.isArray(json.errors) && json.errors.length > 0) {
+          const [firstError] = json.errors;
+          if (firstError !== null && firstError !== undefined) {
+            const gqlMessage =
+              typeof firstError.message === "string"
+                ? firstError.message.trim()
+                : "";
+            const message =
+              gqlMessage.length > 0
+                ? gqlMessage
+                : `GraphQL error (${firstError.extensions?.code ?? "UNKNOWN"})`;
+            throw new Error(message);
+          }
+          throw new Error("GraphQL error");
+        }
+
+        if (payload === null || typeof payload !== "object") {
+          const keys = Object.keys(json);
+          const dataKeys = Object.keys(json.data ?? {});
           this.logger.error(
             `Unexpected OLX response: topKeys=${JSON.stringify(
               keys,
@@ -157,10 +227,33 @@ export class FetchOlxHandler
         }
 
         if (payload.__typename !== "ListingSuccess") {
-          const error = payload?.error;
-          const message = error
-            ? `OLX error: ${error?.status ?? ""} ${error?.code ?? ""} ${error?.title ?? ""} ${error?.detail ?? ""}`.trim()
-            : "OLX ListingError";
+          const error = payload.error;
+          const errorParts: string[] = [];
+          if (
+            typeof error?.status === "number" ||
+            typeof error?.status === "string"
+          ) {
+            errorParts.push(String(error.status));
+          }
+          if (typeof error?.code === "string" && error.code.trim().length > 0) {
+            errorParts.push(error.code.trim());
+          }
+          if (
+            typeof error?.title === "string" &&
+            error.title.trim().length > 0
+          ) {
+            errorParts.push(error.title.trim());
+          }
+          if (
+            typeof error?.detail === "string" &&
+            error.detail.trim().length > 0
+          ) {
+            errorParts.push(error.detail.trim());
+          }
+          const message =
+            errorParts.length > 0
+              ? `OLX error: ${errorParts.join(" ")}`
+              : "OLX ListingError";
           throw new Error(message);
         }
 
@@ -174,9 +267,20 @@ export class FetchOlxHandler
               : null;
 
           const priceParameter = (item?.params ?? []).find(
-            (p: any) => p?.key === "price",
+            (parameter): parameter is OlxListingParameter =>
+              parameter !== null &&
+              parameter !== undefined &&
+              parameter.key === "price",
           );
-          const priceValue = priceParameter?.value ?? null;
+          const valueCandidate = priceParameter?.value;
+          let priceValue: OlxPriceParameter | null = null;
+          if (
+            valueCandidate !== null &&
+            valueCandidate !== undefined &&
+            typeof valueCandidate === "object"
+          ) {
+            priceValue = valueCandidate as OlxPriceParameter;
+          }
 
           return {
             image,
@@ -197,7 +301,7 @@ export class FetchOlxHandler
         });
 
         this.logger.log(
-          `Fetched ${listings.length} OLX listings for query="${query}" (limit=${limit}, offset=${offset})`,
+          `Fetched ${String(listings.length)} OLX listings for query="${query}" (limit=${String(limit)}, offset=${String(offset)})`,
         );
         return listings;
       }
@@ -211,7 +315,7 @@ export class FetchOlxHandler
           bodySnippet = "<no-body>";
         }
         this.logger.warn(
-          `OLX non-2xx (${status}). Body[0..300]: ${bodySnippet}`,
+          `OLX non-2xx (${String(status)}). Body[0..300]: ${bodySnippet}`,
         );
 
         if (attempt <= maxRetries) {
@@ -219,14 +323,14 @@ export class FetchOlxHandler
           const jitter = Math.floor(Math.random() * 300);
           const delayMs = base + jitter;
           this.logger.warn(
-            `OLX retry #${attempt} in ${delayMs}ms (anti-bot/throttle)`,
+            `OLX retry #${String(attempt)} in ${String(delayMs)}ms (anti-bot/throttle)`,
           );
           await sleep(delayMs);
           continue;
         }
       }
 
-      throw new Error(`HTTP_${status}`);
+      throw new Error(`HTTP_${String(status)}`);
     }
   }
 }

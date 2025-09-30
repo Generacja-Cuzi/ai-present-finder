@@ -26,7 +26,5 @@ export class GiftGenerateRequestedHandler {
 
     const giftReadyEvent = new GiftReadyEvent(giftIdeas, event.chatId);
     this.eventBus.emit(GiftReadyEvent.name, giftReadyEvent);
-
-    
   }
 }

@@ -26,7 +26,7 @@ async function bootstrap() {
   const stalkingCompletedMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672"],
+      urls: [process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672"],
       queue: StalkingCompletedEvent.name,
       queueOptions: {
         durable: false,
@@ -37,7 +37,7 @@ async function bootstrap() {
   const chatQuestionAskedMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672"],
+      urls: [process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672"],
       queue: ChatQuestionAskedEvent.name,
       queueOptions: {
         durable: false,
@@ -48,7 +48,7 @@ async function bootstrap() {
   const chatAnswerProcessedMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672"],
+      urls: [process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672"],
       queue: ChatInterviewCompletedEvent.name,
       queueOptions: {
         durable: false,
@@ -59,7 +59,7 @@ async function bootstrap() {
   const giftReadyMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672"],
+      urls: [process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672"],
       queue: GiftReadyEvent.name,
       queueOptions: {
         durable: false,
@@ -70,7 +70,7 @@ async function bootstrap() {
   const chatInappropriateRequestMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672"],
+      urls: [process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672"],
       queue: ChatInappropriateRequestEvent.name,
       queueOptions: {
         durable: false,

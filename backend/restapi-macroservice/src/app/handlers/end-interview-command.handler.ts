@@ -36,6 +36,6 @@ export class EndInterviewCommandHandler
 
     this.logger.log(`Evaluation completed`);
 
-    return Promise.resolve();
+    
   }
 }

@@ -27,6 +27,6 @@ export class GiftReadyHandler {
       }),
     );
 
-    return Promise.resolve();
+    
   }
 }

@@ -15,6 +15,7 @@ export class StalkingAnalyzeRequestHandler
     private readonly eventBus: ClientProxy,
   ) {}
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async execute(command: StalkingAnalyzeRequestCommand) {
     const { analyzeRequestedDto } = command;
 
@@ -31,7 +32,5 @@ export class StalkingAnalyzeRequestHandler
     this.eventBus.emit(StalkingAnalyzeRequestedEvent.name, event);
 
     this.logger.log(`Published event: ${JSON.stringify(event)}`);
-
-    return Promise.resolve();
   }
 }

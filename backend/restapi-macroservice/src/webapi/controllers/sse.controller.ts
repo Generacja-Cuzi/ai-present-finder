@@ -2,7 +2,7 @@ import { Response } from "express";
 import { Observable } from "rxjs";
 import { SseService } from "src/app/services/sse-service";
 import { RegisterUserSseDto } from "src/domain/models/register-user-sse.dto";
-import { SseMessageDto } from "src/domain/models/sse-message.dto";
+import type { SseMessageDto } from "src/domain/models/sse-message.dto";
 
 import { Controller, Query, Res, Sse } from "@nestjs/common";
 
@@ -15,7 +15,9 @@ export class SseController {
     @Query() query: RegisterUserSseDto,
     @Res() response: Response,
   ): Observable<MessageEvent<SseMessageDto>> {
-    if (!query.clientId) throw new Error("query.clientId is required");
+    if (!query.clientId) {
+      throw new Error("query.clientId is required");
+    }
 
     this.sseService.addUser(query.clientId);
     response.on("close", () => {

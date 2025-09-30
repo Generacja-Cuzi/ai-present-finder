@@ -26,6 +26,6 @@ export class ChatQuestionAskedHandler {
       }),
     );
 
-    return Promise.resolve();
+    
   }
 }

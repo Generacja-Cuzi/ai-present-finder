@@ -4,7 +4,7 @@ import { chatMessageSchema } from "./chat-message";
 
 export const uiUpdateEvent = "ui-update";
 
-export const SseMessageDto = z.discriminatedUnion("type", [
+export const sseMessageDtoSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("stalking-started"),
   }),
@@ -31,5 +31,5 @@ export const SseMessageDto = z.discriminatedUnion("type", [
   }),
 ]);
 
-export type SseMessageDto = z.infer<typeof SseMessageDto>;
+export type SseMessageDto = z.infer<typeof sseMessageDtoSchema>;
 export type SseMessageType = SseMessageDto["type"];

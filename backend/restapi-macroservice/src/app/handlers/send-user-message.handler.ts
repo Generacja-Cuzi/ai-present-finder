@@ -22,7 +22,7 @@ export class SendUserMessageHandler
 
     const typedChatId = sendMessageDto.chatId;
 
-    if (!typedLastMessage || typedLastMessage.sender !== "user") {
+    if (typedLastMessage == null || typedLastMessage.sender !== "user") {
       throw new Error("Last message is not from user");
     }
 
@@ -42,7 +42,5 @@ export class SendUserMessageHandler
     );
 
     this.eventBus.emit(ChatUserAnsweredEvent.name, eventToEmit);
-
-    return Promise.resolve();
   }
 }

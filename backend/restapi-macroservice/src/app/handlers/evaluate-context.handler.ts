@@ -25,15 +25,14 @@ export class EvaluateContextHandler
 
     const enoughContext = true; // TODO(simon-the-sharp): Implement this
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!enoughContext) {
       const event = new ChatStartInterviewEvent(context, history);
       this.chatEventBus.emit(ChatStartInterviewEvent.name, event);
       this.logger.log(`Published event: ${JSON.stringify(event)}`);
-      return Promise.resolve();
+      return;
     }
 
     await this.commandBus.execute(new EndInterviewCommand(context, null));
-
-    return Promise.resolve();
   }
 }

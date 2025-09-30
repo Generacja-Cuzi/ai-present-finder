@@ -33,7 +33,9 @@ export function ChatUI({ clientId }: { clientId: string }) {
       chatState.data.messages.at(-1)?.sender === "user");
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || isChatbotProcessing) {return;}
+    if (!inputValue.trim() || isChatbotProcessing) {
+      return;
+    }
 
     setInputValue("");
     if (chatState.type !== "chatting") {

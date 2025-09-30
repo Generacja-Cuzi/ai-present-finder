@@ -1,4 +1,4 @@
-import { EndConversationOutput } from '../models/end-converstion-ai-output';
+import { EndConversationOutput } from "../models/end-converstion-ai-output";
 
 export class GiftGenerateRequestedEvent {
   constructor(

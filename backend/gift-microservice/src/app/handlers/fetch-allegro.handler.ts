@@ -1,8 +1,10 @@
 // application/handlers/fetch-allegro.handler.ts
-import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
-import { Logger } from '@nestjs/common';
-import { FetchAllegroQuery } from '../../domain/queries/fetch-allegro.query';
-import { ListingDto } from 'src/domain/models/listing.dto';
+import { ListingDto } from "src/domain/models/listing.dto";
+
+import { Logger } from "@nestjs/common";
+import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
+
+import { FetchAllegroQuery } from "../../domain/queries/fetch-allegro.query";
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -40,23 +42,23 @@ export class FetchAllegroHandler
   private readonly logger = new Logger(FetchAllegroHandler.name);
 
   private readonly CLIENT_ID =
-    process.env.ALLEGRO_CLIENT_ID || '36fc4e49b99e4152874b49ab463e7b64';
+    process.env.ALLEGRO_CLIENT_ID || "36fc4e49b99e4152874b49ab463e7b64";
   private readonly CLIENT_SECRET =
     process.env.ALLEGRO_CLIENT_SECRET ||
-    'keh75yd5gmEBZJWk7S7LfRtVhYyOvoxlSoLBINIcmynBOxpiDVdDEyU2eTD5EiBi';
+    "keh75yd5gmEBZJWk7S7LfRtVhYyOvoxlSoLBINIcmynBOxpiDVdDEyU2eTD5EiBi";
 
   private readonly TOKEN_URL =
     process.env.ALLEGRO_TOKEN_URL ||
-    'https://allegro.pl.allegrosandbox.pl/auth/oauth/token';
+    "https://allegro.pl.allegrosandbox.pl/auth/oauth/token";
   private readonly SEARCH_URL =
     process.env.ALLEGRO_SEARCH_URL ||
-    'https://api.allegro.pl.allegrosandbox.pl/offers/listing';
+    "https://api.allegro.pl.allegrosandbox.pl/offers/listing";
   private readonly BASE_OFFER_URL =
     process.env.ALLEGRO_BASE_OFFER_URL ||
-    'https://allegro.pl.allegrosandbox.pl/oferta';
+    "https://allegro.pl.allegrosandbox.pl/oferta";
 
   private readonly MAX_RETRIES = parseInt(
-    process.env.ALLEGRO_MAX_RETRIES || '3',
+    process.env.ALLEGRO_MAX_RETRIES || "3",
   );
 
   private tokenCache: {
@@ -71,17 +73,17 @@ export class FetchAllegroHandler
 
     const basic = Buffer.from(
       `${this.CLIENT_ID}:${this.CLIENT_SECRET}`,
-    ).toString('base64');
+    ).toString("base64");
 
     const body = new URLSearchParams({
-      grant_type: 'client_credentials',
+      grant_type: "client_credentials",
     });
 
     const response = await fetch(this.TOKEN_URL, {
-      method: 'POST',
+      method: "POST",
       headers: {
         Authorization: `Basic ${basic}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
+        "Content-Type": "application/x-www-form-urlencoded",
       },
       body: body.toString(),
     });
@@ -108,24 +110,24 @@ export class FetchAllegroHandler
     opts: { offset?: number; limit?: number } = {},
   ): Promise<AllegroSearchResponse> {
     if (!phrase) {
-      throw new Error('Musisz podać parametr phrase');
+      throw new Error("Musisz podać parametr phrase");
     }
 
     const token = await this.getAppToken();
 
     const params = new URLSearchParams();
-    params.set('phrase', phrase);
-    if (opts.offset) params.set('offset', String(opts.offset));
-    if (opts.limit) params.set('limit', String(opts.limit));
+    params.set("phrase", phrase);
+    if (opts.offset) params.set("offset", String(opts.offset));
+    if (opts.limit) params.set("limit", String(opts.limit));
 
     const url = `${this.SEARCH_URL}?${params.toString()}`;
 
     const response = await fetch(url, {
-      method: 'GET',
+      method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: 'application/vnd.allegro.public.v1+json',
-        'Accept-Language': 'pl-PL',
+        Accept: "application/vnd.allegro.public.v1+json",
+        "Accept-Language": "pl-PL",
       },
     });
 
@@ -142,19 +144,19 @@ export class FetchAllegroHandler
   private parsePrice(priceString: string): number | null {
     if (!priceString) return null;
 
-    const cleanPrice = priceString.replace(/[^\d.,]/g, '');
+    const cleanPrice = priceString.replace(/[^\d.,]/g, "");
 
     if (!cleanPrice) return null;
 
-    if (cleanPrice.includes(',') && cleanPrice.includes('.')) {
-      const parsed = cleanPrice.replace(/\./g, '').replace(/,/g, '.');
+    if (cleanPrice.includes(",") && cleanPrice.includes(".")) {
+      const parsed = cleanPrice.replace(/\./g, "").replace(/,/g, ".");
       return parseFloat(parsed);
-    } else if (cleanPrice.includes(',')) {
-      const parts = cleanPrice.split(',');
+    } else if (cleanPrice.includes(",")) {
+      const parts = cleanPrice.split(",");
       if (parts.length === 2 && parts[1].length <= 2) {
-        return parseFloat(cleanPrice.replace(',', '.'));
+        return parseFloat(cleanPrice.replace(",", "."));
       } else {
-        return parseFloat(cleanPrice.replace(/,/g, ''));
+        return parseFloat(cleanPrice.replace(/,/g, ""));
       }
     } else {
       return parseFloat(cleanPrice);
@@ -183,12 +185,12 @@ export class FetchAllegroHandler
 
         const listings: ListingDto[] = offers.map((offer) => {
           const priceAmount = offer.sellingMode?.price?.amount;
-          const priceCurrency = offer.sellingMode?.price?.currency || 'PLN';
+          const priceCurrency = offer.sellingMode?.price?.currency || "PLN";
 
           return {
             image: offer.images?.[0]?.url || null,
-            title: offer.name || '',
-            description: offer.name || '',
+            title: offer.name || "",
+            description: offer.name || "",
             link: `${this.BASE_OFFER_URL}/${offer.id}`,
             price: {
               value: priceAmount ? this.parsePrice(priceAmount) : null,
@@ -209,20 +211,20 @@ export class FetchAllegroHandler
 
         if (
           attempt < this.MAX_RETRIES &&
-          (errorObj.code === 'ENOTFOUND' ||
-            errorObj.code === 'ECONNRESET' ||
-            errorObj.message?.includes('429') ||
-            errorObj.message?.includes('500') ||
-            errorObj.message?.includes('502') ||
-            errorObj.message?.includes('503') ||
-            errorObj.message?.includes('504'))
+          (errorObj.code === "ENOTFOUND" ||
+            errorObj.code === "ECONNRESET" ||
+            errorObj.message?.includes("429") ||
+            errorObj.message?.includes("500") ||
+            errorObj.message?.includes("502") ||
+            errorObj.message?.includes("503") ||
+            errorObj.message?.includes("504"))
         ) {
           const base = Math.min(4000, 1000 * Math.pow(2, attempt - 1));
           const jitter = Math.floor(Math.random() * 500);
           const delayMs = base + jitter;
 
           this.logger.warn(
-            `Allegro error, retry #${attempt} in ${delayMs}ms: ${errorObj.message || 'Unknown error'}`,
+            `Allegro error, retry #${attempt} in ${delayMs}ms: ${errorObj.message || "Unknown error"}`,
           );
 
           await sleep(delayMs);
@@ -230,8 +232,8 @@ export class FetchAllegroHandler
         }
 
         if (
-          errorObj.message?.includes('401') ||
-          errorObj.message?.includes('403')
+          errorObj.message?.includes("401") ||
+          errorObj.message?.includes("403")
         ) {
           this.logger.error(
             `Allegro API authentication error: ${errorObj.message}. Check ALLEGRO_CLIENT_ID and ALLEGRO_CLIENT_SECRET.`,
@@ -245,7 +247,7 @@ export class FetchAllegroHandler
         }
 
         this.logger.error(
-          `Allegro search failed: ${errorObj.message || 'Unknown error'}`,
+          `Allegro search failed: ${errorObj.message || "Unknown error"}`,
         );
         throw error;
       }

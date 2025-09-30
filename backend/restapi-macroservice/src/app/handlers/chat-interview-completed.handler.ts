@@ -1,9 +1,9 @@
-import { CommandBus } from '@nestjs/cqrs';
-import { Controller } from '@nestjs/common';
-import { EventPattern } from '@nestjs/microservices';
+import { EndInterviewCommand } from "src/domain/commands/end-interview.command";
+import { ChatInterviewCompletedEvent } from "src/domain/events/chat-interview-completed.event";
 
-import { ChatInterviewCompletedEvent } from 'src/domain/events/chat-interview-completed.event';
-import { EndInterviewCommand } from 'src/domain/commands/end-interview.command';
+import { Controller } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
+import { EventPattern } from "@nestjs/microservices";
 
 @Controller()
 export class ChatInterviewCompletedHandler {

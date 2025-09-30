@@ -6,4 +6,4 @@ packages:
   - frontend
 
 onlyBuiltDependencies:
-  - '@nestjs/core'
+  - "@nestjs/core"

@@ -4,21 +4,16 @@
   "type": "module",
   "scripts": {
     "build": "vite build && tsc",
-    "check": "prettier --write . && eslint --fix",
+    "check": "prettier format && eslint --fix",
     "dev": "vite --port 5713",
-    "format": "prettier",
+    "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint",
-    "prepare": "husky || true",
     "serve": "vite preview",
     "start": "vite --port 5713",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
-  "lint-staged": {
-    "*": "prettier -w --ignore-unknown"
-  },
-  "prettier": "@solvro/config/prettier",
   "dependencies": {
     "@radix-ui/react-scroll-area": "^1.2.10",
     "@radix-ui/react-slot": "^1.2.3",
@@ -46,20 +41,15 @@
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
     "@solvro/config": "^2.0.7",
-    "@tanstack/eslint-config": "^0.3.2",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.0",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.4",
     "eslint": "^9.36.0",
-    "husky": "^9.1.7",
     "jsdom": "^27.0.0",
-    "lint-staged": "^16.2.3",
-    "prettier": "^3.6.2",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
-    "vitest": "^3.2.4",
-    "web-vitals": "^5.1.0"
+    "vitest": "^3.2.4"
   }
 }

@@ -1,8 +1,9 @@
-import { Controller, Logger } from '@nestjs/common';
-import { EventPattern } from '@nestjs/microservices';
-import { GiftReadyEvent } from 'src/domain/events/gift-ready.event';
-import { NotifyUserSseCommand } from 'src/domain/commands/notify-user-sse.command';
-import { CommandBus } from '@nestjs/cqrs';
+import { NotifyUserSseCommand } from "src/domain/commands/notify-user-sse.command";
+import { GiftReadyEvent } from "src/domain/events/gift-ready.event";
+
+import { Controller, Logger } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
+import { EventPattern } from "@nestjs/microservices";
 
 @Controller()
 export class GiftReadyHandler {
@@ -15,11 +16,11 @@ export class GiftReadyHandler {
 
     const giftIdeas = event.giftIdeas;
 
-    this.logger.log(`Pomysly na prezenty: ${giftIdeas.join('; ')}`);
+    this.logger.log(`Pomysly na prezenty: ${giftIdeas.join("; ")}`);
 
     await this.commandBus.execute(
       new NotifyUserSseCommand(event.chatId, {
-        type: 'gift-ready',
+        type: "gift-ready",
         data: {
           giftIdeas,
         },

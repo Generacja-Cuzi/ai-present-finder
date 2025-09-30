@@ -1,4 +1,4 @@
-import z from 'zod';
+import z from "zod";
 
 export const ListingDto = z.object({
   image: z.string().url().nullable(),

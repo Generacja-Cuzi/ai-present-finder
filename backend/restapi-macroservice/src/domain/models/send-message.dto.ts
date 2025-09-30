@@ -1,5 +1,6 @@
-import { z } from 'zod';
-import { chatMessageSchema } from './chat-message';
+import { z } from "zod";
+
+import { chatMessageSchema } from "./chat-message";
 
 export const sendMessageDtoSchema = z.object({
   messages: z.array(chatMessageSchema),

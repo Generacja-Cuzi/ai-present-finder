@@ -18,7 +18,7 @@ export function NonChatIndicator({
     return (
       <div>
         <div>Gift ready</div>
-          <div>Gift ideas: {state.data.giftIdeas.join(", ")}</div>
+        <div>Gift ideas: {state.data.giftIdeas.join(", ")}</div>
       </div>
     );
   }
@@ -35,7 +35,7 @@ export function NonChatIndicator({
   return (
     <div>
       <div className="flex flex-1 items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-t-2 border-b-2 border-gray-900"></div>
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-gray-900"></div>
         {state.type === "stalking-started" && <div>Stalking started...</div>}
         {state.type === "chat-interview-completed" && (
           <div>Chat interview completed. Waiting for gift ideas...</div>

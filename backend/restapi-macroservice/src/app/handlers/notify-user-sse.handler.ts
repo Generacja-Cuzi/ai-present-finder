@@ -1,6 +1,8 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { NotifyUserSseCommand } from 'src/domain/commands/notify-user-sse.command';
-import { SseService } from '../services/sse-service';
+import { NotifyUserSseCommand } from "src/domain/commands/notify-user-sse.command";
+
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+
+import { SseService } from "../services/sse-service";
 
 @CommandHandler(NotifyUserSseCommand)
 export class NotifyUserSseHandler

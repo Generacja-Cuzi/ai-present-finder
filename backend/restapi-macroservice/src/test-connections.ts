@@ -6,7 +6,7 @@
 //   const { data, error } = await supabase
 //     .from('orders')
 //     .select('*');
-  
+
 //   if (error) {
 //     console.error('Błąd podczas łączenia z Supabase:', error);
 //   } else {

@@ -1,8 +1,10 @@
 // application/handlers/fetch-amazon.handler.ts
-import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
-import { Logger } from '@nestjs/common';
-import { FetchAmazonQuery } from '../../domain/queries/fetch-amazon.query';
-import { ListingDto } from 'src/domain/models/listing.dto';
+import { ListingDto } from "src/domain/models/listing.dto";
+
+import { Logger } from "@nestjs/common";
+import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
+
+import { FetchAmazonQuery } from "../../domain/queries/fetch-amazon.query";
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -17,12 +19,12 @@ export class FetchAmazonHandler
   private readonly RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
   private readonly API_URL =
     process.env.AMAZON_API_URL ||
-    'https://real-time-amazon-data.p.rapidapi.com/search';
+    "https://real-time-amazon-data.p.rapidapi.com/search";
   private readonly API_HOST =
-    process.env.AMAZON_API_HOST || 'real-time-amazon-data.p.rapidapi.com';
-  private readonly DEFAULT_COUNTRY = process.env.AMAZON_COUNTRY || 'PL';
+    process.env.AMAZON_API_HOST || "real-time-amazon-data.p.rapidapi.com";
+  private readonly DEFAULT_COUNTRY = process.env.AMAZON_COUNTRY || "PL";
   private readonly MAX_RETRIES = parseInt(
-    process.env.AMAZON_MAX_RETRIES || '3',
+    process.env.AMAZON_MAX_RETRIES || "3",
   );
 
   async execute(query: FetchAmazonQuery): Promise<ListingDto[]> {
@@ -43,10 +45,10 @@ export class FetchAmazonHandler
         const searchUrl = `${this.API_URL}?${searchParams.toString()}`;
 
         const response = await fetch(searchUrl, {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'X-RapidAPI-Key': this.RAPIDAPI_KEY || '',
-            'X-RapidAPI-Host': this.API_HOST,
+            "X-RapidAPI-Key": this.RAPIDAPI_KEY || "",
+            "X-RapidAPI-Host": this.API_HOST,
           },
         });
 
@@ -69,7 +71,7 @@ export class FetchAmazonHandler
             };
           };
 
-          if (data.status !== 'OK' || !data.data?.products) {
+          if (data.status !== "OK" || !data.data?.products) {
             this.logger.warn(
               `Amazon API returned non-OK status: ${data.status}`,
             );
@@ -83,14 +85,14 @@ export class FetchAmazonHandler
           const listings: ListingDto[] = paginatedItems.map((item) => {
             return {
               image: item.product_photo || null,
-              title: item.product_title || '',
-              description: item.product_title || '',
-              link: item.product_url || '',
+              title: item.product_title || "",
+              description: item.product_title || "",
+              link: item.product_url || "",
               price: {
                 value: null,
                 label:
                   item.product_price || item.product_original_price || null,
-                currency: item.currency || 'PLN',
+                currency: item.currency || "PLN",
                 negotiable: false,
               },
             } as ListingDto;
@@ -104,7 +106,7 @@ export class FetchAmazonHandler
         }
 
         if ([429, 500, 502, 503, 504].includes(response.status)) {
-          const errorText = await response.text().catch(() => '');
+          const errorText = await response.text().catch(() => "");
           this.logger.warn(`Amazon API error ${response.status}: ${errorText}`);
 
           if (attempt < this.MAX_RETRIES) {
@@ -118,7 +120,7 @@ export class FetchAmazonHandler
         }
 
         if ([401, 403].includes(response.status)) {
-          const errorText = await response.text().catch(() => '');
+          const errorText = await response.text().catch(() => "");
           this.logger.error(
             `Amazon API authentication error ${response.status}: ${errorText}. Check RAPIDAPI_KEY.`,
           );
@@ -127,26 +129,26 @@ export class FetchAmazonHandler
           );
         }
 
-        const errorText = await response.text().catch(() => '');
+        const errorText = await response.text().catch(() => "");
         throw new Error(`Amazon API error ${response.status}: ${errorText}`);
       } catch (error: unknown) {
         const errorObj = error as { code?: string; message?: string };
         if (
           attempt < this.MAX_RETRIES &&
-          (errorObj.code === 'ENOTFOUND' || errorObj.code === 'ECONNRESET')
+          (errorObj.code === "ENOTFOUND" || errorObj.code === "ECONNRESET")
         ) {
           const base = Math.min(4000, 1000 * Math.pow(2, attempt - 1));
           const jitter = Math.floor(Math.random() * 500);
           const delayMs = base + jitter;
           this.logger.warn(
-            `Amazon network error, retry #${attempt} in ${delayMs}ms: ${errorObj.message || 'Unknown error'}`,
+            `Amazon network error, retry #${attempt} in ${delayMs}ms: ${errorObj.message || "Unknown error"}`,
           );
           await sleep(delayMs);
           continue;
         }
 
         this.logger.error(
-          `Amazon search failed: ${errorObj.message || 'Unknown error'}`,
+          `Amazon search failed: ${errorObj.message || "Unknown error"}`,
         );
         throw error;
       }

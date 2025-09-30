@@ -1,9 +1,9 @@
-import { Controller } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
-import { EventPattern } from '@nestjs/microservices';
-import { GenerateQuestionCommand } from 'src/domain/commands/generate-question.command';
+import { GenerateQuestionCommand } from "src/domain/commands/generate-question.command";
+import { ChatUserAnsweredEvent } from "src/domain/events/chat-user-answered.event";
 
-import { ChatUserAnsweredEvent } from 'src/domain/events/chat-user-answered.event';
+import { Controller } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
+import { EventPattern } from "@nestjs/microservices";
 
 @Controller()
 export class ChatUserAnsweredHandler {

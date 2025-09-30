@@ -1,31 +1,32 @@
 // src/main.ts
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { Transport } from '@nestjs/microservices';
-import { Logger } from '@nestjs/common';
-import { StalkingCompletedEvent } from './domain/events/stalking-completed.event';
-import { ChatQuestionAskedEvent } from './domain/events/chat-question-asked.event';
-import { ChatInterviewCompletedEvent } from './domain/events/chat-interview-completed.event';
-import { GiftReadyEvent } from './domain/events/gift-ready.event';
-import { ChatInappropriateRequestEvent } from './domain/events/chat-innapropriate-request.event';
+import { Logger } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
+import { Transport } from "@nestjs/microservices";
+
+import { AppModule } from "./app.module";
+import { ChatInappropriateRequestEvent } from "./domain/events/chat-innapropriate-request.event";
+import { ChatInterviewCompletedEvent } from "./domain/events/chat-interview-completed.event";
+import { ChatQuestionAskedEvent } from "./domain/events/chat-question-asked.event";
+import { GiftReadyEvent } from "./domain/events/gift-ready.event";
+import { StalkingCompletedEvent } from "./domain/events/stalking-completed.event";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Enable CORS for frontend access
   app.enableCors({
-    origin: ['http://localhost:5713', 'http://localhost:5173'], // Vite dev server ports
+    origin: ["http://localhost:5713", "http://localhost:5173"], // Vite dev server ports
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control'],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cache-Control"],
   });
 
-  const logger = new Logger('AppLogger');
+  const logger = new Logger("AppLogger");
 
   const stalkingCompletedMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672'],
+      urls: [process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672"],
       queue: StalkingCompletedEvent.name,
       queueOptions: {
         durable: false,
@@ -36,7 +37,7 @@ async function bootstrap() {
   const chatQuestionAskedMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672'],
+      urls: [process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672"],
       queue: ChatQuestionAskedEvent.name,
       queueOptions: {
         durable: false,
@@ -47,7 +48,7 @@ async function bootstrap() {
   const chatAnswerProcessedMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672'],
+      urls: [process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672"],
       queue: ChatInterviewCompletedEvent.name,
       queueOptions: {
         durable: false,
@@ -58,7 +59,7 @@ async function bootstrap() {
   const giftReadyMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672'],
+      urls: [process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672"],
       queue: GiftReadyEvent.name,
       queueOptions: {
         durable: false,
@@ -69,7 +70,7 @@ async function bootstrap() {
   const chatInappropriateRequestMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672'],
+      urls: [process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672"],
       queue: ChatInappropriateRequestEvent.name,
       queueOptions: {
         durable: false,
@@ -87,7 +88,7 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000);
 
-  logger.log('Microservice is listening');
+  logger.log("Microservice is listening");
 }
 
 void bootstrap();

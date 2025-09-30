@@ -1,5 +1,3 @@
-
-
 export interface UIChatMessage {
   id: string;
   content: string;
@@ -16,5 +14,4 @@ export type ChatState =
   | { type: "chat-interview-completed" }
   | { type: "chat-inappropriate-request"; data: { reason: string } };
 
-
-export {type SseMessageDto} from "../../../../backend/restapi-macroservice/src/domain/models/sse-message.dto";
+export { type SseMessageDto } from "../../../../backend/restapi-macroservice/src/domain/models/sse-message.dto";

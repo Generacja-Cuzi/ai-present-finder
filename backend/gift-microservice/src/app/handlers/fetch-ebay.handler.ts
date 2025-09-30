@@ -1,8 +1,10 @@
 // application/handlers/fetch-ebay.handler.ts
-import { QueryHandler, IQueryHandler } from '@nestjs/cqrs';
-import { Logger } from '@nestjs/common';
-import { FetchEbayQuery } from '../../domain/queries/fetch-ebay.query';
-import { ListingDto } from 'src/domain/models/listing.dto';
+import { ListingDto } from "src/domain/models/listing.dto";
+
+import { Logger } from "@nestjs/common";
+import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
+
+import { FetchEbayQuery } from "../../domain/queries/fetch-ebay.query";
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -14,16 +16,16 @@ export class FetchEbayHandler
 {
   private readonly logger = new Logger(FetchEbayHandler.name);
 
-  private readonly CLIENT_ID = process.env.EBAY_CLIENT_ID || '';
-  private readonly CLIENT_SECRET = process.env.EBAY_CLIENT_SECRET || '';
-  private readonly TOKEN_URL = process.env.EBAY_TOKEN_URL || '';
-  private readonly SEARCH_URL = process.env.EBAY_SEARCH_URL || '';
-  private readonly OAUTH_SCOPE = process.env.EBAY_OAUTH_SCOPE || '';
+  private readonly CLIENT_ID = process.env.EBAY_CLIENT_ID || "";
+  private readonly CLIENT_SECRET = process.env.EBAY_CLIENT_SECRET || "";
+  private readonly TOKEN_URL = process.env.EBAY_TOKEN_URL || "";
+  private readonly SEARCH_URL = process.env.EBAY_SEARCH_URL || "";
+  private readonly OAUTH_SCOPE = process.env.EBAY_OAUTH_SCOPE || "";
   private readonly MARKETPLACE_ID =
-    process.env.EBAY_MARKETPLACE_ID || 'EBAY_PL';
-  private readonly MAX_RETRIES = parseInt(process.env.EBAY_MAX_RETRIES || '3');
+    process.env.EBAY_MARKETPLACE_ID || "EBAY_PL";
+  private readonly MAX_RETRIES = parseInt(process.env.EBAY_MAX_RETRIES || "3");
   private readonly TOKEN_BUFFER_SECONDS = parseInt(
-    process.env.EBAY_TOKEN_BUFFER_SECONDS || '300',
+    process.env.EBAY_TOKEN_BUFFER_SECONDS || "300",
   );
 
   // Cache for access token
@@ -38,17 +40,17 @@ export class FetchEbayHandler
 
     const basicAuth = Buffer.from(
       `${this.CLIENT_ID}:${this.CLIENT_SECRET}`,
-    ).toString('base64');
+    ).toString("base64");
 
     const body = new URLSearchParams({
-      grant_type: 'client_credentials',
+      grant_type: "client_credentials",
       scope: this.OAUTH_SCOPE,
     });
 
     const response = await fetch(this.TOKEN_URL, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        "Content-Type": "application/x-www-form-urlencoded",
         Authorization: `Basic ${basicAuth}`,
       },
       body: body.toString(),
@@ -101,11 +103,11 @@ export class FetchEbayHandler
         const searchUrl = `${this.SEARCH_URL}?${searchParams.toString()}`;
 
         const response = await fetch(searchUrl, {
-          method: 'GET',
+          method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-            'X-EBAY-C-MARKETPLACE-ID': this.MARKETPLACE_ID,
+            "Content-Type": "application/json",
+            "X-EBAY-C-MARKETPLACE-ID": this.MARKETPLACE_ID,
           },
         });
 
@@ -139,13 +141,13 @@ export class FetchEbayHandler
 
             return {
               image,
-              title: item.title || '',
-              description: item.shortDescription || item.title || '',
-              link: item.itemWebUrl || item.itemHref || '',
+              title: item.title || "",
+              description: item.shortDescription || item.title || "",
+              link: item.itemWebUrl || item.itemHref || "",
               price: {
                 value: priceValue,
                 label: priceInfo.value
-                  ? `${priceInfo.value} ${priceInfo.currency || ''}`
+                  ? `${priceInfo.value} ${priceInfo.currency || ""}`
                   : null,
                 currency: priceInfo.currency || null,
                 negotiable: false, // eBay prices are typically fixed
@@ -162,7 +164,7 @@ export class FetchEbayHandler
 
         // Handle rate limiting and server errors
         if ([429, 500, 502, 503, 504].includes(response.status)) {
-          const errorText = await response.text().catch(() => '');
+          const errorText = await response.text().catch(() => "");
           this.logger.warn(`eBay API error ${response.status}: ${errorText}`);
 
           if (attempt <= this.MAX_RETRIES) {
@@ -177,32 +179,32 @@ export class FetchEbayHandler
 
         // Handle 401 (token expired) by clearing cache and retrying once
         if (response.status === 401 && attempt === 1) {
-          this.logger.warn('eBay token expired, clearing cache and retrying');
+          this.logger.warn("eBay token expired, clearing cache and retrying");
           this.cachedToken = null;
           continue;
         }
 
         // For other errors, throw immediately
-        const errorText = await response.text().catch(() => '');
+        const errorText = await response.text().catch(() => "");
         throw new Error(`eBay API error ${response.status}: ${errorText}`);
       } catch (error: unknown) {
         const errorObj = error as { code?: string; message?: string };
         if (
           attempt <= this.MAX_RETRIES &&
-          (errorObj.code === 'ENOTFOUND' || errorObj.code === 'ECONNRESET')
+          (errorObj.code === "ENOTFOUND" || errorObj.code === "ECONNRESET")
         ) {
           const base = Math.min(4000, 1000 * Math.pow(2, attempt - 1));
           const jitter = Math.floor(Math.random() * 500);
           const delayMs = base + jitter;
           this.logger.warn(
-            `eBay network error, retry #${attempt} in ${delayMs}ms: ${errorObj.message || 'Unknown error'}`,
+            `eBay network error, retry #${attempt} in ${delayMs}ms: ${errorObj.message || "Unknown error"}`,
           );
           await sleep(delayMs);
           continue;
         }
 
         this.logger.error(
-          `eBay search failed: ${errorObj.message || 'Unknown error'}`,
+          `eBay search failed: ${errorObj.message || "Unknown error"}`,
         );
         throw error;
       }

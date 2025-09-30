@@ -1,4 +1,4 @@
-import z from 'zod';
+import z from "zod";
 
 export const EndConversationOutput = z.object({
   recipient_profile: z.array(z.string()),

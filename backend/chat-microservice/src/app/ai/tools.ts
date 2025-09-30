@@ -1,6 +1,7 @@
-import { InferUITools, tool } from 'ai';
-import z from 'zod';
-import { EndConversationOutput } from './types';
+import { InferUITools, tool } from "ai";
+import z from "zod";
+
+import { EndConversationOutput } from "./types";
 
 export function getTools(
   closeInterview: (output: EndConversationOutput) => void,
@@ -9,21 +10,21 @@ export function getTools(
   return {
     proceed_to_next_phase: tool({
       description:
-        'Call this tool to signal moving from Part I to Part II, or from Part II to Part III of the conversation.',
+        "Call this tool to signal moving from Part I to Part II, or from Part II to Part III of the conversation.",
       inputSchema: z.object({}),
       execute: () => {
-        console.log('Proceeding to next phase');
-        return { success: true, message: 'Proceeding to next phase' };
+        console.log("Proceeding to next phase");
+        return { success: true, message: "Proceeding to next phase" };
       },
     }),
     end_conversation: tool({
       description:
-        'Call this tool to end the conversation with the final structured profile output.',
+        "Call this tool to end the conversation with the final structured profile output.",
       inputSchema: z.object({
         output: EndConversationOutput,
       }),
       execute: ({ output }) => {
-        console.log('Ending conversation with output:', output);
+        console.log("Ending conversation with output:", output);
         closeInterview(output);
         return { success: true, output };
       },
@@ -35,7 +36,7 @@ export function getTools(
         reason: z.string(),
       }),
       execute: ({ reason }) => {
-        console.log('Flagging inappropriate request with reason:', reason);
+        console.log("Flagging inappropriate request with reason:", reason);
         flagInappropriateRequest(reason);
         return { success: true, flagged: true, reason };
       },

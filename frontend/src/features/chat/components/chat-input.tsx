@@ -25,7 +25,9 @@ export function ChatInput({
       <div className="flex gap-2">
         <Input
           value={inputValue}
-          onChange={(e) => { setInputValue(e.target.value); }}
+          onChange={(e) => {
+            setInputValue(e.target.value);
+          }}
           onKeyDown={handleKeyPress}
           placeholder="Type your message..."
           className="flex-1"

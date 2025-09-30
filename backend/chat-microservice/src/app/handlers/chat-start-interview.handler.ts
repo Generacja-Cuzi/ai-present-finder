@@ -1,8 +1,9 @@
-import { CommandBus } from '@nestjs/cqrs';
-import { Controller } from '@nestjs/common';
-import { EventPattern } from '@nestjs/microservices';
-import { ChatStartInterviewEvent } from 'src/domain/events/chat-start-interview.event';
-import { GenerateQuestionCommand } from 'src/domain/commands/generate-question.command';
+import { GenerateQuestionCommand } from "src/domain/commands/generate-question.command";
+import { ChatStartInterviewEvent } from "src/domain/events/chat-start-interview.event";
+
+import { Controller } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
+import { EventPattern } from "@nestjs/microservices";
 
 @Controller()
 export class ChatStartInterviewHandler {
@@ -13,9 +14,9 @@ export class ChatStartInterviewHandler {
     await this.commandBus.execute(
       new GenerateQuestionCommand(event.context, [
         {
-          sender: 'user',
-          content: 'Hi!',
-          id: '1',
+          sender: "user",
+          content: "Hi!",
+          id: "1",
         },
       ]),
     );

@@ -1,16 +1,29 @@
 {
   "name": "ai-present-finder",
   "version": "1.0.0",
-  "description": "AI Present Finder - Full-stack application with microservices backend and React frontend",
   "private": true,
+  "description": "AI Present Finder - Full-stack application with microservices backend and React frontend",
   "scripts": {
     "build": "pnpm -r --parallel build",
-    "start": "pnpm -r --parallel start",
-    "dev": "pnpm -r --parallel dev",
-    "test": "pnpm -r --parallel test",
-    "lint": "pnpm -r --parallel lint",
-    "format": "pnpm -r --parallel format",
     "clean": "pnpm -r --parallel clean && rm -rf node_modules",
-    "install:all": "pnpm install"
+    "dev": "pnpm -r --parallel dev",
+    "format": "prettier -w --ignore-unknown .",
+    "install:all": "pnpm install",
+    "lint": "pnpm -r --parallel lint",
+    "start": "pnpm -r --parallel start",
+    "test": "pnpm -r --parallel test"
+  },
+  "lint-staged": {
+    "*": "prettier -w --ignore-unknown"
+  },
+  "prettier": "@solvro/config/prettier",
+  "devDependencies": {
+    "@solvro/config": "^2.0.7",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.3",
+    "prettier": "^3.6.2",
+    "prettier-plugin-packagejson": "^2.5.19",
+    "prettier-plugin-tailwindcss": "^0.6.14"
   }
 }

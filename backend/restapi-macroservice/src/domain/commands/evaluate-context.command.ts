@@ -1,6 +1,7 @@
-import { Command } from '@nestjs/cqrs';
-import { ContextDto } from '../models/context.dto';
-import { ChatMessage } from '../models/chat-message';
+import { Command } from "@nestjs/cqrs";
+
+import { ChatMessage } from "../models/chat-message";
+import { ContextDto } from "../models/context.dto";
 
 export class EvaluateContextCommand extends Command<void> {
   constructor(

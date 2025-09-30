@@ -1,5 +1,5 @@
-import { EndConversationOutput } from '../models/end-converstion-ai-output';
-import { ContextDto } from '../models/context.dto';
+import { ContextDto } from "../models/context.dto";
+import { EndConversationOutput } from "../models/end-converstion-ai-output";
 
 export class EndInterviewCommand {
   constructor(

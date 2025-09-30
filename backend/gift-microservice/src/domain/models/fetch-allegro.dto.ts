@@ -1,4 +1,4 @@
-import z from 'zod';
+import z from "zod";
 
 export const FetchAllegroDto = z.object({
   query: z.string().min(1),

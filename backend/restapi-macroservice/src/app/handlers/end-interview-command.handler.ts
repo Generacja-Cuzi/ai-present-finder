@@ -1,9 +1,10 @@
-import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Inject, Logger } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { GiftGenerateRequestedEvent } from 'src/domain/events/gift-generate-requested.event';
-import { EndInterviewCommand } from 'src/domain/commands/end-interview.command';
-import { NotifyUserSseCommand } from 'src/domain/commands/notify-user-sse.command';
+import { EndInterviewCommand } from "src/domain/commands/end-interview.command";
+import { NotifyUserSseCommand } from "src/domain/commands/notify-user-sse.command";
+import { GiftGenerateRequestedEvent } from "src/domain/events/gift-generate-requested.event";
+
+import { Inject, Logger } from "@nestjs/common";
+import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { ClientProxy } from "@nestjs/microservices";
 
 @CommandHandler(EndInterviewCommand)
 export class EndInterviewCommandHandler
@@ -12,7 +13,7 @@ export class EndInterviewCommandHandler
   private readonly logger = new Logger(EndInterviewCommandHandler.name);
 
   constructor(
-    @Inject('GIFT_GENERATE_REQUESTED_EVENT')
+    @Inject("GIFT_GENERATE_REQUESTED_EVENT")
     private readonly giftEventBus: ClientProxy,
     private readonly commandBus: CommandBus,
   ) {}
@@ -20,7 +21,7 @@ export class EndInterviewCommandHandler
   async execute(command: EndInterviewCommand) {
     await this.commandBus.execute(
       new NotifyUserSseCommand(command.context.chatId, {
-        type: 'chat-interview-completed',
+        type: "chat-interview-completed",
       }),
     );
 

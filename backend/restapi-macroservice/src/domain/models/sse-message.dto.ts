@@ -1,29 +1,30 @@
-import { z } from 'zod';
-import { chatMessageSchema } from './chat-message';
+import { z } from "zod";
 
-export const uiUpdateEvent = 'ui-update';
+import { chatMessageSchema } from "./chat-message";
 
-export const SseMessageDto = z.discriminatedUnion('type', [
+export const uiUpdateEvent = "ui-update";
+
+export const SseMessageDto = z.discriminatedUnion("type", [
   z.object({
-    type: z.literal('stalking-started'),
+    type: z.literal("stalking-started"),
   }),
   z.object({
-    type: z.literal('stalking-completed'),
+    type: z.literal("stalking-completed"),
   }),
   z.object({
-    type: z.literal('chatbot-message'),
+    type: z.literal("chatbot-message"),
     message: chatMessageSchema,
   }),
 
   z.object({
-    type: z.literal('chat-interview-completed'),
+    type: z.literal("chat-interview-completed"),
   }),
   z.object({
-    type: z.literal('chat-inappropriate-request'),
+    type: z.literal("chat-inappropriate-request"),
     reason: z.string(),
   }),
   z.object({
-    type: z.literal('gift-ready'),
+    type: z.literal("gift-ready"),
     data: z.object({
       giftIdeas: z.array(z.string()),
     }),
@@ -31,4 +32,4 @@ export const SseMessageDto = z.discriminatedUnion('type', [
 ]);
 
 export type SseMessageDto = z.infer<typeof SseMessageDto>;
-export type SseMessageType = SseMessageDto['type'];
+export type SseMessageType = SseMessageDto["type"];

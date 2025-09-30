@@ -1,14 +1,15 @@
-import { openai } from '@ai-sdk/openai';
-import { giftConsultantPrompt } from './prompt';
+import { openai } from "@ai-sdk/openai";
 import {
-  generateText,
-  UIMessage,
-  stepCountIs,
-  UIDataTypes,
   ModelMessage,
-} from 'ai';
-import { getTools, MyUITools } from './tools';
-import { EndConversationOutput } from './types';
+  UIDataTypes,
+  UIMessage,
+  generateText,
+  stepCountIs,
+} from "ai";
+
+import { giftConsultantPrompt } from "./prompt";
+import { MyUITools, getTools } from "./tools";
+import { EndConversationOutput } from "./types";
 
 export function giftInterviewFlow({
   messages,
@@ -20,7 +21,7 @@ export function giftInterviewFlow({
   flagInappropriateRequest: (reason: string) => void;
 }) {
   return generateText({
-    model: openai('gpt-5-nano'),
+    model: openai("gpt-5-nano"),
     messages,
     system: giftConsultantPrompt,
     stopWhen: stepCountIs(5),

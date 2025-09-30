@@ -1,9 +1,10 @@
-import { Controller, Logger } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
-import { EventPattern } from '@nestjs/microservices';
-import { NotifyUserSseCommand } from 'src/domain/commands/notify-user-sse.command';
-import { ChatQuestionAskedEvent } from 'src/domain/events/chat-question-asked.event';
-import { v4 as uuidv4 } from 'uuid';
+import { NotifyUserSseCommand } from "src/domain/commands/notify-user-sse.command";
+import { ChatQuestionAskedEvent } from "src/domain/events/chat-question-asked.event";
+import { v4 as uuidv4 } from "uuid";
+
+import { Controller, Logger } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
+import { EventPattern } from "@nestjs/microservices";
 
 @Controller()
 export class ChatQuestionAskedHandler {
@@ -16,11 +17,11 @@ export class ChatQuestionAskedHandler {
 
     await this.commandBus.execute(
       new NotifyUserSseCommand(event.context.chatId, {
-        type: 'chatbot-message',
+        type: "chatbot-message",
         message: {
           id: uuidv4(),
           content: event.question,
-          sender: 'assistant',
+          sender: "assistant",
         },
       }),
     );

@@ -1,4 +1,4 @@
-import z from 'zod';
+import z from "zod";
 
 export const FetchOlxDto = z.object({
   query: z.string().min(1),
@@ -7,4 +7,3 @@ export const FetchOlxDto = z.object({
 });
 
 export type FetchOlxDto = z.infer<typeof FetchOlxDto>;
-

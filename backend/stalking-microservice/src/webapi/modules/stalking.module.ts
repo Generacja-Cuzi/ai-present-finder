@@ -1,12 +1,14 @@
 // src/webapi/modules/order.module.ts
-import { Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
-import { StalkingController } from '../controllers/stalking.controller';
-import { StalkingAnalyzeRequestHandler } from 'src/app/handlers/stalking-analyze-request.handler';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { ConfigModule } from '@nestjs/config';
-import { StalkingCompletedEvent } from 'src/domain/events/stalking-completed.event';
-import { StalkingAnalyzeHandler } from 'src/app/handlers/stalking-analyze.handler';
+import { StalkingAnalyzeRequestHandler } from "src/app/handlers/stalking-analyze-request.handler";
+import { StalkingAnalyzeHandler } from "src/app/handlers/stalking-analyze.handler";
+import { StalkingCompletedEvent } from "src/domain/events/stalking-completed.event";
+
+import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import { CqrsModule } from "@nestjs/cqrs";
+import { ClientsModule, Transport } from "@nestjs/microservices";
+
+import { StalkingController } from "../controllers/stalking.controller";
 
 @Module({
   imports: [
@@ -16,11 +18,11 @@ import { StalkingAnalyzeHandler } from 'src/app/handlers/stalking-analyze.handle
     }),
     ClientsModule.register([
       {
-        name: 'STALKING_COMPLETED_EVENT',
+        name: "STALKING_COMPLETED_EVENT",
         transport: Transport.RMQ,
         options: {
           urls: [
-            process.env.CLOUDAMQP_URL || 'amqp://admin:admin@localhost:5672',
+            process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672",
           ],
           queue: StalkingCompletedEvent.name,
           queueOptions: {

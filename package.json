@@ -1,16 +1,37 @@
 {
   "name": "ai-present-finder",
   "version": "1.0.0",
-  "description": "AI Present Finder - Full-stack application with microservices backend and React frontend",
   "private": true,
+  "description": "AI Present Finder - Full-stack application with microservices backend and React frontend",
+  "type": "module",
   "scripts": {
-    "build": "pnpm -r --parallel build",
-    "start": "pnpm -r --parallel start",
+    "build": "pnpm -r build",
+    "clean": "pnpm -r clean && rm -rf node_modules",
     "dev": "pnpm -r --parallel dev",
-    "test": "pnpm -r --parallel test",
-    "lint": "pnpm -r --parallel lint",
-    "format": "pnpm -r --parallel format",
-    "clean": "pnpm -r --parallel clean && rm -rf node_modules",
-    "install:all": "pnpm install"
+    "format": "prettier -w --ignore-unknown .",
+    "format:check": "prettier --check .",
+    "install:all": "pnpm install",
+    "lint": "pnpm -r --no-bail lint",
+    "prepare": "husky || true",
+    "start": "pnpm -r --parallel start",
+    "test": "pnpm -r --no-bail test",
+    "test:e2e": "pnpm -r --no-bail test:e2e"
+  },
+  "lint-staged": {
+    "*": "prettier -w --ignore-unknown"
+  },
+  "prettier": "@solvro/config/prettier",
+  "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@solvro/config": "^2.0.7",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.3",
+    "prettier": "^3.6.2",
+    "prettier-plugin-packagejson": "^2.5.19",
+    "prettier-plugin-tailwindcss": "^0.6.14"
+  },
+  "volta": {
+    "node": "22.20.0"
   }
 }

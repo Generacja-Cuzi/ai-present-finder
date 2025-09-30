@@ -1,10 +1,10 @@
-import z from 'zod';
+import { z } from "zod";
 
-export const ListingDto = z.object({
-  image: z.string().url().nullable(),
+export const listingDtoSchema = z.object({
+  image: z.url().nullable(),
   title: z.string().min(1),
   description: z.string().min(1),
-  link: z.string().url(),
+  link: z.url(),
   price: z.object({
     value: z.number().nullable(),
     label: z.string().nullable(),
@@ -13,4 +13,4 @@ export const ListingDto = z.object({
   }),
 });
 
-export type ListingDto = z.infer<typeof ListingDto>;
+export type ListingDto = z.infer<typeof listingDtoSchema>;

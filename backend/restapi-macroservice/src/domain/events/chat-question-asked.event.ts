@@ -1,4 +1,4 @@
-import { ContextDto } from '../models/context.dto';
+import type { ContextDto } from "../models/context.dto";
 
 export class ChatQuestionAskedEvent {
   constructor(

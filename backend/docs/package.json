@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "docs:asyncapi:all": "bash -lc 'for f in asyncapi/*.asyncapi.yml; do name=$(basename \"$f\" .asyncapi.yml); out=asyncapi/html/$name; pnpm --package=@asyncapi/generator dlx asyncapi-generator \"$f\" @asyncapi/html-template -o \"$out\" -p singleFile=true --force-write; done'",
+    "docs:asyncapi:chat": "pnpm --package=@asyncapi/generator dlx asyncapi-generator asyncapi/chat-microservice.asyncapi.yml @asyncapi/html-template -o asyncapi/html/chat -p singleFile=true --force-write",
+    "docs:asyncapi:gift": "pnpm --package=@asyncapi/generator dlx asyncapi-generator asyncapi/gift-microservice.asyncapi.yml @asyncapi/html-template -o asyncapi/html/gift -p singleFile=true --force-write",
+    "docs:asyncapi:restapi": "pnpm --package=@asyncapi/generator dlx asyncapi-generator asyncapi/restapi-macroservice.asyncapi.yml @asyncapi/html-template -o asyncapi/html/restapi -p singleFile=true --force-write",
+    "docs:asyncapi:stalking": "pnpm --package=@asyncapi/generator dlx asyncapi-generator asyncapi/stalking-microservice.asyncapi.yml @asyncapi/html-template -o asyncapi/html/stalking -p singleFile=true --force-write"
+  }
+}

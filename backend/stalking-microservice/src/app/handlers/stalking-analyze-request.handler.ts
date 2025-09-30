@@ -1,9 +1,11 @@
-import { CommandBus } from '@nestjs/cqrs';
-import { StalkingAnalyzeRequestedEvent } from '../../domain/events/stalking-analyze-request.event';
-import { Controller } from '@nestjs/common';
-import { EventPattern } from '@nestjs/microservices';
-import { StalkingAnalyzeRequestDto } from 'src/domain/models/stalking-analyze-request.dto';
-import { StalkingAnalyzeCommand } from 'src/domain/commands/stalking-analyze.command';
+import { StalkingAnalyzeCommand } from "src/domain/commands/stalking-analyze.command";
+import { StalkingAnalyzeRequestDto } from "src/domain/models/stalking-analyze-request.dto";
+
+import { Controller } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
+import { EventPattern } from "@nestjs/microservices";
+
+import { StalkingAnalyzeRequestedEvent } from "../../domain/events/stalking-analyze-request.event";
 
 @Controller()
 export class StalkingAnalyzeRequestHandler {

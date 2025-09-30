@@ -1,14 +1,3 @@
-//  @ts-check
+import { solvro } from "@solvro/config/eslint";
 
-import { tanstackConfig } from '@tanstack/eslint-config'
-
-export default [
-  ...tanstackConfig,
-  {
-    languageOptions: {
-      parserOptions: {
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-  },
-]
+export default solvro();

@@ -1,4 +1,4 @@
-import { StalkingAnalyzeRequestDto } from '../models/stalking-analyze-request.dto';
+import type { StalkingAnalyzeRequestDto } from "../models/stalking-analyze-request.dto";
 
 export class StalkingAnalyzeCommand {
   constructor(

@@ -1,8 +1,7 @@
-// src/webapi/controllers/order.controller.ts
-import { Controller, Body } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { Controller } from "@nestjs/common";
+import { CommandBus, QueryBus } from "@nestjs/cqrs";
 
-@Controller('chat')
+@Controller("chat")
 export class ChatController {
   constructor(
     private readonly commandBus: CommandBus,

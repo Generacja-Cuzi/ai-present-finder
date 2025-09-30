@@ -1,8 +1,9 @@
-import { CommandBus } from '@nestjs/cqrs';
-import { Controller, Logger } from '@nestjs/common';
-import { EventPattern } from '@nestjs/microservices';
-import { ChatInappropriateRequestEvent } from 'src/domain/events/chat-innapropriate-request.event';
-import { NotifyUserSseCommand } from 'src/domain/commands/notify-user-sse.command';
+import { NotifyUserSseCommand } from "src/domain/commands/notify-user-sse.command";
+import { ChatInappropriateRequestEvent } from "src/domain/events/chat-innapropriate-request.event";
+
+import { Controller, Logger } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
+import { EventPattern } from "@nestjs/microservices";
 
 @Controller()
 export class ChatInappropriateRequestHandler {
@@ -16,10 +17,9 @@ export class ChatInappropriateRequestHandler {
     );
     await this.commandBus.execute(
       new NotifyUserSseCommand(event.chatId, {
-        type: 'chat-inappropriate-request',
+        type: "chat-inappropriate-request",
         reason: event.reason,
       }),
     );
-    return Promise.resolve();
   }
 }

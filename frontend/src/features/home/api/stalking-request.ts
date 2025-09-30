@@ -1,33 +1,36 @@
-import { useMutation } from '@tanstack/react-query'
-import { getBackendUrl } from '@/lib/backend-url'
+import { useMutation } from "@tanstack/react-query";
+
+import { getBackendUrl } from "@/lib/backend-url";
 
 interface StalkingRequestData {
-  facebookUrl: string
-  instagramUrl: string
-  tiktokUrl: string
-  youtubeUrl: string
-  xUrl: string
-  linkedinUrl: string
-  chatId: string
+  facebookUrl: string;
+  instagramUrl: string;
+  tiktokUrl: string;
+  youtubeUrl: string;
+  xUrl: string;
+  linkedinUrl: string;
+  chatId: string;
 }
 
 async function createStalkingRequest(data: StalkingRequestData): Promise<void> {
-  const backendUrl = getBackendUrl()
+  const backendUrl = getBackendUrl();
   const response = await fetch(`${backendUrl}/restapi/stalking-request`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
-  })
+  });
 
   if (!response.ok) {
-    throw new Error(`Failed to create stalking request: ${response.statusText}`)
+    throw new Error(
+      `Failed to create stalking request: ${response.statusText}`,
+    );
   }
 }
 
 export function useStalkingRequestMutation() {
   return useMutation({
     mutationFn: createStalkingRequest,
-  })
+  });
 }

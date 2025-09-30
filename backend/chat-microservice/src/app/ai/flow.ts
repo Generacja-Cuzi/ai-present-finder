@@ -1,15 +1,9 @@
 import { openai } from "@ai-sdk/openai";
-import type {
-  ModelMessage,
-  UIDataTypes,
-  UIMessage} from "ai";
-import {
-  generateText,
-  stepCountIs,
-} from "ai";
+import type { ModelMessage, UIDataTypes, UIMessage } from "ai";
+import { generateText, stepCountIs } from "ai";
 
 import { giftConsultantPrompt } from "./prompt";
-import type { MyUITools} from "./tools";
+import type { MyUITools } from "./tools";
 import { getTools } from "./tools";
 import type { EndConversationOutput } from "./types";
 

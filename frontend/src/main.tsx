@@ -1,17 +1,19 @@
+import { QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
-import * as TanStackQueryProvider from "./lib/tanstack-query/root-provider.tsx";
+import { getContext } from "@/lib/tanstack-query/get-context";
+
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 
-const TanStackQueryProviderContext = TanStackQueryProvider.getContext();
+const queryClientContext = getContext();
 const router = createRouter({
   routeTree,
   context: {
-    ...TanStackQueryProviderContext,
+    ...queryClientContext,
   },
   defaultPreload: "intent",
   scrollRestoration: true,
@@ -32,9 +34,9 @@ if (rootElement != null && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
+      <QueryClientProvider client={queryClientContext.queryClient}>
         <RouterProvider router={router} />
-      </TanStackQueryProvider.Provider>
+      </QueryClientProvider>
     </StrictMode>,
   );
 }

@@ -15,7 +15,7 @@ async function bootstrap() {
   const chatAskQuestionMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672"],
+      urls: [process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672"],
       queue: ChatStartInterviewEvent.name,
       queueOptions: {
         durable: false,
@@ -26,7 +26,7 @@ async function bootstrap() {
   const chatUserAnsweredMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672"],
+      urls: [process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672"],
       queue: ChatUserAnsweredEvent.name,
       queueOptions: {
         durable: false,

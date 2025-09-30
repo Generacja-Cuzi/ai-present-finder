@@ -1,4 +1,3 @@
-// src/webapi/controllers/order.controller.ts
 import { Controller } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 

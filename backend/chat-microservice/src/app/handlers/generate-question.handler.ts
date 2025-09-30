@@ -24,7 +24,7 @@ export class GenerateQuestionHandler
 
   async execute(command: GenerateQuestionCommand) {
     const { context, history } = command;
-    let shouldStop = false;
+    let shouldStop = false as boolean;
 
     const result = await giftInterviewFlow({
       messages: history.map((message) => ({

@@ -21,6 +21,5 @@ export class ChatInappropriateRequestHandler {
         reason: event.reason,
       }),
     );
-    
   }
 }

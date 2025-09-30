@@ -1,4 +1,3 @@
-// src/webapi/modules/order.module.ts
 import { ChatInappropriateRequestHandler } from "src/app/handlers/chat-inappropriate-request.handler";
 import { ChatInterviewCompletedHandler } from "src/app/handlers/chat-interview-completed.handler";
 import { ChatQuestionAskedHandler } from "src/app/handlers/chat-question-asked.handler";

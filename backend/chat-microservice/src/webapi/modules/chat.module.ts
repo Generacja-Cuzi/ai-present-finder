@@ -1,4 +1,3 @@
-// src/webapi/modules/order.module.ts
 import { ChatStartInterviewHandler } from "src/app/handlers/chat-start-interview.handler";
 import { ChatUserAnsweredHandler } from "src/app/handlers/chat-user-answered.handler";
 import { GenerateQuestionHandler } from "src/app/handlers/generate-question.handler";
@@ -25,7 +24,7 @@ import { ChatController } from "../controllers/chat.controller";
         transport: Transport.RMQ,
         options: {
           urls: [
-            process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672",
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
           ],
           queue: ChatQuestionAskedEvent.name,
           queueOptions: {
@@ -38,7 +37,7 @@ import { ChatController } from "../controllers/chat.controller";
         transport: Transport.RMQ,
         options: {
           urls: [
-            process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672",
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
           ],
           queue: ChatInterviewCompletedEvent.name,
           queueOptions: {
@@ -51,7 +50,7 @@ import { ChatController } from "../controllers/chat.controller";
         transport: Transport.RMQ,
         options: {
           urls: [
-            process.env.CLOUDAMQP_URL || "amqp://admin:admin@localhost:5672",
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
           ],
           queue: ChatInappropriateRequestEvent.name,
           queueOptions: {

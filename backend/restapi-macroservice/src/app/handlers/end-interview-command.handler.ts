@@ -35,7 +35,5 @@ export class EndInterviewCommandHandler
     this.logger.log(`Published event: ${JSON.stringify(giftEvent)}`);
 
     this.logger.log(`Evaluation completed`);
-
-    
   }
 }

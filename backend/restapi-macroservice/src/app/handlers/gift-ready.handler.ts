@@ -26,7 +26,5 @@ export class GiftReadyHandler {
         },
       }),
     );
-
-    
   }
 }

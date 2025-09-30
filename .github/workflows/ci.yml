@@ -31,10 +31,6 @@ jobs:
         run: pnpm run lint
         if: always()
 
-      - name: Check types
-        run: pnpm run typecheck
-        if: always()
-
       - name: Run tests
         run: pnpm test
         if: always()

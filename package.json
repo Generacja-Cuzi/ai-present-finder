@@ -4,7 +4,7 @@
   "private": true,
   "description": "AI Present Finder - Full-stack application with microservices backend and React frontend",
   "scripts": {
-    "build": "pnpm -r --parallel build",
+    "build": "pnpm -r build",
     "clean": "pnpm -r clean && rm -rf node_modules",
     "dev": "pnpm -r --parallel dev",
     "format": "prettier -w --ignore-unknown .",
@@ -13,8 +13,8 @@
     "lint": "pnpm -r --no-bail lint",
     "prepare": "husky || true",
     "start": "pnpm -r --parallel start",
-    "test": "pnpm -r test",
-    "test:e2e": "pnpm -r test:e2e"
+    "test": "pnpm -r --no-bail test",
+    "test:e2e": "pnpm -r --no-bail test:e2e"
   },
   "lint-staged": {
     "*": "prettier -w --ignore-unknown"

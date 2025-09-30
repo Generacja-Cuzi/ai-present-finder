@@ -43,3 +43,7 @@ jobs:
       - name: Build
         run: pnpm run build
         if: always()
+
+      - name: Run commitlint check
+        if: always() && github.event_name == 'pull_request'
+        run: npx commitlint -f ${{ github.event.pull_request.base.sha }}

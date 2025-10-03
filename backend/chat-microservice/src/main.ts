@@ -1,22 +1,14 @@
 // src/main.ts
-<<<<<<< HEAD
+import { existsSync, mkdirSync, writeFileSync } from "fs";
+
 import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { Transport } from "@nestjs/microservices";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
 import { ChatStartInterviewEvent } from "./domain/events/chat-start-interview.event";
 import { ChatUserAnsweredEvent } from "./domain/events/chat-user-answered.event";
-=======
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { Transport } from '@nestjs/microservices';
-import { Logger } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { writeFileSync, mkdirSync, existsSync } from 'fs';
-import { ChatStartInterviewEvent } from './domain/events/chat-start-interview.event';
-import { ChatUserAnsweredEvent } from './domain/events/chat-user-answered.event';
->>>>>>> b8c32b6 (docs(backend): add swager + openapi)
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -49,11 +41,11 @@ async function bootstrap() {
   app.connectMicroservice(chatUserAnsweredMicroserviceOptions);
 
   const config = new DocumentBuilder()
-    .setTitle('AI Present Finder - Chat Microservice')
+    .setTitle("AI Present Finder - Chat Microservice")
     .setDescription(
-      'Chat message endpoints and webhook-style endpoints used by the chat service.',
+      "Chat message endpoints and webhook-style endpoints used by the chat service.",
     )
-    .setVersion('1.0')
+    .setVersion("1.0")
     .addServer(
       process.env.SWAGGER_SERVER ||
         `http://localhost:${process.env.PORT ?? 3020}`,
@@ -61,15 +53,15 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  const outDir = 'docs/openapi';
+  const outDir = "docs/openapi";
   if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
   writeFileSync(
     `${outDir}/chat-microservice.openapi.json`,
     JSON.stringify(document, null, 2),
   );
-  SwaggerModule.setup('docs', app, document, {
+  SwaggerModule.setup("docs", app, document, {
     swaggerOptions: { persistAuthorization: true },
-    customSiteTitle: 'AI Present Finder — Chat Docs',
+    customSiteTitle: "AI Present Finder — Chat Docs",
   });
   await app.startAllMicroservices();
 

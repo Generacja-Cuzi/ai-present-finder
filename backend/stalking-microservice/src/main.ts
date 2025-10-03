@@ -1,20 +1,13 @@
 // src/main.ts
-<<<<<<< HEAD
+import { existsSync, mkdirSync, writeFileSync } from "fs";
+
 import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { Transport } from "@nestjs/microservices";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
 import { StalkingAnalyzeRequestedEvent } from "./domain/events/stalking-analyze-request.event";
-=======
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { Transport } from '@nestjs/microservices';
-import { Logger } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { writeFileSync, mkdirSync, existsSync } from 'fs';
-import { StalkingAnalyzeRequestedEvent } from './domain/events/stalking-analyze-request.event';
->>>>>>> b8c32b6 (docs(backend): add swager + openapi)
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -33,11 +26,11 @@ async function bootstrap() {
   };
 
   const config = new DocumentBuilder()
-    .setTitle('AI Present Finder - Stalking Microservice')
+    .setTitle("AI Present Finder - Stalking Microservice")
     .setDescription(
-      'Endpoints for requesting stalking/analyze jobs and retrieving status.',
+      "Endpoints for requesting stalking/analyze jobs and retrieving status.",
     )
-    .setVersion('1.0')
+    .setVersion("1.0")
     .addServer(
       process.env.SWAGGER_SERVER ||
         `http://localhost:${process.env.PORT ?? 3000}`,
@@ -45,15 +38,15 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  const outDir = 'docs/openapi';
+  const outDir = "docs/openapi";
   if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
   writeFileSync(
     `${outDir}/stalking-microservice.openapi.json`,
     JSON.stringify(document, null, 2),
   );
-  SwaggerModule.setup('docs', app, document, {
+  SwaggerModule.setup("docs", app, document, {
     swaggerOptions: { persistAuthorization: true },
-    customSiteTitle: 'AI Present Finder — Stalking Docs',
+    customSiteTitle: "AI Present Finder — Stalking Docs",
   });
 
   app.connectMicroservice(microserviceOptions);

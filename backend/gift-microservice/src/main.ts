@@ -1,20 +1,13 @@
 // src/main.ts
-<<<<<<< HEAD
+import { existsSync, mkdirSync, writeFileSync } from "fs";
+
 import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { Transport } from "@nestjs/microservices";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
 import { GiftGenerateRequestedEvent } from "./domain/events/gift-generate-requested.event";
-=======
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { Transport } from '@nestjs/microservices';
-import { Logger } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { writeFileSync, mkdirSync, existsSync } from 'fs';
-import { GiftGenerateRequestedEvent } from './domain/events/gift-generate-requested.event';
->>>>>>> b8c32b6 (docs(backend): add swager + openapi)
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -33,13 +26,13 @@ async function bootstrap() {
   };
 
   app.connectMicroservice(microserviceOptions);
-  
+
   const config = new DocumentBuilder()
-    .setTitle('AI Present Finder - Gift Microservice')
+    .setTitle("AI Present Finder - Gift Microservice")
     .setDescription(
-      'Endpoints for searching gift listings across sources (OLX, eBay, Amazon).',
+      "Endpoints for searching gift listings across sources (OLX, eBay, Amazon).",
     )
-    .setVersion('1.0')
+    .setVersion("1.0")
     .addServer(
       process.env.SWAGGER_SERVER ||
         `http://localhost:${process.env.PORT ?? 3030}`,
@@ -47,15 +40,15 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  const outDir = 'docs/openapi';
+  const outDir = "docs/openapi";
   if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
   writeFileSync(
     `${outDir}/gift-microservice.openapi.json`,
     JSON.stringify(document, null, 2),
   );
-  SwaggerModule.setup('docs', app, document, {
+  SwaggerModule.setup("docs", app, document, {
     swaggerOptions: { persistAuthorization: true },
-    customSiteTitle: 'AI Present Finder — Gift Docs',
+    customSiteTitle: "AI Present Finder — Gift Docs",
   });
   await app.startAllMicroservices();
 

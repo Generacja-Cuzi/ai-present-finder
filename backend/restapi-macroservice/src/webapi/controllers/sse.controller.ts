@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-import { Response } from "express";
-import { Observable } from "rxjs";
-import { SseService } from "src/app/services/sse-service";
-import { RegisterUserSseDto } from "src/domain/models/register-user-sse.dto";
-import type { SseMessageDto } from "src/domain/models/sse-message.dto";
-
-import { Controller, Query, Res, Sse } from "@nestjs/common";
-=======
 import { Controller, Query, Res, Sse } from '@nestjs/common';
 import { Response } from 'express';
 import { Observable } from 'rxjs';
@@ -28,7 +19,6 @@ import {
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
->>>>>>> b8c32b6 (docs(backend): add swager + openapi)
 
 @ApiExtraModels(
   SseStalkingStartedDto,
@@ -43,9 +33,6 @@ import {
 export class SseController {
   constructor(private readonly sseService: SseService) {}
 
-<<<<<<< HEAD
-  @Sse("sse")
-=======
   @Sse('sse')
   @ApiOperation({ summary: 'Subscribe to server-sent events stream' })
   @ApiQuery({
@@ -54,7 +41,6 @@ export class SseController {
     description: 'Client identifier to register for SSE',
   })
   @ApiResponse({ status: 200, description: 'Event stream of SSE messages' })
->>>>>>> b8c32b6 (docs(backend): add swager + openapi)
   sse(
     @Query() query: RegisterUserSseDto,
     @Res() response: Response,

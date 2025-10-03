@@ -31,11 +31,7 @@ export const sseMessageDtoSchema = z.discriminatedUnion("type", [
   }),
 ]);
 
-<<<<<<< HEAD
 export type SseMessageDto = z.infer<typeof sseMessageDtoSchema>;
-export type SseMessageType = SseMessageDto["type"];
-=======
-export type SseMessageDto = z.infer<typeof SseMessageDto>;
 export type SseMessageType = SseMessageDto['type'];
 
 import { ApiProperty } from '@nestjs/swagger';
@@ -83,4 +79,3 @@ export class SseGiftReadyDto {
     giftIdeas: string[];
   };
 }
->>>>>>> b8c32b6 (docs(backend): add swager + openapi)

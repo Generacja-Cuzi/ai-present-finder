@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-import { z } from "zod";
-=======
 import z from 'zod';
 import { ApiProperty } from '@nestjs/swagger';
->>>>>>> b8c32b6 (docs(backend): add swager + openapi)
 
 export const chatMessageSchema = z.object({
   id: z.uuid(),

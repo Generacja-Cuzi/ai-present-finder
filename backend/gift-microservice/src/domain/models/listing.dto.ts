@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-import { z } from "zod";
-=======
 import z from 'zod';
 import { ApiProperty } from '@nestjs/swagger';
->>>>>>> b8c32b6 (docs(backend): add swager + openapi)
 
 export const listingDtoSchema = z.object({
   image: z.url().nullable(),
@@ -18,10 +14,7 @@ export const listingDtoSchema = z.object({
   }),
 });
 
-<<<<<<< HEAD
 export type ListingDto = z.infer<typeof listingDtoSchema>;
-=======
-export type ListingDto = z.infer<typeof ListingDto>;
 
 export class ListingDtoDoc implements ListingDto {
   @ApiProperty({
@@ -54,4 +47,3 @@ export class ListingDtoDoc implements ListingDto {
     negotiable: boolean | null;
   };
 }
->>>>>>> b8c32b6 (docs(backend): add swager + openapi)

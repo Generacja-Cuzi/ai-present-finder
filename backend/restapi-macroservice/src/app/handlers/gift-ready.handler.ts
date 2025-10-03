@@ -16,7 +16,7 @@ export class GiftReadyHandler {
 
     const giftIdeas = event.giftIdeas;
 
-    this.logger.log(`Pomysly na prezenty: ${giftIdeas.join("; ")}`);
+    this.logger.log(`Pomysly na prezenty: ${giftIdeas.join(";")}`);
 
     await this.commandBus.execute(
       new NotifyUserSseCommand(event.chatId, {

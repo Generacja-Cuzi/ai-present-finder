@@ -18,7 +18,12 @@ export function NonChatIndicator({
     return (
       <div>
         <div>Gift ready</div>
-        <div>Gift ideas: {state.data.giftIdeas.join(", ")}</div>
+        <div>
+          Gift ideas:{" "}
+          {state.data.giftIdeas
+            .map((gift) => JSON.stringify(gift))
+            .join("\n\n\n")}
+        </div>
       </div>
     );
   }

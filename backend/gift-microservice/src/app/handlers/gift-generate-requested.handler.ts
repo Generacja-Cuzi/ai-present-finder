@@ -18,13 +18,20 @@ export class GiftGenerateRequestedHandler {
   async handle(event: GiftGenerateRequestedEvent) {
     this.logger.log("Handling gift generate requested event");
 
-    const giftIdeas = await this.queryBus.execute(
-      new FetchOlxQuery(event.keywords.join(" "), 5, 0),
+    const queries = [
+      ...event.keywords.map((keyword) => new FetchOlxQuery(keyword, 5, 0)),
+      ...(event.profile?.gift_recommendations.map(
+        (recommendation) => new FetchOlxQuery(recommendation, 5, 0),
+      ) ?? []),
+    ];
+
+    const giftIdeas = await Promise.all(
+      queries.map(async (query) => this.queryBus.execute(query)),
     );
 
     this.logger.log(`Generated gift ideas: ${JSON.stringify(giftIdeas)}`);
 
-    const giftReadyEvent = new GiftReadyEvent(giftIdeas, event.chatId);
+    const giftReadyEvent = new GiftReadyEvent(giftIdeas.flat(), event.chatId);
     this.eventBus.emit(GiftReadyEvent.name, giftReadyEvent);
   }
 }

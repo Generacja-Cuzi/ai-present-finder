@@ -23,7 +23,7 @@ export class EvaluateContextHandler
 
     const history = command.messages ?? [];
 
-    const enoughContext = true; // TODO(simon-the-sharp): Implement this
+    const enoughContext = false; // TODO(simon-the-sharp): Implement this
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!enoughContext) {

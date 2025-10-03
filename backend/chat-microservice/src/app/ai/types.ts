@@ -6,10 +6,7 @@ export const endConversationOutputSchema = z.object({
   gift_recommendations: z.array(z.string()),
 });
 
-<<<<<<< HEAD
 export type EndConversationOutput = z.infer<typeof endConversationOutputSchema>;
-=======
-export type EndConversationOutput = z.infer<typeof EndConversationOutput>;
 
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -35,4 +32,3 @@ export class EndConversationOutputDto {
   })
   gift_recommendations: string[];
 }
->>>>>>> b8c32b6 (docs(backend): add swager + openapi)

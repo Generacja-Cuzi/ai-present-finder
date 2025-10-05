@@ -2,27 +2,48 @@ import { SendUserMessageCommand } from "src/domain/commands/send-user-message.co
 import { StalkingAnalyzeRequestCommand } from "src/domain/commands/stalking-analyze-request.command";
 import {
   SendMessageDto,
+  SendMessageDtoDocument,
   sendMessageDtoSchema,
 } from "src/domain/models/send-message.dto";
-import { StalkingAnalyzeRequestDto } from "src/domain/models/stalking-analyze-request.dto";
+import {
+  StalkingAnalyzeRequestDto,
+  StalkingAnalyzeRequestDto as StalkingAnalyzeRequestDtoDocument,
+} from "src/domain/models/stalking-analyze-request.dto";
 
 import { Body, Controller, Logger, Post } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
+import {
+  ApiExtraModels,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
 
+@ApiTags("restapi")
+@ApiExtraModels(SendMessageDtoDocument, StalkingAnalyzeRequestDtoDocument)
 @Controller("restapi")
 export class RestApiController {
   private readonly logger = new Logger(RestApiController.name);
+
   constructor(private readonly commandBus: CommandBus) {}
 
   @Post("stalking-request")
-  async create(@Body() analyzeRequestedDto: StalkingAnalyzeRequestDto) {
+  @ApiOperation({
+    summary: "Request stalking analysis for provided social profiles",
+  })
+  @ApiOkResponse({ description: "Analysis requested" })
+  async create(
+    @Body() analyzeRequestedDto: StalkingAnalyzeRequestDto,
+  ): Promise<void> {
     await this.commandBus.execute(
       new StalkingAnalyzeRequestCommand(analyzeRequestedDto),
     );
   }
 
   @Post("send-message")
-  async sendMessage(@Body() sendMessageDto: SendMessageDto) {
+  @ApiOperation({ summary: "Send chat messages to the system" })
+  @ApiOkResponse({ description: "Message accepted" })
+  async sendMessage(@Body() sendMessageDto: SendMessageDto): Promise<void> {
     const validated = sendMessageDtoSchema.parse(sendMessageDto);
     await this.commandBus.execute(new SendUserMessageCommand(validated));
   }

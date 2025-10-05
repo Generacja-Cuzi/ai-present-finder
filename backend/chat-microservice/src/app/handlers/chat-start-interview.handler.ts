@@ -10,7 +10,7 @@ export class ChatStartInterviewHandler {
   constructor(private readonly commandBus: CommandBus) {}
 
   @EventPattern(ChatStartInterviewEvent.name)
-  async handle(event: ChatStartInterviewEvent) {
+  async handle(event: ChatStartInterviewEvent): Promise<void> {
     await this.commandBus.execute(
       new GenerateQuestionCommand(event.context, [
         {

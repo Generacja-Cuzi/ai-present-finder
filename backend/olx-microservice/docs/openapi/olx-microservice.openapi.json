@@ -1,0 +1,157 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Welcome message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Returns the welcome message for the OLX microservice",
+        "tags": ["OLX"]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "AppController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Service health status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Health check endpoint",
+        "tags": ["OLX"]
+      }
+    },
+    "/olx": {
+      "get": {
+        "operationId": "OlxController_fetchOlxGet",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of OLX listings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ListingDtoDocument"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Search OLX listings",
+        "tags": ["olx"]
+      },
+      "post": {
+        "operationId": "OlxController_fetchOlxPost",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of OLX listings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ListingDtoDocument"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Search OLX listings (POST)",
+        "tags": ["olx"]
+      }
+    }
+  },
+  "info": {
+    "title": "AI Present Finder - OLX Microservice",
+    "description": "Endpoints for searching OLX listings and retrieving product data.",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "http://localhost:3004"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "FetchOlxDtoDocument": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query",
+            "example": "lego set"
+          },
+          "limit": {
+            "type": "number",
+            "description": "Max results to return",
+            "example": 40
+          },
+          "offset": {
+            "type": "number",
+            "description": "Offset for pagination",
+            "example": 0
+          }
+        },
+        "required": ["query"]
+      },
+      "ListingDtoDocument": {
+        "type": "object",
+        "properties": {
+          "image": {
+            "type": "string",
+            "description": "Image URL",
+            "example": "https://example.com/image.jpg",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "description": "Listing title",
+            "example": "Lego Star Wars Set"
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed description",
+            "example": "Great condition, used once"
+          },
+          "link": {
+            "type": "string",
+            "description": "Link to listing",
+            "example": "https://olx.pl/..."
+          },
+          "price": {
+            "type": "object",
+            "description": "Price details"
+          }
+        },
+        "required": ["image", "title", "description", "link", "price"]
+      }
+    }
+  }
+}

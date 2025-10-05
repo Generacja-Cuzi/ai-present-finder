@@ -5,6 +5,6 @@
     "docs:asyncapi:gift": "pnpm --package=@asyncapi/generator dlx asyncapi-generator docs/asyncapi/gift-microservice.asyncapi.yml @asyncapi/html-template -o docs/asyncapi/html/gift -p singleFile=true --force-write",
     "docs:asyncapi:restapi": "pnpm --package=@asyncapi/generator dlx asyncapi-generator docs/asyncapi/restapi-macroservice.asyncapi.yml @asyncapi/html-template -o docs/asyncapi/html/restapi -p singleFile=true --force-write",
     "docs:asyncapi:stalking": "pnpm --package=@asyncapi/generator dlx asyncapi-generator docs/asyncapi/stalking-microservice.asyncapi.yml @asyncapi/html-template -o docs/asyncapi/html/stalking -p singleFile=true --force-write",
-    "install:swagger": "pnpm -w add @nestjs/swagger@^6.1.2 swagger-ui-express@^4.6.3 --filter ./restapi-macroservice --filter ./stalking-microservice --filter ./gift-microservice --filter ./chat-microservice"
+    "install:swagger": "pnpm -w add @nestjs/swagger@^6.1.2 swagger-ui-express@^4.6.3 --filter ./restapi-macroservice --filter ./stalking-microservice --filter ./gift-microservice --filter ./chat-microservice --filter ./olx-microservice --filter ./allegro-microservice --filter ./amazon-microservice --filter ./ebay-microservice"
   }
 }

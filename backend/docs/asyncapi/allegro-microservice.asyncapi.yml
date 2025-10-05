@@ -1,0 +1,99 @@
+asyncapi: 3.0.0
+info:
+  title: Allegro Microservice API
+  version: 1.0.0
+  description: |
+    This microservice provides endpoints for searching Allegro listings.
+    It handles product searches and returns listing data from Allegro platform.
+
+servers:
+  production:
+    host: localhost:3021
+    protocol: http
+    description: Allegro Microservice Production Server
+
+channels:
+  http/allegro:
+    address: '/allegro'
+    messages:
+      searchListings:
+        $ref: '#/components/messages/searchListings'
+      listingResults:
+        $ref: '#/components/messages/listingResults'
+
+operations:
+  searchAllegroListings:
+    action: receive
+    channel:
+      $ref: '#/channels/http~1allegro'
+    summary: Search Allegro listings
+    description: Searches for products on Allegro platform based on query parameters
+    messages:
+      - $ref: '#/channels/http~1allegro/messages/searchListings'
+
+components:
+  messages:
+    searchListings:
+      name: SearchListings
+      title: Search Allegro listings
+      summary: Request to search Allegro listings
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/SearchRequest'
+
+    listingResults:
+      name: ListingResults
+      title: Allegro listing results
+      summary: Results from Allegro search
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ListingResults'
+
+  schemas:
+    SearchRequest:
+      type: object
+      properties:
+        query:
+          type: string
+          description: Search query
+          example: "smartphone"
+        limit:
+          type: integer
+          description: Maximum number of results
+          default: 20
+          minimum: 1
+          maximum: 100
+        offset:
+          type: integer
+          description: Number of results to skip
+          default: 0
+          minimum: 0
+      required:
+        - query
+
+    ListingResults:
+      type: array
+      items:
+        $ref: '#/components/schemas/Listing'
+
+    Listing:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Product title
+        url:
+          type: string
+          description: Product URL
+        price:
+          type: string
+          description: Product price
+        image:
+          type: string
+          description: Product image URL
+        description:
+          type: string
+          description: Product description
+        location:
+          type: string
+          description: Product location

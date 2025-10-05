@@ -3,6 +3,10 @@ packages:
   - backend/gift-microservice
   - backend/restapi-macroservice
   - backend/stalking-microservice
+  - backend/olx-microservice
+  - backend/allegro-microservice
+  - backend/amazon-microservice
+  - backend/ebay-microservice
   - frontend
 
 onlyBuiltDependencies:

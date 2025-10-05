@@ -31,7 +31,7 @@
   "tags": [],
   "servers": [
     {
-      "url": "http://localhost:3007"
+      "url": "http://localhost:3004"
     }
   ],
   "components": {

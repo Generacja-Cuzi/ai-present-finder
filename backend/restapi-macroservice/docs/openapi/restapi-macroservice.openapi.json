@@ -91,7 +91,7 @@
   "tags": [],
   "servers": [
     {
-      "url": "http://localhost:3006"
+      "url": "http://localhost:3002"
     }
   ],
   "components": {

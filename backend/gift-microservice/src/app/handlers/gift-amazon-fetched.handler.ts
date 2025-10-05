@@ -8,11 +8,9 @@ export class GiftAmazonFetchedHandler {
   private readonly logger = new Logger(GiftAmazonFetchedHandler.name);
 
   @EventPattern(AmazonFetchedEvent.name)
-  async handle(event: AmazonFetchedEvent) {
-    this.logger.log(`Received Amazon results: ${event.results.length} items`);
-
-    // Here you can process the Amazon results
-    // For example, store them, aggregate with other results, etc.
-    // This is where you would implement the business logic for handling Amazon search results
+  handle(event: AmazonFetchedEvent) {
+    this.logger.log(
+      `Received Amazon results: ${String(event.results.length)} items`,
+    );
   }
 }

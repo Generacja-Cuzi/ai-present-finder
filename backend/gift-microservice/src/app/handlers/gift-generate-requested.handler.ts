@@ -20,7 +20,7 @@ export class GiftGenerateRequestedHandler {
   ) {}
 
   @EventPattern(GiftGenerateRequestedEvent.name)
-  async handle(event: GiftGenerateRequestedEvent) {
+  handle(event: GiftGenerateRequestedEvent) {
     this.logger.log("Handling gift generate requested event");
 
     // Generate events for each platform
@@ -49,7 +49,7 @@ export class GiftGenerateRequestedHandler {
     }
 
     this.logger.log(
-      `Sent search requests for ${keywords.length} keywords to all platforms`,
+      `Sent search requests for ${String(keywords.length)} keywords to all platforms`,
     );
   }
 }

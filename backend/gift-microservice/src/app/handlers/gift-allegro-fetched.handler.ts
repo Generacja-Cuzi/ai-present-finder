@@ -8,11 +8,9 @@ export class GiftAllegroFetchedHandler {
   private readonly logger = new Logger(GiftAllegroFetchedHandler.name);
 
   @EventPattern(AllegroFetchedEvent.name)
-  async handle(event: AllegroFetchedEvent) {
-    this.logger.log(`Received Allegro results: ${event.results.length} items`);
-
-    // Here you can process the Allegro results
-    // For example, store them, aggregate with other results, etc.
-    // This is where you would implement the business logic for handling Allegro search results
+  handle(event: AllegroFetchedEvent) {
+    this.logger.log(
+      `Received Allegro results: ${String(event.results.length)} items`,
+    );
   }
 }

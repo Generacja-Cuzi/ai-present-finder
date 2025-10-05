@@ -28,7 +28,9 @@ export class FetchEbayRequestedHandler {
       const fetchedEvent = new EbayFetchedEvent(results);
       this.eventBus.emit(EbayFetchedEvent.name, fetchedEvent);
 
-      this.logger.log(`eBay search completed: ${results.length} results`);
+      this.logger.log(
+        `eBay search completed: ${String(results.length)} results`,
+      );
     } catch (error) {
       this.logger.error(`eBay search failed:`, error);
       // Send empty results on error

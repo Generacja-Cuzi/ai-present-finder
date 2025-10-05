@@ -28,7 +28,9 @@ export class FetchOlxRequestedHandler {
       const fetchedEvent = new OlxFetchedEvent(results);
       this.eventBus.emit(OlxFetchedEvent.name, fetchedEvent);
 
-      this.logger.log(`OLX search completed: ${results.length} results`);
+      this.logger.log(
+        `OLX search completed: ${String(results.length)} results`,
+      );
     } catch (error) {
       this.logger.error(`OLX search failed:`, error);
       // Send empty results on error

@@ -28,7 +28,9 @@ export class FetchAllegroRequestedHandler {
       const fetchedEvent = new AllegroFetchedEvent(results);
       this.eventBus.emit(AllegroFetchedEvent.name, fetchedEvent);
 
-      this.logger.log(`Allegro search completed: ${results.length} results`);
+      this.logger.log(
+        `Allegro search completed: ${String(results.length)} results`,
+      );
     } catch (error) {
       this.logger.error(`Allegro search failed:`, error);
       const fetchedEvent = new AllegroFetchedEvent([]);

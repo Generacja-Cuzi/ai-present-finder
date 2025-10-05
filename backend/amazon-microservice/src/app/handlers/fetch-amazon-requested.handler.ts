@@ -34,7 +34,9 @@ export class FetchAmazonRequestedHandler {
       const fetchedEvent = new AmazonFetchedEvent(results);
       this.eventBus.emit(AmazonFetchedEvent.name, fetchedEvent);
 
-      this.logger.log(`Amazon search completed: ${results.length} results`);
+      this.logger.log(
+        `Amazon search completed: ${String(results.length)} results`,
+      );
     } catch (error) {
       this.logger.error(`Amazon search failed:`, error);
       // Send empty results on error

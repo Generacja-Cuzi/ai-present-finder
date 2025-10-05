@@ -8,11 +8,9 @@ export class GiftOlxFetchedHandler {
   private readonly logger = new Logger(GiftOlxFetchedHandler.name);
 
   @EventPattern(OlxFetchedEvent.name)
-  async handle(event: OlxFetchedEvent) {
-    this.logger.log(`Received OLX results: ${event.results.length} items`);
-
-    // Here you can process the OLX results
-    // For example, store them, aggregate with other results, etc.
-    // This is where you would implement the business logic for handling OLX search results
+  handle(event: OlxFetchedEvent) {
+    this.logger.log(
+      `Received OLX results: ${String(event.results.length)} items`,
+    );
   }
 }

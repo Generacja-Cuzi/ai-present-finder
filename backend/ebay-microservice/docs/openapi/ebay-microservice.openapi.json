@@ -17,8 +17,8 @@
             }
           }
         },
-        "summary": "Returns the welcome message for the OLX microservice",
-        "tags": ["OLX"]
+        "summary": "Returns the welcome message for the eBay microservice",
+        "tags": ["eBay"]
       }
     },
     "/health": {
@@ -38,16 +38,16 @@
           }
         },
         "summary": "Health check endpoint",
-        "tags": ["OLX"]
+        "tags": ["eBay"]
       }
     },
-    "/olx": {
+    "/ebay": {
       "get": {
-        "operationId": "OlxController_fetchOlxGet",
+        "operationId": "EbayController_fetchEbayGet",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "List of OLX listings",
+            "description": "List of eBay listings",
             "content": {
               "application/json": {
                 "schema": {
@@ -60,15 +60,15 @@
             }
           }
         },
-        "summary": "Search OLX listings",
-        "tags": ["olx"]
+        "summary": "Search eBay listings",
+        "tags": ["ebay"]
       },
       "post": {
-        "operationId": "OlxController_fetchOlxPost",
+        "operationId": "EbayController_fetchEbayPost",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "List of OLX listings",
+            "description": "List of eBay listings",
             "content": {
               "application/json": {
                 "schema": {
@@ -81,37 +81,37 @@
             }
           }
         },
-        "summary": "Search OLX listings (POST)",
-        "tags": ["olx"]
+        "summary": "Search eBay listings (POST)",
+        "tags": ["ebay"]
       }
     }
   },
   "info": {
-    "title": "AI Present Finder - OLX Microservice",
-    "description": "Endpoints for searching OLX listings and retrieving product data.",
+    "title": "AI Present Finder - eBay Microservice",
+    "description": "Endpoints for searching eBay listings and retrieving product data.",
     "version": "1.0",
     "contact": {}
   },
   "tags": [],
   "servers": [
     {
-      "url": "http://localhost:3005"
+      "url": "http://localhost:3003"
     }
   ],
   "components": {
     "schemas": {
-      "FetchOlxDtoDocument": {
+      "FetchEbayDtoDocument": {
         "type": "object",
         "properties": {
           "query": {
             "type": "string",
             "description": "Search query",
-            "example": "lego set"
+            "example": "vintage camera"
           },
           "limit": {
             "type": "number",
             "description": "Max results to return",
-            "example": 40
+            "example": 20
           },
           "offset": {
             "type": "number",

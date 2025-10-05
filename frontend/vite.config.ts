@@ -19,4 +19,12 @@ export default defineConfig({
       "@": path.resolve(import.meta.dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    exclude: ["@grpc/proto-loader", "@grpc/grpc-js"], // 🧩 zapobiega błędom esbuilda
+  },
+  build: {
+    rollupOptions: {
+      external: ["@grpc/proto-loader", "@grpc/grpc-js"], // 🧩 nie bundluj tych paczek
+    },
+  },
 });

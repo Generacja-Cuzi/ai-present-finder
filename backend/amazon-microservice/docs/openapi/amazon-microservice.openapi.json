@@ -17,8 +17,8 @@
             }
           }
         },
-        "summary": "Returns the welcome message for the OLX microservice",
-        "tags": ["OLX"]
+        "summary": "Returns the welcome message for the Amazon microservice",
+        "tags": ["Amazon"]
       }
     },
     "/health": {
@@ -38,16 +38,16 @@
           }
         },
         "summary": "Health check endpoint",
-        "tags": ["OLX"]
+        "tags": ["Amazon"]
       }
     },
-    "/olx": {
+    "/amazon": {
       "get": {
-        "operationId": "OlxController_fetchOlxGet",
+        "operationId": "AmazonController_fetchAmazonGet",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "List of OLX listings",
+            "description": "List of Amazon listings",
             "content": {
               "application/json": {
                 "schema": {
@@ -60,15 +60,15 @@
             }
           }
         },
-        "summary": "Search OLX listings",
-        "tags": ["olx"]
+        "summary": "Search Amazon listings",
+        "tags": ["amazon"]
       },
       "post": {
-        "operationId": "OlxController_fetchOlxPost",
+        "operationId": "AmazonController_fetchAmazonPost",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "List of OLX listings",
+            "description": "List of Amazon listings",
             "content": {
               "application/json": {
                 "schema": {
@@ -81,42 +81,52 @@
             }
           }
         },
-        "summary": "Search OLX listings (POST)",
-        "tags": ["olx"]
+        "summary": "Search Amazon listings (POST)",
+        "tags": ["amazon"]
       }
     }
   },
   "info": {
-    "title": "AI Present Finder - OLX Microservice",
-    "description": "Endpoints for searching OLX listings and retrieving product data.",
+    "title": "AI Present Finder - Amazon Microservice",
+    "description": "Endpoints for searching Amazon listings and retrieving product data.",
     "version": "1.0",
     "contact": {}
   },
   "tags": [],
   "servers": [
     {
-      "url": "http://localhost:3005"
+      "url": "http://localhost:3002"
     }
   ],
   "components": {
     "schemas": {
-      "FetchOlxDtoDocument": {
+      "FetchAmazonDtoDocument": {
         "type": "object",
         "properties": {
           "query": {
             "type": "string",
             "description": "Search query",
-            "example": "lego set"
+            "example": "board game"
           },
           "limit": {
             "type": "number",
             "description": "Max results to return",
-            "example": 40
+            "example": 20
           },
           "offset": {
             "type": "number",
             "description": "Offset for pagination",
             "example": 0
+          },
+          "country": {
+            "type": "string",
+            "description": "Country code for Amazon site",
+            "example": "PL"
+          },
+          "page": {
+            "type": "number",
+            "description": "Page number for Amazon results",
+            "example": 1
           }
         },
         "required": ["query"]

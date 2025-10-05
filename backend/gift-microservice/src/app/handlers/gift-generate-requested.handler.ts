@@ -3,7 +3,6 @@ import { FetchAmazonRequestedEvent } from "src/domain/events/fetch-amazon-reques
 import { FetchEbayRequestedEvent } from "src/domain/events/fetch-ebay-requested.event";
 import { FetchOlxRequestedEvent } from "src/domain/events/fetch-olx-requested.event";
 import { GiftGenerateRequestedEvent } from "src/domain/events/gift-generate-requested.event";
-import { GiftReadyEvent } from "src/domain/events/gift-ready.event";
 
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { ClientProxy, EventPattern } from "@nestjs/microservices";

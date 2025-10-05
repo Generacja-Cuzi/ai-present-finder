@@ -17,8 +17,8 @@
             }
           }
         },
-        "summary": "Returns the welcome message for the OLX microservice",
-        "tags": ["OLX"]
+        "summary": "Returns the welcome message for the Allegro microservice",
+        "tags": ["Allegro"]
       }
     },
     "/health": {
@@ -38,16 +38,16 @@
           }
         },
         "summary": "Health check endpoint",
-        "tags": ["OLX"]
+        "tags": ["Allegro"]
       }
     },
-    "/olx": {
+    "/allegro": {
       "get": {
-        "operationId": "OlxController_fetchOlxGet",
+        "operationId": "AllegroController_fetchAllegroGet",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "List of OLX listings",
+            "description": "List of Allegro listings",
             "content": {
               "application/json": {
                 "schema": {
@@ -60,15 +60,15 @@
             }
           }
         },
-        "summary": "Search OLX listings",
-        "tags": ["olx"]
+        "summary": "Search Allegro listings",
+        "tags": ["allegro"]
       },
       "post": {
-        "operationId": "OlxController_fetchOlxPost",
+        "operationId": "AllegroController_fetchAllegroPost",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "List of OLX listings",
+            "description": "List of Allegro listings",
             "content": {
               "application/json": {
                 "schema": {
@@ -81,46 +81,25 @@
             }
           }
         },
-        "summary": "Search OLX listings (POST)",
-        "tags": ["olx"]
+        "summary": "Search Allegro listings (POST)",
+        "tags": ["allegro"]
       }
     }
   },
   "info": {
-    "title": "AI Present Finder - OLX Microservice",
-    "description": "Endpoints for searching OLX listings and retrieving product data.",
+    "title": "AI Present Finder - Allegro Microservice",
+    "description": "Endpoints for searching Allegro listings and retrieving product data.",
     "version": "1.0",
     "contact": {}
   },
   "tags": [],
   "servers": [
     {
-      "url": "http://localhost:3005"
+      "url": "http://localhost:3000"
     }
   ],
   "components": {
     "schemas": {
-      "FetchOlxDtoDocument": {
-        "type": "object",
-        "properties": {
-          "query": {
-            "type": "string",
-            "description": "Search query",
-            "example": "lego set"
-          },
-          "limit": {
-            "type": "number",
-            "description": "Max results to return",
-            "example": 40
-          },
-          "offset": {
-            "type": "number",
-            "description": "Offset for pagination",
-            "example": 0
-          }
-        },
-        "required": ["query"]
-      },
       "ListingDtoDocument": {
         "type": "object",
         "properties": {

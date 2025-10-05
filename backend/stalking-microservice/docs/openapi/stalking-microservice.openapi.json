@@ -7,12 +7,18 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Welcome message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
-        "tags": [
-          "App"
-        ]
+        "summary": "Returns the welcome message for the Stalking microservice",
+        "tags": ["Stalking"]
       }
     }
   },
@@ -30,36 +36,42 @@
   ],
   "components": {
     "schemas": {
-      "StalkingAnalyzeRequestDto": {
+      "StalkingAnalyzeRequestDtoDocument": {
         "type": "object",
         "properties": {
           "facebookUrl": {
             "type": "string",
+            "format": "url",
             "description": "Facebook profile URL",
             "example": "https://facebook.com/example"
           },
           "instagramUrl": {
             "type": "string",
+            "format": "url",
             "description": "Instagram profile URL",
             "example": "https://instagram.com/example"
           },
           "tiktokUrl": {
             "type": "string",
+            "format": "url",
             "description": "TikTok profile URL",
             "example": "https://tiktok.com/@example"
           },
           "youtubeUrl": {
             "type": "string",
+            "format": "url",
             "description": "YouTube channel URL",
             "example": "https://youtube.com/channel/ABC"
           },
           "xUrl": {
             "type": "string",
+            "format": "url",
             "description": "X (Twitter) profile URL",
             "example": "https://x.com/example"
           },
           "linkedinUrl": {
             "type": "string",
+            "format": "url",
             "description": "LinkedIn profile URL",
             "example": "https://linkedin.com/in/example"
           },
@@ -69,9 +81,7 @@
             "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           }
         },
-        "required": [
-          "chatId"
-        ]
+        "required": ["chatId"]
       }
     }
   }

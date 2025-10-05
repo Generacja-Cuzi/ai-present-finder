@@ -1,5 +1,5 @@
 // src/main.ts
-import { existsSync, mkdirSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
@@ -15,6 +15,12 @@ import { StalkingCompletedEvent } from "./domain/events/stalking-completed.event
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const logger = new Logger("AppLogger");
+
+  const port = Number(process.env.PORT ?? 3000);
+  const portString = String(port);
+  const cloudAmqpUrl =
+    process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672";
 
   app.enableCors({
     origin: ["http://localhost:5713", "http://localhost:5173"],
@@ -23,85 +29,76 @@ async function bootstrap() {
     allowedHeaders: ["Content-Type", "Authorization", "Cache-Control"],
   });
 
+  const swaggerServer =
+    process.env.SWAGGER_SERVER ?? `http://localhost:${portString}`;
+
   const config = new DocumentBuilder()
     .setTitle("AI Present Finder - REST API")
     .setDescription(
       "REST API for interacting with microservices: stalking requests, sending chat messages and streaming events via SSE.",
     )
     .setVersion("1.0")
-    .addServer(
-      process.env.SWAGGER_SERVER ||
-        `http://localhost:${process.env.PORT ?? 3000}`,
-    )
+    .addServer(swaggerServer)
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
 
-  const outDir = "docs/openapi";
-  if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
+  const outputDirectory = "docs/openapi";
+  if (!existsSync(outputDirectory)) {
+    mkdirSync(outputDirectory, { recursive: true });
+  }
   writeFileSync(
-    `${outDir}/restapi-macroservice.openapi.json`,
+    `${outputDirectory}/restapi-macroservice.openapi.json`,
     JSON.stringify(document, null, 2),
   );
+
   SwaggerModule.setup("docs", app, document, {
     swaggerOptions: { persistAuthorization: true },
     customSiteTitle: "AI Present Finder — REST API Docs",
   });
 
-  const logger = new Logger("AppLogger");
-
   const stalkingCompletedMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672"],
+      urls: [cloudAmqpUrl],
       queue: StalkingCompletedEvent.name,
-      queueOptions: {
-        durable: false,
-      },
+      queueOptions: { durable: false },
     },
   };
 
   const chatQuestionAskedMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672"],
+      urls: [cloudAmqpUrl],
       queue: ChatQuestionAskedEvent.name,
-      queueOptions: {
-        durable: false,
-      },
+      queueOptions: { durable: false },
     },
   };
 
   const chatAnswerProcessedMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672"],
+      urls: [cloudAmqpUrl],
       queue: ChatInterviewCompletedEvent.name,
-      queueOptions: {
-        durable: false,
-      },
+      queueOptions: { durable: false },
     },
   };
 
   const giftReadyMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672"],
+      urls: [cloudAmqpUrl],
       queue: GiftReadyEvent.name,
-      queueOptions: {
-        durable: false,
-      },
+      queueOptions: { durable: false },
     },
   };
 
   const chatInappropriateRequestMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672"],
+      urls: [cloudAmqpUrl],
       queue: ChatInappropriateRequestEvent.name,
-      queueOptions: {
-        durable: false,
-      },
+      queueOptions: { durable: false },
     },
   };
 
@@ -112,10 +109,9 @@ async function bootstrap() {
   app.connectMicroservice(chatInappropriateRequestMicroserviceOptions);
 
   await app.startAllMicroservices();
+  await app.listen(port);
 
-  await app.listen(process.env.PORT ?? 3000);
-
-  logger.log("Microservice is listening");
+  logger.log(`Microservice is listening on port ${portString}`);
 }
 
 void bootstrap();

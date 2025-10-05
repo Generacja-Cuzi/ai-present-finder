@@ -1,7 +1,9 @@
 import { z } from "zod";
 
+import { ApiProperty } from "@nestjs/swagger";
+
 import type { ListingDto } from "./listing.dto";
-import { listingDtoSchema } from "./listing.dto";
+import { ListingDtoDocument, listingDtoSchema } from "./listing.dto";
 
 export const giftReadyDtoSchema = z.object({
   giftIdeas: z.array(listingDtoSchema),
@@ -9,9 +11,7 @@ export const giftReadyDtoSchema = z.object({
 
 export type GiftReadyDto = z.infer<typeof giftReadyDtoSchema>;
 
-import { ApiProperty } from '@nestjs/swagger';
-
-export class GiftReadyDtoDoc implements GiftReadyDto {
-  @ApiProperty({ type: Object, isArray: true })
+export class GiftReadyDtoDocument implements GiftReadyDto {
+  @ApiProperty({ type: ListingDtoDocument, isArray: true })
   giftIdeas: ListingDto[];
 }

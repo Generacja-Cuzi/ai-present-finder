@@ -10,7 +10,7 @@ export class ChatUserAnsweredHandler {
   constructor(private readonly commandBus: CommandBus) {}
 
   @EventPattern(ChatUserAnsweredEvent.name)
-  async handle(event: ChatUserAnsweredEvent) {
+  async handle(event: ChatUserAnsweredEvent): Promise<void> {
     await this.commandBus.execute(
       new GenerateQuestionCommand(event.context, event.messages),
     );

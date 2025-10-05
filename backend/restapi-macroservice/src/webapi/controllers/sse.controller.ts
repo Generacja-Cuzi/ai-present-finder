@@ -1,24 +1,25 @@
-import { Controller, Query, Res, Sse } from '@nestjs/common';
-import { Response } from 'express';
-import { Observable } from 'rxjs';
-import { SseService } from 'src/app/services/sse-service';
-import { RegisterUserSseDto } from 'src/domain/models/register-user-sse.dto';
+import { Response } from "express";
+import { Observable } from "rxjs";
+import { SseService } from "src/app/services/sse-service";
+import { RegisterUserSseDto } from "src/domain/models/register-user-sse.dto";
 import {
-  SseMessageDto,
-  SseStalkingStartedDto,
-  SseStalkingCompletedDto,
-  SseChatbotMessageDto,
-  SseChatInterviewCompletedDto,
   SseChatInappropriateRequestDto,
+  SseChatInterviewCompletedDto,
+  SseChatbotMessageDto,
   SseGiftReadyDto,
-} from 'src/domain/models/sse-message.dto';
+  SseMessageDto,
+  SseStalkingCompletedDto,
+  SseStalkingStartedDto,
+} from "src/domain/models/sse-message.dto";
+
+import { Controller, Query, Res, Sse } from "@nestjs/common";
 import {
-  ApiTags,
   ApiExtraModels,
-  ApiQuery,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
-} from '@nestjs/swagger';
+  ApiTags,
+} from "@nestjs/swagger";
 
 @ApiExtraModels(
   SseStalkingStartedDto,
@@ -28,19 +29,19 @@ import {
   SseChatInappropriateRequestDto,
   SseGiftReadyDto,
 )
-@ApiTags('sse')
+@ApiTags("sse")
 @Controller()
 export class SseController {
   constructor(private readonly sseService: SseService) {}
 
-  @Sse('sse')
-  @ApiOperation({ summary: 'Subscribe to server-sent events stream' })
+  @Sse("sse")
+  @ApiOperation({ summary: "Subscribe to server-sent events stream" })
   @ApiQuery({
-    name: 'clientId',
+    name: "clientId",
     required: true,
-    description: 'Client identifier to register for SSE',
+    description: "Client identifier to register for SSE",
   })
-  @ApiResponse({ status: 200, description: 'Event stream of SSE messages' })
+  @ApiResponse({ status: 200, description: "Event stream of SSE messages" })
   sse(
     @Query() query: RegisterUserSseDto,
     @Res() response: Response,

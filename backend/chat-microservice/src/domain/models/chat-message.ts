@@ -1,5 +1,6 @@
-import z from 'zod';
-import { ApiProperty } from '@nestjs/swagger';
+import { z } from "zod";
+
+import { ApiProperty } from "@nestjs/swagger";
 
 export const chatMessageSchema = z.object({
   id: z.uuid(),
@@ -9,16 +10,25 @@ export const chatMessageSchema = z.object({
 
 export type ChatMessage = z.infer<typeof chatMessageSchema>;
 
-export class ChatMessageDto {
+export class ChatMessageDtoDocument implements ChatMessage {
   @ApiProperty({
-    format: 'uuid',
-    example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+    type: String,
+    format: "uuid",
+    example: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   })
   id: string;
 
-  @ApiProperty({ example: 'Hello, how can I help?' })
+  @ApiProperty({
+    type: String,
+    description: "Message content",
+    example: "Hello, how can I help?",
+  })
   content: string;
 
-  @ApiProperty({ enum: ['user', 'assistant'], example: 'user' })
-  sender: 'user' | 'assistant';
+  @ApiProperty({
+    enum: ["user", "assistant"],
+    description: "Message sender",
+    example: "user",
+  })
+  sender: "user" | "assistant";
 }

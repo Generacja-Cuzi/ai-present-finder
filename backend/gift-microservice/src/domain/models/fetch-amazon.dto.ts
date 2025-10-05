@@ -1,5 +1,6 @@
-import z from 'zod';
-import { ApiProperty } from '@nestjs/swagger';
+import { z } from "zod";
+
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export const fetchAmazonDtoSchema = z.object({
   query: z.string().min(1),
@@ -11,33 +12,41 @@ export const fetchAmazonDtoSchema = z.object({
 
 export type FetchAmazonDto = z.infer<typeof fetchAmazonDtoSchema>;
 
-export class FetchAmazonDtoDoc implements FetchAmazonDto {
-  @ApiProperty({ description: 'Search query', example: 'board game' })
+export class FetchAmazonDtoDocument implements FetchAmazonDto {
+  @ApiProperty({
+    type: String,
+    description: "Search query",
+    example: "board game",
+  })
   query: string;
 
-  @ApiProperty({
-    description: 'Max results to return',
+  @ApiPropertyOptional({
+    type: Number,
+    description: "Max results to return",
     example: 20,
     required: false,
   })
   limit?: number;
 
-  @ApiProperty({
-    description: 'Offset for pagination',
+  @ApiPropertyOptional({
+    type: Number,
+    description: "Offset for pagination",
     example: 0,
     required: false,
   })
   offset?: number;
 
-  @ApiProperty({
-    description: 'Country code for Amazon site',
-    example: 'PL',
+  @ApiPropertyOptional({
+    type: String,
+    description: "Country code for Amazon site",
+    example: "PL",
     required: false,
   })
   country?: string;
 
-  @ApiProperty({
-    description: 'Page number for Amazon results',
+  @ApiPropertyOptional({
+    type: Number,
+    description: "Page number for Amazon results",
     example: 1,
     required: false,
   })

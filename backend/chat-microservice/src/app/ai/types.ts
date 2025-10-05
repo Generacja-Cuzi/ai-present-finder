@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { ApiProperty } from "@nestjs/swagger";
+
 export const endConversationOutputSchema = z.object({
   recipient_profile: z.array(z.string()),
   key_themes_and_keywords: z.array(z.string()),
@@ -8,27 +10,25 @@ export const endConversationOutputSchema = z.object({
 
 export type EndConversationOutput = z.infer<typeof endConversationOutputSchema>;
 
-import { ApiProperty } from '@nestjs/swagger';
-
-export class EndConversationOutputDto {
+export class EndConversationOutputDocument {
   @ApiProperty({
-    type: 'array',
-    items: { type: 'string' },
-    example: ['engineer', 'book lover'],
+    type: String,
+    isArray: true,
+    example: ["engineer", "book lover"],
   })
-  recipient_profile: string[];
+  recipient_profile!: string[];
 
   @ApiProperty({
-    type: 'array',
-    items: { type: 'string' },
-    example: ['programming', 'reading'],
+    type: String,
+    isArray: true,
+    example: ["programming", "reading"],
   })
-  key_themes_and_keywords: string[];
+  key_themes_and_keywords!: string[];
 
   @ApiProperty({
-    type: 'array',
-    items: { type: 'string' },
-    example: ['kindle', 'mechanical keyboard'],
+    type: String,
+    isArray: true,
+    example: ["kindle", "mechanical keyboard"],
   })
-  gift_recommendations: string[];
+  gift_recommendations!: string[];
 }

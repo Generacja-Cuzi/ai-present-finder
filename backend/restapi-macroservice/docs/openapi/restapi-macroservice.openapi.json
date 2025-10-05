@@ -7,12 +7,18 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Returns a welcome message from the Gift service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
-        "tags": [
-          "App"
-        ]
+        "summary": "Returns the welcome message for the Gift microservice",
+        "tags": ["Gift"]
       }
     },
     "/restapi/stalking-request": {
@@ -35,9 +41,7 @@
           }
         },
         "summary": "Request stalking analysis for provided social profiles",
-        "tags": [
-          "restapi"
-        ]
+        "tags": ["restapi"]
       }
     },
     "/restapi/send-message": {
@@ -50,9 +54,7 @@
           }
         },
         "summary": "Send chat messages to the system",
-        "tags": [
-          "restapi"
-        ]
+        "tags": ["restapi"]
       }
     },
     "/sse": {
@@ -76,9 +78,7 @@
           }
         },
         "summary": "Subscribe to server-sent events stream",
-        "tags": [
-          "sse"
-        ]
+        "tags": ["sse"]
       }
     }
   },
@@ -96,7 +96,7 @@
   ],
   "components": {
     "schemas": {
-      "SendMessageDtoDoc": {
+      "SendMessageDtoDocument": {
         "type": "object",
         "properties": {
           "messages": {
@@ -112,10 +112,7 @@
             "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           }
         },
-        "required": [
-          "messages",
-          "chatId"
-        ]
+        "required": ["messages", "chatId"]
       },
       "StalkingAnalyzeRequestDto": {
         "type": "object",
@@ -156,67 +153,89 @@
             "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           }
         },
-        "required": [
-          "chatId"
-        ]
+        "required": ["chatId"]
       },
       "SseStalkingStartedDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
+            "enum": ["stalking-started"],
             "example": "stalking-started"
           }
         },
-        "required": [
-          "type"
-        ]
+        "required": ["type"]
       },
       "SseStalkingCompletedDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
+            "enum": ["stalking-completed"],
             "example": "stalking-completed"
           }
         },
-        "required": [
-          "type"
-        ]
+        "required": ["type"]
+      },
+      "ChatMessageDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique message identifier",
+            "format": "uuid",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          },
+          "content": {
+            "type": "string",
+            "description": "Message content",
+            "example": "Hello!"
+          },
+          "sender": {
+            "type": "string",
+            "enum": ["user", "assistant"],
+            "description": "Message sender",
+            "example": "user"
+          }
+        },
+        "required": ["id", "content", "sender"]
       },
       "SseChatbotMessageDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
+            "enum": ["chatbot-message"],
             "example": "chatbot-message"
           },
           "message": {
-            "type": "object"
+            "description": "Chat message from the bot",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ChatMessageDto"
+              }
+            ]
           }
         },
-        "required": [
-          "type",
-          "message"
-        ]
+        "required": ["type", "message"]
       },
       "SseChatInterviewCompletedDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
+            "enum": ["chat-interview-completed"],
             "example": "chat-interview-completed"
           }
         },
-        "required": [
-          "type"
-        ]
+        "required": ["type"]
       },
       "SseChatInappropriateRequestDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
+            "enum": ["chat-inappropriate-request"],
             "example": "chat-inappropriate-request"
           },
           "reason": {
@@ -225,26 +244,25 @@
             "example": "inappropriate content"
           }
         },
-        "required": [
-          "type",
-          "reason"
-        ]
+        "required": ["type", "reason"]
       },
       "SseGiftReadyDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
+            "enum": ["gift-ready"],
             "example": "gift-ready"
           },
           "data": {
-            "type": "object"
+            "type": "object",
+            "description": "Gift ideas payload",
+            "example": {
+              "giftIdeas": ["book", "pen"]
+            }
           }
         },
-        "required": [
-          "type",
-          "data"
-        ]
+        "required": ["type", "data"]
       }
     }
   }

@@ -1,5 +1,6 @@
-import z from 'zod';
-import { ApiProperty } from '@nestjs/swagger';
+import { z } from "zod";
+
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export const fetchOlxDtoSchema = z.object({
   query: z.string().min(1),
@@ -9,19 +10,25 @@ export const fetchOlxDtoSchema = z.object({
 
 export type FetchOlxDto = z.infer<typeof fetchOlxDtoSchema>;
 
-export class FetchOlxDtoDoc implements FetchOlxDto {
-  @ApiProperty({ description: 'Search query', example: 'lego set' })
+export class FetchOlxDtoDocument implements FetchOlxDto {
+  @ApiProperty({
+    type: String,
+    description: "Search query",
+    example: "lego set",
+  })
   query: string;
 
-  @ApiProperty({
-    description: 'Max results to return',
+  @ApiPropertyOptional({
+    type: Number,
+    description: "Max results to return",
     example: 40,
     required: false,
   })
   limit?: number;
 
-  @ApiProperty({
-    description: 'Offset for pagination',
+  @ApiPropertyOptional({
+    type: Number,
+    description: "Offset for pagination",
     example: 0,
     required: false,
   })

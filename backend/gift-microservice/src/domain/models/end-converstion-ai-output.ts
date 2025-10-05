@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { ApiProperty } from "@nestjs/swagger";
+
 export const endConversationOuputSchema = z.object({
   recipient_profile: z.array(z.string()),
   key_themes_and_keywords: z.array(z.string()),
@@ -8,15 +10,28 @@ export const endConversationOuputSchema = z.object({
 
 export type EndConversationOutput = z.infer<typeof endConversationOuputSchema>;
 
-import { ApiProperty } from '@nestjs/swagger';
-
-export class EndConversationOutputDoc implements EndConversationOutput {
-  @ApiProperty({ type: [String] })
+export class EndConversationOutputDocument implements EndConversationOutput {
+  @ApiProperty({
+    type: String,
+    isArray: true,
+    example: ["engineer", "book lover"],
+    description: "Profile of the recipient",
+  })
   recipient_profile: string[];
 
-  @ApiProperty({ type: [String] })
+  @ApiProperty({
+    type: String,
+    isArray: true,
+    example: ["technology", "books"],
+    description: "LLM key themes and keywords",
+  })
   key_themes_and_keywords: string[];
 
-  @ApiProperty({ type: [String] })
+  @ApiProperty({
+    type: String,
+    isArray: true,
+    example: ["smartwatch", "book"],
+    description: "LLM gift recommendations",
+  })
   gift_recommendations: string[];
 }

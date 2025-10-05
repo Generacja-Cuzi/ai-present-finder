@@ -7,12 +7,18 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Returns welcome message from Chat service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
-        "tags": [
-          "App"
-        ]
+        "summary": "Get welcome message from Chat service",
+        "tags": ["Chat"]
       }
     }
   },
@@ -25,12 +31,12 @@
   "tags": [],
   "servers": [
     {
-      "url": "http://localhost:3001"
+      "url": "http://localhost:3005"
     }
   ],
   "components": {
     "schemas": {
-      "ChatMessageDto": {
+      "ChatMessageDtoDocument": {
         "type": "object",
         "properties": {
           "id": {
@@ -40,36 +46,28 @@
           },
           "content": {
             "type": "string",
+            "description": "Message content",
             "example": "Hello, how can I help?"
           },
           "sender": {
             "type": "string",
-            "enum": [
-              "user",
-              "assistant"
-            ],
+            "enum": ["user", "assistant"],
+            "description": "Message sender",
             "example": "user"
           }
         },
-        "required": [
-          "id",
-          "content",
-          "sender"
-        ]
+        "required": ["id", "content", "sender"]
       },
-      "ContextDto": {
+      "ContextDtoDocument": {
         "type": "object",
         "properties": {
           "keywords": {
+            "description": "Keywords that describe the context",
+            "example": ["books", "programming"],
             "type": "array",
             "items": {
               "type": "string"
-            },
-            "description": "Keywords that describe the context",
-            "example": [
-              "books",
-              "programming"
-            ]
+            }
           },
           "chatId": {
             "type": "string",
@@ -77,43 +75,31 @@
             "example": "b3d9f9f0-3c2b-4f9a-9c2a-0d1e2f3a4b5c"
           }
         },
-        "required": [
-          "keywords",
-          "chatId"
-        ]
+        "required": ["keywords", "chatId"]
       },
-      "EndConversationOutputDto": {
+      "EndConversationOutputDocument": {
         "type": "object",
         "properties": {
           "recipient_profile": {
+            "example": ["engineer", "book lover"],
             "type": "array",
             "items": {
               "type": "string"
-            },
-            "example": [
-              "engineer",
-              "book lover"
-            ]
+            }
           },
           "key_themes_and_keywords": {
+            "example": ["programming", "reading"],
             "type": "array",
             "items": {
               "type": "string"
-            },
-            "example": [
-              "programming",
-              "reading"
-            ]
+            }
           },
           "gift_recommendations": {
+            "example": ["kindle", "mechanical keyboard"],
             "type": "array",
             "items": {
               "type": "string"
-            },
-            "example": [
-              "kindle",
-              "mechanical keyboard"
-            ]
+            }
           }
         },
         "required": [

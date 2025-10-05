@@ -1,5 +1,6 @@
-import z from 'zod';
-import { ApiProperty } from '@nestjs/swagger';
+import { z } from "zod";
+
+import { ApiProperty } from "@nestjs/swagger";
 
 export const listingDtoSchema = z.object({
   image: z.url().nullable(),
@@ -16,30 +17,37 @@ export const listingDtoSchema = z.object({
 
 export type ListingDto = z.infer<typeof listingDtoSchema>;
 
-export class ListingDtoDoc implements ListingDto {
+export class ListingDtoDocument implements ListingDto {
   @ApiProperty({
-    description: 'Image URL',
-    example: 'https://example.com/image.jpg',
+    type: String,
+    description: "Image URL",
+    example: "https://example.com/image.jpg",
     nullable: true,
   })
   image: string | null;
 
-  @ApiProperty({ description: 'Listing title', example: 'Lego Star Wars Set' })
+  @ApiProperty({
+    type: String,
+    description: "Listing title",
+    example: "Lego Star Wars Set",
+  })
   title: string;
 
   @ApiProperty({
-    description: 'Detailed description',
-    example: 'Great condition, used once',
+    type: String,
+    description: "Detailed description",
+    example: "Great condition, used once",
   })
   description: string;
 
   @ApiProperty({
-    description: 'Link to listing',
-    example: 'https://olx.pl/...',
+    type: String,
+    description: "Link to listing",
+    example: "https://olx.pl/...",
   })
   link: string;
 
-  @ApiProperty({ description: 'Price details', type: () => Object })
+  @ApiProperty({ description: "Price details", type: () => Object })
   price: {
     value: number | null;
     label: string | null;

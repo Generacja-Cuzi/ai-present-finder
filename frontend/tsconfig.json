@@ -20,6 +20,8 @@
     "verbatimModuleSyntax": true,
     "noEmit": true,
 
+    "experimentalDecorators": true,
+
     /* Linting */
     "skipLibCheck": true,
     "strict": true,

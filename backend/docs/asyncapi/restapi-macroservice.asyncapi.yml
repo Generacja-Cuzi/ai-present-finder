@@ -183,6 +183,17 @@ components:
             type: string
             format: date-time
           chatId: { type: string }
+          profiles:
+            type: array
+            items:
+              type: object
+              properties:
+                source: { type: string }
+                url: { type: string }
+                fetchedAt:
+                  type: string
+                  format: date-time
+                raw: {}
 
     # zewnętrzne komunikaty z innych speców (PLIKI W TYM SAMYM KATALOGU!)
     ChatQuestionAsked:

@@ -4,6 +4,7 @@ import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AllegroModule } from "./webapi/modules/allegro.module";
+import { DatabaseModule } from "./webapi/modules/database.module";
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { AllegroModule } from "./webapi/modules/allegro.module";
       isGlobal: true,
     }),
     AllegroModule,
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

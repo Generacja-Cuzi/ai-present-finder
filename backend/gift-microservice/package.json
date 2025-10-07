@@ -10,6 +10,9 @@
     "dev": "nest start --watch",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "migration:generate": "npm run typeorm -- migration:generate -d data-source.ts",
+    "migration:revert": "npm run typeorm -- migration:revert -d data-source.ts",
+    "migration:run": "npm run typeorm -- migration:run -d data-source.ts",
     "start": "nest start",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -17,7 +20,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "typeorm": "typeorm-ts-node-commonjs"
   },
   "lint-staged": {
     "*": "prettier -w --ignore-unknown"
@@ -49,6 +53,7 @@
     "@nestjs/microservices": "^11.0.13",
     "@nestjs/platform-express": "^11.0.13",
     "@nestjs/swagger": "^11.2.0",
+    "@nestjs/typeorm": "^10.0.2",
     "@supabase/supabase-js": "^2.49.4",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.7",
@@ -57,6 +62,7 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^4.6.3",
+    "typeorm": "^0.3.20",
     "zod": "^4.1.8"
   },
   "devDependencies": {

@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  ebay-db:
+    image: postgres:15-alpine
+    container_name: ebay-microservice-db
+    ports:
+      - "5437:5432"
+    environment:
+      POSTGRES_DB: ebay_microservice
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ebay_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  ebay_db_data:

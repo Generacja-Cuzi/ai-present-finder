@@ -279,3 +279,25 @@ components:
                   nullable: true
           chatId:
             type: string
+            format: date-time
+          profiles:
+            type: array
+            items:
+              type: object
+              properties:
+                source: { type: string }
+                url: { type: string }
+                fetchedAt:
+                  type: string
+                  format: date-time
+                raw: {}
+
+    # zewnętrzne komunikaty z innych speców (PLIKI W TYM SAMYM KATALOGU!)
+    ChatQuestionAsked:
+      $ref: "./chat-microservice.asyncapi.yml#/components/messages/ChatQuestionAsked"
+    ChatInterviewCompleted:
+      $ref: "./chat-microservice.asyncapi.yml#/components/messages/ChatInterviewCompleted"
+    GiftReady:
+      $ref: "./gift-microservice.asyncapi.yml#/components/messages/GiftReady"
+    ChatInappropriateRequest:
+      $ref: "./chat-microservice.asyncapi.yml#/components/messages/ChatInappropriateRequest"

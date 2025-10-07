@@ -1,6 +1,7 @@
 import { StalkingCompletedEvent } from "@core/events";
 import { StalkingAnalyzeRequestHandler } from "src/app/handlers/stalking-analyze-request.handler";
 import { StalkingAnalyzeHandler } from "src/app/handlers/stalking-analyze.handler";
+import { BrightDataService } from "src/app/services/brightdata.service";
 
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
@@ -29,7 +30,7 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
       },
     ]),
   ],
-  controllers: [StalkingAnalyzeRequestHandler],
-  providers: [StalkingAnalyzeHandler],
+  controllers: [ StalkingAnalyzeRequestHandler],
+  providers: [StalkingAnalyzeHandler, BrightDataService],
 })
 export class StalkingModule {}

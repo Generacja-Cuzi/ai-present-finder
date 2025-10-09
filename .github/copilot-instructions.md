@@ -46,4 +46,106 @@ These notes make AI coding agents immediately productive in this repo. Keep edit
 - CQRS: stalking-analyze.handler.ts and stalking-analyze-request.handler.ts; restapi StalkingAnalyzeRequestCommand.
 - BrightData integration: stalking-microservice/src/app/services/brightdata.service.ts (+ DATASET_MAP) and its tests.
 
-Questions or gaps? Tell me what’s unclear and I’ll refine these instructions.
+## Guidelines
+
+- Don't write README.md files about new features. The root README.md covers everything.
+
+### **Project Architectural Guidelines & File Structure**
+
+#### **1. Philosophy**
+
+Our project is built on a microservices architecture that values clear separation of concerns. To achieve this, we apply principles from **Clean Architecture**. The most important rule is the **Dependency Rule**: code dependencies must always point from outer layers (like the web API and database) to inner layers (our core business logic). The `domain` should be independent of all other parts.
+
+#### **2. Core Structure: Service & Feature Organization**
+
+Our codebase is organized by service (e.g., `chat-microservice`), and within each service, we organize by feature. The primary entry point for a feature's configuration is its NestJS module file, typically found in `webapi/modules/`.
+
+#### **3. The Architectural Layers**
+
+Within each service's `src` directory, we use the following folder structure to separate our concerns.
+
+##### **`domain` (The Core Business Logic)**
+
+This is the heart of the service. It contains the business rules, models, and events that are central to its purpose. It is pure, framework-agnostic, and has **no external dependencies**.
+
+- **Purpose**: To define the "what" of our business domain.
+- **Contents**:
+  - `models/`: Core business objects (e.g., `chat-message.ts`). These should be plain classes or interfaces. **Note: DTOs for web requests/responses do not belong here.**
+  - `events/`: Domain events that describe significant occurrences (e.g., `chat-interview-completed.event.ts`).
+  - `commands/` & `queries/`: Data structures that represent an intent to change the system or request information.
+  - **Repository Interfaces**: If persistence is needed, the abstract class or interface for the repository **must be defined here** (e.g., `igift-session.repository.ts`).
+
+##### **`app` (The Application Layer)**
+
+This layer contains the specific logic that orchestrates the domain objects to perform tasks. These are our use cases.
+
+- **Purpose**: To define the "how" of our application's features. It directs the flow of data and calls upon the `domain`.
+- **Dependencies**: Depends only on the `domain` layer.
+- **Contents**:
+  - `handlers/`: These are our **Use Cases**. Each handler should be responsible for a single application action (e.g., `chat-start-interview.handler.ts`). They are triggered by controllers or event listeners.
+  - `ai/`, `services/`: Any application-specific services or logic that is needed to carry out a use case.
+
+##### **`webapi` & Infrastructure (The Outer Layer)**
+
+This layer contains all the details for interacting with the outside world, such as our web framework, database connections, and other external services. We group these concerns together.
+
+- **Purpose**: To act as the interface to the outside world and provide concrete implementations for the abstractions defined in the `domain`.
+- **Dependencies**: Depends on the `app` and `domain` layers.
+- **Contents**:
+  - **`webapi/`**: Our primary presentation layer.
+    - `controllers/`: NestJS controllers that handle incoming requests. Their only job is to validate input (DTOs), call the correct handler in the `app` layer, and format the response.
+    - `modules/`: The NestJS modules that act as our **Composition Root**, wiring all the dependencies together for a feature.
+    - `dtos/`: **(New convention)** A dedicated folder for Data Transfer Objects used by the controllers. This keeps them out of the `domain`.
+  - **`infrastructure/` or `persistence/`**: **(New convention)** A dedicated folder at the `src` root for concrete implementations of external-facing concerns.
+    - e.g., `persistence/prisma/gift-session.prisma.repository.ts`. This class would implement the repository interface defined in the `domain`.
+
+#### **4. The Composition Root: The Feature Module**
+
+The NestJS module file (e.g., `webapi/modules/chat.module.ts`) is where we connect the layers. We map the abstract interfaces from the `domain` to the concrete classes from our infrastructure (`persistence`).
+
+```typescript
+// src/webapi/modules/chat.module.ts
+
+@Module({
+  controllers: [ChatController], // From src/webapi/controllers/
+  providers: [
+    // All Handlers from src/app/handlers/
+    ChatStartInterviewHandler,
+    ChatUserAnsweredHandler,
+
+    // The mapping of the domain repository interface to its concrete implementation
+    {
+      provide: IChatSessionRepository, // The abstraction from src/domain/
+      useClass: ChatSessionDbRepository, // The concrete class from src/persistence/
+    },
+  ],
+})
+export class ChatModule {}
+```
+
+#### **5. Example: Scaffolding a New "Orders" Feature**
+
+When creating a new feature within a service, follow this template:
+
+```plaintext
+src/
+├── app/
+│   └── handlers/
+│       └── create-order.handler.ts
+├── domain/
+│   ├── commands/
+│   │   └── create-order.command.ts
+│   ├── models/
+│   │   └── order.ts
+│   └── repositories/
+│       └── iorder.repository.ts
+├── persistence/
+│   └── order.db.repository.ts    // Implements IOrderRepository
+└── webapi/
+    ├── controllers/
+    │   └── order.controller.ts
+    ├── dtos/
+    │   └── create-order.dto.ts
+    └── modules/
+        └── order.module.ts
+```

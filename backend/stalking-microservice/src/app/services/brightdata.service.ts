@@ -1,6 +1,9 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import type { InstagramProfileResponse } from "src/domain/types/instagram.types";
 import type { TikTokProfileResponse } from "src/domain/types/tiktok.types";
 import type { XPostsResponse } from "src/domain/types/x-posts.types";
+import type { EnvironmentVariables } from "src/webapi/config/environment.config";
 
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -103,18 +106,29 @@ export class BrightDataService {
   private readonly logger = new Logger(BrightDataService.name);
   private readonly apiKey: string;
   private readonly endpoint: string;
+  private readonly useMockData: boolean;
 
-  constructor(private readonly configService: ConfigService) {
-    this.apiKey = this.configService
-      .get<string>("BRIGHTDATA_API_KEY", "")
-      .trim();
-    this.endpoint = this.configService.get<string>(
-      "BRIGHTDATA_ENDPOINT",
-      "https://api.brightdata.com/datasets/v3/scrape",
-    );
+  constructor(
+    private readonly configService: ConfigService<EnvironmentVariables, true>,
+  ) {
+    this.apiKey = this.configService.get("BRIGHTDATA_API_KEY", {
+      infer: true,
+    });
+    this.endpoint = this.configService.get("BRIGHTDATA_ENDPOINT", {
+      infer: true,
+    });
+    this.useMockData = this.configService.get("USE_MOCK_DATA", {
+      infer: true,
+    });
 
-    if (!this.apiKey) {
+    if (!this.apiKey && !this.useMockData) {
       throw new Error("Missing BRIGHTDATA_API_KEY");
+    }
+
+    if (this.useMockData) {
+      this.logger.warn(
+        "🔧 Mock data mode is enabled. Scraping will use local mock files.",
+      );
     }
   }
 
@@ -176,6 +190,10 @@ export class BrightDataService {
   private async scrapeSingle(
     item: ScrapeRequestItem,
   ): Promise<AnyProfileScrapeResult | null> {
+    if (this.useMockData) {
+      return this.loadMockData(item);
+    }
+
     const datasetId = this.resolveDatasetId(item);
     const requestUrl = `${this.endpoint}?dataset_id=${encodeURIComponent(datasetId)}`;
 
@@ -273,30 +291,67 @@ export class BrightDataService {
   }
 
   private detectSource(url: string): string {
-    try {
-      const hostname = new URL(url).hostname.toLowerCase();
-      if (hostname.includes("facebook")) {
-        return "facebook";
+    const hostname = new URL(url).hostname.toLowerCase();
+    if (hostname.includes("facebook")) {
+      return "facebook";
+    }
+    if (hostname.includes("instagram")) {
+      return "instagram";
+    }
+    if (hostname.includes("tiktok")) {
+      return "tiktok";
+    }
+    if (hostname.includes("youtube")) {
+      return "youtube";
+    }
+    if (hostname.includes("linkedin")) {
+      return "linkedin";
+    }
+    if (hostname.endsWith("x.com") || hostname.includes("twitter")) {
+      return "x";
+    }
+    return hostname;
+  }
+
+  private loadMockData(item: ScrapeRequestItem): AnyProfileScrapeResult | null {
+    const source = this.detectSource(item.url);
+
+    this.logger.debug(`Loading mock data for ${source} profile: ${item.url}`);
+
+    switch (source) {
+      case "instagram": {
+        const mockFilePath = path.join(
+          process.cwd(),
+          "src",
+          "app",
+          "services",
+          "instagram_mock_response.json",
+        );
+        const mockDataRaw = readFileSync(mockFilePath, "utf8");
+        const parsed = JSON.parse(mockDataRaw) as InstagramProfileResponse;
+
+        return {
+          type: "instagram",
+          url: item.url,
+          fetchedAt: new Date().toISOString(),
+          raw: parsed,
+        };
       }
-      if (hostname.includes("instagram")) {
-        return "instagram";
+      case "tiktok": {
+        // TODO: Add TikTok mock data when available
+        this.logger.warn("TikTok mock data not yet implemented");
+        return null;
       }
-      if (hostname.includes("tiktok")) {
-        return "tiktok";
+      case "x":
+      case "twitter": {
+        // TODO: Add X/Twitter mock data when available
+        this.logger.warn("X/Twitter mock data not yet implemented");
+        return null;
       }
-      if (hostname.includes("youtube")) {
-        return "youtube";
+      default: {
+        this.logger.warn(`Mock data not available for source: ${source}`);
+        return null;
       }
-      if (hostname.includes("linkedin")) {
-        return "linkedin";
-      }
-      if (hostname.endsWith("x.com") || hostname.includes("twitter")) {
-        return "x";
-      }
-      return hostname;
-    } catch {
-      this.logger.warn(`Unable to detect source for url: ${url}`);
-      return "unknown";
     }
   }
 }

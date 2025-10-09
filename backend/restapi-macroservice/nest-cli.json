@@ -5,5 +5,5 @@
   "compilerOptions": {
     "deleteOutDir": true
   },
-  "entryFile": "restapi-macroservice/src/main"
+  "entryFile": "backend/restapi-macroservice/src/main"
 }

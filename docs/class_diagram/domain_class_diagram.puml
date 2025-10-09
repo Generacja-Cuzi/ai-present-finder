@@ -1,4 +1,4 @@
-@startuml Domain Class Diagram - AI Present Finder v2
+@startuml Domain Class Diagram
 
 hide circle
 skinparam linetype ortho

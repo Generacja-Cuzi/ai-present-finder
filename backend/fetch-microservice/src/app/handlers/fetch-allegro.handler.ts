@@ -66,6 +66,7 @@ export class FetchAllegroHandler {
         "allegro",
         true,
         event.eventUuid,
+        event.totalEvents,
       );
 
       this.logger.log(
@@ -85,7 +86,7 @@ export class FetchAllegroHandler {
         "allegro",
         false,
         event.eventUuid,
-        errorMessage,
+        event.totalEvents,
       );
 
       this.eventBus.emit(ProductFetchedEvent.name, productFetchedEvent);

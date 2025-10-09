@@ -73,6 +73,7 @@ describe("FetchEbayHandler (with .env, OLX-like structure)", () => {
       "test-request-id",
       "test-chat-id",
       "test-event-uuid",
+      10,
     );
 
     await handler.handle(event);

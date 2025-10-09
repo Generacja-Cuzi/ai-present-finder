@@ -8,7 +8,7 @@
     "build": "pnpm -r build",
     "clean": "pnpm -r clean && rm -rf node_modules",
     "dev": "concurrently \"pnpm run services:dev\" \"pnpm run fetch:dev\"",
-    "fetch:dev": "concurrently \"cross-env FETCH_PROVIDER=olx PORT=8011 pnpm run --filter @backend/fetch-microservice dev\" \"cross-env FETCH_PROVIDER=allegro PORT=8012 pnpm run --filter @backend/fetch-microservice dev\" \"cross-env FETCH_PROVIDER=ebay PORT=8013 pnpm run --filter @backend/fetch-microservice dev\" \"cross-env FETCH_PROVIDER=amazon PORT=8014 pnpm run --filter @backend/fetch-microservice dev\" ",
+    "fetch:dev": "concurrently \"cross-env FETCH_PROVIDER=olx PORT=8011 pnpm run --filter @backend/fetch-microservice dev\" \"cross-env FETCH_PROVIDER=allegro PORT=8012 pnpm run --filter @backend/fetch-microservice dev\" \"cross-env FETCH_PROVIDER=ebay PORT=8013 pnpm run --filter @backend/fetch-microservice dev\" \"cross-env FETCH_PROVIDER=amazon PORT=8014 pnpm run --filter @backend/fetch-microservice dev\"",
     "format": "prettier -w --ignore-unknown .",
     "format:check": "prettier --check .",
     "install:all": "pnpm install",
@@ -17,7 +17,8 @@
     "services:dev": "pnpm -r --filter=!@backend/fetch-microservice --parallel dev",
     "start": "pnpm -r --parallel start",
     "test": "pnpm -r --no-bail test",
-    "test:e2e": "pnpm -r --no-bail test:e2e"
+    "test:e2e": "pnpm -r --no-bail test:e2e",
+    "typecheck": "pnpm -r --no-bail typecheck"
   },
   "lint-staged": {
     "*": "prettier -w --ignore-unknown"

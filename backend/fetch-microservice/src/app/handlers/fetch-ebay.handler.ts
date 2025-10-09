@@ -63,6 +63,7 @@ export class FetchEbayHandler {
         "ebay",
         true,
         event.eventUuid,
+        event.totalEvents,
       );
 
       this.eventBus.emit(ProductFetchedEvent.name, productFetchedEvent);
@@ -78,7 +79,7 @@ export class FetchEbayHandler {
         "ebay",
         false,
         event.eventUuid,
-        errorMessage,
+        event.totalEvents,
       );
 
       this.eventBus.emit(ProductFetchedEvent.name, productFetchedEvent);

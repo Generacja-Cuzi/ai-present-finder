@@ -56,6 +56,7 @@ export class FetchAmazonHandler {
         "amazon",
         true,
         event.eventUuid,
+        event.totalEvents,
       );
 
       this.eventBus.emit(ProductFetchedEvent.name, productFetchedEvent);
@@ -71,7 +72,7 @@ export class FetchAmazonHandler {
         "amazon",
         false,
         event.eventUuid,
-        errorMessage,
+        event.totalEvents,
       );
 
       this.eventBus.emit(ProductFetchedEvent.name, productFetchedEvent);

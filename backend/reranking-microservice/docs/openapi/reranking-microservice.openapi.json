@@ -1,0 +1,40 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns a welcome message from the Reranking service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Returns the welcome message for the Reranking microservice",
+        "tags": ["reranking"]
+      }
+    }
+  },
+  "info": {
+    "title": "AI Present Finder - Reranking Microservice",
+    "description": "Endpoints for reranking and filtering gift recommendations.",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "http://localhost:3040"
+    }
+  ],
+  "components": {
+    "schemas": {}
+  }
+}

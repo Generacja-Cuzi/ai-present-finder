@@ -5,6 +5,7 @@ export class FetchEbayEvent {
     public readonly offset = 0,
     public readonly requestId: string,
     public readonly chatId: string,
-    public readonly eventUuid?: string,
+    public readonly eventUuid: string,
+    public readonly totalEvents: number,
   ) {}
 }

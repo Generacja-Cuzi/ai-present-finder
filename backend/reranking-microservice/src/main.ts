@@ -3,9 +3,11 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
+import { Transport } from "@nestjs/microservices";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
+import { ProductFetchedEvent } from "./domain/events/product-fetched.event";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,24 +18,22 @@ async function bootstrap() {
   const cloudAmqpUrl =
     process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672";
 
-  // TODO: Add microservice connections for reranking events
-  // const microserviceOptions = {
-  //   transport: Transport.RMQ,
-  //   options: {
-  //     urls: [cloudAmqpUrl],
-  //     queue: "RerankingRequestedEvent",
-  //     queueOptions: { durable: false },
-  //   },
-  // };
-  // app.connectMicroservice(microserviceOptions);
-
+  const productFetchedOptions = {
+    transport: Transport.RMQ,
+    options: {
+      urls: [cloudAmqpUrl],
+      queue: ProductFetchedEvent.name,
+      queueOptions: { durable: false },
+    },
+  };
+  app.connectMicroservice(productFetchedOptions);
   const swaggerServer =
     process.env.SWAGGER_SERVER ?? `http://localhost:${portString}`;
 
   const config = new DocumentBuilder()
     .setTitle("AI Present Finder - Reranking Microservice")
     .setDescription(
-      "Endpoints for reranking and optimizing gift recommendations.",
+      "Endpoints for reranking and filtering gift recommendations.",
     )
     .setVersion("1.0")
     .addServer(swaggerServer)

@@ -5,9 +5,8 @@ export class FetchAmazonEvent {
     public readonly offset = 0,
     public readonly country = "PL",
     public readonly page = 1,
-    public readonly requestId: string,
     public readonly chatId: string,
-    public readonly eventUuid: string,
+    public readonly eventId: string,
     public readonly totalEvents: number,
   ) {}
 }

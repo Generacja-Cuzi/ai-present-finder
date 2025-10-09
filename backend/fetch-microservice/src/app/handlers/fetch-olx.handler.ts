@@ -48,11 +48,10 @@ export class FetchOlxHandler {
 
       const productFetchedEvent = new ProductFetchedEvent(
         listings,
-        event.requestId,
         event.chatId,
         "olx",
         true,
-        event.eventUuid,
+        event.eventId,
         event.totalEvents,
       );
 
@@ -64,11 +63,10 @@ export class FetchOlxHandler {
 
       const productFetchedEvent = new ProductFetchedEvent(
         [],
-        event.requestId,
         event.chatId,
         "olx",
         false,
-        event.eventUuid,
+        event.eventId,
         event.totalEvents,
       );
 

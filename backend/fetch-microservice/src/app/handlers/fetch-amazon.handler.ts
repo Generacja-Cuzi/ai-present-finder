@@ -51,11 +51,10 @@ export class FetchAmazonHandler {
 
       const productFetchedEvent = new ProductFetchedEvent(
         listings,
-        event.requestId,
         event.chatId,
         "amazon",
         true,
-        event.eventUuid,
+        event.eventId,
         event.totalEvents,
       );
 
@@ -67,11 +66,10 @@ export class FetchAmazonHandler {
 
       const productFetchedEvent = new ProductFetchedEvent(
         [],
-        event.requestId,
         event.chatId,
         "amazon",
         false,
-        event.eventUuid,
+        event.eventId,
         event.totalEvents,
       );
 

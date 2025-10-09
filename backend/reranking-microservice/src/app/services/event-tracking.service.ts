@@ -1,5 +1,4 @@
 import { In, LessThanOrEqual, Repository } from "typeorm";
-import { ulid } from "ulid";
 
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -31,22 +30,20 @@ export class EventTrackingService {
     chatId: string,
     totalEvents: number,
   ): Promise<string> {
-    // Check if session already exists for this eventUuid
+    // Check if session already exists
     const existingSession = await this.giftSessionRepository.findOne({
       where: { eventId },
-      select: ["sessionId"],
+      select: ["eventId"],
     });
 
     if (existingSession !== null) {
-      return existingSession.sessionId;
+      return existingSession.eventId;
     }
 
     // Create new session
-    const sessionId = ulid();
     const session = this.giftSessionRepository.create({
-      sessionId,
-      chatId,
       eventId,
+      chatId,
       status: SessionStatus.ACTIVE,
       completedEvents: 0,
       totalEvents,
@@ -56,33 +53,33 @@ export class EventTrackingService {
 
     await this.giftSessionRepository.save(session);
     this.logger.log(
-      `Created session ${sessionId} for chat ${chatId} with ${String(totalEvents)} events`,
+      `Inserted session ${eventId} for chat ${chatId} with ${String(totalEvents)} events`,
     );
 
-    return sessionId;
+    return eventId;
   }
 
   async incrementSessionCompletion(
-    sessionId: string,
+    eventId: string,
   ): Promise<{ completed: boolean }> {
     return this.giftSessionRepository.manager.transaction(async (manager) => {
-      await manager.increment(GiftSession, { sessionId }, "completedEvents", 1);
+      await manager.increment(GiftSession, { eventId }, "completedEvents", 1);
 
       // Check if session is now complete
       const session = await manager.findOne(GiftSession, {
-        where: { sessionId },
+        where: { eventId },
       });
 
       this.logger.log(
-        `Session ${sessionId} completedEvents: ${session?.completedEvents.toString() ?? "---"}/${session?.totalEvents.toString() ?? "---"}`,
+        `Session ${eventId} completedEvents: ${session?.completedEvents.toString() ?? "---"}/${session?.totalEvents.toString() ?? "---"}`,
       );
       if (session !== null && session.completedEvents >= session.totalEvents) {
         await manager.update(
           GiftSession,
-          { sessionId },
+          { eventId },
           { status: SessionStatus.COMPLETED },
         );
-        this.logger.log(`Session ${sessionId} marked as completed`);
+        this.logger.log(`Session ${eventId} marked as completed`);
         return { completed: true };
       }
       return { completed: false };
@@ -103,7 +100,7 @@ export class EventTrackingService {
     if (timeoutSessions.length > 0) {
       // Update sessions to timeout status
       await this.giftSessionRepository.update(
-        { sessionId: In(timeoutSessions.map((s) => s.sessionId)) },
+        { eventId: In(timeoutSessions.map((s) => s.eventId)) },
         { status: SessionStatus.TIMEOUT },
       );
 
@@ -112,6 +109,6 @@ export class EventTrackingService {
       );
     }
 
-    return timeoutSessions.map((session) => session.sessionId);
+    return timeoutSessions.map((session) => session.eventId);
   }
 }

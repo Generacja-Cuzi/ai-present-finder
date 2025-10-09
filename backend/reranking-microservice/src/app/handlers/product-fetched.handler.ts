@@ -22,7 +22,7 @@ export class ProductFetchedHandler {
     this.logger.log(
       `Handling ProductFetchedEvent from ${event.provider} for chat ${event.chatId}`,
     );
-    const eventId = event.eventUuid;
+    const eventId = event.eventId;
 
     const sessionId = await this.eventTrackingService.createSessionIfNotExists(
       eventId,

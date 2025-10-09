@@ -5,7 +5,7 @@ import {
   FetchOlxEvent,
   GiftGenerateRequestedEvent,
 } from "@core/events";
-import { v4 as uuidv4 } from "uuid";
+import { ulid } from "ulid";
 
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { ClientProxy, EventPattern } from "@nestjs/microservices";
@@ -31,61 +31,52 @@ export class GiftGenerateRequestedHandler {
       ...(event.profile?.gift_recommendations ?? []),
     ];
 
-    const eventUuid = uuidv4();
-    const numberOfServices = 3;
-    const totalEvents = allQueries.length * numberOfServices; //! 3 services per query
+    const eventId = ulid();
+
+    const fetchServices: ((query: string, totalEvents: number) => void)[] = [
+      (query, totalEvents) => {
+        const fetchOlxEvent = new FetchOlxEvent(
+          query,
+          5,
+          0,
+          event.chatId,
+          eventId,
+          totalEvents,
+        );
+        this.olxEventBus.emit(FetchOlxEvent.name, fetchOlxEvent);
+      },
+      (query, totalEvents) => {
+        const fetchAllegroEvent = new FetchAllegroEvent(
+          query,
+          5,
+          0,
+          event.chatId,
+          eventId,
+          totalEvents,
+        );
+        this.allegroEventBus.emit(FetchAllegroEvent.name, fetchAllegroEvent);
+      },
+      (query, totalEvents) => {
+        const fetchEbayEvent = new FetchEbayEvent(
+          query,
+          5,
+          0,
+          event.chatId,
+          eventId,
+          totalEvents,
+        );
+        this.ebayEventBus.emit(FetchEbayEvent.name, fetchEbayEvent);
+      },
+    ];
+
+    const numberOfServices = fetchServices.length;
+    const totalEvents = allQueries.length * numberOfServices;
 
     for (const query of allQueries) {
-      const requestId = `req_${Date.now().toString()}_${Math.random().toString(36).slice(2, 15)}`;
-
-      // Emit fetch events for all services with totalEvents
-      const fetchOlxEvent = new FetchOlxEvent(
-        query,
-        5,
-        0,
-        requestId,
-        event.chatId,
-        eventUuid,
-        totalEvents,
-      );
-      this.olxEventBus.emit(FetchOlxEvent.name, fetchOlxEvent);
-
-      const fetchAllegroEvent = new FetchAllegroEvent(
-        query,
-        5,
-        0,
-        requestId,
-        event.chatId,
-        eventUuid,
-        totalEvents,
-      );
-      this.allegroEventBus.emit(FetchAllegroEvent.name, fetchAllegroEvent);
-
-      // const fetchAmazonEvent = new FetchAmazonEvent(
-      //   query,
-      //   5,
-      //   0,
-      //   "PL",
-      //   1,
-      //   requestId,
-      //   event.chatId,
-      //   eventUuid,
-      //   totalEvents,
-      // );
-      // this.amazonEventBus.emit(FetchAmazonEvent.name, fetchAmazonEvent);
-
-      const fetchEbayEvent = new FetchEbayEvent(
-        query,
-        5,
-        0,
-        requestId,
-        event.chatId,
-        eventUuid,
-        totalEvents,
-      );
-      this.ebayEventBus.emit(FetchEbayEvent.name, fetchEbayEvent);
+      for (const fetchService of fetchServices) {
+        fetchService(query, totalEvents);
+      }
     }
-
     this.logger.log(
       `Sent fetch events for ${allQueries.length.toString()} queries to ${numberOfServices.toString()} services`,
     );

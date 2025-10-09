@@ -28,7 +28,6 @@ async function bootstrap() {
     },
   };
 
-  // Also listen for ProductFetchedEvent
   const productFetchedOptions = {
     transport: Transport.RMQ,
     options: {

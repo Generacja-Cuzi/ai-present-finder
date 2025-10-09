@@ -65,8 +65,8 @@ describe("BrightDataService", () => {
     ]);
 
     expect(results).toHaveLength(1);
-    expect(results[0].url).toBe("https://facebook.com/example");
-    expect(results[0].raw).toEqual(payload);
+    expect(results[0]?.url).toBe("https://facebook.com/example");
+    expect(results[0]?.raw).toEqual(payload);
     scope.done();
   });
 
@@ -202,8 +202,8 @@ describe("BrightDataService", () => {
     ]);
 
     expect(results).toHaveLength(2);
-    expect(results[0].url).toBe("https://facebook.com/user1");
-    expect(results[1].url).toBe("https://tiktok.com/@user3");
+    expect(results[0]?.url).toBe("https://facebook.com/user1");
+    expect(results[1]?.url).toBe("https://tiktok.com/@user3");
 
     scope1.done();
     scope2.done();

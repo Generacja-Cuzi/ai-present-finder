@@ -2,6 +2,7 @@ import { StalkingAnalyzeRequestHandler } from "src/app/handlers/stalking-analyze
 import { StalkingAnalyzeHandler } from "src/app/handlers/stalking-analyze.handler";
 import { BrightDataService } from "src/app/services/brightdata.service";
 import { StalkingCompletedEvent } from "src/domain/events/stalking-completed.event";
+import { validate } from "src/webapi/config/environment.config";
 
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
@@ -15,6 +16,7 @@ import { StalkingController } from "../controllers/stalking.controller";
     CqrsModule,
     ConfigModule.forRoot({
       isGlobal: true,
+      validate,
     }),
     ClientsModule.register([
       {

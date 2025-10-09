@@ -4,7 +4,9 @@ import type {
 } from "src/app/services/brightdata.service";
 import { StalkingAnalyzeCommand } from "src/domain/commands/stalking-analyze.command";
 import { StalkingCompletedEvent } from "src/domain/events/stalking-completed.event";
-import type { ProfileScrapeResult } from "src/domain/models/profile-scrape-result.model";
+import type { AnyProfileScrapeResult } from "src/domain/models/profile-scrape-result.model";
+import type { InstagramProfileResponse } from "src/domain/types/instagram.types";
+import type { XPostsResponse } from "src/domain/types/x-posts.types";
 
 import type { ClientProxy } from "@nestjs/microservices";
 
@@ -30,19 +32,21 @@ function createHandler(scrapeProfilesImplementation: ScrapeProfilesMock) {
 describe("StalkingAnalyzeHandler", () => {
   it("scrapes provided URLs and emits completed event with keywords", async () => {
     const scrapeProfiles = jest
-      .fn<Promise<ProfileScrapeResult[]>, [ScrapeRequestItem[]]>()
+      .fn<Promise<AnyProfileScrapeResult[]>, [ScrapeRequestItem[]]>()
       .mockResolvedValue([
         {
-          url: "https://facebook.com/test",
+          type: "instagram",
+          url: "https://instagram.com/test",
           fetchedAt: new Date().toISOString(),
-          raw: { content: "Loves hiking boots and outdoor adventures" },
+          raw: [] as InstagramProfileResponse,
         },
         {
-          url: "https://instagram.com/runner",
+          type: "x",
+          url: "https://x.com/runner",
           fetchedAt: new Date().toISOString(),
-          raw: "Running shoes for marathon training",
+          raw: [] as XPostsResponse,
         },
-      ]);
+      ] as AnyProfileScrapeResult[]);
 
     const { handler, emit } = createHandler(
       scrapeProfiles as ScrapeProfilesMock,
@@ -78,7 +82,7 @@ describe("StalkingAnalyzeHandler", () => {
 
   it("emits empty results when no URLs are provided", async () => {
     const scrapeProfiles = jest
-      .fn<Promise<ProfileScrapeResult[]>, [ScrapeRequestItem[]]>()
+      .fn<Promise<AnyProfileScrapeResult[]>, [ScrapeRequestItem[]]>()
       .mockResolvedValue([]);
     const { handler, emit } = createHandler(
       scrapeProfiles as ScrapeProfilesMock,

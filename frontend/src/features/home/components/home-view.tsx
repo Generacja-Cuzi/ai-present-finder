@@ -1,4 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { toast } from "sonner";
 import { v7 as uuidv7 } from "uuid";
 
@@ -10,6 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 import { useStalkingRequestMutation } from "../api/stalking-request";
 
@@ -17,20 +20,26 @@ export function HomeView() {
   const navigate = useNavigate();
   const stalkingRequestMutation = useStalkingRequestMutation();
 
+  const [facebookUrl, setFacebookUrl] = useState("");
+  const [instagramUrl, setInstagramUrl] = useState("");
+  const [tiktokUrl, setTiktokUrl] = useState("");
+  const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [xUrl, setXUrl] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
+
   const handleStart = async () => {
     try {
       // Generate a unique client ID for this session
       const clientId = uuidv7();
 
-      // TODO(simon-the-shark): someone needs to add this later
       await stalkingRequestMutation.mutateAsync(
         {
-          facebookUrl: "",
-          instagramUrl: "",
-          tiktokUrl: "",
-          youtubeUrl: "",
-          xUrl: "",
-          linkedinUrl: "",
+          facebookUrl,
+          instagramUrl,
+          tiktokUrl,
+          youtubeUrl,
+          xUrl,
+          linkedinUrl,
           chatId: clientId,
         },
         {
@@ -59,18 +68,92 @@ export function HomeView() {
             Welcome to AI Present Finder
           </CardDescription>
         </CardHeader>
-        <CardContent className="text-center">
-          <p className="mb-6 text-gray-600 dark:text-gray-300">
+        <CardContent>
+          <p className="mb-6 text-center text-gray-600 dark:text-gray-300">
             Let&apos;s help you find the perfect gift for your loved ones!
           </p>
-          <Button
-            size="lg"
-            className="w-full"
-            onClick={handleStart}
-            disabled={stalkingRequestMutation.isPending}
-          >
-            {stalkingRequestMutation.isPending ? "Starting..." : "Start →"}
-          </Button>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="facebook">Facebook URL</Label>
+              <Input
+                id="facebook"
+                type="url"
+                placeholder="https://facebook.com/..."
+                value={facebookUrl}
+                onChange={(event) => {
+                  setFacebookUrl(event.target.value);
+                }}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="instagram">Instagram URL</Label>
+              <Input
+                id="instagram"
+                type="url"
+                placeholder="https://instagram.com/..."
+                value={instagramUrl}
+                onChange={(event) => {
+                  setInstagramUrl(event.target.value);
+                }}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="tiktok">TikTok URL</Label>
+              <Input
+                id="tiktok"
+                type="url"
+                placeholder="https://tiktok.com/@..."
+                value={tiktokUrl}
+                onChange={(event) => {
+                  setTiktokUrl(event.target.value);
+                }}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="youtube">YouTube URL</Label>
+              <Input
+                id="youtube"
+                type="url"
+                placeholder="https://youtube.com/@..."
+                value={youtubeUrl}
+                onChange={(event) => {
+                  setYoutubeUrl(event.target.value);
+                }}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="x">X (Twitter) URL</Label>
+              <Input
+                id="x"
+                type="url"
+                placeholder="https://x.com/..."
+                value={xUrl}
+                onChange={(event) => {
+                  setXUrl(event.target.value);
+                }}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="linkedin">LinkedIn URL</Label>
+              <Input
+                id="linkedin"
+                type="url"
+                placeholder="https://linkedin.com/in/..."
+                value={linkedinUrl}
+                onChange={(event) => {
+                  setLinkedinUrl(event.target.value);
+                }}
+              />
+            </div>
+            <Button
+              size="lg"
+              className="w-full"
+              onClick={handleStart}
+              disabled={stalkingRequestMutation.isPending}
+            >
+              {stalkingRequestMutation.isPending ? "Starting..." : "Start →"}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>

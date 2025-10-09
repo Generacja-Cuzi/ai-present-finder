@@ -1,0 +1,2 @@
+- Poprawne loga
+- Wyśrodkowany przycisk do szukania na całą szerokość strony

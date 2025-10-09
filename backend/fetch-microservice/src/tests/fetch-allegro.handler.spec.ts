@@ -40,11 +40,13 @@ describe("FetchAllegroHandler (with .env)", () => {
   });
 
   it("should load env variables", () => {
-    const clientId = configService.get<string>("ALLEGRO_CLIENT_ID");
-    const clientSecret = configService.get<string>("ALLEGRO_CLIENT_SECRET");
-    const tokenUrl = configService.get<string>("ALLEGRO_TOKEN_URL");
-    const searchUrl = configService.get<string>("ALLEGRO_SEARCH_URL");
-    const baseOfferUrl = configService.get<string>("ALLEGRO_BASE_OFFER_URL");
+    const clientId = configService.get<string>("ALLEGRO_CLIENT_ID") ?? "";
+    const clientSecret =
+      configService.get<string>("ALLEGRO_CLIENT_SECRET") ?? "";
+    const tokenUrl = configService.get<string>("ALLEGRO_TOKEN_URL") ?? "";
+    const searchUrl = configService.get<string>("ALLEGRO_SEARCH_URL") ?? "";
+    const baseOfferUrl =
+      configService.get<string>("ALLEGRO_BASE_OFFER_URL") ?? "";
     const maxRetries = configService.get<string | number>(
       "ALLEGRO_MAX_RETRIES",
     );

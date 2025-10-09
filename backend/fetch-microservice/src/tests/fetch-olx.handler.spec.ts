@@ -42,8 +42,8 @@ describe("FetchOlxHandler (with .env)", () => {
   });
 
   it("should load env variables", () => {
-    const apiUrl = configService.get<string>("OLX_API_URL");
-    const retries = configService.get<number>("OLX_MAX_RETRIES");
+    const apiUrl = configService.get<string>("OLX_API_URL") ?? "";
+    const retries = configService.get<number>("OLX_MAX_RETRIES") ?? 0;
 
     expect(apiUrl).toBeDefined();
     expect(retries).toBeDefined();

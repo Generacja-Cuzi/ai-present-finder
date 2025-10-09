@@ -40,12 +40,12 @@ describe("FetchEbayHandler (with .env, OLX-like structure)", () => {
   });
 
   it("should load env variables", () => {
-    const clientId = configService.get<string>("EBAY_CLIENT_ID");
-    const secret = configService.get<string>("EBAY_CLIENT_SECRET");
-    const tokenUrl = configService.get<string>("EBAY_TOKEN_URL");
-    const searchUrl = configService.get<string>("EBAY_SEARCH_URL");
-    const scope = configService.get<string>("EBAY_OAUTH_SCOPE");
-    const marketplace = configService.get<string>("EBAY_MARKETPLACE_ID");
+    const clientId = configService.get<string>("EBAY_CLIENT_ID") ?? "";
+    const secret = configService.get<string>("EBAY_CLIENT_SECRET") ?? "";
+    const tokenUrl = configService.get<string>("EBAY_TOKEN_URL") ?? "";
+    const searchUrl = configService.get<string>("EBAY_SEARCH_URL") ?? "";
+    const scope = configService.get<string>("EBAY_OAUTH_SCOPE") ?? "";
+    const marketplace = configService.get<string>("EBAY_MARKETPLACE_ID") ?? "";
 
     expect(clientId).toBeDefined();
     expect(secret).toBeDefined();

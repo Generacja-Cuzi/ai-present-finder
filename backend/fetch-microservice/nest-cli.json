@@ -5,5 +5,5 @@
   "compilerOptions": {
     "deleteOutDir": true
   },
-  "entryFile": "fetch-microservice/src/main"
+  "entryFile": "backend/fetch-microservice/src/main"
 }

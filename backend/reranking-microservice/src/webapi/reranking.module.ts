@@ -19,15 +19,14 @@ import { GiftSession } from "../domain/entities/gift-session.entity";
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         type: "postgres" as const,
-        host: configService.get<string>("DATABASE_HOST") ?? "localhost",
+        host: configService.get<string>("DATABASE_HOST"),
         port: Number.parseInt(
-          configService.get<string>("DATABASE_PORT") ?? "5433",
+          configService.get<string>("DATABASE_PORT") ?? "",
           10,
         ),
-        username: configService.get<string>("DATABASE_USERNAME") ?? "gift_user",
-        password:
-          configService.get<string>("DATABASE_PASSWORD") ?? "gift_password",
-        database: configService.get<string>("DATABASE_NAME") ?? "gift_service",
+        username: configService.get<string>("DATABASE_USERNAME") ?? "",
+        password: configService.get<string>("DATABASE_PASSWORD") ?? "",
+        database: configService.get<string>("DATABASE_NAME") ?? "",
         entities: [GiftSession],
         synchronize: true, // Only for development
         logging: false,

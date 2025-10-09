@@ -5,5 +5,5 @@
   "compilerOptions": {
     "deleteOutDir": true
   },
-  "entryFile": "reranking-microservice/src/main"
+  "entryFile": "backend/reranking-microservice/src/main"
 }

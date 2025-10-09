@@ -13,7 +13,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger("AppLogger");
 
-  const port = Number(process.env.PORT ?? 3040);
+  const port = Number(process.env.PORT ?? 3091);
   const portString = String(port);
   const cloudAmqpUrl =
     process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672";

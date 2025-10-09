@@ -1,8 +1,9 @@
+import { ProductFetchedEvent } from "@core/events";
+
 import { Controller, Logger } from "@nestjs/common";
 import { EventPattern } from "@nestjs/microservices";
 import { ApiTags } from "@nestjs/swagger";
 
-import { ProductFetchedEvent } from "../../domain/events/product-fetched.event";
 import { EventTrackingService } from "../services/event-tracking.service";
 import { SessionCompletionService } from "../services/session-completion.service";
 

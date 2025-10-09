@@ -1,0 +1,16 @@
+{
+  "name": "@core/events",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Core events package for AI Present Finder microservices",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

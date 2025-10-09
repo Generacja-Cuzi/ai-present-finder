@@ -1,7 +1,7 @@
 /* eslint-disable @darraghor/nestjs-typed/controllers-should-supply-api-tags */
+import { StalkingCompletedEvent } from "@core/events";
 import { EvaluateContextCommand } from "src/domain/commands/evaluate-context.command";
 import { NotifyUserSseCommand } from "src/domain/commands/notify-user-sse.command";
-import { StalkingCompletedEvent } from "src/domain/events/stalking-completed.event";
 import { ContextDto } from "src/domain/models/context.dto";
 
 import { Controller } from "@nestjs/common";

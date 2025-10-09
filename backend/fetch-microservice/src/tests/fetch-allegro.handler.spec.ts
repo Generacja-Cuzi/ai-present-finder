@@ -1,9 +1,10 @@
+import { FetchAllegroEvent } from "@core/events";
+
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { FetchAllegroHandler } from "../app/handlers/fetch-allegro.handler";
-import { FetchAllegroEvent } from "../domain/events/fetch-allegro.event";
 
 interface MockEventBus {
   emit: jest.Mock;

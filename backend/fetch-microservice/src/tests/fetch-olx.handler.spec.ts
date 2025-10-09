@@ -1,9 +1,10 @@
+import { FetchOlxEvent } from "@core/events";
+
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { FetchOlxHandler } from "../app/handlers/fetch-olx.handler";
-import { FetchOlxEvent } from "../domain/events/fetch-olx.event";
 
 interface MockEventBus {
   emit: jest.Mock;

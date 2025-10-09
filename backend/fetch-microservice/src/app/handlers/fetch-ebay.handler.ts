@@ -1,16 +1,15 @@
+import { FetchEbayEvent, ListingDto, ProductFetchedEvent } from "@core/events";
+
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ClientProxy, EventPattern } from "@nestjs/microservices";
 
-import { FetchEbayEvent } from "../../domain/events/fetch-ebay.event";
-import { ProductFetchedEvent } from "../../domain/events/product-fetched.event";
-import { ListingDto } from "../../domain/models/listing.dto";
 import {
   DEFAULT_RETRY_CONFIG,
   calculateRetryDelay,
   isRetryableError,
   sleep,
-} from "../types/common.types";
+} from "../../domain/types/common.types";
 import {
   EbayCachedToken,
   EbayConfig,
@@ -19,7 +18,7 @@ import {
   EbaySearchResponse,
   EbayTokenRequestHeaders,
   EbayTokenResponse,
-} from "../types/ebay.types";
+} from "../../domain/types/ebay.types";
 
 @Controller()
 export class FetchEbayHandler {

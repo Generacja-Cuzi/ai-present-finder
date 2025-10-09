@@ -1,4 +1,4 @@
-import type { ListingDto } from "../models/listing.dto";
+import type { ListingDto } from "../types";
 
 export class GiftReadyEvent {
   constructor(

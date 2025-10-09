@@ -1,5 +1,5 @@
+import { StalkingCompletedEvent } from "@core/events";
 import { StalkingAnalyzeCommand } from "src/domain/commands/stalking-analyze.command";
-import { StalkingCompletedEvent } from "src/domain/events/stalking-completed.event";
 
 import { Inject, Logger } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";

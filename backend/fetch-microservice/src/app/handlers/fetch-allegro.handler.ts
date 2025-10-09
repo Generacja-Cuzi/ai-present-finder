@@ -1,23 +1,26 @@
+import {
+  FetchAllegroEvent,
+  ListingDto,
+  ProductFetchedEvent,
+} from "@core/events";
+
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ClientProxy, EventPattern } from "@nestjs/microservices";
 
-import { FetchAllegroEvent } from "../../domain/events/fetch-allegro.event";
-import { ProductFetchedEvent } from "../../domain/events/product-fetched.event";
-import { ListingDto } from "../../domain/models/listing.dto";
 import {
   AllegroConfig,
   AllegroSearchOptions,
   AllegroSearchResponse,
   AllegroTokenCache,
   AllegroTokenResponse,
-} from "../types/allegro.types";
+} from "../../domain/types/allegro.types";
 import {
   DEFAULT_RETRY_CONFIG,
   calculateRetryDelay,
   isRetryableError,
   sleep,
-} from "../types/common.types";
+} from "../../domain/types/common.types";
 
 @Controller()
 export class FetchAllegroHandler {

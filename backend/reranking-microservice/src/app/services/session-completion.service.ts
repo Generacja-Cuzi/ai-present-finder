@@ -1,3 +1,4 @@
+import { GiftReadyEvent } from "@core/events";
 import { Repository } from "typeorm";
 
 import { Inject, Injectable, Logger } from "@nestjs/common";
@@ -5,7 +6,6 @@ import { ClientProxy } from "@nestjs/microservices";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { GiftSession } from "../../domain/entities/gift-session.entity";
-import { GiftReadyEvent } from "../../domain/events/gift-ready.event";
 import type { ListingDto } from "../../domain/models/listing.dto";
 
 @Injectable()

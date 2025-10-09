@@ -1,4 +1,5 @@
 // src/main.ts
+import { GiftGenerateRequestedEvent } from "@core/events";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 import { Logger } from "@nestjs/common";
@@ -7,7 +8,6 @@ import { Transport } from "@nestjs/microservices";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
-import { GiftGenerateRequestedEvent } from "./domain/events/gift-generate-requested.event";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

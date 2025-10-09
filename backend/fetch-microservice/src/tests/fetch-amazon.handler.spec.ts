@@ -1,10 +1,11 @@
+// eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
+import { FetchAmazonEvent } from "@core/events";
+
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { FetchAmazonHandler } from "../app/handlers/fetch-amazon.handler";
-// eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
-import { FetchAmazonEvent } from "../domain/events/fetch-amazon.event";
 
 interface MockEventBus {
   emit: jest.Mock;

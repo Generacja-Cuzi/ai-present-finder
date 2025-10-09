@@ -1,6 +1,6 @@
 /* eslint-disable @darraghor/nestjs-typed/controllers-should-supply-api-tags */
+import { ChatInterviewCompletedEvent } from "@core/events";
 import { EndInterviewCommand } from "src/domain/commands/end-interview.command";
-import { ChatInterviewCompletedEvent } from "src/domain/events/chat-interview-completed.event";
 
 import { Controller } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";

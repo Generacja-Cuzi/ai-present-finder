@@ -1,9 +1,10 @@
+import { FetchEbayEvent } from "@core/events";
+
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { FetchEbayHandler } from "../app/handlers/fetch-ebay.handler";
-import { FetchEbayEvent } from "../domain/events/fetch-ebay.event";
 
 interface MockEventBus {
   emit: jest.Mock;

@@ -1,4 +1,5 @@
 packages:
+  - backend/core-events
   - backend/chat-microservice
   - backend/fetch-microservice
   - backend/gift-ideas-microservice

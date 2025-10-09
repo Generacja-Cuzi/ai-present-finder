@@ -33,13 +33,11 @@ describe("StalkingAnalyzeHandler", () => {
       .fn<Promise<ProfileScrapeResult[]>, [ScrapeRequestItem[]]>()
       .mockResolvedValue([
         {
-          source: "facebook",
           url: "https://facebook.com/test",
           fetchedAt: new Date().toISOString(),
           raw: { content: "Loves hiking boots and outdoor adventures" },
         },
         {
-          source: "instagram",
           url: "https://instagram.com/runner",
           fetchedAt: new Date().toISOString(),
           raw: "Running shoes for marathon training",

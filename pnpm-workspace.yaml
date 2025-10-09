@@ -1,5 +1,6 @@
 packages:
   - backend/chat-microservice
+  - backend/fetch-microservice
   - backend/gift-microservice
   - backend/restapi-macroservice
   - backend/stalking-microservice

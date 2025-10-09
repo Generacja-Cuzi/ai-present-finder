@@ -1,8 +1,8 @@
 {
-  "name": "@backend/gift-microservice",
+  "name": "@backend/fetch-microservice",
   "version": "0.0.1",
   "private": true,
-  "description": "",
+  "description": "Microservice for fetching products from various sources",
   "license": "UNLICENSED",
   "author": "",
   "scripts": {
@@ -41,26 +41,16 @@
     }
   },
   "dependencies": {
-    "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.0.13",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.13",
-    "@nestjs/cqrs": "^11.0.3",
     "@nestjs/microservices": "^11.0.13",
     "@nestjs/platform-express": "^11.0.13",
-    "@nestjs/schedule": "^6.0.1",
-    "@nestjs/swagger": "^11.2.0",
-    "@nestjs/typeorm": "^11.0.0",
-    "@supabase/supabase-js": "^2.49.4",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.7",
     "dotenv": "^16.5.0",
-    "pg": "^8.14.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "swagger-ui-express": "^4.6.3",
-    "typeorm": "^0.3.20",
-    "uuid": "^10.0.0",
     "zod": "^4.1.8"
   },
   "devDependencies": {
@@ -73,9 +63,7 @@
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.7",
-    "@types/pg": "^8.11.11",
     "@types/supertest": "^6.0.2",
-    "@types/uuid": "^10.0.0",
     "@typescript-eslint/parser": "^8.45.0",
     "eslint": "^9.18.0",
     "globals": "^16.0.0",

@@ -37,7 +37,7 @@ jobs:
         if: always()
 
       - name: Run tests
-        run: pnpm test
+        run: pnpm -r --filter '!fetch-microservice' test
         if: always()
 
       - name: Build

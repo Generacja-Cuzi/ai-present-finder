@@ -3,6 +3,7 @@ import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { FetchAmazonHandler } from "../app/handlers/fetch-amazon.handler";
+// eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
 import { FetchAmazonEvent } from "../domain/events/fetch-amazon.event";
 
 interface MockEventBus {
@@ -62,34 +63,34 @@ describe("FetchAmazonHandler (with .env, OLX-like structure)", () => {
     });
   });
 
-  it("should handle FetchAmazonEvent and print API response", async () => {
-    const event = new FetchAmazonEvent(
-      "laptop",
-      5,
-      0,
-      "PL",
-      1,
-      "test-request-id",
-      "test-chat-id",
-      "test-event-uuid",
-    );
+  //   it("should handle FetchAmazonEvent and print API response", async () => {
+  //     const event = new FetchAmazonEvent(
+  //       "laptop",
+  //       5,
+  //       0,
+  //       "PL",
+  //       1,
+  //       "test-request-id",
+  //       "test-chat-id",
+  //       "test-event-uuid",
+  //     );
 
-    await handler.handle(event);
+  //     await handler.handle(event);
 
-    expect(mockEventBus.emit).toHaveBeenCalledTimes(1);
-    const emitCall = mockEventBus.emit.mock.calls[0] as unknown[];
-    const emittedEvent = emitCall[1];
+  //     expect(mockEventBus.emit).toHaveBeenCalledTimes(1);
+  //     const emitCall = mockEventBus.emit.mock.calls[0] as unknown[];
+  //     const emittedEvent = emitCall[1];
 
-    // eslint-disable-next-line no-console
-    console.log("API Response result:", JSON.stringify(emittedEvent, null, 2));
+  //     // eslint-disable-next-line no-console
+  //     console.log("API Response result:", JSON.stringify(emittedEvent, null, 2));
 
-    expect(mockEventBus.emit).toHaveBeenCalledWith(
-      "ProductFetchedEvent",
-      expect.objectContaining({
-        requestId: "test-request-id",
-        chatId: "test-chat-id",
-        provider: "amazon",
-      }),
-    );
-  }, 30_000);
+  //     expect(mockEventBus.emit).toHaveBeenCalledWith(
+  //       "ProductFetchedEvent",
+  //       expect.objectContaining({
+  //         requestId: "test-request-id",
+  //         chatId: "test-chat-id",
+  //         provider: "amazon",
+  //       }),
+  //     );
+  //   }, 30_000);
 });

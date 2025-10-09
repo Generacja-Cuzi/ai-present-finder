@@ -41,11 +41,12 @@ describe("FetchAmazonHandler (with .env, OLX-like structure)", () => {
   });
 
   it("should load env variables", () => {
-    const rapidKey = configService.get<string>("RAPIDAPI_KEY");
-    const apiUrl = configService.get<string>("AMAZON_API_URL");
-    const apiHost = configService.get<string>("AMAZON_API_HOST");
-    const country = configService.get<string>("AMAZON_COUNTRY");
-    const maxRetries = configService.get<string | number>("AMAZON_MAX_RETRIES");
+    const rapidKey = configService.get<string>("RAPIDAPI_KEY") ?? "";
+    const apiUrl = configService.get<string>("AMAZON_API_URL") ?? "";
+    const apiHost = configService.get<string>("AMAZON_API_HOST") ?? "";
+    const country = configService.get<string>("AMAZON_COUNTRY") ?? "";
+    const maxRetries =
+      configService.get<string | number>("AMAZON_MAX_RETRIES") ?? "";
 
     expect(rapidKey).toBeDefined();
     expect(apiUrl).toBeDefined();

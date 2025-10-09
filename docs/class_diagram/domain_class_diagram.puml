@@ -99,7 +99,7 @@ User "1" -- "0..*" Recipient : searches_gift_for
 User "1" -- "0..*" SocialMediaLinks : inserts
 SocialMediaLinks "0..*" -- "1..*" SocialMediaService : processed_by
 SocialMediaService "1" -- "0..*" SocialMediaProfile : analyses
-SocialMediaService "1..*" -- "1" RecipientData : enhances
+SocialMediaService "0..*" -- "1" RecipientData : enhances
 Recipient "1" -- "0..*" SocialMediaProfile : has
 Recipient "1" -- "1" RecipientData : has
 ChatConversation "1..*" -- "1" RecipientData : enhances

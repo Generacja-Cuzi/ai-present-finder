@@ -14,6 +14,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Pull rabbitmq alpine image
+        run: docker pull rabbitmq:3.12.11-alpine
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:

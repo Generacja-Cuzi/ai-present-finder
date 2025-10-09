@@ -58,7 +58,6 @@ describe("FetchOlxHandler (with .env)", () => {
       "telefon",
       2,
       0,
-      "test-request-id",
       "test-chat-id",
       "test-event-uuid",
       10,
@@ -77,7 +76,6 @@ describe("FetchOlxHandler (with .env)", () => {
     expect(mockEventBus.emit).toHaveBeenCalledWith(
       "ProductFetchedEvent",
       expect.objectContaining({
-        requestId: "test-request-id",
         chatId: "test-chat-id",
         provider: "olx",
       }),

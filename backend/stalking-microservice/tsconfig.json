@@ -18,7 +18,8 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@core/events": ["../core-events/src/index"]
+      "@core/events": ["../../core/events/src/index"],
+      "@core/types": ["../../core/types/src/index"]
     }
   }
 }

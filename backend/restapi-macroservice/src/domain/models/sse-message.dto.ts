@@ -1,53 +1,8 @@
-import { z } from "zod";
+import type { ChatMessage, ListingDto } from "@core/types";
 
 import { ApiProperty } from "@nestjs/swagger";
 
-import { ChatMessageDto, chatMessageSchema } from "./chat-message";
-
 export const uiUpdateEvent = "ui-update";
-
-export const sseMessageDtoSchema = z.discriminatedUnion("type", [
-  z.object({
-    type: z.literal("stalking-started"),
-  }),
-  z.object({
-    type: z.literal("stalking-completed"),
-  }),
-  z.object({
-    type: z.literal("chatbot-message"),
-    message: chatMessageSchema,
-  }),
-
-  z.object({
-    type: z.literal("chat-interview-completed"),
-  }),
-  z.object({
-    type: z.literal("chat-inappropriate-request"),
-    reason: z.string(),
-  }),
-  z.object({
-    type: z.literal("gift-ready"),
-    data: z.object({
-      giftIdeas: z.array(
-        z.object({
-          image: z.string().nullable(),
-          title: z.string(),
-          description: z.string(),
-          link: z.string(),
-          price: z.object({
-            value: z.number().nullable(),
-            label: z.string().nullable(),
-            currency: z.string().nullable(),
-            negotiable: z.boolean().nullable(),
-          }),
-        }),
-      ),
-    }),
-  }),
-]);
-
-export type SseMessageDto = z.infer<typeof sseMessageDtoSchema>;
-export type SseMessageType = SseMessageDto["type"];
 
 export class SseStalkingStartedDto {
   @ApiProperty({ enum: ["stalking-started"], example: "stalking-started" })
@@ -64,10 +19,15 @@ export class SseChatbotMessageDto {
   type!: "chatbot-message";
 
   @ApiProperty({
-    type: ChatMessageDto,
+    type: Object,
     description: "Chat message from the bot",
+    example: {
+      id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      content: "Hello!",
+      sender: "user",
+    },
   })
-  message!: ChatMessageDto;
+  message!: ChatMessage;
 }
 
 export class SseChatInterviewCompletedDto {
@@ -99,9 +59,34 @@ export class SseGiftReadyDto {
   @ApiProperty({
     type: Object,
     description: "Gift ideas payload",
-    example: { giftIdeas: ["book", "pen"] },
+    example: {
+      giftIdeas: [
+        {
+          image: "https://example.com/image.jpg",
+          title: "Book",
+          description: "Great book",
+          link: "https://example.com/book",
+        },
+        {
+          image: "https://example.com/image.jpg",
+          title: "Pen",
+          description: "Great pen",
+          link: "https://example.com/pen",
+        },
+      ],
+    },
   })
   data!: {
-    giftIdeas: string[];
+    giftIdeas: ListingDto[];
   };
 }
+
+export type SseMessageDto =
+  | SseStalkingStartedDto
+  | SseStalkingCompletedDto
+  | SseChatbotMessageDto
+  | SseChatInterviewCompletedDto
+  | SseChatInappropriateRequestDto
+  | SseGiftReadyDto;
+
+export type SseMessageType = SseMessageDto["type"];

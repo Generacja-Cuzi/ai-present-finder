@@ -2,7 +2,7 @@ import { BrightDataService } from "src/app/services/brightdata.service";
 import type { ScrapeRequestItem } from "src/app/services/brightdata.service";
 import { StalkingAnalyzeCommand } from "src/domain/commands/stalking-analyze.command";
 import { StalkingCompletedEvent } from "src/domain/events/stalking-completed.event";
-import type { ProfileScrapeResult } from "src/domain/models/profile-scrape-result.model";
+import type { AnyProfileScrapeResult } from "src/domain/models/profile-scrape-result.model";
 
 import { Inject, Logger } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
@@ -34,7 +34,7 @@ export class StalkingAnalyzeHandler
         ? await this.brightDataService.scrapeProfiles(scrapeRequests)
         : [];
 
-    const keywords = this.extractKeywords(profiles);
+    const keywords = this.extractFacts(profiles);
 
     const completedAt = new Date();
 
@@ -70,7 +70,8 @@ export class StalkingAnalyzeHandler
     return uniqueUrls.map((url) => ({ url }));
   }
 
-  private extractKeywords(_profiles: ProfileScrapeResult[]): string[] {
-    return [];
+  private extractFacts(_profiles: AnyProfileScrapeResult[]): string[] {
+    this.logger.log(_profiles);
+    return ["hiking", "running"];
   }
 }

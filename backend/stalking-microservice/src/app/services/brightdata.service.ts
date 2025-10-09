@@ -1,9 +1,16 @@
+import type { InstagramProfileResponse } from "src/domain/types/instagram.types";
+import type { TikTokProfileResponse } from "src/domain/types/tiktok.types";
+import type { XPostsResponse } from "src/domain/types/x-posts.types";
+
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
-import type { ProfileScrapeResult } from "../../domain/models/profile-scrape-result.model";
+import type { AnyProfileScrapeResult } from "../../domain/models/profile-scrape-result.model";
 
-type BrightDataResponse = unknown;
+type BrightDataResponse =
+  | InstagramProfileResponse
+  | TikTokProfileResponse
+  | XPostsResponse;
 
 export interface ScrapeRequestItem {
   url: string;
@@ -113,23 +120,52 @@ export class BrightDataService {
 
   async scrapeProfiles(
     items: ScrapeRequestItem[],
-  ): Promise<ProfileScrapeResult[]> {
-    const results: ProfileScrapeResult[] = [];
+  ): Promise<AnyProfileScrapeResult[]> {
+    // Filter out items with empty or whitespace-only URLs
+    const filteredItems = items.filter(
+      (item) => typeof item.url === "string" && item.url.trim().length > 0,
+    );
+    const skipped = items.length - filteredItems.length;
+    if (skipped > 0) {
+      this.logger.warn(
+        `Filtered out ${String(skipped)} item(s) with empty URL`,
+      );
+    }
 
-    for (const item of items) {
-      try {
-        const scrapeResult = await this.scrapeSingle(item);
-        if (scrapeResult == null) {
-          continue;
+    const results: AnyProfileScrapeResult[] = [];
+    const settled = await Promise.allSettled(
+      filteredItems.map(async (item) => {
+        try {
+          const scrapeResult = await this.scrapeSingle(item);
+          return { success: true, item, scrapeResult };
+        } catch (error) {
+          return { success: false, item, error: error as unknown };
         }
+      }),
+    );
 
-        results.push(scrapeResult);
-      } catch (error: unknown) {
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
+    for (const outcome of settled) {
+      if (outcome.status === "fulfilled") {
+        const result = outcome.value;
+        if (result.success) {
+          if (result.scrapeResult != null) {
+            results.push(result.scrapeResult);
+          }
+        } else {
+          const error =
+            result.error instanceof Error
+              ? result.error
+              : new Error(String(result.error));
+          this.logger.error(
+            `Failed to scrape ${result.item.url}: ${error.message}`,
+            error.stack,
+          );
+        }
+      } else {
+        // This shouldn't happen since we catch all errors
         this.logger.error(
-          `Failed to scrape ${item.url}: ${errorMessage}`,
-          error instanceof Error ? error.stack : undefined,
+          "Unexpected rejection in Promise.allSettled",
+          outcome.reason,
         );
       }
     }
@@ -139,7 +175,7 @@ export class BrightDataService {
 
   private async scrapeSingle(
     item: ScrapeRequestItem,
-  ): Promise<ProfileScrapeResult | null> {
+  ): Promise<AnyProfileScrapeResult | null> {
     const datasetId = this.resolveDatasetId(item);
     const requestUrl = `${this.endpoint}?dataset_id=${encodeURIComponent(datasetId)}`;
 
@@ -183,18 +219,45 @@ export class BrightDataService {
 
     const rawText = await response.text();
 
-    let parsed: BrightDataResponse = rawText;
+    let parsed: unknown = rawText;
     try {
       parsed = JSON.parse(rawText) as BrightDataResponse;
     } catch {
       this.logger.debug("Bright Data response is not JSON, storing raw text");
     }
 
-    return {
-      url: item.url,
-      fetchedAt: new Date().toISOString(),
-      raw: parsed,
-    };
+    const source = this.detectSource(item.url);
+    switch (source) {
+      case "instagram": {
+        return {
+          type: "instagram",
+          url: item.url,
+          fetchedAt: new Date().toISOString(),
+          raw: parsed as InstagramProfileResponse,
+        };
+      }
+      case "tiktok": {
+        return {
+          type: "tiktok",
+          url: item.url,
+          fetchedAt: new Date().toISOString(),
+          raw: parsed as TikTokProfileResponse,
+        };
+      }
+      case "x":
+      case "twitter": {
+        return {
+          type: "x",
+          url: item.url,
+          fetchedAt: new Date().toISOString(),
+          raw: parsed as XPostsResponse,
+        };
+      }
+      default: {
+        this.logger.warn(`Unsupported source: ${source}`);
+        return null;
+      }
+    }
   }
 
   private resolveDatasetId(item: ScrapeRequestItem): string {

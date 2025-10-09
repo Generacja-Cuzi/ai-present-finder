@@ -1,97 +1,114 @@
-@startuml Domain Classes
+@startuml Domain Class Diagram - AI Present Finder v2
 
-' == Existing classes ==
+hide circle
+skinparam linetype ortho
+skinparam nodesep 100
+skinparam ranksep 120
+
+' Core Domain Classes - Left Side
 class User {
 }
 
-class PersonSearch {
-  +id: UUID
-  +createdAt: Date
+class Chatbot {
 }
 
-class Person {
-  +firstName: String
-  +lastName: String
+class ChatConversation {
 }
 
-class PersonData {
-  ' Aggregates social media and interview data
+class Message {
 }
 
-class SocialMediaData {
-  +source: String
-  +content: String
+' Middle - Data Collection
+class SocialMediaLinks {
 }
 
-class InterviewAnswer {
-  +question: String
-  +answer: String
+abstract class SocialMediaService {
 }
 
-class Interview {
-  +id: UUID
-  +startedAt: Date
+class TwitterAPI {
 }
 
-class Preferences {
-  +budgetMin: Decimal
-  +budgetMax: Decimal
-  +preferredCategories: String[]
-  +excludedCategories: String[]
+class TikTokAPI {
 }
 
-class Keyword {
-  +value: String
-  +source: String  ' vision LLM / user / chatbot
-  +weight: Decimal
+class FacebookAPI {
 }
 
-class RecommendationContext {
-  +id: UUID
-  +createdAt: DateTime
-  ' Ephemeral (in-memory) per request
+class InstagramAPI {
+}
+
+class SocialMediaProfile {
+}
+
+class Recipient {
+}
+
+' Generalization (Inheritance) - Social Media
+SocialMediaService <|-- TwitterAPI
+SocialMediaService <|-- TikTokAPI
+SocialMediaService <|-- FacebookAPI
+SocialMediaService <|-- InstagramAPI
+
+class RecipientData {
+}
+
+' Middle - AI Processing
+class AIModel {
 }
 
 class GiftIdea {
-  +name: String
-  +description: String
 }
 
-class Offer {
-  +externalId: String
-  +title: String
-  +price: Decimal
-  +currency: String
-  +description: String
-  +url: URL
+class ProductSearchAIModel {
 }
 
-class Provider {
-  +name: String
-  +apiUrl: URL
-  +authType: String  ' OAuth / API Key
+' Right Side - Products
+abstract class ECommerceShop {
 }
 
-class SocialLink {
-  +url: URL
-  +type: String  ' instagram / facebook / etc
+class AllegroSandbox {
 }
 
-' === Relationships ===
-User "1" -- "0..*" PersonSearch : initiates >
-PersonSearch "1" -- "1" Person : subject >
-Person "1" -- "0..*" SocialLink
-PersonSearch "1" -- "1" PersonData
-PersonData "1" -- "0..*" SocialMediaData
-PersonData "1" -- "0..*" InterviewAnswer
-PersonSearch "1" -- "0..1" Interview
-Interview "1" -- "0..*" InterviewAnswer
+class EbayAPI {
+}
 
-PersonSearch "1" -- "1" RecommendationContext
-RecommendationContext "1" -- "0..*" Keyword
-RecommendationContext "1" -- "0..1" Preferences
-RecommendationContext "1" -- "0..*" GiftIdea
-GiftIdea "1" -- "0..*" Offer
-Offer "0..*" -- "1" Provider
+class AmazonAPI {
+}
+
+class OlxAPI {
+}
+
+class ProductOffer {
+}
+
+class RankingAIModel {
+}
+
+' Generalization (Inheritance)
+ECommerceShop <|-- AllegroSandbox
+ECommerceShop <|-- EbayAPI
+ECommerceShop <|-- AmazonAPI
+ECommerceShop <|-- OlxAPI
+
+' Relationships
+User "0..*" -- "1" Chatbot : interacts_with
+User "1" -- "0..*" ChatConversation : has
+ChatConversation "1" *-- "0..*" Message : contains
+Chatbot "1" -- "0..*" ChatConversation : manages
+User "1" -- "0..*" Recipient : searches_gift_for
+User "1" -- "0..*" SocialMediaLinks : inserts
+SocialMediaLinks "0..*" -- "1..*" SocialMediaService : processed_by
+SocialMediaService "1" -- "0..*" SocialMediaProfile : analyses
+SocialMediaService "1..*" -- "1" RecipientData : enhances
+Recipient "1" -- "0..*" SocialMediaProfile : has
+Recipient "1" -- "1" RecipientData : has
+ChatConversation "1..*" -- "1" RecipientData : enhances
+RecipientData "1" -- "1" AIModel : processed_by
+AIModel "1" -- "0..*" GiftIdea : creates
+GiftIdea "0..*" -- "1" ProductSearchAIModel : processed_by
+ProductSearchAIModel "1" -- "1..*" ECommerceShop : searches_in
+ECommerceShop "1" -- "0..*" ProductOffer : returns
+ProductOffer "0..*" -- "1" RankingAIModel : filtered_and_ranked_by
+RankingAIModel "1" -- "1" User : returns_to
 
 @enduml

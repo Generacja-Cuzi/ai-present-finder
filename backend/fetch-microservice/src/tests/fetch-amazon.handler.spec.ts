@@ -71,6 +71,7 @@ describe("FetchAmazonHandler (with .env, OLX-like structure)", () => {
       1,
       "test-request-id",
       "test-chat-id",
+      "test-event-uuid",
     );
 
     await handler.handle(event);

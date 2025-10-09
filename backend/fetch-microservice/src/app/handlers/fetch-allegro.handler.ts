@@ -65,6 +65,11 @@ export class FetchAllegroHandler {
         event.chatId,
         "allegro",
         true,
+        event.eventUuid,
+      );
+
+      this.logger.log(
+        `Emitting ProductFetchedEvent with ${listings.length.toString()} listings for chat ${event.chatId}`,
       );
 
       this.eventBus.emit(ProductFetchedEvent.name, productFetchedEvent);
@@ -79,6 +84,7 @@ export class FetchAllegroHandler {
         event.chatId,
         "allegro",
         false,
+        event.eventUuid,
         errorMessage,
       );
 

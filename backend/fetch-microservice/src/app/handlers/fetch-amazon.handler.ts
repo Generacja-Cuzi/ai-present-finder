@@ -55,6 +55,7 @@ export class FetchAmazonHandler {
         event.chatId,
         "amazon",
         true,
+        event.eventUuid,
       );
 
       this.eventBus.emit(ProductFetchedEvent.name, productFetchedEvent);
@@ -69,6 +70,7 @@ export class FetchAmazonHandler {
         event.chatId,
         "amazon",
         false,
+        event.eventUuid,
         errorMessage,
       );
 

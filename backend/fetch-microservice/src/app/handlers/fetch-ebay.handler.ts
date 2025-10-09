@@ -62,6 +62,7 @@ export class FetchEbayHandler {
         event.chatId,
         "ebay",
         true,
+        event.eventUuid,
       );
 
       this.eventBus.emit(ProductFetchedEvent.name, productFetchedEvent);
@@ -76,6 +77,7 @@ export class FetchEbayHandler {
         event.chatId,
         "ebay",
         false,
+        event.eventUuid,
         errorMessage,
       );
 

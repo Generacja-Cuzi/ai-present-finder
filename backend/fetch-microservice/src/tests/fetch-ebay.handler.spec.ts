@@ -3,7 +3,7 @@ import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { FetchEbayHandler } from "../app/handlers/fetch-ebay.handler";
-import type { FetchEbayEvent } from "../domain/events/fetch-ebay.event";
+import { FetchEbayEvent } from "../domain/events/fetch-ebay.event";
 
 interface MockEventBus {
   emit: jest.Mock;
@@ -66,13 +66,14 @@ describe("FetchEbayHandler (with .env, OLX-like structure)", () => {
   });
 
   it("should handle FetchEbayEvent and print API response", async () => {
-    const event: FetchEbayEvent = {
-      query: "laptop",
-      limit: 5,
-      offset: 0,
-      requestId: "test-request-id",
-      chatId: "test-chat-id",
-    };
+    const event = new FetchEbayEvent(
+      "laptop",
+      5,
+      0,
+      "test-request-id",
+      "test-chat-id",
+      "test-event-uuid",
+    );
 
     await handler.handle(event);
 

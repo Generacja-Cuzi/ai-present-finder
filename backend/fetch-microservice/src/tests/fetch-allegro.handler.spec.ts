@@ -74,6 +74,7 @@ describe("FetchAllegroHandler (with .env)", () => {
       0,
       "test-request-id",
       "test-chat-id",
+      "test-event-uuid",
     );
 
     await handler.handle(event);

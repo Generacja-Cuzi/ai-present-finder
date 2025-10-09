@@ -52,6 +52,7 @@ export class FetchOlxHandler {
         event.chatId,
         "olx",
         true,
+        event.eventUuid,
       );
 
       this.eventBus.emit(ProductFetchedEvent.name, productFetchedEvent);
@@ -66,6 +67,7 @@ export class FetchOlxHandler {
         event.chatId,
         "olx",
         false,
+        event.eventUuid,
         errorMessage,
       );
 

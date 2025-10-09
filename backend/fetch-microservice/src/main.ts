@@ -17,6 +17,8 @@ async function bootstrap() {
 
   const provider = process.env.FETCH_PROVIDER ?? "allegro";
 
+  logger.log(`${provider}`);
+
   const queueName =
     provider === "allegro"
       ? FetchAllegroEvent.name

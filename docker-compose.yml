@@ -20,8 +20,88 @@ services:
       timeout: 30s
       retries: 3
 
+  gift-postgres:
+    image: postgres:16
+    container_name: ai-gift-finder-gift-postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: gift_service
+      POSTGRES_USER: gift_user
+      POSTGRES_PASSWORD: gift_password
+    volumes:
+      - gift_postgres_data:/var/lib/postgresql/data
+    networks:
+      - ai-present-finder-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gift_user -d gift_service"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  fetch-postgres:
+    image: postgres:16
+    container_name: ai-gift-finder-fetch-postgres
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: fetch_service
+      POSTGRES_USER: fetch_user
+      POSTGRES_PASSWORD: fetch_password
+    volumes:
+      - fetch_postgres_data:/var/lib/postgresql/data
+    networks:
+      - ai-present-finder-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fetch_user -d fetch_service"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  stalking-postgres:
+    image: postgres:16
+    container_name: ai-gift-finder-stalking-postgres
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_DB: stalking_service
+      POSTGRES_USER: stalking_user
+      POSTGRES_PASSWORD: stalking_password
+    volumes:
+      - stalking_postgres_data:/var/lib/postgresql/data
+    networks:
+      - ai-present-finder-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stalking_user -d stalking_service"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  chat-postgres:
+    image: postgres:16
+    container_name: ai-gift-finder-chat-postgres
+    ports:
+      - "5436:5432"
+    environment:
+      POSTGRES_DB: chat_service
+      POSTGRES_USER: chat_user
+      POSTGRES_PASSWORD: chat_password
+    volumes:
+      - chat_postgres_data:/var/lib/postgresql/data
+    networks:
+      - ai-present-finder-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chat_user -d chat_service"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 volumes:
   rabbitmq_data:
+  gift_postgres_data:
+  fetch_postgres_data:
+  stalking_postgres_data:
+  chat_postgres_data:
 
 networks:
   ai-present-finder-network:

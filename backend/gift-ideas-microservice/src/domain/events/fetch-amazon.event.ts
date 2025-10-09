@@ -8,5 +8,6 @@ export class FetchAmazonEvent {
     public readonly requestId: string,
     public readonly chatId: string,
     public readonly eventUuid?: string,
+    public readonly totalEvents?: number,
   ) {}
 }

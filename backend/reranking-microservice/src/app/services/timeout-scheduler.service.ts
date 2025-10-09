@@ -15,32 +15,21 @@ export class TimeoutSchedulerService {
 
   @Cron(CronExpression.EVERY_30_SECONDS)
   async handleTimeouts() {
-    this.logger.debug("Checking for sessions older than 2 minutes...");
+    this.logger.debug("Checking for timed out events...");
 
     try {
-      const oldSessions =
-        await this.eventTrackingService.getActiveSessionsOlderThan(12);
+      const sessionIds = await this.eventTrackingService.markTimeoutEvents();
 
-      if (oldSessions.length > 0) {
+      if (sessionIds.length > 0) {
         this.logger.log(
-          `Found ${String(oldSessions.length)} sessions older than 2 minutes, timing them out`,
+          `Marked ${String(sessionIds.length)} sessions as timed out`,
         );
 
-        for (const session of oldSessions) {
-          await this.eventTrackingService.markSessionTimeout(session.sessionId);
-
-          await this.eventTrackingService.markTimeoutEvents();
-
-          this.sessionCompletionService.checkAndEmitCompletedSessions([
-            session.sessionId,
-          ]);
-
-          this.logger.log(
-            `Session ${session.sessionId} processed after timeout`,
-          );
+        for (const sessionId of sessionIds) {
+          await this.sessionCompletionService.emitSessionProducts(sessionId);
         }
       } else {
-        this.logger.debug("No sessions older than 2 minutes found");
+        this.logger.debug("No timed out events found");
       }
     } catch (error) {
       this.logger.error("Error while checking for timeouts:", error);

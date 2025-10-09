@@ -1,3 +1,4 @@
+/* eslint-disable @darraghor/nestjs-typed/controllers-should-supply-api-tags */
 import { NotifyUserSseCommand } from "src/domain/commands/notify-user-sse.command";
 import { GiftReadyEvent } from "src/domain/events/gift-ready.event";
 

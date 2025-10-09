@@ -17,7 +17,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "typecheck": "tsc --noEmit"
   },
   "lint-staged": {
     "*": "prettier -w --ignore-unknown"
@@ -41,16 +42,13 @@
     }
   },
   "dependencies": {
-    "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.0.13",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.13",
     "@nestjs/cqrs": "^11.0.3",
     "@nestjs/microservices": "^11.0.13",
     "@nestjs/platform-express": "^11.0.13",
-    "@nestjs/schedule": "^6.0.1",
     "@nestjs/swagger": "^11.2.0",
-    "@nestjs/typeorm": "^11.0.0",
     "@supabase/supabase-js": "^2.49.4",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.7",

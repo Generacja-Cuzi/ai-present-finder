@@ -8,7 +8,6 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
 import { GiftGenerateRequestedEvent } from "./domain/events/gift-generate-requested.event";
-import { ProductFetchedEvent } from "./domain/events/product-fetched.event";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -28,17 +27,7 @@ async function bootstrap() {
     },
   };
 
-  const productFetchedOptions = {
-    transport: Transport.RMQ,
-    options: {
-      urls: [cloudAmqpUrl],
-      queue: ProductFetchedEvent.name,
-      queueOptions: { durable: false },
-    },
-  };
-
   app.connectMicroservice(microserviceOptions);
-  app.connectMicroservice(productFetchedOptions);
 
   const swaggerServer =
     process.env.SWAGGER_SERVER ?? `http://localhost:${portString}`;

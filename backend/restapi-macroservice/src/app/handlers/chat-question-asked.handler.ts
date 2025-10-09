@@ -1,3 +1,4 @@
+/* eslint-disable @darraghor/nestjs-typed/controllers-should-supply-api-tags */
 import { NotifyUserSseCommand } from "src/domain/commands/notify-user-sse.command";
 import { ChatQuestionAskedEvent } from "src/domain/events/chat-question-asked.event";
 import { v4 as uuidv4 } from "uuid";

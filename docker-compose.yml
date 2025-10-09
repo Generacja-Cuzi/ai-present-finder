@@ -62,7 +62,7 @@ services:
     image: postgres:16
     container_name: ai-gift-finder-stalking-postgres
     ports:
-      - "5435:5432"
+      - "6435:5432"
     environment:
       POSTGRES_DB: stalking_service
       POSTGRES_USER: stalking_user
@@ -81,7 +81,7 @@ services:
     image: postgres:16
     container_name: ai-gift-finder-chat-postgres
     ports:
-      - "5436:5432"
+      - "6436:5432"
     environment:
       POSTGRES_DB: chat_service
       POSTGRES_USER: chat_user

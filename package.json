@@ -8,7 +8,7 @@
     "build": "pnpm -r build",
     "clean": "pnpm -r clean && rm -rf node_modules",
     "dev": "concurrently \"pnpm run services:dev\" \"pnpm run fetch:dev\"",
-    "fetch:dev": "cross-env FETCH_PROVIDER=olx pnpm run --filter @backend/fetch-microservice dev",
+    "fetch:dev": "concurrently \"cross-env FETCH_PROVIDER=olx PORT=8011 pnpm run --filter @backend/fetch-microservice dev\" \"cross-env FETCH_PROVIDER=allegro PORT=8012 pnpm run --filter @backend/fetch-microservice dev\"",
     "format": "prettier -w --ignore-unknown .",
     "format:check": "prettier --check .",
     "install:all": "pnpm install",

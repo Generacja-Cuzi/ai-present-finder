@@ -109,6 +109,6 @@ GiftIdea "0..*" -- "1" ProductSearchAIModel : processed_by
 ProductSearchAIModel "1" -- "1..*" ECommerceShop : searches_in
 ECommerceShop "1" -- "0..*" ProductOffer : returns
 ProductOffer "0..*" -- "1" RankingAIModel : filtered_and_ranked_by
-RankingAIModel "1..*" -- "1" User : returns_to
+RankingAIModel "1" -- "1..*" User : returns_to
 
 @enduml

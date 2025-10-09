@@ -75,7 +75,6 @@ describe("FetchAllegroHandler (with .env)", () => {
       "laptop",
       5,
       0,
-      "test-request-id",
       "test-chat-id",
       "test-event-uuid",
       10,
@@ -93,7 +92,6 @@ describe("FetchAllegroHandler (with .env)", () => {
     expect(mockEventBus.emit).toHaveBeenCalledWith(
       "ProductFetchedEvent",
       expect.objectContaining({
-        requestId: "test-request-id",
         chatId: "test-chat-id",
         provider: "allegro",
       }),

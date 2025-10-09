@@ -5,8 +5,6 @@ import { ConfigModule } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
 import { ClientsModule, Transport } from "@nestjs/microservices";
 
-import { GiftController } from "../controllers/gift.controller";
-
 @Module({
   imports: [
     CqrsModule,
@@ -68,7 +66,7 @@ import { GiftController } from "../controllers/gift.controller";
       },
     ]),
   ],
-  controllers: [GiftController, GiftGenerateRequestedHandler],
+  controllers: [GiftGenerateRequestedHandler],
   providers: [],
 })
 export class GiftModule {}

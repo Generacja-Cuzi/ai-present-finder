@@ -1,24 +1,6 @@
-import { z } from "zod";
-
 import { ApiProperty } from "@nestjs/swagger";
 
-export const stalkingAnalyzeRequestDtoSchema = z.object({
-  facebookUrl: z.url().optional(),
-  instagramUrl: z.url().optional(),
-  tiktokUrl: z.url().optional(),
-  youtubeUrl: z.url().optional(),
-  xUrl: z.url().optional(),
-  linkedinUrl: z.url().optional(),
-  chatId: z.string(),
-});
-
-export type StalkingAnalyzeRequestDto = z.infer<
-  typeof stalkingAnalyzeRequestDtoSchema
->;
-
-export class StalkingAnalyzeRequestDtoDocument
-  implements StalkingAnalyzeRequestDto
-{
+export class StalkingAnalyzeRequestDto {
   @ApiProperty({
     type: String,
     format: "url",

@@ -1,10 +1,6 @@
 import { SendUserMessageCommand } from "src/domain/commands/send-user-message.command";
 import { StalkingAnalyzeRequestCommand } from "src/domain/commands/stalking-analyze-request.command";
-import {
-  SendMessageDto,
-  SendMessageDtoDocument,
-  sendMessageDtoSchema,
-} from "src/domain/models/send-message.dto";
+import { SendMessageDto } from "src/domain/models/send-message.dto";
 import {
   StalkingAnalyzeRequestDto,
   StalkingAnalyzeRequestDto as StalkingAnalyzeRequestDtoDocument,
@@ -20,7 +16,7 @@ import {
 } from "@nestjs/swagger";
 
 @ApiTags("restapi")
-@ApiExtraModels(SendMessageDtoDocument, StalkingAnalyzeRequestDtoDocument)
+@ApiExtraModels(StalkingAnalyzeRequestDtoDocument)
 @Controller("restapi")
 export class RestApiController {
   private readonly logger = new Logger(RestApiController.name);
@@ -36,7 +32,7 @@ export class RestApiController {
     @Body() analyzeRequestedDto: StalkingAnalyzeRequestDto,
   ): Promise<void> {
     await this.commandBus.execute(
-      new StalkingAnalyzeRequestCommand(analyzeRequestedDto),
+      new StalkingAnalyzeRequestCommand(analyzeRequestedDto), // TODO(simon-the-shark): validate analyzeRequestedDto
     );
   }
 
@@ -44,7 +40,6 @@ export class RestApiController {
   @ApiOperation({ summary: "Send chat messages to the system" })
   @ApiOkResponse({ description: "Message accepted" })
   async sendMessage(@Body() sendMessageDto: SendMessageDto): Promise<void> {
-    const validated = sendMessageDtoSchema.parse(sendMessageDto);
-    await this.commandBus.execute(new SendUserMessageCommand(validated));
+    await this.commandBus.execute(new SendUserMessageCommand(sendMessageDto)); // TODO(simon-the-shark): validate sendMessageDto
   }
 }

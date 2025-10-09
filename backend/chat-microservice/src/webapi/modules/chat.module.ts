@@ -12,8 +12,6 @@ import { ConfigModule } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
 import { ClientsModule, Transport } from "@nestjs/microservices";
 
-import { ChatController } from "../controllers/chat.controller";
-
 @Module({
   imports: [
     CqrsModule,
@@ -62,11 +60,7 @@ import { ChatController } from "../controllers/chat.controller";
       },
     ]),
   ],
-  controllers: [
-    ChatController,
-    ChatStartInterviewHandler,
-    ChatUserAnsweredHandler,
-  ],
+  controllers: [ChatStartInterviewHandler, ChatUserAnsweredHandler],
   providers: [GenerateQuestionHandler],
 })
 export class ChatModule {}

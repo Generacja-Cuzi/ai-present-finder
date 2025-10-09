@@ -4,5 +4,6 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "deleteOutDir": true
-  }
+  },
+  "entryFile": "stalking-microservice/src/main"
 }

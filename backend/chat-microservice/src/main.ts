@@ -1,5 +1,4 @@
 // src/main.ts
-import { ChatStartInterviewEvent, ChatUserAnsweredEvent } from "@core/events";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 import { Logger } from "@nestjs/common";
@@ -7,6 +6,10 @@ import { NestFactory } from "@nestjs/core";
 import { Transport } from "@nestjs/microservices";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
+import {
+  ChatStartInterviewEvent,
+  ChatUserAnsweredEvent,
+} from "../../core/events/src";
 import { AppModule } from "./app.module";
 
 async function bootstrap() {

@@ -71,7 +71,6 @@ describe("FetchEbayHandler (with .env, OLX-like structure)", () => {
       "laptop",
       5,
       0,
-      "test-request-id",
       "test-chat-id",
       "test-event-uuid",
       10,
@@ -89,7 +88,6 @@ describe("FetchEbayHandler (with .env, OLX-like structure)", () => {
     expect(mockEventBus.emit).toHaveBeenCalledWith(
       "ProductFetchedEvent",
       expect.objectContaining({
-        requestId: "test-request-id",
         chatId: "test-chat-id",
         provider: "ebay",
       }),

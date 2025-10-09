@@ -1,4 +1,5 @@
-import { FetchOlxEvent, ListingDto, ProductFetchedEvent } from "@core/events";
+import { FetchOlxEvent, ProductFetchedEvent } from "@core/events";
+import { ListingDto } from "@core/types";
 
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";

@@ -18,7 +18,9 @@
           }
         },
         "summary": "Get welcome message from Chat service",
-        "tags": ["Chat"]
+        "tags": [
+          "Chat"
+        ]
       }
     }
   },
@@ -35,79 +37,6 @@
     }
   ],
   "components": {
-    "schemas": {
-      "ChatMessageDtoDocument": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-          },
-          "content": {
-            "type": "string",
-            "description": "Message content",
-            "example": "Hello, how can I help?"
-          },
-          "sender": {
-            "type": "string",
-            "enum": ["user", "assistant"],
-            "description": "Message sender",
-            "example": "user"
-          }
-        },
-        "required": ["id", "content", "sender"]
-      },
-      "ContextDtoDocument": {
-        "type": "object",
-        "properties": {
-          "keywords": {
-            "description": "Keywords that describe the context",
-            "example": ["books", "programming"],
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "chatId": {
-            "type": "string",
-            "description": "Unique chat identifier",
-            "example": "b3d9f9f0-3c2b-4f9a-9c2a-0d1e2f3a4b5c"
-          }
-        },
-        "required": ["keywords", "chatId"]
-      },
-      "EndConversationOutputDocument": {
-        "type": "object",
-        "properties": {
-          "recipient_profile": {
-            "example": ["engineer", "book lover"],
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "key_themes_and_keywords": {
-            "example": ["programming", "reading"],
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "gift_recommendations": {
-            "example": ["kindle", "mechanical keyboard"],
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "recipient_profile",
-          "key_themes_and_keywords",
-          "gift_recommendations"
-        ]
-      }
-    }
+    "schemas": {}
   }
 }

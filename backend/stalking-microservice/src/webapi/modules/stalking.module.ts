@@ -7,8 +7,6 @@ import { ConfigModule } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
 import { ClientsModule, Transport } from "@nestjs/microservices";
 
-import { StalkingController } from "../controllers/stalking.controller";
-
 @Module({
   imports: [
     CqrsModule,
@@ -31,7 +29,7 @@ import { StalkingController } from "../controllers/stalking.controller";
       },
     ]),
   ],
-  controllers: [StalkingController, StalkingAnalyzeRequestHandler],
+  controllers: [StalkingAnalyzeRequestHandler],
   providers: [StalkingAnalyzeHandler],
 })
 export class StalkingModule {}

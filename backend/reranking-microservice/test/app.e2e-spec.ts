@@ -5,7 +5,7 @@ import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
-import { AppModule } from "./../src/app.module";
+import { AppModule } from "../src/webapi/reranking.module";
 
 describe("AppController (e2e)", () => {
   let app: INestApplication<App>;

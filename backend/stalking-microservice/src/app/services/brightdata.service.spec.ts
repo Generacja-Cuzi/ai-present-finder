@@ -1,4 +1,4 @@
-import * as nock from "nock";
+import nock from "nock";
 import { MockConfigService } from "src/app/services/mock-config-service";
 
 import { ConfigService } from "@nestjs/config";

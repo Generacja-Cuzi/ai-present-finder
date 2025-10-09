@@ -263,7 +263,13 @@ export class BrightDataService {
   private resolveDatasetId(item: ScrapeRequestItem): string {
     const source = this.detectSource(item.url);
 
-    return DATASET_MAP[source];
+    const datasetId = DATASET_MAP[source];
+
+    if (datasetId == null) {
+      throw new Error(`No dataset ID configured for source: ${source}`);
+    }
+
+    return datasetId;
   }
 
   private detectSource(url: string): string {

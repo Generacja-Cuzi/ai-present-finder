@@ -1,6 +1,6 @@
 /* eslint-disable @darraghor/nestjs-typed/controllers-should-supply-api-tags */
+import { ChatUserAnsweredEvent } from "@core/events";
 import { GenerateQuestionCommand } from "src/domain/commands/generate-question.command";
-import { ChatUserAnsweredEvent } from "src/domain/events/chat-user-answered.event";
 
 import { Controller } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";

@@ -1,8 +1,10 @@
 /* eslint-disable @darraghor/nestjs-typed/controllers-should-supply-api-tags */
-import { FetchAllegroEvent } from "src/domain/events/fetch-allegro.event";
-import { FetchEbayEvent } from "src/domain/events/fetch-ebay.event";
-import { FetchOlxEvent } from "src/domain/events/fetch-olx.event";
-import { GiftGenerateRequestedEvent } from "src/domain/events/gift-generate-requested.event";
+import {
+  FetchAllegroEvent,
+  FetchEbayEvent,
+  FetchOlxEvent,
+  GiftGenerateRequestedEvent,
+} from "@core/events";
 import { v4 as uuidv4 } from "uuid";
 
 import { Controller, Inject, Logger } from "@nestjs/common";

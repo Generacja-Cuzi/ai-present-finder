@@ -1,6 +1,6 @@
+import { GiftGenerateRequestedEvent } from "@core/events";
 import { EndInterviewCommand } from "src/domain/commands/end-interview.command";
 import { NotifyUserSseCommand } from "src/domain/commands/notify-user-sse.command";
-import { GiftGenerateRequestedEvent } from "src/domain/events/gift-generate-requested.event";
 
 import { Inject, Logger } from "@nestjs/common";
 import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";

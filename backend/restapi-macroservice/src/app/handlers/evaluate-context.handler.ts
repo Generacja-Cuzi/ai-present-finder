@@ -1,6 +1,6 @@
+import { ChatStartInterviewEvent } from "@core/events";
 import { EndInterviewCommand } from "src/domain/commands/end-interview.command";
 import { EvaluateContextCommand } from "src/domain/commands/evaluate-context.command";
-import { ChatStartInterviewEvent } from "src/domain/events/chat-start-interview.event";
 
 import { Inject, Logger } from "@nestjs/common";
 import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";

@@ -1,9 +1,10 @@
+import { StalkingAnalyzeRequestedEvent } from "@core/events";
+
 import { Inject, Logger } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { ClientProxy } from "@nestjs/microservices";
 
 import { StalkingAnalyzeRequestCommand } from "../../domain/commands/stalking-analyze-request.command";
-import { StalkingAnalyzeRequestedEvent } from "../../domain/events/stalking-analyze-request.event";
 
 @CommandHandler(StalkingAnalyzeRequestCommand)
 export class StalkingAnalyzeRequestHandler

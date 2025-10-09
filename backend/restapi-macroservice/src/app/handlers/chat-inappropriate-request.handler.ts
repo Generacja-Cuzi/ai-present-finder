@@ -1,6 +1,6 @@
 /* eslint-disable @darraghor/nestjs-typed/controllers-should-supply-api-tags */
+import { ChatInappropriateRequestEvent } from "@core/events";
 import { NotifyUserSseCommand } from "src/domain/commands/notify-user-sse.command";
-import { ChatInappropriateRequestEvent } from "src/domain/events/chat-innapropriate-request.event";
 
 import { Controller, Logger } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";

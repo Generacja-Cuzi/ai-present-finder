@@ -1,21 +1,24 @@
+import {
+  FetchAmazonEvent,
+  ListingDto,
+  ProductFetchedEvent,
+} from "@core/events";
+
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ClientProxy, EventPattern } from "@nestjs/microservices";
 
-import { FetchAmazonEvent } from "../../domain/events/fetch-amazon.event";
-import { ProductFetchedEvent } from "../../domain/events/product-fetched.event";
-import { ListingDto } from "../../domain/models/listing.dto";
 import {
   AmazonApiResponse,
   AmazonConfig,
   AmazonSearchParameters,
-} from "../types/amazon.types";
+} from "../../domain/types/amazon.types";
 import {
   DEFAULT_RETRY_CONFIG,
   calculateRetryDelay,
   isRetryableError,
   sleep,
-} from "../types/common.types";
+} from "../../domain/types/common.types";
 
 @Controller()
 export class FetchAmazonHandler {

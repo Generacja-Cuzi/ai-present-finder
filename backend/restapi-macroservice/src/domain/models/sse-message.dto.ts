@@ -28,7 +28,20 @@ export const sseMessageDtoSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("gift-ready"),
     data: z.object({
-      giftIdeas: z.array(z.string()),
+      giftIdeas: z.array(
+        z.object({
+          image: z.string().nullable(),
+          title: z.string(),
+          description: z.string(),
+          link: z.string(),
+          price: z.object({
+            value: z.number().nullable(),
+            label: z.string().nullable(),
+            currency: z.string().nullable(),
+            negotiable: z.boolean().nullable(),
+          }),
+        }),
+      ),
     }),
   }),
 ]);

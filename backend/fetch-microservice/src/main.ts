@@ -1,12 +1,15 @@
+import {
+  FetchAllegroEvent,
+  FetchAmazonEvent,
+  FetchEbayEvent,
+  FetchOlxEvent,
+} from "@core/events";
+
 import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { Transport } from "@nestjs/microservices";
 
 import { AppModule } from "./app.module";
-import { FetchAllegroEvent } from "./domain/events/fetch-allegro.event";
-import { FetchAmazonEvent } from "./domain/events/fetch-amazon.event";
-import { FetchEbayEvent } from "./domain/events/fetch-ebay.event";
-import { FetchOlxEvent } from "./domain/events/fetch-olx.event";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

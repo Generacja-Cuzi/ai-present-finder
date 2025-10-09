@@ -1,7 +1,9 @@
+import {
+  ChatInappropriateRequestEvent,
+  ChatInterviewCompletedEvent,
+  ChatQuestionAskedEvent,
+} from "@core/events";
 import { GenerateQuestionCommand } from "src/domain/commands/generate-question.command";
-import { ChatInappropriateRequestEvent } from "src/domain/events/chat-innapropriate-request.event";
-import { ChatInterviewCompletedEvent } from "src/domain/events/chat-interview-completed.event";
-import { ChatQuestionAskedEvent } from "src/domain/events/chat-question-asked.event";
 
 import { Inject } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";

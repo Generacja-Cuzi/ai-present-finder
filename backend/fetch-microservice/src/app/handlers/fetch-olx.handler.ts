@@ -1,23 +1,22 @@
+import { FetchOlxEvent, ListingDto, ProductFetchedEvent } from "@core/events";
+
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ClientProxy, EventPattern } from "@nestjs/microservices";
 
-import { FetchOlxEvent } from "../../domain/events/fetch-olx.event";
-import { ProductFetchedEvent } from "../../domain/events/product-fetched.event";
-import { ListingDto } from "../../domain/models/listing.dto";
 import {
   DEFAULT_RETRY_CONFIG,
   calculateRetryDelay,
   isRetryableError,
   sleep,
-} from "../types/common.types";
+} from "../../domain/types/common.types";
 import {
   OlxConfig,
   OlxGraphQLQuery,
   OlxGraphQLResponse,
   OlxPriceParameter,
   OlxRequestHeaders,
-} from "../types/olx.types";
+} from "../../domain/types/olx.types";
 
 @Controller()
 export class FetchOlxHandler {

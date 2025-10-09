@@ -1,6 +1,6 @@
+import { StalkingCompletedEvent } from "@core/events";
 import { StalkingAnalyzeRequestHandler } from "src/app/handlers/stalking-analyze-request.handler";
 import { StalkingAnalyzeHandler } from "src/app/handlers/stalking-analyze.handler";
-import { StalkingCompletedEvent } from "src/domain/events/stalking-completed.event";
 
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";

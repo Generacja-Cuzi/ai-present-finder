@@ -1,5 +1,5 @@
-import type { ChatMessage } from "../models/chat-message";
-import type { ContextDto } from "../models/context.dto";
+import type { ChatMessage } from "../types";
+import type { ContextDto } from "../types";
 
 export class ChatUserAnsweredEvent {
   constructor(

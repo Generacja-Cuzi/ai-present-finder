@@ -1,6 +1,6 @@
 /* eslint-disable @darraghor/nestjs-typed/controllers-should-supply-api-tags */
+import { GiftReadyEvent } from "@core/events";
 import { NotifyUserSseCommand } from "src/domain/commands/notify-user-sse.command";
-import { GiftReadyEvent } from "src/domain/events/gift-ready.event";
 
 import { Controller, Logger } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
@@ -17,7 +17,9 @@ export class GiftReadyHandler {
 
     const giftIdeas = event.giftIdeas;
 
-    this.logger.log(`Pomysly na prezenty: ${giftIdeas.join(";")}`);
+    this.logger.log(
+      `Pomysly na prezenty: ${giftIdeas.map((gift) => gift.title).join(";")}`,
+    );
 
     await this.commandBus.execute(
       new NotifyUserSseCommand(event.chatId, {

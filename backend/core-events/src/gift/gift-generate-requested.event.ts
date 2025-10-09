@@ -1,4 +1,4 @@
-import type { EndConversationOutput } from "../models/end-converstion-ai-output";
+import type { EndConversationOutput } from "../types";
 
 export class GiftGenerateRequestedEvent {
   constructor(

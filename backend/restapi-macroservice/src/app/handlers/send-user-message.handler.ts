@@ -1,6 +1,6 @@
+import { ChatUserAnsweredEvent } from "@core/events";
 import { NotifyUserSseCommand } from "src/domain/commands/notify-user-sse.command";
 import { SendUserMessageCommand } from "src/domain/commands/send-user-message.command";
-import { ChatUserAnsweredEvent } from "src/domain/events/chat-user-answered.event";
 
 import { Inject } from "@nestjs/common";
 import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";

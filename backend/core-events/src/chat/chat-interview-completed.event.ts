@@ -1,5 +1,5 @@
-import type { ContextDto } from "../models/context.dto";
-import type { EndConversationOutput } from "../models/end-converstion-ai-output";
+import type { EndConversationOutput } from "../types";
+import type { ContextDto } from "../types";
 
 export class ChatInterviewCompletedEvent {
   constructor(

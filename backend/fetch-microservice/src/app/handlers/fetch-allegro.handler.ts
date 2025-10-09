@@ -61,11 +61,10 @@ export class FetchAllegroHandler {
 
       const productFetchedEvent = new ProductFetchedEvent(
         listings,
-        event.requestId,
         event.chatId,
         "allegro",
         true,
-        event.eventUuid,
+        event.eventId,
         event.totalEvents,
       );
 
@@ -81,11 +80,10 @@ export class FetchAllegroHandler {
 
       const productFetchedEvent = new ProductFetchedEvent(
         [],
-        event.requestId,
         event.chatId,
         "allegro",
         false,
-        event.eventUuid,
+        event.eventId,
         event.totalEvents,
       );
 

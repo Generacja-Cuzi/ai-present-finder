@@ -1,5 +1,3 @@
-// Shared types used across events
-
 export interface ListingDto {
   image: string | null;
   title: string;

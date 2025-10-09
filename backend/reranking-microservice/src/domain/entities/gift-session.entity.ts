@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryColumn } from "typeorm";
 
 export enum SessionStatus {
   ACTIVE = "active",
@@ -8,17 +8,11 @@ export enum SessionStatus {
 
 @Entity("gift_sessions")
 export class GiftSession {
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
-
-  @Column({ name: "session_id", unique: true })
-  sessionId: string;
+  @PrimaryColumn({ name: "event_id", unique: true })
+  eventId: string;
 
   @Column({ name: "chat_id" })
   chatId: string;
-
-  @Column({ name: "event_id" })
-  eventId: string;
 
   @Column({
     name: "status",

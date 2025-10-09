@@ -20,27 +20,27 @@ export class SessionCompletionService {
     private readonly giftSessionRepository: Repository<GiftSession>,
   ) {}
 
-  addProductsToSession(sessionId: string, products: ListingDto[]): void {
-    const existingProducts = this.sessionProducts.get(sessionId) ?? [];
+  addProductsToSession(eventId: string, products: ListingDto[]): void {
+    const existingProducts = this.sessionProducts.get(eventId) ?? [];
     existingProducts.push(...products);
-    this.sessionProducts.set(sessionId, existingProducts);
+    this.sessionProducts.set(eventId, existingProducts);
 
     this.logger.log(
-      `Added ${String(products.length)} products to session ${sessionId}, ` +
+      `Added ${String(products.length)} products to session ${eventId}, ` +
         `total: ${String(existingProducts.length)}`,
     );
   }
 
-  async emitSessionProducts(sessionId: string): Promise<void> {
-    const allProducts = this.sessionProducts.get(sessionId) ?? [];
+  async emitSessionProducts(eventId: string): Promise<void> {
+    const allProducts = this.sessionProducts.get(eventId) ?? [];
 
     // Fetch the session from database to get chatId
     const session = await this.giftSessionRepository.findOne({
-      where: { sessionId },
+      where: { eventId },
     });
 
     if (session === null) {
-      this.logger.error(`Session ${sessionId} not found in database`);
+      this.logger.error(`Session ${eventId} not found in database`);
       return;
     }
 
@@ -51,20 +51,20 @@ export class SessionCompletionService {
       this.giftReadyEventBus.emit(GiftReadyEvent.name, giftReadyEvent);
 
       this.logger.log(
-        `Emitted GiftReadyEvent with ${String(allProducts.length)} products for session ${sessionId}`,
+        `Emitted GiftReadyEvent with ${String(allProducts.length)} products for session ${eventId}`,
       );
     } else {
       this.logger.warn(
-        `No products found for session ${sessionId}, emitting empty event`,
+        `No products found for session ${eventId}, emitting empty event`,
       );
       const giftReadyEvent = new GiftReadyEvent([], chatId);
       this.giftReadyEventBus.emit(GiftReadyEvent.name, giftReadyEvent);
     }
 
-    this.removeSession(sessionId);
+    this.removeSession(eventId);
   }
 
-  private removeSession(sessionId: string): void {
-    this.sessionProducts.delete(sessionId);
+  private removeSession(eventId: string): void {
+    this.sessionProducts.delete(eventId);
   }
 }

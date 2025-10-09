@@ -1,7 +1,7 @@
 /* eslint-disable @darraghor/nestjs-typed/controllers-should-supply-api-tags */
 import { ChatQuestionAskedEvent } from "@core/events";
 import { NotifyUserSseCommand } from "src/domain/commands/notify-user-sse.command";
-import { v4 as uuidv4 } from "uuid";
+import { ulid } from "ulid";
 
 import { Controller, Logger } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
@@ -20,7 +20,7 @@ export class ChatQuestionAskedHandler {
       new NotifyUserSseCommand(event.context.chatId, {
         type: "chatbot-message",
         message: {
-          id: uuidv4(),
+          id: ulid(),
           content: event.question,
           sender: "assistant",
         },

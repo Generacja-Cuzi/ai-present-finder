@@ -58,11 +58,10 @@ export class FetchEbayHandler {
 
       const productFetchedEvent = new ProductFetchedEvent(
         listings,
-        event.requestId,
         event.chatId,
         "ebay",
         true,
-        event.eventUuid,
+        event.eventId,
         event.totalEvents,
       );
 
@@ -74,11 +73,10 @@ export class FetchEbayHandler {
 
       const productFetchedEvent = new ProductFetchedEvent(
         [],
-        event.requestId,
         event.chatId,
         "ebay",
         false,
-        event.eventUuid,
+        event.eventId,
         event.totalEvents,
       );
 

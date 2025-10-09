@@ -94,7 +94,6 @@ export class EventTrackingService {
     if ((result.affected ?? 0) > 0) {
       this.logger.log(`Event ${eventUuid} marked as completed`);
 
-      // Update session completion count
       const event = await this.giftEventRepository.findOne({
         where: { eventUuid },
       });
@@ -189,7 +188,6 @@ export class EventTrackingService {
   async markTimeoutEvents(): Promise<string[]> {
     const now = new Date();
 
-    // First get sessions that have pending events about to timeout
     const pendingEvents = await this.giftEventRepository.find({
       where: {
         status: EventStatus.PENDING,
@@ -197,13 +195,11 @@ export class EventTrackingService {
       },
     });
 
-    // Group by sessionId to track which sessions will be completed after timeout
     const sessionIds = new Set<string>();
     for (const event of pendingEvents) {
       sessionIds.add(event.sessionId);
     }
 
-    // Mark events as timeout
     const result = await this.giftEventRepository.update(
       {
         status: EventStatus.PENDING,
@@ -218,7 +214,6 @@ export class EventTrackingService {
       this.logger.log(`Marked ${String(result.affected)} events as timed out`);
     }
 
-    // Return sessionIds that might now be complete (for external handling)
     return [...sessionIds];
   }
 

@@ -15,10 +15,8 @@ export interface SessionInfo {
 export class SessionCompletionService {
   private readonly logger = new Logger(SessionCompletionService.name);
 
-  // Store session info for timeout completion
   private readonly sessionInfoMap = new Map<string, SessionInfo>();
 
-  // Store collected products for each session
   private readonly sessionProducts = new Map<string, ListingDto[]>();
 
   constructor(
@@ -45,7 +43,7 @@ export class SessionCompletionService {
         const sessionInfo = this.sessionInfoMap.get(sessionId);
         if (sessionInfo !== undefined) {
           completedSessions.push(sessionInfo);
-          // Clean up completed session
+
           this.sessionInfoMap.delete(sessionId);
         }
       }
@@ -88,7 +86,6 @@ export class SessionCompletionService {
       this.giftReadyEventBus.emit(GiftReadyEvent.name, giftReadyEvent);
     }
 
-    // Clean up after emission
     this.removeSession(sessionId);
   }
 

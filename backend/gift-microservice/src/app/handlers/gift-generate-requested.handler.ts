@@ -30,13 +30,11 @@ export class GiftGenerateRequestedHandler {
   async handle(event: GiftGenerateRequestedEvent) {
     this.logger.log("Handling gift generate requested event");
 
-    // Create fetch events for keywords and recommendations
     const allQueries = [
       ...event.keywords,
       ...(event.profile?.gift_recommendations ?? []),
     ];
 
-    // Create a session for this request
     const sessionId = uuidv4();
     const services = [
       ServiceType.OLX,
@@ -45,29 +43,24 @@ export class GiftGenerateRequestedHandler {
       ServiceType.EBAY,
     ];
 
-    // Calculate total events that will be created
     const totalEvents = allQueries.length * services.length;
 
-    // Create session record with timestamp
     await this.eventTrackingService.createSession(
       sessionId,
       event.chatId,
       totalEvents,
     );
 
-    // Register session for completion tracking
     this.sessionCompletionService.registerSession(sessionId, event.chatId);
 
     for (const query of allQueries) {
       const requestId = `req_${Date.now().toString()}_${Math.random().toString(36).slice(2, 15)}`;
 
-      // Create separate tracking events for each query to each service
       const trackingEvents = await this.eventTrackingService.createEventSession(
         sessionId,
         services,
       );
 
-      // Get UUIDs for each service from tracking events
       const olxEvent = trackingEvents.find(
         (trackingEvent) => trackingEvent.serviceType === ServiceType.OLX,
       );
@@ -81,7 +74,6 @@ export class GiftGenerateRequestedHandler {
         (trackingEvent) => trackingEvent.serviceType === ServiceType.EBAY,
       );
 
-      // Send to all services - each query gets unique UUIDs
       if (olxEvent !== undefined) {
         const fetchOlxEvent = new FetchOlxEvent(
           query,
@@ -136,7 +128,5 @@ export class GiftGenerateRequestedHandler {
     this.logger.log(
       `Sent fetch events for ${allQueries.length.toString()} queries to ${services.length.toString()} services`,
     );
-
-    // Note: ProductFetchedEvent responses will be handled by a separate handler
   }
 }

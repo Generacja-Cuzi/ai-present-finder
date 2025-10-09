@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable, Logger } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
 
@@ -20,7 +18,6 @@ export class TimeoutSchedulerService {
     this.logger.debug("Checking for sessions older than 2 minutes...");
 
     try {
-      // Get sessions that are older than 2 minutes and still active
       const oldSessions =
         await this.eventTrackingService.getActiveSessionsOlderThan(12);
 
@@ -30,13 +27,10 @@ export class TimeoutSchedulerService {
         );
 
         for (const session of oldSessions) {
-          // Mark session as timeout
           await this.eventTrackingService.markSessionTimeout(session.sessionId);
 
-          // Mark any remaining pending events as timeout
           await this.eventTrackingService.markTimeoutEvents();
 
-          // Trigger completion check and emit products for this session
           this.sessionCompletionService.checkAndEmitCompletedSessions([
             session.sessionId,
           ]);

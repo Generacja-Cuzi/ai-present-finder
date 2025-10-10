@@ -1,6 +1,3 @@
-// eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
-import { FetchAmazonEvent } from "@core/events";
-
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";

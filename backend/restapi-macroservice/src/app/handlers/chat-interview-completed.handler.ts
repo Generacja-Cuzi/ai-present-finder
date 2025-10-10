@@ -1,4 +1,3 @@
-/* eslint-disable @darraghor/nestjs-typed/controllers-should-supply-api-tags */
 import { ChatInterviewCompletedEvent } from "@core/events";
 import { EndInterviewCommand } from "src/domain/commands/end-interview.command";
 

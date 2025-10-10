@@ -1,4 +1,3 @@
-/* eslint-disable @darraghor/nestjs-typed/controllers-should-supply-api-tags */
 import {
   FetchAllegroEvent,
   FetchEbayEvent,

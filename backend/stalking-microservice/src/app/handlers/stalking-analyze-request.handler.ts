@@ -1,4 +1,3 @@
-/* eslint-disable @darraghor/nestjs-typed/controllers-should-supply-api-tags */
 import { StalkingAnalyzeRequestedEvent } from "@core/events";
 import { StalkingAnalyzeCommand } from "src/domain/commands/stalking-analyze.command";
 import { StalkingAnalyzeRequestDto } from "src/domain/models/stalking-analyze-request.dto";

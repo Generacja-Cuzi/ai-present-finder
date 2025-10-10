@@ -1,9 +1,10 @@
+import { FetchOlxEvent } from "@core/events";
+
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { FetchOlxHandler } from "../app/handlers/fetch-olx.handler";
-import { FetchOlxEvent } from "../domain/events/fetch-olx.event";
 
 interface MockEventBus {
   emit: jest.Mock;
@@ -57,9 +58,9 @@ describe("FetchOlxHandler (with .env)", () => {
       "telefon",
       2,
       0,
-      "test-request-id",
       "test-chat-id",
       "test-event-uuid",
+      10,
     );
 
     await handler.handle(event);
@@ -75,7 +76,6 @@ describe("FetchOlxHandler (with .env)", () => {
     expect(mockEventBus.emit).toHaveBeenCalledWith(
       "ProductFetchedEvent",
       expect.objectContaining({
-        requestId: "test-request-id",
         chatId: "test-chat-id",
         provider: "olx",
       }),

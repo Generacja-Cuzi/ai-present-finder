@@ -1,9 +1,10 @@
+import { FetchAllegroEvent } from "@core/events";
+
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
 import { FetchAllegroHandler } from "../app/handlers/fetch-allegro.handler";
-import { FetchAllegroEvent } from "../domain/events/fetch-allegro.event";
 
 interface MockEventBus {
   emit: jest.Mock;
@@ -74,9 +75,9 @@ describe("FetchAllegroHandler (with .env)", () => {
       "laptop",
       5,
       0,
-      "test-request-id",
       "test-chat-id",
       "test-event-uuid",
+      10,
     );
 
     await handler.handle(event);
@@ -91,7 +92,6 @@ describe("FetchAllegroHandler (with .env)", () => {
     expect(mockEventBus.emit).toHaveBeenCalledWith(
       "ProductFetchedEvent",
       expect.objectContaining({
-        requestId: "test-request-id",
         chatId: "test-chat-id",
         provider: "allegro",
       }),

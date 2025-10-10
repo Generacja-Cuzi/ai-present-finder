@@ -1,0 +1,19 @@
+{
+  "openapi": "3.0.0",
+  "paths": {},
+  "info": {
+    "title": "AI Present Finder - Reranking Microservice",
+    "description": "Endpoints for reranking and filtering gift recommendations.",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "http://localhost:6011"
+    }
+  ],
+  "components": {
+    "schemas": {}
+  }
+}

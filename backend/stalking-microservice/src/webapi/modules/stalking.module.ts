@@ -1,13 +1,11 @@
+import { StalkingCompletedEvent } from "@core/events";
 import { StalkingAnalyzeRequestHandler } from "src/app/handlers/stalking-analyze-request.handler";
 import { StalkingAnalyzeHandler } from "src/app/handlers/stalking-analyze.handler";
-import { StalkingCompletedEvent } from "src/domain/events/stalking-completed.event";
 
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
 import { ClientsModule, Transport } from "@nestjs/microservices";
-
-import { StalkingController } from "../controllers/stalking.controller";
 
 @Module({
   imports: [
@@ -31,7 +29,7 @@ import { StalkingController } from "../controllers/stalking.controller";
       },
     ]),
   ],
-  controllers: [StalkingController, StalkingAnalyzeRequestHandler],
+  controllers: [StalkingAnalyzeRequestHandler],
   providers: [StalkingAnalyzeHandler],
 })
 export class StalkingModule {}

@@ -1,3 +1,9 @@
+import {
+  ChatStartInterviewEvent,
+  ChatUserAnsweredEvent,
+  GiftGenerateRequestedEvent,
+  StalkingAnalyzeRequestedEvent,
+} from "@core/events";
 import { ChatInappropriateRequestHandler } from "src/app/handlers/chat-inappropriate-request.handler";
 import { ChatInterviewCompletedHandler } from "src/app/handlers/chat-interview-completed.handler";
 import { ChatQuestionAskedHandler } from "src/app/handlers/chat-question-asked.handler";
@@ -9,10 +15,6 @@ import { SendUserMessageHandler } from "src/app/handlers/send-user-message.handl
 import { StalkingAnalyzeRequestHandler } from "src/app/handlers/stalking-analyze-request.handler";
 import { StalkingCompletedHandler } from "src/app/handlers/stalking-completed.handler";
 import { SseService } from "src/app/services/sse-service";
-import { ChatStartInterviewEvent } from "src/domain/events/chat-start-interview.event";
-import { ChatUserAnsweredEvent } from "src/domain/events/chat-user-answered.event";
-import { GiftGenerateRequestedEvent } from "src/domain/events/gift-generate-requested.event";
-import { StalkingAnalyzeRequestedEvent } from "src/domain/events/stalking-analyze-request.event";
 
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";

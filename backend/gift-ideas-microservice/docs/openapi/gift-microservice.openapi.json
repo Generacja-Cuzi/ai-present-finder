@@ -1,0 +1,40 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A welcome message returned by the Gift service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Returns the welcome message from the Gift microservice",
+        "tags": ["Gift"]
+      }
+    }
+  },
+  "info": {
+    "title": "AI Present Finder - Gift Microservice",
+    "description": "Endpoints for searching gift listings across sources (OLX, eBay, Amazon).",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "http://localhost:3010"
+    }
+  ],
+  "components": {
+    "schemas": {}
+  }
+}

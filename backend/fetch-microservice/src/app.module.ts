@@ -1,3 +1,5 @@
+import { ProductFetchedEvent } from "@core/events";
+
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { ClientsModule, Transport } from "@nestjs/microservices";
@@ -6,7 +8,6 @@ import { FetchAllegroHandler } from "./app/handlers/fetch-allegro.handler";
 import { FetchAmazonHandler } from "./app/handlers/fetch-amazon.handler";
 import { FetchEbayHandler } from "./app/handlers/fetch-ebay.handler";
 import { FetchOlxHandler } from "./app/handlers/fetch-olx.handler";
-import { ProductFetchedEvent } from "./domain/events/product-fetched.event";
 
 @Module({
   imports: [

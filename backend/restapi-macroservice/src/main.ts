@@ -1,4 +1,11 @@
 // src/main.ts
+import {
+  ChatInappropriateRequestEvent,
+  ChatInterviewCompletedEvent,
+  ChatQuestionAskedEvent,
+  GiftReadyEvent,
+  StalkingCompletedEvent,
+} from "@core/events";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 import { Logger } from "@nestjs/common";
@@ -7,11 +14,6 @@ import { Transport } from "@nestjs/microservices";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
-import { ChatInappropriateRequestEvent } from "./domain/events/chat-innapropriate-request.event";
-import { ChatInterviewCompletedEvent } from "./domain/events/chat-interview-completed.event";
-import { ChatQuestionAskedEvent } from "./domain/events/chat-question-asked.event";
-import { GiftReadyEvent } from "./domain/events/gift-ready.event";
-import { StalkingCompletedEvent } from "./domain/events/stalking-completed.event";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

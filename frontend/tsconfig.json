@@ -31,7 +31,9 @@
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@core/types": ["../core/types/src/index"],
+      "@core/events": ["../core/events/src/index"]
     }
   }
 }

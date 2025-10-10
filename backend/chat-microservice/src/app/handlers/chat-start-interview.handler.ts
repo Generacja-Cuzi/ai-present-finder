@@ -1,5 +1,5 @@
+import { ChatStartInterviewEvent } from "@core/events";
 import { GenerateQuestionCommand } from "src/domain/commands/generate-question.command";
-import { ChatStartInterviewEvent } from "src/domain/events/chat-start-interview.event";
 
 import { Controller } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";

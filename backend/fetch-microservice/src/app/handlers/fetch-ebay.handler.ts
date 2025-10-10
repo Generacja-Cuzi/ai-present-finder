@@ -1,16 +1,16 @@
+import { FetchEbayEvent, ProductFetchedEvent } from "@core/events";
+import { ListingDto } from "@core/types";
+
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ClientProxy, EventPattern } from "@nestjs/microservices";
 
-import { FetchEbayEvent } from "../../domain/events/fetch-ebay.event";
-import { ProductFetchedEvent } from "../../domain/events/product-fetched.event";
-import { ListingDto } from "../../domain/models/listing.dto";
 import {
   DEFAULT_RETRY_CONFIG,
   calculateRetryDelay,
   isRetryableError,
   sleep,
-} from "../types/common.types";
+} from "../../domain/types/common.types";
 import {
   EbayCachedToken,
   EbayConfig,
@@ -19,7 +19,7 @@ import {
   EbaySearchResponse,
   EbayTokenRequestHeaders,
   EbayTokenResponse,
-} from "../types/ebay.types";
+} from "../../domain/types/ebay.types";
 
 @Controller()
 export class FetchEbayHandler {
@@ -58,11 +58,11 @@ export class FetchEbayHandler {
 
       const productFetchedEvent = new ProductFetchedEvent(
         listings,
-        event.requestId,
         event.chatId,
         "ebay",
         true,
-        event.eventUuid,
+        event.eventId,
+        event.totalEvents,
       );
 
       this.eventBus.emit(ProductFetchedEvent.name, productFetchedEvent);
@@ -73,12 +73,11 @@ export class FetchEbayHandler {
 
       const productFetchedEvent = new ProductFetchedEvent(
         [],
-        event.requestId,
         event.chatId,
         "ebay",
         false,
-        event.eventUuid,
-        errorMessage,
+        event.eventId,
+        event.totalEvents,
       );
 
       this.eventBus.emit(ProductFetchedEvent.name, productFetchedEvent);

@@ -1,23 +1,23 @@
+import { FetchAllegroEvent, ProductFetchedEvent } from "@core/events";
+import { ListingDto } from "@core/types";
+
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ClientProxy, EventPattern } from "@nestjs/microservices";
 
-import { FetchAllegroEvent } from "../../domain/events/fetch-allegro.event";
-import { ProductFetchedEvent } from "../../domain/events/product-fetched.event";
-import { ListingDto } from "../../domain/models/listing.dto";
 import {
   AllegroConfig,
   AllegroSearchOptions,
   AllegroSearchResponse,
   AllegroTokenCache,
   AllegroTokenResponse,
-} from "../types/allegro.types";
+} from "../../domain/types/allegro.types";
 import {
   DEFAULT_RETRY_CONFIG,
   calculateRetryDelay,
   isRetryableError,
   sleep,
-} from "../types/common.types";
+} from "../../domain/types/common.types";
 
 @Controller()
 export class FetchAllegroHandler {
@@ -61,11 +61,11 @@ export class FetchAllegroHandler {
 
       const productFetchedEvent = new ProductFetchedEvent(
         listings,
-        event.requestId,
         event.chatId,
         "allegro",
         true,
-        event.eventUuid,
+        event.eventId,
+        event.totalEvents,
       );
 
       this.logger.log(
@@ -80,12 +80,11 @@ export class FetchAllegroHandler {
 
       const productFetchedEvent = new ProductFetchedEvent(
         [],
-        event.requestId,
         event.chatId,
         "allegro",
         false,
-        event.eventUuid,
-        errorMessage,
+        event.eventId,
+        event.totalEvents,
       );
 
       this.eventBus.emit(ProductFetchedEvent.name, productFetchedEvent);

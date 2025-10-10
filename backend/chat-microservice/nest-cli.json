@@ -4,5 +4,6 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "deleteOutDir": true
-  }
+  },
+  "entryFile": "backend/chat-microservice/src/main"
 }

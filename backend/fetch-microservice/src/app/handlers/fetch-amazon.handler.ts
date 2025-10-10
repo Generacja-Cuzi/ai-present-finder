@@ -1,21 +1,21 @@
+import { FetchAmazonEvent, ProductFetchedEvent } from "@core/events";
+import { ListingDto } from "@core/types";
+
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ClientProxy, EventPattern } from "@nestjs/microservices";
 
-import { FetchAmazonEvent } from "../../domain/events/fetch-amazon.event";
-import { ProductFetchedEvent } from "../../domain/events/product-fetched.event";
-import { ListingDto } from "../../domain/models/listing.dto";
 import {
   AmazonApiResponse,
   AmazonConfig,
   AmazonSearchParameters,
-} from "../types/amazon.types";
+} from "../../domain/types/amazon.types";
 import {
   DEFAULT_RETRY_CONFIG,
   calculateRetryDelay,
   isRetryableError,
   sleep,
-} from "../types/common.types";
+} from "../../domain/types/common.types";
 
 @Controller()
 export class FetchAmazonHandler {
@@ -51,11 +51,11 @@ export class FetchAmazonHandler {
 
       const productFetchedEvent = new ProductFetchedEvent(
         listings,
-        event.requestId,
         event.chatId,
         "amazon",
         true,
-        event.eventUuid,
+        event.eventId,
+        event.totalEvents,
       );
 
       this.eventBus.emit(ProductFetchedEvent.name, productFetchedEvent);
@@ -66,12 +66,11 @@ export class FetchAmazonHandler {
 
       const productFetchedEvent = new ProductFetchedEvent(
         [],
-        event.requestId,
         event.chatId,
         "amazon",
         false,
-        event.eventUuid,
-        errorMessage,
+        event.eventId,
+        event.totalEvents,
       );
 
       this.eventBus.emit(ProductFetchedEvent.name, productFetchedEvent);

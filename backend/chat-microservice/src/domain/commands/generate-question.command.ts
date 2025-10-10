@@ -1,9 +1,12 @@
-import type { ChatMessage } from "../models/chat-message";
-import type { ContextDto } from "../models/context.dto";
+import type { ChatMessage, ContextDto } from "@core/types";
 
-export class GenerateQuestionCommand {
+import { Command } from "@nestjs/cqrs";
+
+export class GenerateQuestionCommand extends Command<void> {
   constructor(
     public readonly context: ContextDto,
     public readonly history: ChatMessage[],
-  ) {}
+  ) {
+    super();
+  }
 }

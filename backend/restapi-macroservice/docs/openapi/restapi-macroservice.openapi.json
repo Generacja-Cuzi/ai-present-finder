@@ -48,6 +48,16 @@
       "post": {
         "operationId": "RestApiController_sendMessage",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMessageDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Message accepted"
@@ -96,24 +106,6 @@
   ],
   "components": {
     "schemas": {
-      "SendMessageDtoDocument": {
-        "type": "object",
-        "properties": {
-          "messages": {
-            "description": "Messages in the conversation",
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
-          },
-          "chatId": {
-            "type": "string",
-            "description": "Chat identifier",
-            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-          }
-        },
-        "required": ["messages", "chatId"]
-      },
       "StalkingAnalyzeRequestDto": {
         "type": "object",
         "properties": {
@@ -155,28 +147,6 @@
         },
         "required": ["chatId"]
       },
-      "SseStalkingStartedDto": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": ["stalking-started"],
-            "example": "stalking-started"
-          }
-        },
-        "required": ["type"]
-      },
-      "SseStalkingCompletedDto": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": ["stalking-completed"],
-            "example": "stalking-completed"
-          }
-        },
-        "required": ["type"]
-      },
       "ChatMessageDto": {
         "type": "object",
         "properties": {
@@ -200,6 +170,46 @@
         },
         "required": ["id", "content", "sender"]
       },
+      "SendMessageDto": {
+        "type": "object",
+        "properties": {
+          "messages": {
+            "description": "Messages in the conversation",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatMessageDto"
+            }
+          },
+          "chatId": {
+            "type": "string",
+            "description": "Chat identifier",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          }
+        },
+        "required": ["messages", "chatId"]
+      },
+      "SseStalkingStartedDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["stalking-started"],
+            "example": "stalking-started"
+          }
+        },
+        "required": ["type"]
+      },
+      "SseStalkingCompletedDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["stalking-completed"],
+            "example": "stalking-completed"
+          }
+        },
+        "required": ["type"]
+      },
       "SseChatbotMessageDto": {
         "type": "object",
         "properties": {
@@ -209,12 +219,13 @@
             "example": "chatbot-message"
           },
           "message": {
+            "type": "object",
             "description": "Chat message from the bot",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ChatMessageDto"
-              }
-            ]
+            "example": {
+              "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "content": "Hello!",
+              "sender": "user"
+            }
           }
         },
         "required": ["type", "message"]
@@ -258,7 +269,20 @@
             "type": "object",
             "description": "Gift ideas payload",
             "example": {
-              "giftIdeas": ["book", "pen"]
+              "giftIdeas": [
+                {
+                  "image": "https://example.com/image.jpg",
+                  "title": "Book",
+                  "description": "Great book",
+                  "link": "https://example.com/book"
+                },
+                {
+                  "image": "https://example.com/image.jpg",
+                  "title": "Pen",
+                  "description": "Great pen",
+                  "link": "https://example.com/pen"
+                }
+              ]
             }
           }
         },

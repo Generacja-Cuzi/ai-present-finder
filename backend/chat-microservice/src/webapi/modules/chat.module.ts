@@ -1,16 +1,16 @@
+import {
+  ChatInappropriateRequestEvent,
+  ChatInterviewCompletedEvent,
+  ChatQuestionAskedEvent,
+} from "@core/events";
 import { ChatStartInterviewHandler } from "src/app/handlers/chat-start-interview.handler";
 import { ChatUserAnsweredHandler } from "src/app/handlers/chat-user-answered.handler";
 import { GenerateQuestionHandler } from "src/app/handlers/generate-question.handler";
-import { ChatInappropriateRequestEvent } from "src/domain/events/chat-innapropriate-request.event";
-import { ChatInterviewCompletedEvent } from "src/domain/events/chat-interview-completed.event";
-import { ChatQuestionAskedEvent } from "src/domain/events/chat-question-asked.event";
 
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
 import { ClientsModule, Transport } from "@nestjs/microservices";
-
-import { ChatController } from "../controllers/chat.controller";
 
 @Module({
   imports: [
@@ -60,11 +60,7 @@ import { ChatController } from "../controllers/chat.controller";
       },
     ]),
   ],
-  controllers: [
-    ChatController,
-    ChatStartInterviewHandler,
-    ChatUserAnsweredHandler,
-  ],
+  controllers: [ChatStartInterviewHandler, ChatUserAnsweredHandler],
   providers: [GenerateQuestionHandler],
 })
 export class ChatModule {}

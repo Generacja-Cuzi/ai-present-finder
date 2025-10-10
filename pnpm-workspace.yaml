@@ -1,9 +1,12 @@
 packages:
+  - backend/core/events
+  - backend/core/types
   - backend/chat-microservice
   - backend/fetch-microservice
-  - backend/gift-microservice
+  - backend/gift-ideas-microservice
   - backend/restapi-macroservice
   - backend/stalking-microservice
+  - backend/reranking-microservice
   - frontend
 
 onlyBuiltDependencies:

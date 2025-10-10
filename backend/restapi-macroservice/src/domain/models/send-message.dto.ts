@@ -1,19 +1,33 @@
-import { z } from "zod";
-
 import { ApiProperty } from "@nestjs/swagger";
 
-import { ChatMessageDto, chatMessageSchema } from "./chat-message";
-
-export const sendMessageDtoSchema = z.object({
-  messages: z.array(chatMessageSchema),
-  chatId: z.string(),
-});
-
-export type SendMessageDto = z.infer<typeof sendMessageDtoSchema>;
-
-export class SendMessageDtoDocument implements SendMessageDto {
+// this is only needed for swagger
+export class ChatMessageDto {
   @ApiProperty({
-    type: Object,
+    type: String,
+    description: "Unique message identifier",
+    format: "uuid",
+    example: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  })
+  id!: string;
+
+  @ApiProperty({
+    type: String,
+    description: "Message content",
+    example: "Hello!",
+  })
+  content!: string;
+
+  @ApiProperty({
+    enum: ["user", "assistant"],
+    description: "Message sender",
+    example: "user",
+  })
+  sender!: "user" | "assistant";
+}
+
+export class SendMessageDto {
+  @ApiProperty({
+    type: ChatMessageDto,
     isArray: true,
     description: "Messages in the conversation",
   })

@@ -18,9 +18,7 @@
           }
         },
         "summary": "Returns the welcome message from the Gift microservice",
-        "tags": [
-          "Gift"
-        ]
+        "tags": ["Gift"]
       }
     }
   },

@@ -18,9 +18,7 @@
           }
         },
         "summary": "Get welcome message from Chat service",
-        "tags": [
-          "Chat"
-        ]
+        "tags": ["Chat"]
       }
     }
   },

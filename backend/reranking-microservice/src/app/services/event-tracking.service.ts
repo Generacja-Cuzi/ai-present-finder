@@ -30,30 +30,25 @@ export class EventTrackingService {
     chatId: string,
     totalEvents: number,
   ): Promise<string> {
-    // Check if session already exists
-    const existingSession = await this.giftSessionRepository.findOne({
-      where: { eventId },
-      select: ["eventId"],
-    });
+    // This will either insert a new session or do nothing if it already exists
+    await this.giftSessionRepository
+      .createQueryBuilder()
+      .insert()
+      .into(GiftSession)
+      .values({
+        eventId,
+        chatId,
+        status: SessionStatus.ACTIVE,
+        completedEvents: 0,
+        totalEvents,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .orIgnore() // Ignore if the record already exists
+      .execute();
 
-    if (existingSession !== null) {
-      return existingSession.eventId;
-    }
-
-    // Create new session
-    const session = this.giftSessionRepository.create({
-      eventId,
-      chatId,
-      status: SessionStatus.ACTIVE,
-      completedEvents: 0,
-      totalEvents,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-
-    await this.giftSessionRepository.save(session);
     this.logger.log(
-      `Inserted session ${eventId} for chat ${chatId} with ${String(totalEvents)} events`,
+      `Upserted session ${eventId} exists for chat ${chatId} with ${String(totalEvents)} events`,
     );
 
     return eventId;

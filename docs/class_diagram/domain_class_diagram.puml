@@ -1,6 +1,7 @@
 @startuml Domain Class Diagram
 
 hide circle
+hide empty members
 skinparam linetype ortho
 skinparam nodesep 100
 skinparam ranksep 120
@@ -100,15 +101,14 @@ User "1" -- "0..*" SocialMediaLinks : inserts
 SocialMediaLinks "0..*" -- "1..*" SocialMediaService : processed_by
 SocialMediaService "1" -- "0..*" SocialMediaProfile : analyses
 SocialMediaService "0..*" -- "1" RecipientData : enhances
-Recipient "1" -- "0..*" SocialMediaProfile : has
-Recipient "1" -- "1" RecipientData : has
+Recipient "1" *-- "0..*" SocialMediaProfile : has
+Recipient "1" *-- "1" RecipientData : has
 ChatConversation "1..*" -- "1" RecipientData : enhances
-RecipientData "1" -- "1" AIModel : processed_by
+RecipientData "1..*" -- "1" AIModel : processed_by
 AIModel "1" -- "0..*" GiftIdea : creates
 GiftIdea "0..*" -- "1" ProductSearchAIModel : processed_by
 ProductSearchAIModel "1" -- "1..*" ECommerceShop : searches_in
 ECommerceShop "1" -- "0..*" ProductOffer : returns
 ProductOffer "0..*" -- "1" RankingAIModel : filtered_and_ranked_by
-RankingAIModel "1" -- "1..*" User : returns_to
 
 @enduml

@@ -1,3 +1,4 @@
+import { GenerateGiftIdeasHandler } from "src/app/handlers/generate-gift-ideas.handler";
 import { GiftGenerateRequestedHandler } from "src/app/handlers/gift-generate-requested.handler";
 
 import { Module } from "@nestjs/common";
@@ -67,6 +68,6 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
     ]),
   ],
   controllers: [GiftGenerateRequestedHandler],
-  providers: [],
+  providers: [GenerateGiftIdeasHandler],
 })
 export class GiftModule {}

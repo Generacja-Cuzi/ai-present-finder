@@ -1,14 +1,20 @@
+import { RecipientProfile } from "@core/types";
 import { UpdateInterviewStatusCommand } from "src/domain/commands/update-interview-status.command";
-import {
-  ChatSession,
-  SessionStatus,
-} from "src/domain/entities/chat-session.entity";
+import { SessionStatus } from "src/domain/entities/chat-session.entity";
 import { DataSource } from "typeorm";
 
 import { Logger } from "@nestjs/common";
 import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
 import { GenerateGiftIdeasCommand } from "../../domain/commands/generate-gift-ideas.command";
+
+interface UpsertResult {
+  chat_id: string;
+  interview_profile: RecipientProfile | null;
+  stalking_keywords: string[];
+  gift_generation_triggered: boolean;
+  both_complete: boolean;
+}
 
 @CommandHandler(UpdateInterviewStatusCommand)
 export class UpdateInterviewStatusHandler
@@ -24,82 +30,76 @@ export class UpdateInterviewStatusHandler
   async execute(command: UpdateInterviewStatusCommand): Promise<void> {
     const { chatId, profile } = command;
 
-    // Use transaction with SERIALIZABLE isolation to prevent race conditions
-    await this.dataSource.transaction("SERIALIZABLE", async (entityManager) => {
-      const sessionRepo = entityManager.getRepository(ChatSession);
-
-      // Use INSERT ... ON CONFLICT to safely create session if it doesn't exist
-      // This prevents race condition when both handlers try to create simultaneously
-      await entityManager.query(
-        `INSERT INTO chat_sessions (
+    // Single atomic UPDATE that creates session if needed and conditionally triggers generation
+    const result = await this.dataSource.query<UpsertResult[]>(
+      `
+      WITH upsert AS (
+        INSERT INTO chat_sessions (
           chat_id, 
           stalking_status, 
           interview_status, 
           gift_generation_triggered,
+          interview_profile,
           created_at, 
           updated_at
         )
-        VALUES ($1, $2, $3, $4, NOW(), NOW())
-        ON CONFLICT (chat_id) DO NOTHING`,
-        [chatId, SessionStatus.IN_PROGRESS, SessionStatus.IN_PROGRESS, false],
-      );
+        VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+        ON CONFLICT (chat_id) DO UPDATE SET
+          interview_status = $3,
+          interview_profile = $5,
+          gift_generation_triggered = CASE
+            WHEN chat_sessions.stalking_status = $3 
+                 AND NOT chat_sessions.gift_generation_triggered
+            THEN true
+            ELSE chat_sessions.gift_generation_triggered
+          END,
+          updated_at = NOW()
+        RETURNING 
+          chat_id,
+          interview_profile,
+          stalking_keywords,
+          gift_generation_triggered,
+          stalking_status = $3 as both_complete
+      )
+      SELECT * FROM upsert WHERE both_complete AND gift_generation_triggered
+      `,
+      [
+        chatId,
+        SessionStatus.IN_PROGRESS,
+        SessionStatus.COMPLETED,
+        false,
+        profile,
+      ],
+    );
 
-      // Now lock and fetch the session (guaranteed to exist)
-      const session = await sessionRepo.findOne({
-        where: { chatId },
-        lock: { mode: "pessimistic_write" },
-      });
+    this.logger.log(
+      `Updated interview status for session ${chatId} to COMPLETED`,
+    );
 
-      if (session === null) {
-        // This should never happen after INSERT ... ON CONFLICT
-        throw new Error(`Session ${chatId} not found after creation attempt`);
-      }
-
-      // Update interview status
-      session.interviewStatus = SessionStatus.COMPLETED;
-      session.interviewProfile = profile ?? null;
-      session.updatedAt = new Date();
-      await sessionRepo.save(session);
+    // If the query returned a row, it means we triggered gift generation
+    if (result.length > 0) {
+      const row = result[0];
 
       this.logger.log(
-        `Updated interview status for session ${chatId} to COMPLETED`,
+        `Both stalking and interview completed for session ${chatId}. Triggering gift generation.`,
       );
 
-      // Check if both are complete and gift generation hasn't been triggered yet
-      if (
-        session.stalkingStatus === SessionStatus.COMPLETED &&
-        !session.giftGenerationTriggered
-      ) {
-        this.logger.log(
-          `Both stalking and interview completed for session ${chatId}. Triggering gift generation.`,
+      try {
+        await this.commandBus.execute(
+          new GenerateGiftIdeasCommand(
+            row.interview_profile,
+            row.stalking_keywords,
+            chatId,
+          ),
         );
-
-        // Mark gift generation as triggered to prevent duplicate execution
-        session.giftGenerationTriggered = true;
-        await sessionRepo.save(session);
-
-        const keywords = session.stalkingKeywords ?? [];
-        const finalProfile = session.interviewProfile ?? null;
-
-        // Trigger gift generation after transaction commits
-        // Using setImmediate ensures transaction completes first
-        setImmediate(() => {
-          this.commandBus
-            .execute(
-              new GenerateGiftIdeasCommand(finalProfile, keywords, chatId),
-            )
-            .catch((error: unknown) => {
-              this.logger.error(
-                `Failed to execute gift generation for session ${chatId}`,
-                error instanceof Error ? error.stack : String(error),
-              );
-            });
-        });
-      } else {
-        this.logger.log(
-          `Waiting for completion. Stalking: ${session.stalkingStatus}, Interview: ${session.interviewStatus}, Gift triggered: ${String(session.giftGenerationTriggered)}`,
+      } catch (error: unknown) {
+        this.logger.error(
+          `Failed to execute gift generation for session ${chatId}`,
+          error instanceof Error ? error.stack : String(error),
         );
       }
-    });
+    } else {
+      this.logger.log(`Waiting for stalking completion for session ${chatId}`);
+    }
   }
 }

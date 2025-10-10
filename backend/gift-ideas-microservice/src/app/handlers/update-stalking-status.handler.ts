@@ -30,84 +30,113 @@ export class UpdateStalkingStatusHandler
   async execute(command: UpdateStalkingStatusCommand): Promise<void> {
     const { chatId, keywords } = command;
 
-    // Single atomic UPDATE that creates session if needed and conditionally triggers generation
-    const result = await this.dataSource.query<UpsertResult[]>(
-      `
-      WITH upsert AS (
-        INSERT INTO chat_sessions (
-          chat_id, 
-          stalking_status, 
-          interview_status, 
-          gift_generation_triggered,
-          stalking_keywords,
-          created_at, 
-          updated_at
-        )
-        VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
-        ON CONFLICT (chat_id) DO UPDATE SET
-          stalking_status = $2,
-          stalking_keywords = $5,
-          gift_generation_triggered = CASE
-            WHEN chat_sessions.interview_status = $2 
-                 AND NOT chat_sessions.gift_generation_triggered
-            THEN true
-            ELSE chat_sessions.gift_generation_triggered
-          END,
-          updated_at = NOW()
-        RETURNING 
-          chat_id,
-          interview_profile,
-          stalking_keywords,
-          gift_generation_triggered,
-          interview_status = $2 as both_complete
-      )
-      SELECT * FROM upsert WHERE both_complete AND gift_generation_triggered
-      `,
-      [
-        chatId,
-        SessionStatus.COMPLETED,
-        SessionStatus.IN_PROGRESS,
-        false,
-        keywords,
-      ],
-    );
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    this.logger.log(
-      `Updated stalking status for session ${chatId} to COMPLETED`,
-    );
-
-    // If the query returned a row, it means we triggered gift generation
-    if (result.length > 0) {
-      const row = result[0];
-
-      this.logger.log(
-        `Both stalking and interview completed for session ${chatId}. Triggering gift generation.`,
+    try {
+      // Lock the row to prevent concurrent updates from racing
+      await queryRunner.query(
+        `
+        SELECT chat_id FROM chat_sessions 
+        WHERE chat_id = $1 
+        FOR UPDATE
+        `,
+        [chatId],
       );
 
-      // Guard against null interview_profile
-      if (row.interview_profile === null) {
-        this.logger.error(
-          `Cannot generate gift ideas for session ${chatId}: interview_profile is null`,
-        );
-        return;
-      }
+      // Perform the upsert with conditional gift_generation_triggered flip
+      const result = (await queryRunner.query(
+        `
+        WITH upsert AS (
+          INSERT INTO chat_sessions (
+            chat_id, 
+            stalking_status, 
+            interview_status, 
+            gift_generation_triggered,
+            stalking_keywords,
+            created_at, 
+            updated_at
+          )
+          VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+          ON CONFLICT (chat_id) DO UPDATE SET
+            stalking_status = $2,
+            stalking_keywords = $5,
+            gift_generation_triggered = CASE
+              WHEN chat_sessions.interview_status::text = $2::text
+                   AND NOT chat_sessions.gift_generation_triggered
+              THEN true
+              ELSE chat_sessions.gift_generation_triggered
+            END,
+            updated_at = NOW()
+          RETURNING 
+            chat_id,
+            interview_profile,
+            stalking_keywords,
+            gift_generation_triggered,
+            interview_status::text = $2::text as both_complete
+        )
+        SELECT * FROM upsert WHERE both_complete AND gift_generation_triggered
+        `,
+        [
+          chatId,
+          SessionStatus.COMPLETED,
+          SessionStatus.IN_PROGRESS,
+          false,
+          keywords,
+        ],
+      )) as UpsertResult[];
 
-      try {
-        await this.commandBus.execute(
-          new GenerateGiftIdeasCommand(
-            row.interview_profile,
-            row.stalking_keywords,
-            chatId,
-          ),
+      await queryRunner.commitTransaction();
+
+      this.logger.log(
+        `Updated stalking status for session ${chatId} to COMPLETED`,
+      );
+
+      // If the query returned a row, it means we triggered gift generation
+      if (result.length > 0) {
+        const row = result[0];
+
+        this.logger.log(
+          `Both stalking and interview completed for session ${chatId}. Triggering gift generation.`,
         );
-      } catch (error: unknown) {
-        this.logger.error(
-          `Failed to execute gift generation for session ${chatId}`,
-          error instanceof Error ? error.stack : String(error),
+
+        // Guard against null interview_profile
+        if (row.interview_profile === null) {
+          this.logger.error(
+            `Cannot generate gift ideas for session ${chatId}: interview_profile is null`,
+          );
+          return;
+        }
+
+        try {
+          await this.commandBus.execute(
+            new GenerateGiftIdeasCommand(
+              row.interview_profile,
+              row.stalking_keywords,
+              chatId,
+            ),
+          );
+        } catch (error: unknown) {
+          this.logger.error(
+            `Failed to execute gift generation for session ${chatId}`,
+            error instanceof Error ? error.stack : String(error),
+          );
+        }
+      } else {
+        this.logger.log(
+          `Waiting for interview completion for session ${chatId}`,
         );
       }
-    } else {
-      this.logger.log(`Waiting for interview completion for session ${chatId}`);
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      this.logger.error(
+        `Transaction failed for session ${chatId}`,
+        error instanceof Error ? error.stack : String(error),
+      );
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
   }
 }

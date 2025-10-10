@@ -84,6 +84,14 @@ export class UpdateInterviewStatusHandler
         `Both stalking and interview completed for session ${chatId}. Triggering gift generation.`,
       );
 
+      // Guard against null interview_profile
+      if (row.interview_profile === null) {
+        this.logger.error(
+          `Cannot generate gift ideas for session ${chatId}: interview_profile is null`,
+        );
+        return;
+      }
+
       try {
         await this.commandBus.execute(
           new GenerateGiftIdeasCommand(

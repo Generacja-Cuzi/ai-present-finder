@@ -94,12 +94,32 @@ services:
       timeout: 10s
       retries: 3
 
+  gift-ideas-postgres:
+    image: postgres:16
+    container_name: ai-gift-finder-gift-ideas-postgres
+    ports:
+      - "6096:5432"
+    environment:
+      POSTGRES_DB: gift_ideas_service
+      POSTGRES_USER: gift_ideas_user
+      POSTGRES_PASSWORD: gift_ideas_password
+    volumes:
+      - gift_ideas_postgres_data:/var/lib/postgresql/data
+    networks:
+      - ai-present-finder-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gift_ideas_user -d gift_ideas_service"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 volumes:
   rabbitmq_data:
   reranking_postgres_data:
   fetch_postgres_data:
   stalking_postgres_data:
   chat_postgres_data:
+  gift_ideas_postgres_data:
 
 networks:
   ai-present-finder-network:

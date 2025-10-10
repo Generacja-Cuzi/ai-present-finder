@@ -16,7 +16,7 @@ export class ChatQuestionAskedHandler {
     this.logger.log(`sending assistant message to user`);
 
     await this.commandBus.execute(
-      new NotifyUserSseCommand(event.context.chatId, {
+      new NotifyUserSseCommand(event.chatId, {
         type: "chatbot-message",
         message: {
           id: ulid(),

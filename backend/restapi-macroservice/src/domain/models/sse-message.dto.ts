@@ -4,16 +4,6 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export const uiUpdateEvent = "ui-update";
 
-export class SseStalkingStartedDto {
-  @ApiProperty({ enum: ["stalking-started"], example: "stalking-started" })
-  type!: "stalking-started";
-}
-
-export class SseStalkingCompletedDto {
-  @ApiProperty({ enum: ["stalking-completed"], example: "stalking-completed" })
-  type!: "stalking-completed";
-}
-
 export class SseChatbotMessageDto {
   @ApiProperty({ enum: ["chatbot-message"], example: "chatbot-message" })
   type!: "chatbot-message";
@@ -82,8 +72,6 @@ export class SseGiftReadyDto {
 }
 
 export type SseMessageDto =
-  | SseStalkingStartedDto
-  | SseStalkingCompletedDto
   | SseChatbotMessageDto
   | SseChatInterviewCompletedDto
   | SseChatInappropriateRequestDto

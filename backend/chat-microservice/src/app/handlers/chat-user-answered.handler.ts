@@ -12,7 +12,7 @@ export class ChatUserAnsweredHandler {
   @EventPattern(ChatUserAnsweredEvent.name)
   async handle(event: ChatUserAnsweredEvent): Promise<void> {
     await this.commandBus.execute(
-      new GenerateQuestionCommand(event.context, event.messages),
+      new GenerateQuestionCommand(event.chatId, event.messages),
     );
   }
 }

@@ -1,11 +1,16 @@
 import { GiftContextInitializedEvent } from "@core/events";
+import { ChatInterviewCompletedHandler } from "src/app/handlers/chat-interview-completed.handler";
 import { GenerateGiftIdeasHandler } from "src/app/handlers/generate-gift-ideas.handler";
-import { GiftGenerateRequestedHandler } from "src/app/handlers/gift-generate-requested.handler";
+import { StalkingCompletedHandler } from "src/app/handlers/stalking-completed.handler";
+import { UpdateInterviewStatusHandler } from "src/app/handlers/update-interview-status.handler";
+import { UpdateStalkingStatusHandler } from "src/app/handlers/update-stalking-status.handler";
+import { ChatSession } from "src/domain/entities/chat-session.entity";
 
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
 import { ClientsModule, Transport } from "@nestjs/microservices";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
 @Module({
   imports: [
@@ -13,6 +18,28 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    TypeOrmModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        type: "postgres" as const,
+        host: configService.get<string>("DATABASE_HOST") ?? "localhost",
+        port: Number.parseInt(
+          configService.get<string>("DATABASE_PORT") ?? "6096",
+          10,
+        ),
+        username:
+          configService.get<string>("DATABASE_USERNAME") ?? "gift_ideas_user",
+        password:
+          configService.get<string>("DATABASE_PASSWORD") ??
+          "gift_ideas_password",
+        database:
+          configService.get<string>("DATABASE_NAME") ?? "gift_ideas_service",
+        entities: [ChatSession],
+        synchronize: true, // Only for development
+        logging: false,
+      }),
+      inject: [ConfigService],
+    }),
+    TypeOrmModule.forFeature([ChatSession]),
     ClientsModule.register([
       {
         name: "FETCH_ALLEGRO_EVENT",
@@ -81,7 +108,11 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
       },
     ]),
   ],
-  controllers: [GiftGenerateRequestedHandler],
-  providers: [GenerateGiftIdeasHandler],
+  controllers: [StalkingCompletedHandler, ChatInterviewCompletedHandler],
+  providers: [
+    GenerateGiftIdeasHandler,
+    UpdateStalkingStatusHandler,
+    UpdateInterviewStatusHandler,
+  ],
 })
 export class GiftModule {}

@@ -282,6 +282,9 @@ importers:
       "@nestjs/swagger":
         specifier: ^11.2.0
         version: 11.2.0(@nestjs/common@11.1.6(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6(@nestjs/common@11.1.6(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/microservices@11.1.6)(@nestjs/platform-express@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2))(class-validator@0.14.2)(reflect-metadata@0.2.2)
+      "@nestjs/typeorm":
+        specifier: ^10.0.2
+        version: 10.0.2(@nestjs/common@11.1.6(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6(@nestjs/common@11.1.6(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/microservices@11.1.6)(@nestjs/platform-express@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.27(pg@8.16.3)(reflect-metadata@0.2.2)(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.18.1)(typescript@5.9.2)))
       ai:
         specifier: ^5.0.44
         version: 5.0.44(zod@4.1.12)

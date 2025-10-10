@@ -1,4 +1,5 @@
 import {
+  ChatCompletedNotifyUserEvent,
   ChatInappropriateRequestEvent,
   ChatInterviewCompletedEvent,
   ChatQuestionAskedEvent,
@@ -53,6 +54,19 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
             process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
           ],
           queue: ChatInappropriateRequestEvent.name,
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
+      {
+        name: "CHAT_COMPLETED_NOTIFY_USER_EVENT",
+        transport: Transport.RMQ,
+        options: {
+          urls: [
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
+          ],
+          queue: ChatCompletedNotifyUserEvent.name,
           queueOptions: {
             durable: false,
           },

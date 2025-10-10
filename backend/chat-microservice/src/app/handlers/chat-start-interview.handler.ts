@@ -1,4 +1,3 @@
-/* eslint-disable @darraghor/nestjs-typed/controllers-should-supply-api-tags */
 import { ChatStartInterviewEvent } from "@core/events";
 import { GenerateQuestionCommand } from "src/domain/commands/generate-question.command";
 

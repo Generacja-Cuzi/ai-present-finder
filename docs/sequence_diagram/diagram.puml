@@ -1,37 +1,123 @@
 @startuml sequence_diagram
-title Flow eventów (hub-and-spoke, REST jako koordynator)
+title AI Present Finder System - Sequence Diagram of Events and Commands
 
 actor User as U
 participant "REST API" as REST
-participant "Stalking Service" as STALK
 participant "Chat Service" as CHAT
-participant "Gift Service" as GIFT
+participant "Stalking Service" as STALK
+participant "Gift Ideas Service" as GIFT
+box "Fetch Microservices" #LightBlue
+  participant "OLX" as FETCH_OLX
+  participant "Allegro" as FETCH_ALLEGRO
+  participant "eBay" as FETCH_EBAY
+  participant "Amazon" as FETCH_AMAZON
+end box
+participant "Reranking Service" as RERANK
 
 == Start sesji ==
-U -> REST: start sesji + linki/preferencje
-REST -> STALK: stalking.requested {links}
+U -> REST: POST /stalking-request\n{chatId, social URLs}
+activate REST
+REST -> REST: **StartProcessingCommand**
 
-STALK --> REST: stalking.completed {keywords}
-
-REST -> REST: eval.context {context: preferences + keywords}
-
-alt Brakuje kontekstu
-  REST -> CHAT: chat.start.interview {context}
-  loop Dopóki agent nie uzna, że zebrał wystarczająco kontekstu lub user zachowuje się nieodpowiednio
-    CHAT -> CHAT: GenerateQuestionCommand
-    CHAT --> REST: chat.question.asked (pytanie)
-    REST -> U: Wyświetl pytanie
-    U -> REST: Odpowiedź użytkownika
-    REST -> CHAT: chat.user.answered (odpowiedź)
-  end
-  CHAT -> REST: chat.interview.completed {profile}
-  alt User zachowuje się nieodpowiednio
-    CHAT -> REST: chat.inappropriate.request {reason}
-  end
+par Przetwarzanie Równoległe
+  REST -> STALK: **StalkingAnalyzeRequestedEvent**\n{chatId, URLs}
+  activate STALK
+  STALK -> STALK: **StalkingAnalyzeCommand**\n(analiza profili social media)
+  
+  REST -> CHAT: **ChatStartInterviewEvent**\n{chatId}
+  activate CHAT
 end
 
-REST -> GIFT: gift.generate.requested {context}
-GIFT --> REST: gift.ready {propozycje}
-REST -> U: Wyświetl propozycje
+== Interview loop ==
+loop Dopóki AI nie zdecyduje zakończyć lub niewłaściwe zachowanie usera
+  CHAT -> CHAT: **GenerateQuestionCommand**\n(AI decyduje o następnym pytaniu)
+  CHAT --> REST: **ChatQuestionAskedEvent**\n{chatId, question}
+  REST -> REST: **NotifyUserSseCommand**
+  REST -> U: SSE: chatbot-message
+  U -> REST: POST /send-message\n{chatId, answer}
+  REST -> REST: **SendUserMessageCommand**
+  REST -> REST: **NotifyUserSseCommand**
+  REST -> U: SSE: chatbot-message\n(echo wiadomości użytkownika)
+  REST -> CHAT: **ChatUserAnsweredEvent**\n{chatId, messages}
+end
+
+alt Wywiad zakończony pomyślnie
+  CHAT -> CHAT: **closeInterview** toolcall
+  CHAT -> GIFT: **ChatInterviewCompletedEvent**\n{chatId, profile}
+  activate GIFT
+  GIFT -> GIFT: **UpdateInterviewStatusCommand**\n(zapisz profil usera, sprawdź czy stalking gotowy)
+  CHAT -> REST: **ChatCompletedNotifyUserEvent**\n{chatId}
+  REST -> REST: **NotifyUserSseCommand**
+  REST -> U: SSE: chat-interview-completed
+  note left: Wywiad zakończony,\nekran ładowania
+else Wykryto niewłaściwe zachowanie
+  CHAT -> CHAT: **flagInappropriateRequest** toolcall
+  CHAT -> REST: **ChatInappropriateRequestEvent**\n{chatId, reason}
+  REST -> REST: **NotifyUserSseCommand**
+  REST -> U: SSE: chat-inappropriate-request
+    note left: Wywiad zakończony,\nagana dla użytkownika
+end
+
+deactivate CHAT
+
+== Zakończenie Stalkingu ==
+STALK -> GIFT: **StalkingCompletedEvent**\n{chatId, keywords}
+deactivate STALK
+GIFT -> GIFT: **UpdateStalkingStatusCommand**\n(zapisz keywords, sprawdź czy wywiad gotowy)
+
+== Koordynacja Generowania Prezentów ==
+note over GIFT: Gdy oba eventy otrzymane
+
+alt Zarówno stalking jak i wywiad zakończone
+  GIFT -> GIFT: **GenerateGiftIdeasCommand**\n{profile, keywords, chatId}
+  note right: AI generuje zapytania wyszukiwania\ndla wielu serwisów
+  
+  par Wyślij do Reranking Service
+    GIFT -> RERANK: **GiftContextInitializedEvent**\n{profile, keywords, chatId, eventId, totalEvents}
+    activate RERANK
+  end
+  
+  par Równoległe Żądania FETCH
+    GIFT -> FETCH_OLX: **FetchOlxEvent**\n{query, chatId, eventId, totalEvents}
+    activate FETCH_OLX
+    GIFT -> FETCH_ALLEGRO: **FetchAllegroEvent**\n{query, chatId, eventId, totalEvents}
+    activate FETCH_ALLEGRO
+    GIFT -> FETCH_EBAY: **FetchEbayEvent**\n{query, chatId, eventId, totalEvents}
+    activate FETCH_EBAY
+    GIFT -> FETCH_AMAZON: **FetchAmazonEvent**\n{query, chatId, eventId, totalEvents}
+    activate FETCH_AMAZON
+    note right of FETCH_AMAZON: Wiele zapytań na serwis\nna podstawie decyzji AI
+  end
+end
+deactivate GIFT
+
+== Zbieranie Produktów i Rerankowanie ==
+par Odpowiedzi od wszystkich serwisów
+  FETCH_OLX -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "olx", eventId, totalEvents}
+  FETCH_ALLEGRO -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "allegro", eventId, totalEvents}
+  FETCH_EBAY -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "ebay", eventId, totalEvents}
+  FETCH_AMAZON -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "amazon", eventId, totalEvents}
+end
+deactivate FETCH_OLX
+deactivate FETCH_ALLEGRO
+deactivate FETCH_EBAY
+deactivate FETCH_AMAZON
+
+note over RERANK
+  Reranking Service śledzi wszystkie przychodzące produkty
+  według eventId i czeka, aż wszystkie oczekiwane
+  zdarzenia nadejdą (totalEvents)
+end note
+
+RERANK -> RERANK: Zbierz i zagreguj produkty\nze wszystkich źródeł
+
+alt Wszystkie produkty zebrane (lub timeout)
+  RERANK -> RERANK: AI rerankowanie i filtrowanie\n(na podstawie profilu + słów kluczowych)
+  RERANK -> REST: **GiftReadyEvent**\n{chatId, giftIdeas[]}
+  deactivate RERANK
+  REST -> REST: **NotifyUserSseCommand**
+  REST -> U: SSE: gift-ready
+  deactivate REST
+end
 
 @enduml

@@ -23,7 +23,7 @@ par Przetwarzanie Równoległe
   REST -> STALK: **StalkingAnalyzeRequestedEvent**\n{chatId, URLs}
   activate STALK
   STALK -> STALK: **StalkingAnalyzeCommand**\n(analiza profili social media)
-  
+else
   REST -> CHAT: **ChatStartInterviewEvent**\n{chatId}
   activate CHAT
 end
@@ -80,10 +80,13 @@ alt Zarówno stalking jak i wywiad zakończone
   par Równoległe Żądania FETCH
     GIFT -> FETCH_OLX: **FetchOlxEvent**\n{query, chatId, eventId, totalEvents}
     activate FETCH_OLX
+  else Allegro
     GIFT -> FETCH_ALLEGRO: **FetchAllegroEvent**\n{query, chatId, eventId, totalEvents}
     activate FETCH_ALLEGRO
+  else eBay
     GIFT -> FETCH_EBAY: **FetchEbayEvent**\n{query, chatId, eventId, totalEvents}
     activate FETCH_EBAY
+  else Amazon
     GIFT -> FETCH_AMAZON: **FetchAmazonEvent**\n{query, chatId, eventId, totalEvents}
     activate FETCH_AMAZON
     note right of FETCH_AMAZON: Wiele zapytań na serwis\nna podstawie decyzji AI

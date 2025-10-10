@@ -50,6 +50,7 @@
     "@nestjs/microservices": "^11.0.13",
     "@nestjs/platform-express": "^11.0.13",
     "@nestjs/swagger": "^11.2.0",
+    "@nestjs/typeorm": "^10.0.2",
     "ai": "^5.0.44",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.7",

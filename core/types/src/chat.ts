@@ -44,8 +44,3 @@ export interface EndConversationOutput {
   recipient_profile: RecipientProfile;
   key_themes_and_keywords: string[];
 }
-
-export interface ContextDto {
-  keywords: string[];
-  chatId: string;
-}

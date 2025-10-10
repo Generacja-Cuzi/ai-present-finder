@@ -1,19 +1,15 @@
 import {
   ChatStartInterviewEvent,
   ChatUserAnsweredEvent,
-  GiftGenerateRequestedEvent,
   StalkingAnalyzeRequestedEvent,
 } from "@core/events";
+import { ChatCompletedNotifyUserHandler } from "src/app/handlers/chat-completed-notify-user.handler";
 import { ChatInappropriateRequestHandler } from "src/app/handlers/chat-inappropriate-request.handler";
-import { ChatInterviewCompletedHandler } from "src/app/handlers/chat-interview-completed.handler";
 import { ChatQuestionAskedHandler } from "src/app/handlers/chat-question-asked.handler";
-import { EndInterviewCommandHandler } from "src/app/handlers/end-interview-command.handler";
-import { EvaluateContextHandler } from "src/app/handlers/evaluate-context.handler";
 import { GiftReadyHandler } from "src/app/handlers/gift-ready.handler";
 import { NotifyUserSseHandler } from "src/app/handlers/notify-user-sse.handler";
 import { SendUserMessageHandler } from "src/app/handlers/send-user-message.handler";
-import { StalkingAnalyzeRequestHandler } from "src/app/handlers/stalking-analyze-request.handler";
-import { StalkingCompletedHandler } from "src/app/handlers/stalking-completed.handler";
+import { StartProcessingCommandHandler } from "src/app/handlers/start-processing.handler";
 import { SseService } from "src/app/services/sse-service";
 
 import { Module } from "@nestjs/common";
@@ -70,36 +66,20 @@ import { SseController } from "../controllers/sse.controller";
           },
         },
       },
-      {
-        name: "GIFT_GENERATE_REQUESTED_EVENT",
-        transport: Transport.RMQ,
-        options: {
-          urls: [
-            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
-          ],
-          queue: GiftGenerateRequestedEvent.name,
-          queueOptions: {
-            durable: false,
-          },
-        },
-      },
     ]),
   ],
   controllers: [
     RestApiController,
-    StalkingCompletedHandler,
     ChatQuestionAskedHandler,
-    ChatInterviewCompletedHandler,
     ChatInappropriateRequestHandler,
+    ChatCompletedNotifyUserHandler,
     GiftReadyHandler,
     SseController,
   ],
   providers: [
-    StalkingAnalyzeRequestHandler,
-    EvaluateContextHandler,
+    StartProcessingCommandHandler,
     NotifyUserSseHandler,
     SendUserMessageHandler,
-    EndInterviewCommandHandler,
     SseService,
   ],
 })

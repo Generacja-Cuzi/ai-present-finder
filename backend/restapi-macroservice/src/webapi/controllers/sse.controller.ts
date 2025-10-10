@@ -8,8 +8,6 @@ import {
   SseChatbotMessageDto,
   SseGiftReadyDto,
   SseMessageDto,
-  SseStalkingCompletedDto,
-  SseStalkingStartedDto,
 } from "src/domain/models/sse-message.dto";
 
 import { Controller, Query, Res, Sse } from "@nestjs/common";
@@ -22,8 +20,6 @@ import {
 } from "@nestjs/swagger";
 
 @ApiExtraModels(
-  SseStalkingStartedDto,
-  SseStalkingCompletedDto,
   SseChatbotMessageDto,
   SseChatInterviewCompletedDto,
   SseChatInappropriateRequestDto,

@@ -1,3 +1,3 @@
-export class ChatStartInterviewEvent {
+export class ChatCompletedNotifyUserEvent {
   constructor(public readonly chatId: string) {}
 }

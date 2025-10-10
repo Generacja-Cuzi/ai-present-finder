@@ -18,9 +18,7 @@
           }
         },
         "summary": "Returns the welcome message for the Stalking microservice",
-        "tags": [
-          "Stalking"
-        ]
+        "tags": ["Stalking"]
       }
     }
   },

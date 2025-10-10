@@ -1,6 +1,6 @@
-import type { UIChatMessage } from "../types";
+import type { ChatMessage } from "@core/types";
 
-export function Message({ message }: { message: UIChatMessage }) {
+export function Message({ message }: { message: ChatMessage }) {
   return (
     <div
       key={message.id}

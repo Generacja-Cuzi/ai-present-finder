@@ -6,7 +6,7 @@ import type { RecipientProfile } from "@core/types";
 export function serializeRecipientProfile(
   profile: RecipientProfile | null,
 ): string {
-  if (profile == null) {
+  if (profile === null) {
     return "Brak profilu użytkownika";
   }
 

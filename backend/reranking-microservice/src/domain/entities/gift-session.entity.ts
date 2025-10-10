@@ -1,3 +1,4 @@
+import { RecipientProfile } from "@core/types";
 import { Column, Entity, PrimaryColumn } from "typeorm";
 
 export enum SessionStatus {
@@ -42,4 +43,15 @@ export class GiftSession {
     onUpdate: "CURRENT_TIMESTAMP",
   })
   updatedAt: Date;
+
+  @Column({
+    name: "gift_context",
+    type: "jsonb",
+    nullable: true,
+    array: false,
+  })
+  giftContext?: {
+    userProfile: RecipientProfile | null;
+    keywords: string[];
+  } | null;
 }

@@ -4,6 +4,7 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
 import { ScheduleModule } from "@nestjs/schedule";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
+import { GiftContextInitializedHandler } from "../app/handlers/gift-context-initialized.handler";
 import { ProductFetchedHandler } from "../app/handlers/product-fetched.handler";
 import { EventTrackingService } from "../app/services/event-tracking.service";
 import { SessionCompletionService } from "../app/services/session-completion.service";
@@ -48,7 +49,7 @@ import { GiftSession } from "../domain/entities/gift-session.entity";
       },
     ]),
   ],
-  controllers: [ProductFetchedHandler],
+  controllers: [ProductFetchedHandler, GiftContextInitializedHandler],
   providers: [
     EventTrackingService,
     SessionCompletionService,

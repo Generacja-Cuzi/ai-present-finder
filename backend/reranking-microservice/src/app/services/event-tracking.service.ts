@@ -1,3 +1,4 @@
+import { RecipientProfile } from "@core/types";
 import { In, LessThanOrEqual, Repository } from "typeorm";
 
 import { Injectable, Logger } from "@nestjs/common";
@@ -52,6 +53,29 @@ export class EventTrackingService {
     );
 
     return eventId;
+  }
+
+  async saveGiftContext(
+    eventId: string,
+    chatId: string,
+    totalEvents: number,
+    userProfile: RecipientProfile | null,
+    keywords: string[],
+  ): Promise<void> {
+    const sessionId = await this.createSessionIfNotExists(
+      eventId,
+      chatId,
+      totalEvents,
+    );
+
+    await this.giftSessionRepository.update(sessionId, {
+      giftContext: {
+        userProfile,
+        keywords,
+      },
+    });
+
+    this.logger.log(`Saved gift context for session ${eventId}`);
   }
 
   async incrementSessionCompletion(

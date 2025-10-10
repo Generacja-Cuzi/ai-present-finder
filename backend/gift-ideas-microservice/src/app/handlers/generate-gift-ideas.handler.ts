@@ -3,6 +3,7 @@ import {
   FetchAmazonEvent,
   FetchEbayEvent,
   FetchOlxEvent,
+  GiftContextInitializedEvent,
 } from "@core/events";
 import { ulid } from "ulid";
 
@@ -25,9 +26,11 @@ export class GenerateGiftIdeasHandler
     private readonly allegroEventBus: ClientProxy,
     @Inject("FETCH_AMAZON_EVENT") private readonly amazonEventBus: ClientProxy,
     @Inject("FETCH_EBAY_EVENT") private readonly ebayEventBus: ClientProxy,
+    @Inject("GIFT_CONTEXT_INITIALIZED_EVENT")
+    private readonly rerankingEventBus: ClientProxy,
   ) {}
 
-  async execute(command: GenerateGiftIdeasCommand) {
+  async execute(command: GenerateGiftIdeasCommand): Promise<void> {
     const { userProfile, keywords, chatId } = command;
 
     try {
@@ -49,6 +52,18 @@ export class GenerateGiftIdeasHandler
       // Send fetch events to specific shops based on AI decision
       const eventId = ulid();
       const totalEvents = filteredSearchQueries.length;
+
+      // Send gift context to reranking service
+      this.rerankingEventBus.emit(
+        GiftContextInitializedEvent.name,
+        new GiftContextInitializedEvent(
+          userProfile,
+          keywords,
+          chatId,
+          eventId,
+          totalEvents,
+        ),
+      );
 
       for (const { query, service } of filteredSearchQueries) {
         switch (service) {

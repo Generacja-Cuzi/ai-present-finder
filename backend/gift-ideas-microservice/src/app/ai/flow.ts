@@ -4,7 +4,6 @@ import { generateObject } from "ai";
 
 import { serializeRecipientProfile } from "./profile-serializer";
 import { giftIdeasGeneratorPrompt } from "./prompt";
-import type { GiftIdeasOutput } from "./types";
 import { giftIdeasOutputSchema } from "./types";
 
 export async function giftIdeasFlow({
@@ -13,28 +12,21 @@ export async function giftIdeasFlow({
 }: {
   userProfile: RecipientProfile | null;
   keywords: string[];
-}): Promise<GiftIdeasOutput> {
+}) {
   const profileText = serializeRecipientProfile(userProfile);
   const keywordsText = keywords.join(", ");
 
   const prompt = `
-    Profil użytkownika:
+    Profil użytkownika: 
     ${profileText}
     
-    Słowa kluczowe: ${keywordsText}
-`;
+    Słowa kluczowe: ${keywordsText}`;
 
   const result = await generateObject({
     model: openai("gpt-5-nano"),
-    messages: [
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-    system: giftIdeasGeneratorPrompt,
     schema: giftIdeasOutputSchema,
+    prompt,
+    system: giftIdeasGeneratorPrompt,
   });
-
   return result.object;
 }

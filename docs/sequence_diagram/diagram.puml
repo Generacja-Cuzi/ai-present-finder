@@ -97,8 +97,11 @@ deactivate GIFT
 == Zbieranie Produktów i Rerankowanie ==
 par Odpowiedzi od wszystkich serwisów
   FETCH_OLX -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "olx", eventId, totalEvents}
+else Allegro
   FETCH_ALLEGRO -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "allegro", eventId, totalEvents}
+else eBay
   FETCH_EBAY -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "ebay", eventId, totalEvents}
+else Amazon
   FETCH_AMAZON -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "amazon", eventId, totalEvents}
 end
 deactivate FETCH_OLX

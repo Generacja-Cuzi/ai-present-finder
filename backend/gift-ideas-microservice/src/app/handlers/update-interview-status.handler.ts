@@ -58,10 +58,10 @@ export class UpdateInterviewStatusHandler
             created_at, 
             updated_at
           )
-          VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+          VALUES ($1, $2, $3, $4, $5::jsonb, NOW(), NOW())
           ON CONFLICT (chat_id) DO UPDATE SET
             interview_status = $3,
-            interview_profile = $5,
+            interview_profile = $5::jsonb,
             gift_generation_triggered = CASE
               WHEN chat_sessions.stalking_status::text = $3::text
                    AND NOT chat_sessions.gift_generation_triggered
@@ -83,7 +83,7 @@ export class UpdateInterviewStatusHandler
           SessionStatus.IN_PROGRESS,
           SessionStatus.COMPLETED,
           false,
-          profile,
+          JSON.stringify(profile),
         ],
       )) as UpsertResult[];
 

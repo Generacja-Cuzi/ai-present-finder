@@ -1,5 +1,5 @@
 import { SendUserMessageCommand } from "src/domain/commands/send-user-message.command";
-import { StalkingAnalyzeRequestCommand } from "src/domain/commands/stalking-analyze-request.command";
+import { StartProcessingCommand } from "src/domain/commands/start-processing.command";
 import { SendMessageDto } from "src/domain/models/send-message.dto";
 import {
   StalkingAnalyzeRequestDto,
@@ -32,7 +32,7 @@ export class RestApiController {
     @Body() analyzeRequestedDto: StalkingAnalyzeRequestDto,
   ): Promise<void> {
     await this.commandBus.execute(
-      new StalkingAnalyzeRequestCommand(analyzeRequestedDto), // TODO(simon-the-shark): validate analyzeRequestedDto
+      new StartProcessingCommand(analyzeRequestedDto), // TODO(simon-the-shark): validate analyzeRequestedDto
     );
   }
 

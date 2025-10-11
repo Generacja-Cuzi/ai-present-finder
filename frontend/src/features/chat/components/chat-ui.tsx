@@ -21,9 +21,9 @@ export function ChatUI({ clientId }: { clientId: string }) {
 
   const isChatbotProcessing =
     sendMessage.isPending ||
-    chatState.type === "stalking-completed" ||
     (chatState.type === "chatting" &&
-      chatState.data.messages.at(-1)?.sender === "user");
+      (chatState.data.messages.at(-1)?.sender === "user" ||
+        chatState.data.messages.length === 0));
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isChatbotProcessing) {
@@ -43,14 +43,11 @@ export function ChatUI({ clientId }: { clientId: string }) {
     });
   };
 
-  if (
-    chatState.type !== "chatting" &&
-    chatState.type !== "stalking-completed"
-  ) {
+  if (chatState.type !== "chatting") {
     return <NonChatIndicator state={chatState} />;
   }
 
-  const messages = chatState.type === "chatting" ? chatState.data.messages : [];
+  const messages = chatState.data.messages;
 
   return (
     <Card className="mx-auto flex h-[90vh] w-full max-w-2xl flex-col">

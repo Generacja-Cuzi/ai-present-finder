@@ -33,13 +33,7 @@ export class SendUserMessageHandler
       }),
     );
 
-    const eventToEmit = new ChatUserAnsweredEvent(
-      {
-        keywords: [], // TODO(simon-the-shark): add previous keywords
-        chatId: typedChatId,
-      },
-      typedMessages,
-    );
+    const eventToEmit = new ChatUserAnsweredEvent(typedChatId, typedMessages);
 
     this.eventBus.emit(ChatUserAnsweredEvent.name, eventToEmit);
   }

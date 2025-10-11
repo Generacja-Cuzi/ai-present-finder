@@ -1,5 +1,8 @@
 // src/main.ts
-import { GiftGenerateRequestedEvent } from "@core/events";
+import {
+  ChatInterviewCompletedEvent,
+  StalkingCompletedEvent,
+} from "@core/events";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 import { Logger } from "@nestjs/common";
@@ -18,16 +21,26 @@ async function bootstrap() {
   const cloudAmqpUrl =
     process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672";
 
-  const microserviceOptions = {
+  const stalkingCompletedMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
       urls: [cloudAmqpUrl],
-      queue: GiftGenerateRequestedEvent.name,
+      queue: StalkingCompletedEvent.name,
       queueOptions: { durable: false },
     },
   };
 
-  app.connectMicroservice(microserviceOptions);
+  const chatInterviewCompletedMicroserviceOptions = {
+    transport: Transport.RMQ,
+    options: {
+      urls: [cloudAmqpUrl],
+      queue: ChatInterviewCompletedEvent.name,
+      queueOptions: { durable: false },
+    },
+  };
+
+  app.connectMicroservice(stalkingCompletedMicroserviceOptions);
+  app.connectMicroservice(chatInterviewCompletedMicroserviceOptions);
 
   const swaggerServer =
     process.env.SWAGGER_SERVER ?? `http://localhost:${portString}`;

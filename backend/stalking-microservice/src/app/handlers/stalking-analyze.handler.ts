@@ -24,11 +24,8 @@ export class StalkingAnalyzeHandler
 
     const keywords = ["klapki", "czerwone", "nike"];
 
-    const completedAt = new Date();
-
     const event = new StalkingCompletedEvent(
       keywords,
-      completedAt,
       command.stalkingAnalyzeRequestDto.chatId,
     );
 

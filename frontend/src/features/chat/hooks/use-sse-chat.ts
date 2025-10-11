@@ -6,7 +6,12 @@ import type { ChatState, SseMessageDto } from "../types";
 
 export const useSseChat = ({ clientId }: { clientId: string }) => {
   const initialState: ChatState = useMemo(
-    () => ({ type: "stalking-started" }),
+    () => ({
+      type: "chatting",
+      data: {
+        messages: [],
+      },
+    }),
     [],
   );
 
@@ -17,14 +22,10 @@ export const useSseChat = ({ clientId }: { clientId: string }) => {
     {
       stateReducer: (previousState, action) => {
         switch (action.data.type) {
-          case "stalking-started": {
-            return { type: "stalking-started" };
-          }
-          case "stalking-completed": {
-            return { type: "stalking-completed" };
-          }
           case "chat-interview-completed": {
-            return { type: "chat-interview-completed" };
+            return {
+              type: "waiting-for-gift-ideas",
+            };
           }
           case "chat-inappropriate-request": {
             return {
@@ -34,12 +35,7 @@ export const useSseChat = ({ clientId }: { clientId: string }) => {
           }
           case "chatbot-message": {
             if (previousState.type !== "chatting") {
-              return {
-                type: "chatting",
-                data: {
-                  messages: [action.data.message],
-                },
-              };
+              throw new Error("Previous state is not chatting");
             }
             return {
               type: "chatting",
@@ -53,6 +49,9 @@ export const useSseChat = ({ clientId }: { clientId: string }) => {
               type: "gift-ready",
               data: { giftIdeas: action.data.data.giftIdeas },
             };
+          }
+          default: {
+            return previousState;
           }
         }
       },

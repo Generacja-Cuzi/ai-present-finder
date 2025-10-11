@@ -1,10 +1,9 @@
 // src/main.ts
 import {
+  ChatCompletedNotifyUserEvent,
   ChatInappropriateRequestEvent,
-  ChatInterviewCompletedEvent,
   ChatQuestionAskedEvent,
   GiftReadyEvent,
-  StalkingCompletedEvent,
 } from "@core/events";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
@@ -59,29 +58,11 @@ async function bootstrap() {
     customSiteTitle: "AI Present Finder — REST API Docs",
   });
 
-  const stalkingCompletedMicroserviceOptions = {
-    transport: Transport.RMQ,
-    options: {
-      urls: [cloudAmqpUrl],
-      queue: StalkingCompletedEvent.name,
-      queueOptions: { durable: false },
-    },
-  };
-
   const chatQuestionAskedMicroserviceOptions = {
     transport: Transport.RMQ,
     options: {
       urls: [cloudAmqpUrl],
       queue: ChatQuestionAskedEvent.name,
-      queueOptions: { durable: false },
-    },
-  };
-
-  const chatAnswerProcessedMicroserviceOptions = {
-    transport: Transport.RMQ,
-    options: {
-      urls: [cloudAmqpUrl],
-      queue: ChatInterviewCompletedEvent.name,
       queueOptions: { durable: false },
     },
   };
@@ -104,11 +85,19 @@ async function bootstrap() {
     },
   };
 
-  app.connectMicroservice(stalkingCompletedMicroserviceOptions);
+  const chatCompletedNotifyUserMicroserviceOptions = {
+    transport: Transport.RMQ,
+    options: {
+      urls: [cloudAmqpUrl],
+      queue: ChatCompletedNotifyUserEvent.name,
+      queueOptions: { durable: false },
+    },
+  };
+
   app.connectMicroservice(chatQuestionAskedMicroserviceOptions);
-  app.connectMicroservice(chatAnswerProcessedMicroserviceOptions);
   app.connectMicroservice(giftReadyMicroserviceOptions);
   app.connectMicroservice(chatInappropriateRequestMicroserviceOptions);
+  app.connectMicroservice(chatCompletedNotifyUserMicroserviceOptions);
 
   await app.startAllMicroservices();
   await app.listen(port);

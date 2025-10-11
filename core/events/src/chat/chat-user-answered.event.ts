@@ -1,9 +1,8 @@
 import type { ChatMessage } from "@core/types";
-import type { ContextDto } from "@core/types";
 
 export class ChatUserAnsweredEvent {
   constructor(
-    public readonly context: ContextDto,
+    public readonly chatId: string,
     public readonly messages: ChatMessage[],
   ) {}
 }

@@ -1,3 +1,5 @@
+import { GiftContextInitializedEvent } from "@core/events";
+import { GenerateGiftIdeasHandler } from "src/app/handlers/generate-gift-ideas.handler";
 import { GiftGenerateRequestedHandler } from "src/app/handlers/gift-generate-requested.handler";
 
 import { Module } from "@nestjs/common";
@@ -64,9 +66,22 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
           },
         },
       },
+      {
+        name: "GIFT_CONTEXT_INITIALIZED_EVENT",
+        transport: Transport.RMQ,
+        options: {
+          urls: [
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
+          ],
+          queue: GiftContextInitializedEvent.name,
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
     ]),
   ],
   controllers: [GiftGenerateRequestedHandler],
-  providers: [],
+  providers: [GenerateGiftIdeasHandler],
 })
 export class GiftModule {}

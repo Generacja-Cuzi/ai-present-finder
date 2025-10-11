@@ -1,83 +1,29 @@
-import {
-  FetchAllegroEvent,
-  FetchEbayEvent,
-  FetchOlxEvent,
-  GiftGenerateRequestedEvent,
-} from "@core/events";
-import { ulid } from "ulid";
+import { GiftGenerateRequestedEvent } from "@core/events";
 
-import { Controller, Inject, Logger } from "@nestjs/common";
-import { ClientProxy, EventPattern } from "@nestjs/microservices";
+import { Controller, Logger } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
+import { EventPattern } from "@nestjs/microservices";
+
+import { GenerateGiftIdeasCommand } from "../../domain/commands/generate-gift-ideas.command";
 
 @Controller()
 export class GiftGenerateRequestedHandler {
   private readonly logger = new Logger(GiftGenerateRequestedHandler.name);
 
-  constructor(
-    @Inject("FETCH_OLX_EVENT") private readonly olxEventBus: ClientProxy,
-    @Inject("FETCH_ALLEGRO_EVENT")
-    private readonly allegroEventBus: ClientProxy,
-    @Inject("FETCH_AMAZON_EVENT") private readonly amazonEventBus: ClientProxy,
-    @Inject("FETCH_EBAY_EVENT") private readonly ebayEventBus: ClientProxy,
-  ) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   @EventPattern(GiftGenerateRequestedEvent.name)
-  handle(event: GiftGenerateRequestedEvent) {
+  async handle(event: GiftGenerateRequestedEvent) {
     this.logger.log("Handling gift generate requested event");
 
-    const allQueries = [
+    const profile = event.profile?.recipient_profile ?? null;
+    const keywords = [
       ...event.keywords,
-      ...(event.profile?.gift_recommendations ?? []),
+      ...(event.profile?.key_themes_and_keywords ?? []),
     ];
 
-    const eventId = ulid();
-
-    const fetchServices: ((query: string, totalEvents: number) => void)[] = [
-      (query, totalEvents) => {
-        const fetchOlxEvent = new FetchOlxEvent(
-          query,
-          5,
-          0,
-          event.chatId,
-          eventId,
-          totalEvents,
-        );
-        this.olxEventBus.emit(FetchOlxEvent.name, fetchOlxEvent);
-      },
-      (query, totalEvents) => {
-        const fetchAllegroEvent = new FetchAllegroEvent(
-          query,
-          5,
-          0,
-          event.chatId,
-          eventId,
-          totalEvents,
-        );
-        this.allegroEventBus.emit(FetchAllegroEvent.name, fetchAllegroEvent);
-      },
-      (query, totalEvents) => {
-        const fetchEbayEvent = new FetchEbayEvent(
-          query,
-          5,
-          0,
-          event.chatId,
-          eventId,
-          totalEvents,
-        );
-        this.ebayEventBus.emit(FetchEbayEvent.name, fetchEbayEvent);
-      },
-    ];
-
-    const numberOfServices = fetchServices.length;
-    const totalEvents = allQueries.length * numberOfServices;
-
-    for (const query of allQueries) {
-      for (const fetchService of fetchServices) {
-        fetchService(query, totalEvents);
-      }
-    }
-    this.logger.log(
-      `Sent fetch events for ${allQueries.length.toString()} queries to ${numberOfServices.toString()} services`,
+    await this.commandBus.execute(
+      new GenerateGiftIdeasCommand(profile, keywords, event.chatId),
     );
   }
 }

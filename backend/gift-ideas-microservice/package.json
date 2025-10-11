@@ -42,6 +42,7 @@
     }
   },
   "dependencies": {
+    "@ai-sdk/openai": "^2.0.30",
     "@nestjs/common": "^11.0.13",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.13",
@@ -49,6 +50,7 @@
     "@nestjs/microservices": "^11.0.13",
     "@nestjs/platform-express": "^11.0.13",
     "@nestjs/swagger": "^11.2.0",
+    "ai": "^5.0.44",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.7",
     "dotenv": "^16.5.0",
@@ -57,7 +59,8 @@
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^4.6.3",
     "typeorm": "^0.3.20",
-    "ulid": "^3.0.1"
+    "ulid": "^3.0.1",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",

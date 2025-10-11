@@ -1,5 +1,5 @@
 // src/main.ts
-import { ProductFetchedEvent } from "@core/events";
+import { GiftContextInitializedEvent, ProductFetchedEvent } from "@core/events";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 import { Logger } from "@nestjs/common";
@@ -27,6 +27,16 @@ async function bootstrap() {
     },
   };
   app.connectMicroservice(productFetchedOptions);
+
+  const giftContextInitializedOptions = {
+    transport: Transport.RMQ,
+    options: {
+      urls: [cloudAmqpUrl],
+      queue: GiftContextInitializedEvent.name,
+      queueOptions: { durable: false },
+    },
+  };
+  app.connectMicroservice(giftContextInitializedOptions);
   const swaggerServer =
     process.env.SWAGGER_SERVER ?? `http://localhost:${portString}`;
 

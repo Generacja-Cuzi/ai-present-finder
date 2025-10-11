@@ -737,6 +737,18 @@ importers:
         specifier: ^5.7.3
         version: 5.9.2
 
+  core/events:
+    devDependencies:
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.2
+
+  core/types:
+    devDependencies:
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.2
+
   frontend:
     dependencies:
       "@radix-ui/react-scroll-area":

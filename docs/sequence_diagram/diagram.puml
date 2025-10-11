@@ -55,7 +55,7 @@ else Wykryto niewłaściwe zachowanie
   CHAT -> REST: **ChatInappropriateRequestEvent**\n{chatId, reason}
   REST -> REST: **NotifyUserSseCommand**
   REST -> U: SSE: chat-inappropriate-request
-    note left: Wywiad zakończony,\nagana dla użytkownika
+    note left: Wywiad zakończony, nagana dla użytkownika
 end
 
 deactivate CHAT
@@ -72,14 +72,13 @@ alt Zarówno stalking jak i wywiad zakończone
   GIFT -> GIFT: **GenerateGiftIdeasCommand**\n{profile, keywords, chatId}
   note right: AI generuje zapytania wyszukiwania\ndla wielu serwisów
   
-  par Wyślij do Reranking Service
-    GIFT -> RERANK: **GiftContextInitializedEvent**\n{profile, keywords, chatId, eventId, totalEvents}
-    activate RERANK
-  end
-  
+  GIFT -> RERANK: **GiftContextInitializedEvent**\n{profile, keywords, chatId, eventId, totalEvents}
+  activate RERANK
+ 
   par Równoległe Żądania FETCH
-    GIFT -> FETCH_OLX: **FetchOlxEvent**\n{query, chatId, eventId, totalEvents}
+  else OLX
     activate FETCH_OLX
+    GIFT -> FETCH_OLX: **FetchOlxEvent**\n{query, chatId, eventId, totalEvents}
   else Allegro
     GIFT -> FETCH_ALLEGRO: **FetchAllegroEvent**\n{query, chatId, eventId, totalEvents}
     activate FETCH_ALLEGRO
@@ -96,6 +95,7 @@ deactivate GIFT
 
 == Zbieranie Produktów i Rerankowanie ==
 par Odpowiedzi od wszystkich serwisów
+else OLX
   FETCH_OLX -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "olx", eventId, totalEvents}
 else Allegro
   FETCH_ALLEGRO -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "allegro", eventId, totalEvents}

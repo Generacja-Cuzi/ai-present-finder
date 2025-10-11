@@ -1,0 +1,212 @@
+asyncapi: 3.0.0
+id: 'urn:ai-present-finder:reranking'
+info:
+  title: Reranking Microservice AsyncAPI
+  version: 1.0.0
+  description: >
+    AsyncAPI for the reranking microservice. Uses RabbitMQ queues.
+
+    This service aggregates products from multiple fetch services, 
+
+    waits for all expected products to arrive (tracked by eventId and
+    totalEvents),
+
+    then performs AI-based reranking and filtering to select the most relevant
+    gifts
+
+    based on the user profile and keywords.
+
+defaultContentType: application/json
+servers:
+  rabbitmq:
+    host: 'admin:admin@localhost:5672'
+    pathname: ''
+    protocol: amqp
+    description: RabbitMQ broker (env CLOUDAMQP_URL supported)
+channels:
+  GiftContextInitializedEvent:
+    address: GiftContextInitializedEvent
+    messages:
+      GiftContextInitialized:
+        $ref: '#/components/messages/GiftContextInitialized'
+    description: Queue to receive gift context before products arrive.
+  ProductFetchedEvent:
+    address: ProductFetchedEvent
+    messages:
+      ProductFetched:
+        $ref: '#/components/messages/ProductFetched'
+    description: Queue to receive fetched products from various marketplace services.
+  GiftReadyEvent:
+    address: GiftReadyEvent
+    messages:
+      GiftReady:
+        $ref: '#/components/messages/GiftReady'
+    description: Queue to publish reranked gift recommendations.
+operations:
+  handleGiftContextInitialized:
+    action: receive
+    channel:
+      $ref: '#/channels/GiftContextInitializedEvent'
+    summary: Initialize session with user profile and keywords for later reranking
+    messages:
+      - $ref: '#/channels/GiftContextInitializedEvent/messages/GiftContextInitialized'
+  handleProductFetched:
+    action: receive
+    channel:
+      $ref: '#/channels/ProductFetchedEvent'
+    summary: Collect products from fetch services and track completion
+    messages:
+      - $ref: '#/channels/ProductFetchedEvent/messages/ProductFetched'
+  publishGiftReady:
+    action: send
+    channel:
+      $ref: '#/channels/GiftReadyEvent'
+    summary: Send final reranked gift recommendations to REST API
+    messages:
+      - $ref: '#/channels/GiftReadyEvent/messages/GiftReady'
+components:
+  messages:
+    GiftContextInitialized:
+      name: GiftContextInitializedEvent
+      title: GiftContextInitialized
+      summary: Gift context for reranking preparation.
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - chatId
+          - eventId
+          - totalEvents
+        properties:
+          userProfile:
+            type: object
+            nullable: true
+            description: User/recipient profile from interview
+          keywords:
+            type: array
+            items:
+              type: string
+            description: Keywords from stalking analysis
+          chatId:
+            type: string
+            description: Unique identifier for the chat session
+          eventId:
+            type: string
+            description: Unique ID for this batch of fetch requests
+          totalEvents:
+            type: integer
+            description: Total number of fetch events expected
+    ProductFetched:
+      name: ProductFetchedEvent
+      title: ProductFetched
+      summary: Products fetched from a marketplace service.
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - chatId
+          - provider
+          - eventId
+          - totalEvents
+          - success
+        properties:
+          products:
+            type: array
+            items:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: uri
+                  nullable: true
+                title:
+                  type: string
+                description:
+                  type: string
+                link:
+                  type: string
+                  format: uri
+                price:
+                  type: object
+                  nullable: true
+                  properties:
+                    value:
+                      type: number
+                      nullable: true
+                    label:
+                      type: string
+                      nullable: true
+                    currency:
+                      type: string
+                      nullable: true
+                    negotiable:
+                      type: boolean
+                      nullable: true
+            description: Array of product listings from the marketplace
+          chatId:
+            type: string
+            description: Unique identifier for the chat session
+          provider:
+            type: string
+            enum:
+              - allegro
+              - amazon
+              - ebay
+              - olx
+            description: Marketplace provider name
+          success:
+            type: boolean
+            description: Whether the fetch operation was successful
+          eventId:
+            type: string
+            description: Unique ID for this batch of fetch requests
+          totalEvents:
+            type: integer
+            description: Total number of fetch events in this batch
+    GiftReady:
+      name: GiftReadyEvent
+      title: GiftReady
+      summary: Reranked gift recommendations ready for user.
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - chatId
+          - giftIdeas
+        properties:
+          giftIdeas:
+            type: array
+            items:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: uri
+                  nullable: true
+                title:
+                  type: string
+                description:
+                  type: string
+                link:
+                  type: string
+                  format: uri
+                price:
+                  type: object
+                  nullable: true
+                  properties:
+                    value:
+                      type: number
+                      nullable: true
+                    label:
+                      type: string
+                      nullable: true
+                    currency:
+                      type: string
+                      nullable: true
+                    negotiable:
+                      type: boolean
+                      nullable: true
+            description: Reranked and filtered gift recommendations
+          chatId:
+            type: string
+            description: Unique identifier for the chat session

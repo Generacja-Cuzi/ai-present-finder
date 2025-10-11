@@ -1,47 +1,107 @@
-asyncapi: "2.6.0"
+asyncapi: 3.0.0
+id: 'urn:ai-present-finder:stalking'
 info:
   title: Stalking Microservice AsyncAPI
-  version: "1.0.0"
-  description: |
-    AsyncAPI for the stalking microservice. Uses RabbitMQ queues as configured in code.
+  version: 2.0.0
+  description: >
+    AsyncAPI for the stalking microservice. Uses RabbitMQ queues.
+
+    This service analyzes social media profiles to extract keywords and
+    interests
+
+    that can help identify suitable gifts for the recipient.
+  tags:
+    - name: stalking
+defaultContentType: application/json
 servers:
   rabbitmq:
-    url: "${CLOUDAMQP_URL:///amqp://admin:admin@localhost:5672}"
+    host: 'admin:admin@localhost:5672'
+    pathname: ''
     protocol: amqp
+    description: RabbitMQ broker (env CLOUDAMQP_URL supported)
 channels:
   StalkingAnalyzeRequestedEvent:
-    description: Queue the service subscribes to when an analysis is requested.
-    subscribe:
-      message:
-        $ref: "#/components/messages/StalkingAnalyzeRequested"
+    address: StalkingAnalyzeRequestedEvent
+    messages:
+      StalkingAnalyzeRequested:
+        $ref: '#/components/messages/StalkingAnalyzeRequested'
+    description: Queue to receive stalking analysis requests.
   StalkingCompletedEvent:
-    description: Queue the service publishes when analysis completes.
-    publish:
-      message:
-        $ref: "#/components/messages/StalkingCompleted"
+    address: StalkingCompletedEvent
+    messages:
+      StalkingCompleted:
+        $ref: '#/components/messages/StalkingCompleted'
+    description: Queue to publish stalking analysis results.
+operations:
+  handleStalkingAnalyzeRequested:
+    action: receive
+    channel:
+      $ref: '#/channels/StalkingAnalyzeRequestedEvent'
+    summary: Start analyzing social media profiles
+    messages:
+      - $ref: '#/channels/StalkingAnalyzeRequestedEvent/messages/StalkingAnalyzeRequested'
+  publishStalkingCompleted:
+    action: send
+    channel:
+      $ref: '#/channels/StalkingCompletedEvent'
+    summary: Publishes extracted keywords from social analysis
+    messages:
+      - $ref: '#/channels/StalkingCompletedEvent/messages/StalkingCompleted'
 components:
   messages:
     StalkingAnalyzeRequested:
       name: StalkingAnalyzeRequestedEvent
+      title: StalkingAnalyzeRequested
+      summary: Request to analyze social media profiles.
+      contentType: application/json
       payload:
         type: object
+        required:
+          - chatId
         properties:
-          facebookUrl: { type: string }
-          instagramUrl: { type: string }
-          tiktokUrl: { type: string }
-          youtubeUrl: { type: string }
-          xUrl: { type: string }
-          linkedinUrl: { type: string }
-          chatId: { type: string }
+          chatId:
+            type: string
+            description: Unique identifier for the chat session
+          facebookUrl:
+            type: string
+            nullable: true
+            description: Facebook profile URL
+          instagramUrl:
+            type: string
+            nullable: true
+            description: Instagram profile URL
+          tiktokUrl:
+            type: string
+            nullable: true
+            description: TikTok profile URL
+          youtubeUrl:
+            type: string
+            nullable: true
+            description: YouTube channel URL
+          xUrl:
+            type: string
+            nullable: true
+            description: X (Twitter) profile URL
+          linkedinUrl:
+            type: string
+            nullable: true
+            description: LinkedIn profile URL
     StalkingCompleted:
       name: StalkingCompletedEvent
+      title: StalkingCompleted
+      summary: Stalking analysis completed with extracted keywords.
+      contentType: application/json
       payload:
         type: object
+        required:
+          - chatId
+          - keywords
         properties:
           keywords:
             type: array
-            items: { type: string }
-          completedAt:
+            items:
+              type: string
+            description: Keywords and interests extracted from social media
+          chatId:
             type: string
-            format: date-time
-          chatId: { type: string }
+            description: Unique identifier for the chat session

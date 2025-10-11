@@ -1,98 +1,222 @@
-asyncapi: "2.6.0"
-id: "urn:ai-present-finder:chat"
-defaultContentType: application/json
-
+asyncapi: 3.0.0
+id: 'urn:ai-present-finder:chat'
 info:
   title: Chat Microservice AsyncAPI
-  version: "1.0.0"
-  description: |
+  version: 2.0.0
+  description: >
     AsyncAPI for the chat microservice. Transport: RabbitMQ (AMQP).
-    The service subscribes to events produced by other services.
-  license:
-    name: MIT
-    url: https://opensource.org/licenses/MIT
-tags:
-  - name: chat
 
+    This service handles the conversational interview with users to gather gift
+    preferences.
+
+    It subscribes to interview start/user answer events and publishes questions
+    and completion events.
+  tags:
+    - name: chat
+defaultContentType: application/json
 servers:
   rabbitmq:
-    url: amqp://admin:admin@localhost:5672
+    host: 'admin:admin@localhost:5672'
+    pathname: ''
     protocol: amqp
-    description: Local RabbitMQ broker
-
+    description: RabbitMQ broker (env CLOUDAMQP_URL supported)
 channels:
+  ChatStartInterviewEvent:
+    address: ChatStartInterviewEvent
+    messages:
+      ChatStartInterview:
+        $ref: '#/components/messages/ChatStartInterview'
+    description: Queue to start a new chat interview session.
+  ChatUserAnsweredEvent:
+    address: ChatUserAnsweredEvent
+    messages:
+      ChatUserAnswered:
+        $ref: '#/components/messages/ChatUserAnswered'
+    description: Queue with user responses during the interview.
   ChatQuestionAskedEvent:
-    description: Queue with questions asked by the chat flow.
-    subscribe:
-      operationId: handleChatQuestionAsked
-      summary: Handle incoming question events
-      message:
-        $ref: "#/components/messages/ChatQuestionAsked"
+    address: ChatQuestionAskedEvent
+    messages:
+      ChatQuestionAsked:
+        $ref: '#/components/messages/ChatQuestionAsked'
+    description: Queue with questions asked by the chat AI to the user.
   ChatInterviewCompletedEvent:
-    description: Queue with interview completed events.
-    subscribe:
-      operationId: handleChatInterviewCompleted
-      summary: Handle interview completion
-      message:
-        $ref: "#/components/messages/ChatInterviewCompleted"
+    address: ChatInterviewCompletedEvent
+    messages:
+      ChatInterviewCompleted:
+        $ref: '#/components/messages/ChatInterviewCompleted'
+    description: Queue with interview completed events containing user profile.
   ChatInappropriateRequestEvent:
+    address: ChatInappropriateRequestEvent
+    messages:
+      ChatInappropriateRequest:
+        $ref: '#/components/messages/ChatInappropriateRequest'
     description: Queue with inappropriate request notifications.
-    subscribe:
-      operationId: handleChatInappropriateRequest
-      summary: Handle inappropriate requests
-      message:
-        $ref: "#/components/messages/ChatInappropriateRequest"
-
+  ChatCompletedNotifyUserEvent:
+    address: ChatCompletedNotifyUserEvent
+    messages:
+      ChatCompletedNotifyUser:
+        $ref: '#/components/messages/ChatCompletedNotifyUser'
+    description: Queue to notify user that interview is complete (via SSE).
+operations:
+  handleChatStartInterview:
+    action: receive
+    channel:
+      $ref: '#/channels/ChatStartInterviewEvent'
+    summary: Start chat interview for a given chatId
+    messages:
+      - $ref: '#/channels/ChatStartInterviewEvent/messages/ChatStartInterview'
+  handleChatUserAnswered:
+    action: receive
+    channel:
+      $ref: '#/channels/ChatUserAnsweredEvent'
+    summary: Process user's answer and generate next question
+    messages:
+      - $ref: '#/channels/ChatUserAnsweredEvent/messages/ChatUserAnswered'
+  publishChatQuestionAsked:
+    action: send
+    channel:
+      $ref: '#/channels/ChatQuestionAskedEvent'
+    summary: Publish a question for the user
+    messages:
+      - $ref: '#/channels/ChatQuestionAskedEvent/messages/ChatQuestionAsked'
+  publishChatInterviewCompleted:
+    action: send
+    channel:
+      $ref: '#/channels/ChatInterviewCompletedEvent'
+    summary: Publish interview completion with generated profile
+    messages:
+      - $ref: '#/channels/ChatInterviewCompletedEvent/messages/ChatInterviewCompleted'
+  publishChatInappropriateRequest:
+    action: send
+    channel:
+      $ref: '#/channels/ChatInappropriateRequestEvent'
+    summary: Publish when user behavior is flagged as inappropriate
+    messages:
+      - $ref: >-
+          #/channels/ChatInappropriateRequestEvent/messages/ChatInappropriateRequest
+  publishChatCompletedNotifyUser:
+    action: send
+    channel:
+      $ref: '#/channels/ChatCompletedNotifyUserEvent'
+    summary: Notify REST API to inform user via SSE
+    messages:
+      - $ref: >-
+          #/channels/ChatCompletedNotifyUserEvent/messages/ChatCompletedNotifyUser
 components:
   messages:
-    ChatQuestionAsked:
-      messageId: ChatQuestionAsked
-      name: ChatQuestionAskedEvent
-      title: ChatQuestionAsked
-      summary: Question asked by the user during chat.
+    ChatStartInterview:
+      name: ChatStartInterviewEvent
+      title: ChatStartInterview
+      summary: Start a new chat interview session.
       contentType: application/json
       payload:
         type: object
-        required: [question, context]
+        required:
+          - chatId
         properties:
+          chatId:
+            type: string
+            description: Unique identifier for the chat session
+    ChatUserAnswered:
+      name: ChatUserAnsweredEvent
+      title: ChatUserAnswered
+      summary: User's answer to a chat question.
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - chatId
+          - messages
+        properties:
+          chatId:
+            type: string
+            description: Unique identifier for the chat session
+          messages:
+            type: array
+            description: Full conversation history including user's latest answer
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                sender:
+                  type: string
+                  enum:
+                    - user
+                    - assistant
+                content:
+                  type: string
+    ChatQuestionAsked:
+      name: ChatQuestionAskedEvent
+      title: ChatQuestionAsked
+      summary: Question asked by the AI to the user during chat.
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - chatId
+          - question
+        properties:
+          chatId:
+            type: string
+            description: Unique identifier for the chat session
           question:
             type: string
-          context:
+            description: The question text to ask the user
+    ChatInterviewCompleted:
+      name: ChatInterviewCompletedEvent
+      title: ChatInterviewCompleted
+      summary: Interview flow finished with computed recipient profile.
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - chatId
+          - profile
+        properties:
+          chatId:
+            type: string
+            description: Unique identifier for the chat session
+          profile:
             type: object
+            description: Generated profile from the conversation
             properties:
-              keywords:
+              recipient_profile:
+                type: object
+                nullable: true
+                description: Structured information about the gift recipient
+              key_themes_and_keywords:
                 type: array
                 items:
                   type: string
-              chatId:
-                type: string
-
-    ChatInterviewCompleted:
-      messageId: ChatInterviewCompleted
-      name: ChatInterviewCompletedEvent
-      title: ChatInterviewCompleted
-      summary: Interview flow finished with computed profile.
-      contentType: application/json
-      payload:
-        type: object
-        required: [context, profile]
-        properties:
-          context:
-            type: object
-          profile:
-            type: object
-
+                description: Key themes and keywords extracted from the conversation
     ChatInappropriateRequest:
-      messageId: ChatInappropriateRequest
       name: ChatInappropriateRequestEvent
       title: ChatInappropriateRequest
-      summary: The request was flagged as inappropriate.
+      summary: User behavior flagged as inappropriate.
       contentType: application/json
       payload:
         type: object
-        required: [reason, chatId]
+        required:
+          - reason
+          - chatId
         properties:
           reason:
             type: string
+            description: Reason why the request was flagged
           chatId:
             type: string
+            description: Unique identifier for the chat session
+    ChatCompletedNotifyUser:
+      name: ChatCompletedNotifyUserEvent
+      title: ChatCompletedNotifyUser
+      summary: Notify user that interview is complete.
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - chatId
+        properties:
+          chatId:
+            type: string
+            description: Unique identifier for the chat session

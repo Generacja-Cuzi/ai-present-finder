@@ -7,7 +7,6 @@ export * from "./chat/chat-inappropriate-request.event";
 export * from "./chat/chat-completed-notify-user.event";
 
 // Gift events
-export * from "./gift/gift-generate-requested.event";
 export * from "./gift/gift-context-initialized.event";
 export * from "./gift/gift-ready.event";
 

@@ -1,6 +1,6 @@
 packages:
-  - backend/core/events
-  - backend/core/types
+  - core/events
+  - core/types
   - backend/chat-microservice
   - backend/fetch-microservice
   - backend/gift-ideas-microservice

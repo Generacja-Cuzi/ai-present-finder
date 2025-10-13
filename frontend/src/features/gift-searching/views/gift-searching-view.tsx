@@ -1,31 +1,22 @@
-import { SseProvider } from "@/lib/sse";
+import { CustomSseProvider } from "@/lib/sse";
 
-import { useSseRecommendation } from "../hooks/use-sse-finding";
+import { useSseGiftSearching } from "../hooks/use-sse-gift-searching";
 
-export function RecommendationView({ clientId }: { clientId: string }) {
+export function GiftSearchingView({ clientId }: { clientId: string }) {
   return (
-    <SseProvider clientId={clientId}>
-      <RecommendationContent clientId={clientId} />
-    </SseProvider>
+    <CustomSseProvider clientId={clientId}>
+      <GiftSearchingContent clientId={clientId} />
+    </CustomSseProvider>
   );
 }
 
-function RecommendationContent({ clientId }: { clientId: string }) {
-  const { state } = useSseRecommendation({ clientId });
+function GiftSearchingContent({ clientId }: { clientId: string }) {
+  const { state } = useSseGiftSearching({ clientId });
 
   switch (state.type) {
-    case "idle": {
+    case "searching": {
       return <div>Waiting for recommendations...</div>;
     }
-
-    case "generating": {
-      return <div>Generating recommendations...</div>;
-    }
-
-    case "error": {
-      return <div>Error: {state.error}</div>;
-    }
-
     case "ready": {
       return (
         <div>

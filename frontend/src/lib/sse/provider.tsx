@@ -3,7 +3,7 @@ import { SSEProvider } from "react-hooks-sse";
 
 import { getBackendUrl } from "@/lib/backend-url";
 
-export function SseProviderWrapper({
+export function CustomSseProvider({
   children,
   clientId,
 }: {
@@ -12,5 +12,6 @@ export function SseProviderWrapper({
 }) {
   const baseUrl = getBackendUrl();
   const sseEndpoint = `${baseUrl}/sse?clientId=${clientId}`;
+
   return <SSEProvider endpoint={sseEndpoint}>{children}</SSEProvider>;
 }

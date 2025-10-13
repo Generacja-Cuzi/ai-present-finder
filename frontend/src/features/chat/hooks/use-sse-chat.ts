@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { useSSE } from "react-hooks-sse";
 
-import { uiUpdateEvent } from "../types";
+import { SSE_EVENTS, useSse } from "@/lib/sse";
+
 import type { ChatState, SseMessageDto } from "../types";
 
 export const useSseChat = ({ clientId }: { clientId: string }) => {
@@ -15,10 +15,9 @@ export const useSseChat = ({ clientId }: { clientId: string }) => {
     [],
   );
 
-  const state = useSSE<ChatState, SseMessageDto>(
-    uiUpdateEvent,
+  const state = useSse<ChatState, SseMessageDto>(
+    SSE_EVENTS.UI_UPDATE,
     initialState,
-
     {
       stateReducer: (previousState, action) => {
         switch (action.data.type) {

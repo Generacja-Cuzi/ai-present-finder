@@ -32,7 +32,7 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
       },
     ]),
   ],
-  controllers: [ StalkingAnalyzeRequestHandler],
+  controllers: [StalkingAnalyzeRequestHandler],
   providers: [StalkingAnalyzeHandler, BrightDataService],
 })
 export class StalkingModule {}

@@ -62,13 +62,13 @@ export function StalkingView() {
     <div className="flex min-h-screen flex-col bg-[#FFFFFF] pb-20">
       {/* Header */}
       <div className="relative flex items-center justify-center border-b border-gray-200 px-4 py-4">
-        <button
+        <Button
           onClick={handleBack}
           className="absolute left-4 flex size-10 items-center justify-center rounded-full transition-colors hover:bg-gray-100"
           aria-label="Go back"
         >
           <ArrowLeft className="size-6 text-gray-900" />
-        </button>
+        </Button>
         <h1 className="text-xl font-bold text-gray-900">
           Find the perfect gift
         </h1>

@@ -1,14 +1,9 @@
 import { Cake, Flame, Heart, Smile } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export type Occasion = "birthday" | "anniversary" | "holiday" | "just-because";
-
-interface OccasionCardProps {
-  occasion: Occasion;
-  selected: boolean;
-  onSelect: () => void;
-}
 
 const occasionConfig = {
   birthday: {
@@ -37,12 +32,16 @@ export function OccasionCard({
   occasion,
   selected,
   onSelect,
-}: OccasionCardProps) {
+}: {
+  occasion: Occasion;
+  selected: boolean;
+  onSelect: () => void;
+}) {
   const config = occasionConfig[occasion];
   const Icon = config.icon;
 
   return (
-    <button
+    <Button
       type="button"
       onClick={onSelect}
       className={cn(
@@ -64,6 +63,6 @@ export function OccasionCard({
       >
         {config.label}
       </span>
-    </button>
+    </Button>
   );
 }

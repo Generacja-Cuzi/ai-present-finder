@@ -20,13 +20,6 @@ function InstagramIcon({ className }: { className?: string }) {
   );
 }
 
-interface SocialMediaInputProps {
-  platform: "instagram" | "x" | "tiktok";
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-}
-
 const platformIcons = {
   instagram: InstagramIcon,
   x: X,
@@ -44,7 +37,12 @@ export function SocialMediaInput({
   value,
   onChange,
   placeholder,
-}: SocialMediaInputProps) {
+}: {
+  platform: "instagram" | "x" | "tiktok";
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+}) {
   const Icon = platformIcons[platform];
 
   return (

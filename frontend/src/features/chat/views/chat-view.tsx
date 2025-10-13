@@ -1,5 +1,6 @@
+import { CustomSseProvider } from "@/lib/sse";
+
 import { ChatUI } from "../components/chat-ui";
-import { SseProviderWrapper } from "../components/sse-provider";
 
 export function ChatView({ clientId }: { clientId: string }) {
   return (
@@ -8,9 +9,9 @@ export function ChatView({ clientId }: { clientId: string }) {
         <h1 className="mb-8 text-center text-3xl font-bold text-gray-800">
           AI Present Finder - Chat
         </h1>
-        <SseProviderWrapper clientId={clientId}>
+        <CustomSseProvider clientId={clientId}>
           <ChatUI clientId={clientId} />
-        </SseProviderWrapper>
+        </CustomSseProvider>
       </div>
     </div>
   );

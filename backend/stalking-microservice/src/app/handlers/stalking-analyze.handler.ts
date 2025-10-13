@@ -1,9 +1,12 @@
 import { StalkingCompletedEvent } from "@core/events";
-import { StalkingAnalyzeCommand } from "src/domain/commands/stalking-analyze.command";
 import { extractFacts } from "src/app/ai/flow";
 import { BrightDataService } from "src/app/services/brightdata.service";
 import type { ScrapeRequestItem } from "src/app/services/brightdata.service";
+import { StalkingAnalyzeCommand } from "src/domain/commands/stalking-analyze.command";
 import type { AnyProfileScrapeResult } from "src/domain/models/profile-scrape-result.model";
+import type { InstagramProfileResponse } from "src/domain/types/instagram.types";
+import type { TikTokProfileResponse } from "src/domain/types/tiktok.types";
+import type { XPostsResponse } from "src/domain/types/x-posts.types";
 
 import { Inject, Logger } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
@@ -162,7 +165,7 @@ export class StalkingAnalyzeHandler
     switch (type) {
       case "instagram": {
         // Instagram response is an array, take first account
-        const account = raw.at(0);
+        const account = (raw as InstagramProfileResponse).at(0);
 
         if (account === undefined) {
           return {
@@ -190,8 +193,8 @@ export class StalkingAnalyzeHandler
       }
       case "x": {
         // X response is an array of posts
-        const posts = raw.slice(0, 10);
-        const userInfo = raw.at(0);
+        const posts = (raw as XPostsResponse).slice(0, 10);
+        const userInfo = (raw as XPostsResponse).at(0);
 
         if (userInfo === undefined) {
           return {
@@ -218,7 +221,7 @@ export class StalkingAnalyzeHandler
       }
       case "tiktok": {
         // TikTok response is an array, take first profile
-        const tikTokProfile = raw.at(0);
+        const tikTokProfile = (raw as TikTokProfileResponse).at(0);
 
         if (tikTokProfile === undefined) {
           return {

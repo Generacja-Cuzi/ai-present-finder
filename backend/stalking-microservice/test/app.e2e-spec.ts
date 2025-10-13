@@ -1,3 +1,7 @@
+import {
+  StalkingAnalyzeRequestedEvent,
+  StalkingCompletedEvent,
+} from "@core/events";
 import { RabbitMQContainer } from "@testcontainers/rabbitmq";
 import type { StartedRabbitMQContainer } from "@testcontainers/rabbitmq";
 import type { App } from "supertest/types";
@@ -8,8 +12,6 @@ import { Test } from "@nestjs/testing";
 
 import { AppModule } from "./../src/app.module";
 import { StalkingAnalyzeRequestHandler } from "./../src/app/handlers/stalking-analyze-request.handler";
-import { StalkingAnalyzeRequestedEvent } from "./../src/domain/events/stalking-analyze-request.event";
-import { StalkingCompletedEvent } from "./../src/domain/events/stalking-completed.event";
 
 jest.mock("@ai-sdk/openai", () => ({
   openai: jest.fn(() => ({})),
@@ -79,9 +81,13 @@ describe("Stalking Microservice (e2e)", () => {
       const instagramUrl = "https://instagram.com/testuser";
 
       const event = new StalkingAnalyzeRequestedEvent(
-        chatId,
-        undefined,
-        instagramUrl,
+        "", // facebookUrl
+        instagramUrl, // instagramUrl
+        "", // tiktokUrl
+        "", // youtubeUrl
+        "", // xUrl
+        "", // linkedinUrl
+        chatId, // chatId
       );
 
       const handler = app.get(StalkingAnalyzeRequestHandler);

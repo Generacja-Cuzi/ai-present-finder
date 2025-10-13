@@ -1,9 +1,9 @@
+import { StalkingCompletedEvent } from "@core/events";
 import type {
   BrightDataService,
   ScrapeRequestItem,
 } from "src/app/services/brightdata.service";
 import { StalkingAnalyzeCommand } from "src/domain/commands/stalking-analyze.command";
-import { StalkingCompletedEvent } from "src/domain/events/stalking-completed.event";
 import type { AnyProfileScrapeResult } from "src/domain/models/profile-scrape-result.model";
 import type { InstagramProfileResponse } from "src/domain/types/instagram.types";
 import type { XPostsResponse } from "src/domain/types/x-posts.types";

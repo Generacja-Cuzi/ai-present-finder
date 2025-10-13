@@ -1,15 +1,12 @@
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-
 import { useSendMessage } from "../api/send-message";
 import { useSseChat } from "../hooks/use-sse-chat";
+import { ChatHeader } from "./chat-header";
 import { ChatInput } from "./chat-input";
-import { Message } from "./message";
+import { ChatMessages } from "./chat-messages";
 import { NonChatIndicator } from "./non-chat-indicator";
-import { ThinkingBadge } from "./thinking-badge";
 
 export function ChatUI({ clientId }: { clientId: string }) {
   const { state: chatState } = useSseChat({
@@ -48,30 +45,22 @@ export function ChatUI({ clientId }: { clientId: string }) {
   }
 
   const messages = chatState.data.messages;
+  const currentStep = Math.min(messages.length, 10);
 
   return (
-    <Card className="mx-auto flex h-[90vh] w-full max-w-2xl flex-col">
-      <CardHeader className="flex-shrink-0">
-        <CardTitle>Chat</CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-1 flex-col overflow-hidden p-0">
-        <ScrollArea className="min-h-0 flex-1">
-          <div className="space-y-4 p-4">
-            {messages.map((message) => (
-              <Message key={message.id} message={message} />
-            ))}
-            {isChatbotProcessing ? <ThinkingBadge /> : null}
-          </div>
-        </ScrollArea>
-        <div className="flex-shrink-0">
-          <ChatInput
-            inputValue={inputValue}
-            setInputValue={setInputValue}
-            handleSendMessage={handleSendMessage}
-            isLoading={isChatbotProcessing}
-          />
-        </div>
-      </CardContent>
-    </Card>
+    <div className="bg-secondary flex h-screen flex-col pb-20">
+      <ChatHeader currentStep={currentStep} />
+
+      <ChatMessages messages={messages} isProcessing={isChatbotProcessing} />
+
+      <div className="fixed bottom-20 left-0 right-0 bg-transparent">
+        <ChatInput
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          handleSendMessage={handleSendMessage}
+          isLoading={isChatbotProcessing}
+        />
+      </div>
+    </div>
   );
 }

@@ -13,12 +13,9 @@ export class StalkingAnalyzeRequestHandler {
   @EventPattern(StalkingAnalyzeRequestedEvent.name)
   async handle(event: StalkingAnalyzeRequestedEvent) {
     const analyzeRequestedDto: StalkingAnalyzeRequestDto = {
-      facebookUrl: event.facebookUrl,
       instagramUrl: event.instagramUrl,
       tiktokUrl: event.tiktokUrl,
-      youtubeUrl: event.youtubeUrl,
       xUrl: event.xUrl,
-      linkedinUrl: event.linkedinUrl,
       chatId: event.chatId,
     };
 

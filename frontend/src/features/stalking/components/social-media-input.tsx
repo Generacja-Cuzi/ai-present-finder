@@ -2,7 +2,6 @@ import { Music, X } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 
-// Instagram icon component since the lucide Instagram icon is deprecated
 function InstagramIcon({ className }: { className?: string }) {
   return (
     <svg

@@ -31,7 +31,7 @@ export function Navbar() {
   const currentPath = router.location.pathname;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white">
+    <nav className="bg-background fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200">
       <div className="mx-auto flex max-w-lg items-center justify-around px-6 py-3">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -47,13 +47,13 @@ export function Navbar() {
               <Icon
                 className={cn(
                   "h-6 w-6 transition-colors",
-                  isActive ? "text-[#E89B3C]" : "text-gray-500",
+                  isActive ? "text-primary" : "text-gray-500",
                 )}
               />
               <span
                 className={cn(
                   "text-xs transition-colors",
-                  isActive ? "text-[#E89B3C]" : "text-gray-500",
+                  isActive ? "text-primary" : "text-gray-500",
                 )}
               >
                 {item.label}

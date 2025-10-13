@@ -784,6 +784,9 @@ importers:
       "@radix-ui/react-label":
         specifier: ^2.1.7
         version: 2.1.7(@types/react-dom@19.1.9(@types/react@19.1.16))(@types/react@19.1.16)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      "@hookform/resolvers":
+        specifier: ^5.2.2
+        version: 5.2.2(react-hook-form@7.65.0(react@19.1.1))
       "@radix-ui/react-scroll-area":
         specifier: ^1.2.10
         version: 1.2.10(@types/react-dom@19.1.9(@types/react@19.1.16))(@types/react@19.1.16)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -829,6 +832,9 @@ importers:
       react-dom:
         specifier: ^19.1.1
         version: 19.1.1(react@19.1.1)
+      react-hook-form:
+        specifier: ^7.65.0
+        version: 7.65.0(react@19.1.1)
       react-hooks-sse:
         specifier: ^2.1.0
         version: 2.1.0(react@19.1.1)
@@ -1957,6 +1963,13 @@ packages:
       }
     engines: { node: ">=6" }
     hasBin: true
+  "@hookform/resolvers@5.2.2":
+    resolution:
+      {
+        integrity: sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA==,
+      }
+    peerDependencies:
+      react-hook-form: ^7.55.0
 
   "@humanfs/core@0.19.1":
     resolution:
@@ -3326,6 +3339,12 @@ packages:
     resolution:
       {
         integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==,
+      }
+
+  "@standard-schema/utils@0.3.0":
+    resolution:
+      {
+        integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==,
       }
 
   "@stylistic/eslint-plugin@5.4.0":
@@ -9859,6 +9878,15 @@ packages:
     peerDependencies:
       react: ^19.1.1
 
+  react-hook-form@7.65.0:
+    resolution:
+      {
+        integrity: sha512-xtOzDz063WcXvGWaHgLNrNzlsdFgtUWcb32E6WFaGTd7kPZG3EeDusjdZfUsPwKCKVXy1ZlntifaHZ4l8pAsmw==,
+      }
+    engines: { node: ">=18.0.0" }
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18 || ^19
+
   react-hooks-sse@2.1.0:
     resolution:
       {
@@ -12816,6 +12844,10 @@ snapshots:
       long: 5.3.2
       protobufjs: 7.5.4
       yargs: 17.7.2
+  "@hookform/resolvers@5.2.2(react-hook-form@7.65.0(react@19.1.1))":
+    dependencies:
+      "@standard-schema/utils": 0.3.0
+      react-hook-form: 7.65.0(react@19.1.1)
 
   "@humanfs/core@0.19.1": {}
 
@@ -13838,6 +13870,8 @@ snapshots:
   "@sqltools/formatter@1.2.5": {}
 
   "@standard-schema/spec@1.0.0": {}
+
+  "@standard-schema/utils@0.3.0": {}
 
   "@stylistic/eslint-plugin@5.4.0(eslint@9.35.0(jiti@2.5.1))":
     dependencies:
@@ -18517,6 +18551,10 @@ snapshots:
     dependencies:
       react: 19.1.1
       scheduler: 0.26.0
+
+  react-hook-form@7.65.0(react@19.1.1):
+    dependencies:
+      react: 19.1.1
 
   react-hooks-sse@2.1.0(react@19.1.1):
     dependencies:

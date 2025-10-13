@@ -4,15 +4,6 @@ export class StalkingAnalyzeRequestDto {
   @ApiPropertyOptional({
     type: String,
     format: "url",
-    description: "Facebook profile URL",
-    example: "https://facebook.com/example",
-    required: false,
-  })
-  facebookUrl?: string;
-
-  @ApiPropertyOptional({
-    type: String,
-    format: "url",
     description: "Instagram profile URL",
     example: "https://instagram.com/example",
     required: false,
@@ -31,29 +22,11 @@ export class StalkingAnalyzeRequestDto {
   @ApiPropertyOptional({
     type: String,
     format: "url",
-    description: "YouTube channel URL",
-    example: "https://youtube.com/channel/ABC",
-    required: false,
-  })
-  youtubeUrl?: string;
-
-  @ApiPropertyOptional({
-    type: String,
-    format: "url",
     description: "X (Twitter) profile URL",
     example: "https://x.com/example",
     required: false,
   })
   xUrl?: string;
-
-  @ApiPropertyOptional({
-    type: String,
-    format: "url",
-    description: "LinkedIn profile URL",
-    example: "https://linkedin.com/in/example",
-    required: false,
-  })
-  linkedinUrl?: string;
 
   @ApiProperty({
     type: String,

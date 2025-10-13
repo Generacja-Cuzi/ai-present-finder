@@ -1,38 +1,48 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Link as RouterLink, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { v7 as uuidv7 } from "uuid";
 
 import { Button } from "@/components/ui/button";
 
 import { useStalkingRequestMutation } from "../api/stalking-request";
-import type { Occasion } from "../components";
 import { OccasionCard, SocialMediaInput } from "../components";
+import { stalkingFormSchema } from "../types";
+import type { StalkingFormData } from "../types";
 
 export function StalkingView() {
   const navigate = useNavigate();
   const { mutateAsync: sendRequest, isPending } = useStalkingRequestMutation();
 
-  const [instagramUrl, setInstagramUrl] = useState("");
-  const [xUrl, setXUrl] = useState("");
-  const [tiktokUrl, setTiktokUrl] = useState("");
-  const [selectedOccasion, setSelectedOccasion] = useState<Occasion | null>(
-    null,
-  );
+  const {
+    handleSubmit,
+    watch,
+    setValue,
+    control,
+    formState: { errors, isValid },
+  } = useForm<StalkingFormData>({
+    resolver: zodResolver(stalkingFormSchema),
+    mode: "onChange",
+    defaultValues: {
+      instagramUrl: "",
+      xUrl: "",
+      tiktokUrl: "",
+    },
+  });
 
-  const handleStart = async () => {
+  const selectedOccasion = watch("occasion");
+
+  const onSubmit = async (data: StalkingFormData) => {
     try {
       const clientId = uuidv7();
 
       await sendRequest(
         {
-          facebookUrl: "",
-          instagramUrl,
-          tiktokUrl,
-          youtubeUrl: "",
-          xUrl,
-          linkedinUrl: "",
+          instagramUrl: data.instagramUrl,
+          tiktokUrl: data.tiktokUrl,
+          xUrl: data.xUrl,
           chatId: clientId,
         },
         {
@@ -51,8 +61,6 @@ export function StalkingView() {
     }
   };
 
-  const isFormValid = selectedOccasion !== null;
-
   return (
     <div className="bg-background flex min-h-screen flex-col pb-20">
       <div className="relative flex items-center justify-center border-b border-gray-200 px-4 py-4">
@@ -70,7 +78,10 @@ export function StalkingView() {
         </h1>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-6 py-6 pb-28">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex-1 overflow-y-auto px-6 py-6 pb-28"
+      >
         <section className="mb-8">
           <h2 className="text-foreground mb-2 text-2xl font-bold">
             Tell us about the person
@@ -81,23 +92,62 @@ export function StalkingView() {
           </p>
 
           <div className="space-y-4">
-            <SocialMediaInput
-              platform="instagram"
-              value={instagramUrl}
-              onChange={setInstagramUrl}
-              placeholder="Instagram URL"
+            <Controller
+              name="instagramUrl"
+              control={control}
+              render={({ field, fieldState }) => (
+                <div>
+                  <SocialMediaInput
+                    platform="instagram"
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Instagram URL"
+                  />
+                  {Boolean(fieldState.error) && (
+                    <p className="text-sm text-red-500">
+                      {fieldState.error?.message ?? "Invalid URL"}
+                    </p>
+                  )}
+                </div>
+              )}
             />
-            <SocialMediaInput
-              platform="x"
-              value={xUrl}
-              onChange={setXUrl}
-              placeholder="X (formerly Twitter) URL"
+            <Controller
+              name="xUrl"
+              control={control}
+              render={({ field, fieldState }) => (
+                <div>
+                  <SocialMediaInput
+                    platform="x"
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="X (formerly Twitter) URL"
+                  />
+                  {Boolean(fieldState.error) && (
+                    <p className="text-sm text-red-500">
+                      {fieldState.error?.message ?? "Invalid URL"}
+                    </p>
+                  )}
+                </div>
+              )}
             />
-            <SocialMediaInput
-              platform="tiktok"
-              value={tiktokUrl}
-              onChange={setTiktokUrl}
-              placeholder="TikTok URL"
+            <Controller
+              name="tiktokUrl"
+              control={control}
+              render={({ field, fieldState }) => (
+                <div>
+                  <SocialMediaInput
+                    platform="tiktok"
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="TikTok URL"
+                  />
+                  {Boolean(fieldState.error) && (
+                    <p className="text-sm text-red-500">
+                      {fieldState.error?.message ?? "Invalid URL"}
+                    </p>
+                  )}
+                </div>
+              )}
             />
           </div>
         </section>
@@ -115,43 +165,56 @@ export function StalkingView() {
               occasion="birthday"
               selected={selectedOccasion === "birthday"}
               onSelect={() => {
-                setSelectedOccasion("birthday");
+                setValue("occasion", "birthday", {
+                  shouldValidate: true,
+                });
               }}
             />
             <OccasionCard
               occasion="anniversary"
               selected={selectedOccasion === "anniversary"}
               onSelect={() => {
-                setSelectedOccasion("anniversary");
+                setValue("occasion", "anniversary", {
+                  shouldValidate: true,
+                });
               }}
             />
             <OccasionCard
               occasion="holiday"
               selected={selectedOccasion === "holiday"}
               onSelect={() => {
-                setSelectedOccasion("holiday");
+                setValue("occasion", "holiday", {
+                  shouldValidate: true,
+                });
               }}
             />
             <OccasionCard
               occasion="just-because"
               selected={selectedOccasion === "just-because"}
               onSelect={() => {
-                setSelectedOccasion("just-because");
+                setValue("occasion", "just-because", {
+                  shouldValidate: true,
+                });
               }}
             />
           </div>
+          {Boolean(errors.occasion) && (
+            <p className="mt-2 text-sm text-red-500">
+              {errors.occasion?.message ?? "Please select an occasion"}
+            </p>
+          )}
         </section>
-      </div>
 
-      <div className="fixed bottom-20 left-0 right-0 bg-transparent px-6 py-4 shadow-none">
-        <Button
-          onClick={handleStart}
-          disabled={!isFormValid || isPending}
-          className="bg-brand text-brand-foreground hover:bg-brand/90 w-full rounded-full py-6 text-lg font-semibold shadow-lg transition-all active:scale-95 disabled:bg-gray-300 disabled:text-gray-500"
-        >
-          {isPending ? "Starting..." : "Find Gift Ideas"}
-        </Button>
-      </div>
+        <div className="fixed bottom-20 left-0 right-0 bg-transparent px-6 py-4 shadow-none">
+          <Button
+            type="submit"
+            disabled={!isValid || isPending}
+            className="bg-brand text-brand-foreground hover:bg-brand/90 w-full rounded-full py-6 text-lg font-semibold shadow-lg transition-all active:scale-95 disabled:bg-gray-300 disabled:text-gray-500"
+          >
+            {isPending ? "Starting..." : "Find Gift Ideas"}
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }

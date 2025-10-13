@@ -3,12 +3,9 @@ import { useMutation } from "@tanstack/react-query";
 import { getBackendUrl } from "@/lib/backend-url";
 
 interface StalkingRequestData {
-  facebookUrl: string;
   instagramUrl: string;
   tiktokUrl: string;
-  youtubeUrl: string;
   xUrl: string;
-  linkedinUrl: string;
   chatId: string;
 }
 

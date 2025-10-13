@@ -4,10 +4,6 @@ import { SSE_EVENTS, useSse } from "@/lib/sse";
 
 import type { ChatState, SseMessageDto } from "../types";
 
-/**
- * Chat-specific SSE hook.
- * Manages chat state based on SSE events from the backend.
- */
 export const useSseChat = ({ clientId }: { clientId: string }) => {
   const initialState: ChatState = useMemo(
     () => ({

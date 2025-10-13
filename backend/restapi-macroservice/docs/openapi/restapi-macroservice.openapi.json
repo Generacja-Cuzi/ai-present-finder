@@ -109,11 +109,6 @@
       "StalkingAnalyzeRequestDto": {
         "type": "object",
         "properties": {
-          "facebookUrl": {
-            "type": "string",
-            "description": "Facebook profile URL",
-            "example": "https://facebook.com/example"
-          },
           "instagramUrl": {
             "type": "string",
             "description": "Instagram profile URL",
@@ -124,20 +119,10 @@
             "description": "TikTok profile URL",
             "example": "https://tiktok.com/@example"
           },
-          "youtubeUrl": {
-            "type": "string",
-            "description": "YouTube channel URL",
-            "example": "https://youtube.com/channel/ABC"
-          },
           "xUrl": {
             "type": "string",
             "description": "X (Twitter) profile URL",
             "example": "https://x.com/example"
-          },
-          "linkedinUrl": {
-            "type": "string",
-            "description": "LinkedIn profile URL",
-            "example": "https://linkedin.com/in/example"
           },
           "chatId": {
             "type": "string",

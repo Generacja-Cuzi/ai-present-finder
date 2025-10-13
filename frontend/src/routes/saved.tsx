@@ -6,10 +6,12 @@ export const Route = createFileRoute("/saved")({
 
 function SavedView() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#E8DED3] pb-20">
+    <div className="bg-surface flex min-h-screen flex-col items-center justify-center pb-20">
       <div className="text-center">
-        <h1 className="mb-4 text-3xl font-bold text-gray-900">Saved Gifts</h1>
-        <p className="text-gray-600">Your saved gifts will appear here</p>
+        <h1 className="text-foreground mb-4 text-3xl font-bold">Saved Gifts</h1>
+        <p className="text-muted-foreground">
+          Your saved gifts will appear here
+        </p>
       </div>
     </div>
   );

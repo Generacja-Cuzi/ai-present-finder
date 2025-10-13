@@ -9,22 +9,22 @@ const occasionConfig = {
   birthday: {
     icon: Cake,
     label: "Birthday",
-    color: "text-[#E89B3C]",
+    color: "text-brand",
   },
   anniversary: {
     icon: Heart,
     label: "Anniversary",
-    color: "text-[#E89B3C]",
+    color: "text-brand",
   },
   holiday: {
     icon: Flame,
     label: "Holiday",
-    color: "text-[#E89B3C]",
+    color: "text-brand",
   },
   "just-because": {
     icon: Smile,
     label: "Just Because",
-    color: "text-[#E89B3C]",
+    color: "text-brand",
   },
 };
 
@@ -43,22 +43,24 @@ export function OccasionCard({
   return (
     <Button
       type="button"
-      onClick={onSelect}
+      variant="ghost"
       className={cn(
+        "h-auto shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
         "flex flex-col items-center justify-center gap-3 rounded-2xl border-2 p-6 transition-all duration-200",
         selected
-          ? "border-[#E89B3C] bg-[#FFF8F0] shadow-md"
-          : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50",
+          ? "border-brand bg-[#FFF8F0]"
+          : "bg-background border-gray-200 hover:border-gray-300 hover:bg-gray-50",
       )}
+      onClick={onSelect}
     >
       <Icon
-        className={cn("size-10", selected ? config.color : "text-gray-400")}
+        className={cn("size-10", selected ? "text-brand" : "text-gray-400")}
         strokeWidth={1.5}
       />
       <span
         className={cn(
           "text-base font-medium",
-          selected ? "text-gray-900" : "text-gray-600",
+          selected ? "text-foreground" : "text-muted-foreground",
         )}
       >
         {config.label}

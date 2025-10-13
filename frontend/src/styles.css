@@ -19,6 +19,12 @@ code {
 }
 
 :root {
+  --brand: oklch(0.75 0.16 70);
+  --brand-foreground: oklch(0.985 0 0);
+  --brand-hover: oklch(0.7 0.15 70);
+  --surface: oklch(0.93 0.018 80);
+  --surface-foreground: var(--foreground);
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
@@ -55,6 +61,12 @@ code {
 }
 
 .dark {
+  --brand: oklch(0.75 0.16 70);
+  --brand-foreground: oklch(0.141 0.005 285.823);
+  --brand-hover: oklch(0.68 0.15 70);
+  --surface: oklch(0.22 0.015 285);
+  --surface-foreground: var(--foreground);
+
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.141 0.005 285.823);
@@ -90,6 +102,12 @@ code {
 }
 
 @theme inline {
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

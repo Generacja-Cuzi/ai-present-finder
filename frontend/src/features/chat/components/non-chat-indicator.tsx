@@ -10,7 +10,7 @@ export function NonChatIndicator({
       <div className="flex h-[90vh] items-center justify-center">
         <div className="text-center">
           <div className="text-xl font-semibold">Interview Complete! 🎉</div>
-          <div className="mt-2 text-gray-600">
+          <div className="text-muted-foreground mt-2">
             Generating personalized gift ideas for you...
           </div>
           <div className="mt-4 text-4xl">🎁</div>
@@ -38,7 +38,7 @@ export function NonChatIndicator({
               ) : null}
               <h3 className="text-lg font-semibold">{gift.title}</h3>
               {gift.description.length > 0 ? (
-                <p className="mt-2 text-gray-600">{gift.description}</p>
+                <p className="text-muted-foreground mt-2">{gift.description}</p>
               ) : null}
               <a
                 href={gift.link}
@@ -61,7 +61,7 @@ export function NonChatIndicator({
         <div className="text-xl font-semibold text-red-600">
           ⚠️ Inappropriate Request Detected
         </div>
-        <div className="mt-2 text-gray-600">{state.data.reason}</div>
+        <div className="text-muted-foreground mt-2">{state.data.reason}</div>
       </div>
     </div>
   );

@@ -146,7 +146,7 @@ export class StalkingAnalyzeHandler
         },
       });
 
-      return result.object.facts;
+      return result.facts;
     } catch (error) {
       this.logger.error(
         `Failed to extract facts from profile ${profile.url}:`,

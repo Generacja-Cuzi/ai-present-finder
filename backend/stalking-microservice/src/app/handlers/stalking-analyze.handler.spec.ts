@@ -1,4 +1,5 @@
 import { StalkingCompletedEvent } from "@core/events";
+import { extractFacts } from "src/app/ai/flow";
 import type {
   BrightDataService,
   ScrapeRequestItem,
@@ -11,6 +12,10 @@ import type { XPostsResponse } from "src/domain/types/x-posts.types";
 import type { ClientProxy } from "@nestjs/microservices";
 
 import { StalkingAnalyzeHandler } from "./stalking-analyze.handler";
+
+jest.mock("src/app/ai/flow", () => ({
+  extractFacts: jest.fn(),
+}));
 
 type ScrapeProfilesMock = jest.MockedFunction<
   BrightDataService["scrapeProfiles"]
@@ -30,6 +35,16 @@ function createHandler(scrapeProfilesImplementation: ScrapeProfilesMock) {
 }
 
 describe("StalkingAnalyzeHandler", () => {
+  beforeEach(() => {
+    jest
+      .mocked(extractFacts)
+      .mockResolvedValue({ facts: ["hiking", "running"] });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("scrapes provided URLs and emits completed event with keywords", async () => {
     const scrapeProfiles = jest
       .fn<Promise<AnyProfileScrapeResult[]>, [ScrapeRequestItem[]]>()

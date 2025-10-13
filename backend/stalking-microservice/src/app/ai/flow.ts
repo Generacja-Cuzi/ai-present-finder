@@ -17,7 +17,7 @@ export async function extractFacts({ input }: { input: ModelMessage }) {
           "List of extracted facts relevant for gift suggestions, could be 0",
         ),
     }),
-  });
+  }).then((result) => result.object);
 }
 
 export type MyUIMessage = UIMessage<never>;

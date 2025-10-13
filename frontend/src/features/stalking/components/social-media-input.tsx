@@ -39,7 +39,7 @@ export function SocialMediaInput({
           onChange(event.target.value);
         }}
         placeholder={placeholder}
-        className="focus-visible:border-brand focus-visible:ring-brand/20 h-14 rounded-2xl border-2 border-gray-200 pl-12 text-base placeholder:text-gray-400"
+        className="focus-visible:border-primary focus-visible:ring-primary/20 h-14 rounded-2xl border-2 border-gray-200 pl-12 text-base placeholder:text-gray-400"
         aria-label={platformLabels[platform]}
       />
     </div>

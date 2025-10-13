@@ -1,19 +1,13 @@
-import { useNavigate } from "@tanstack/react-router";
+import { Link as RouterLink } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
 
 export function HomeView() {
-  const navigate = useNavigate();
-
-  const handleGetStarted = () => {
-    void navigate({ to: "/stalking" });
-  };
-
   return (
     <div className="bg-background flex min-h-screen flex-col">
       <div className="flex flex-1 flex-col items-center justify-center px-6 pb-24">
         <div className="mb-8 w-full max-w-sm">
-          <div className="bg-surface aspect-square w-full overflow-hidden rounded-3xl shadow-lg">
+          <div className="bg-secondary aspect-square w-full overflow-hidden rounded-3xl shadow-lg">
             <img
               src="/logo192.png"
               alt="Gift box"
@@ -32,10 +26,10 @@ export function HomeView() {
         </p>
 
         <Button
-          onClick={handleGetStarted}
-          className="bg-brand text-brand-foreground hover:bg-brand/90 w-full max-w-sm rounded-full py-7 text-lg font-semibold shadow-lg transition-all active:scale-95"
+          asChild
+          className="bg-primary text-primary-foreground hover:bg-primary/90 w-full max-w-sm rounded-full py-7 text-lg font-semibold shadow-lg transition-all active:scale-95"
         >
-          Get Started
+          <RouterLink to="/stalking">Get Started</RouterLink>
         </Button>
       </div>
     </div>

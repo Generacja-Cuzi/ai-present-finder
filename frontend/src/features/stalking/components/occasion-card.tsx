@@ -9,22 +9,22 @@ const occasionConfig = {
   birthday: {
     icon: Cake,
     label: "Birthday",
-    color: "text-brand",
+    color: "text-primary",
   },
   anniversary: {
     icon: Heart,
     label: "Anniversary",
-    color: "text-brand",
+    color: "text-primary",
   },
   holiday: {
     icon: Flame,
     label: "Holiday",
-    color: "text-brand",
+    color: "text-primary",
   },
   "just-because": {
     icon: Smile,
     label: "Just Because",
-    color: "text-brand",
+    color: "text-primary",
   },
 };
 
@@ -48,13 +48,13 @@ export function OccasionCard({
         "h-auto shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
         "flex flex-col items-center justify-center gap-3 rounded-2xl border-2 p-6 transition-all duration-200",
         selected
-          ? "border-brand bg-[#FFF8F0]"
+          ? "border-primary bg-[#FFF8F0]"
           : "bg-background border-gray-200 hover:border-gray-300 hover:bg-gray-50",
       )}
       onClick={onSelect}
     >
       <Icon
-        className={cn("size-10", selected ? "text-brand" : "text-gray-400")}
+        className={cn("size-10", selected ? "text-primary" : "text-gray-400")}
         strokeWidth={1.5}
       />
       <span

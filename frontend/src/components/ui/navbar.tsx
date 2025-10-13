@@ -47,13 +47,13 @@ export function Navbar() {
               <Icon
                 className={cn(
                   "h-6 w-6 transition-colors",
-                  isActive ? "text-brand" : "text-gray-500",
+                  isActive ? "text-primary" : "text-gray-500",
                 )}
               />
               <span
                 className={cn(
                   "text-xs transition-colors",
-                  isActive ? "text-brand" : "text-gray-500",
+                  isActive ? "text-primary" : "text-gray-500",
                 )}
               >
                 {item.label}

@@ -11,7 +11,7 @@ export function SubmitBar({ disabled, isPending }: SubmitBarProps) {
       <Button
         type="submit"
         disabled={disabled}
-        className="bg-brand text-brand-foreground hover:bg-brand/90 w-full rounded-full py-6 text-lg font-semibold shadow-lg transition-all active:scale-95 disabled:bg-gray-300 disabled:text-gray-500"
+        className="bg-primary text-primary-foreground hover:bg-primary/90 w-full rounded-full py-6 text-lg font-semibold shadow-lg transition-all active:scale-95 disabled:bg-gray-300 disabled:text-gray-500"
       >
         {isPending ? "Starting..." : "Find Gift Ideas"}
       </Button>

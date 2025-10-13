@@ -145,22 +145,13 @@ components:
           chatId:
             type: string
             description: Unique identifier for the chat session
-          facebookUrl:
-            type: string
-            nullable: true
           instagramUrl:
             type: string
             nullable: true
           tiktokUrl:
             type: string
             nullable: true
-          youtubeUrl:
-            type: string
-            nullable: true
           xUrl:
-            type: string
-            nullable: true
-          linkedinUrl:
             type: string
             nullable: true
     ChatStartInterview:

@@ -27,12 +27,9 @@ export class StartProcessingCommandHandler
 
     // Start stalking
     const stalkingEvent = new StalkingAnalyzeRequestedEvent(
-      analyzeRequestedDto.facebookUrl,
       analyzeRequestedDto.instagramUrl,
       analyzeRequestedDto.tiktokUrl,
-      analyzeRequestedDto.youtubeUrl,
       analyzeRequestedDto.xUrl,
-      analyzeRequestedDto.linkedinUrl,
       analyzeRequestedDto.chatId,
     );
 

@@ -36,7 +36,7 @@ function GiftSearchingContent({ clientId }: { clientId: string }) {
     }
 
     const startTime = Date.now();
-    const maxDuration = 120_000;
+    const maxDuration = 60_000;
 
     const interval = setInterval(() => {
       const elapsed = Date.now() - startTime;
@@ -62,7 +62,7 @@ function GiftSearchingContent({ clientId }: { clientId: string }) {
     const giftIdeas = state.data.giftIdeas;
     const startProgress = progressRef.current;
     const remainingProgress = 100 - startProgress;
-    const duration = 3000; // 3 seconds
+    const duration = 3000;
     const startTime = Date.now();
 
     const interval = setInterval(() => {
@@ -85,7 +85,7 @@ function GiftSearchingContent({ clientId }: { clientId: string }) {
       }).then(() => {
         window.history.replaceState({ ...window.history.state, giftIdeas }, "");
       });
-    }, 3000);
+    }, duration + 2000);
 
     return () => {
       clearInterval(interval);

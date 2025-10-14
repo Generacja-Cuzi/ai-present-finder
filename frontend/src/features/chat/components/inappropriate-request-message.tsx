@@ -1,10 +1,4 @@
-interface InappropriateRequestMessageProps {
-  reason: string;
-}
-
-export function InappropriateRequestMessage({
-  reason,
-}: InappropriateRequestMessageProps) {
+export function InappropriateRequestMessage({ reason }: { reason: string }) {
   return (
     <div className="flex h-[90vh] items-center justify-center">
       <div className="text-center">

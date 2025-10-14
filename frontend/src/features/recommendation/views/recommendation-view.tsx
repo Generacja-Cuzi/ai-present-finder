@@ -1,11 +1,11 @@
 import type { ListingDto } from "@core/types";
 
-interface RecommendationViewProps {
+export function RecommendationView({
+  giftIdeas,
+}: {
   clientId: string;
   giftIdeas: ListingDto[];
-}
-
-export function RecommendationView({ giftIdeas }: RecommendationViewProps) {
+}) {
   return (
     <div className="p-8">
       <div className="text-2xl font-bold">Gift Ideas Ready! 🎁</div>

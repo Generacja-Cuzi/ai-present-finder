@@ -1,21 +1,27 @@
 import type { ChatMessage } from "@core/types";
 
+import { Avatar } from "@/components/ui/avatar";
+
 export function Message({ message }: { message: ChatMessage }) {
+  const isUser = message.sender === "user";
+
   return (
     <div
       key={message.id}
-      className={`flex ${
-        message.sender === "user" ? "justify-end" : "justify-start"
-      }`}
+      className={`flex gap-3 ${isUser ? "flex-row-reverse" : "flex-row"}`}
     >
+      <Avatar
+        alt={isUser ? "User" : "AI Present Finder"}
+        className="mt-1 flex-shrink-0"
+      />
       <div
-        className={`max-w-[80%] rounded-lg px-3 py-2 ${
-          message.sender === "user"
+        className={`max-w-[75%] rounded-2xl px-5 py-3 ${
+          isUser
             ? "bg-primary text-primary-foreground"
-            : "bg-muted"
+            : "bg-secondary text-secondary-foreground"
         }`}
       >
-        <p className="text-sm">{message.content}</p>
+        <p className="text-base leading-relaxed">{message.content}</p>
       </div>
     </div>
   );

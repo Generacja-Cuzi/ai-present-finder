@@ -26,7 +26,6 @@ function GiftSearchingContent({ clientId }: { clientId: string }) {
   const hasNavigatedRef = useRef(false);
   const progressRef = useRef(0);
 
-  // Keep progress in sync with ref
   useEffect(() => {
     progressRef.current = progress;
   }, [progress]);

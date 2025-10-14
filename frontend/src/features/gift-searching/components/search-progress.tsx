@@ -1,14 +1,12 @@
 import { Progress } from "@/components/ui/progress";
 
-interface SearchProgressProps {
-  progress: number;
-  isComplete?: boolean;
-}
-
 export function SearchProgress({
   progress,
   isComplete = false,
-}: SearchProgressProps) {
+}: {
+  progress: number;
+  isComplete?: boolean;
+}) {
   return (
     <div className="mb-4">
       <div className="mb-2">

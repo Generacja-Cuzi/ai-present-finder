@@ -34,7 +34,7 @@ COPY --from=builder /app/backend ./backend
 COPY --from=builder /app/core ./core
 
 # Copy PM2 ecosystem file
-COPY deployment/ecosystem.config.js ./ecosystem.config.js
+COPY deployment/ecosystem.config.cjs ./ecosystem.config.cjs
 
 # Expose ports (for documentation, not used by Coolify)
 EXPOSE 3000 3010 3020 3030 3040 3050 8011 8012 8013 8014
@@ -44,4 +44,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3000/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"
 
 # Start all services with PM2
-CMD ["pm2-runtime", "start", "ecosystem.config.js"]
+CMD ["pm2-runtime", "start", "ecosystem.config.cjs"]

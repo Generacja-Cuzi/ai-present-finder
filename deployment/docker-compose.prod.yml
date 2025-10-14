@@ -69,8 +69,8 @@ services:
   # Frontend
   frontend:
     build:
-      context: ../frontend
-      dockerfile: ../deployment/frontend.Dockerfile
+      context: ..
+      dockerfile: ./deployment/frontend.Dockerfile
     environment:
       NODE_ENV: production
       VITE_API_URL: ${SERVICE_URL_APP:-http://localhost:3000}

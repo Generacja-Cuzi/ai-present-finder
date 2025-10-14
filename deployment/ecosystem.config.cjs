@@ -3,7 +3,7 @@ module.exports = {
     {
       name: "restapi-macroservice",
       cwd: "./backend/restapi-macroservice",
-      script: "dist/main.js",
+      script: "dist/backend/restapi-macroservice/src/main.js",
       instances: 1,
       exec_mode: "cluster",
       env: {
@@ -14,7 +14,7 @@ module.exports = {
     {
       name: "stalking-microservice",
       cwd: "./backend/stalking-microservice",
-      script: "dist/main.js",
+      script: "dist/backend/stalking-microservice/src/main.js",
       instances: 1,
       exec_mode: "cluster",
       env: {
@@ -26,7 +26,7 @@ module.exports = {
     {
       name: "chat-microservice",
       cwd: "./backend/chat-microservice",
-      script: "dist/main.js",
+      script: "dist/backend/chat-microservice/src/main.js",
       instances: 1,
       exec_mode: "cluster",
       env: {
@@ -49,7 +49,7 @@ module.exports = {
     {
       name: "gift-ideas-microservice",
       cwd: "./backend/gift-ideas-microservice",
-      script: "dist/main.js",
+      script: "dist/backend/gift-ideas-microservice/src/main.js",
       instances: 1,
       exec_mode: "cluster",
       env: {
@@ -61,7 +61,7 @@ module.exports = {
     {
       name: "reranking-microservice",
       cwd: "./backend/reranking-microservice",
-      script: "dist/main.js",
+      script: "dist/backend/reranking-microservice/src/main.js",
       instances: 1,
       exec_mode: "cluster",
       env: {
@@ -73,7 +73,7 @@ module.exports = {
     {
       name: "fetch-microservice-olx",
       cwd: "./backend/fetch-microservice",
-      script: "dist/main.js",
+      script: "dist/backend/fetch-microservice/src/main.js",
       instances: 1,
       exec_mode: "cluster",
       env: {
@@ -86,7 +86,7 @@ module.exports = {
     {
       name: "fetch-microservice-allegro",
       cwd: "./backend/fetch-microservice",
-      script: "dist/main.js",
+      script: "dist/backend/fetch-microservice/src/main.js",
       instances: 1,
       exec_mode: "cluster",
       env: {
@@ -99,7 +99,7 @@ module.exports = {
     {
       name: "fetch-microservice-ebay",
       cwd: "./backend/fetch-microservice",
-      script: "dist/main.js",
+      script: "dist/backend/fetch-microservice/src/main.js",
       instances: 1,
       exec_mode: "cluster",
       env: {
@@ -112,7 +112,7 @@ module.exports = {
     {
       name: "fetch-microservice-amazon",
       cwd: "./backend/fetch-microservice",
-      script: "dist/main.js",
+      script: "dist/backend/fetch-microservice/src/main.js",
       instances: 1,
       exec_mode: "cluster",
       env: {

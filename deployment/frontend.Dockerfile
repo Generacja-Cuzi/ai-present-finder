@@ -6,9 +6,15 @@ RUN corepack enable && corepack prepare pnpm@10.0.0 --activate
 
 WORKDIR /app
 
-COPY . /app
+# Copy workspace configuration and all necessary files
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
+COPY core ./core
+COPY backend ./backend
+COPY frontend ./frontend
+
+# Install dependencies and build
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
-RUN pnpm run --filter=frontend build
+RUN pnpm --filter frontend build
 
 # Production stage
 FROM nginx:alpine

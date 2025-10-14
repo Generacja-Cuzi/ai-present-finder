@@ -9,16 +9,16 @@ WORKDIR /app
 # Copy workspace configuration
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Copy frontend package files
-COPY frontend/package.json ./frontend/
+# Copy frontend package.json for dependency resolution
+COPY frontend/package.json ./frontend/package.json
 
-# Install dependencies for the entire workspace
+# Install dependencies (this will install frontend deps based on workspace config)
 RUN pnpm install --frozen-lockfile --filter frontend...
 
-# Copy frontend source files
+# Copy all frontend source files
 COPY frontend ./frontend
 
-# Build the frontend application
+# Build the frontend application using workspace filter from root
 RUN pnpm --filter frontend build
 
 # Production stage

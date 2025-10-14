@@ -18,3 +18,7 @@ onlyBuiltDependencies:
   - msw
   - protobufjs
   - ssh2
+
+syncInjectedDepsAfterScripts:
+  - build
+injectWorkspacePackages: true

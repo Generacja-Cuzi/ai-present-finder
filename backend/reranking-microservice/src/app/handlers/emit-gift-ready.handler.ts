@@ -1,40 +1,33 @@
 import { GiftReadyEvent } from "@core/events";
-import type { ListingDto } from "@core/types";
 import { Repository } from "typeorm";
 
-import { Inject, Injectable, Logger } from "@nestjs/common";
+import { Inject, Logger } from "@nestjs/common";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { ClientProxy } from "@nestjs/microservices";
 import { InjectRepository } from "@nestjs/typeorm";
 
+import { EmitGiftReadyCommand } from "../../domain/commands/emit-gift-ready.command";
 import { GiftSession } from "../../domain/entities/gift-session.entity";
+import { AddProductsToSessionHandler } from "./add-products-to-session.handler";
 
-@Injectable()
-export class SessionCompletionService {
-  private readonly logger = new Logger(SessionCompletionService.name);
-
-  private readonly sessionProducts = new Map<string, ListingDto[]>();
+@CommandHandler(EmitGiftReadyCommand)
+export class EmitGiftReadyHandler
+  implements ICommandHandler<EmitGiftReadyCommand, void>
+{
+  private readonly logger = new Logger(EmitGiftReadyHandler.name);
 
   constructor(
     @Inject("GIFT_READY_EVENT") private readonly giftReadyEventBus: ClientProxy,
     @InjectRepository(GiftSession)
     private readonly giftSessionRepository: Repository<GiftSession>,
+    private readonly productsHandler: AddProductsToSessionHandler,
   ) {}
 
-  addProductsToSession(eventId: string, products: ListingDto[]): void {
-    const existingProducts = this.sessionProducts.get(eventId) ?? [];
-    existingProducts.push(...products);
-    this.sessionProducts.set(eventId, existingProducts);
+  async execute(command: EmitGiftReadyCommand): Promise<void> {
+    const { eventId } = command;
 
-    this.logger.log(
-      `Added ${String(products.length)} products to session ${eventId}, ` +
-        `total: ${String(existingProducts.length)}`,
-    );
-  }
+    const allProducts = this.productsHandler.getSessionProducts(eventId);
 
-  async emitSessionProducts(eventId: string): Promise<void> {
-    const allProducts = this.sessionProducts.get(eventId) ?? [];
-
-    // Fetch the session from database to get chatId
     const session = await this.giftSessionRepository.findOne({
       where: { eventId },
     });
@@ -61,10 +54,6 @@ export class SessionCompletionService {
       this.giftReadyEventBus.emit(GiftReadyEvent.name, giftReadyEvent);
     }
 
-    this.removeSession(eventId);
-  }
-
-  private removeSession(eventId: string): void {
-    this.sessionProducts.delete(eventId);
+    this.productsHandler.clearSessionProducts(eventId);
   }
 }

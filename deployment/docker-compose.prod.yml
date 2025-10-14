@@ -3,8 +3,8 @@ services:
   rabbitmq:
     image: rabbitmq:3.12-management
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-admin}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-admin}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:?}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:?}
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
@@ -23,9 +23,9 @@ services:
       POSTGRES_MULTIPLE_DATABASES: reranking_service,fetch_service,stalking_service,chat_service,gift_ideas_service
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./docker-init-db.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
+      - ./deployment/docker-init-db.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", 'pg_isready -U "$${POSTGRES_USER:-postgres}"']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -37,8 +37,8 @@ services:
       dockerfile: ./deployment/Dockerfile
     environment:
       NODE_ENV: production
-      # RabbitMQ
-      CLOUDAMQP_URL: ${CLOUDAMQP_URL:-amqp://admin:admin@rabbitmq:5672}
+      # RabbitMQ - Construct URL from required credentials or use provided URL
+      CLOUDAMQP_URL: ${CLOUDAMQP_URL:-amqp://${RABBITMQ_USER:?}:${RABBITMQ_PASS:?}@rabbitmq:5672}
       # API Keys
       OPENAI_API_KEY: ${OPENAI_API_KEY:?}
       BRIGHTDATA_API_KEY: ${BRIGHTDATA_API_KEY:?}

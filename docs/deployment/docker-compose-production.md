@@ -29,8 +29,8 @@ The production Docker Compose setup consists of 4 main services:
 rabbitmq:
   image: rabbitmq:3.12-management
   environment:
-    RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-admin}
-    RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-admin}
+    RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:?}
+    RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:?}
   volumes:
     - rabbitmq_data:/var/lib/rabbitmq
   healthcheck:
@@ -45,9 +45,10 @@ rabbitmq:
 **Key Points**:
 
 - Uses management plugin (port 15672 not exposed in production)
-- Credentials configurable via environment variables
+- **Credentials are REQUIRED** - no defaults provided for security
 - Persistent storage via named volume
 - Health check ensures service is ready before dependent services start
+- Both `RABBITMQ_USER` and `RABBITMQ_PASS` must be set before deployment
 
 **Queues Created**:
 
@@ -67,9 +68,9 @@ postgres:
     POSTGRES_MULTIPLE_DATABASES: reranking_service,fetch_service,stalking_service,chat_service,gift_ideas_service
   volumes:
     - postgres_data:/var/lib/postgresql/data
-    - ./docker-init-db.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
+    - ./deployment/docker-init-db.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
   healthcheck:
-    test: ["CMD-SHELL", "pg_isready -U postgres"]
+    test: ["CMD-SHELL", 'pg_isready -U "$${POSTGRES_USER:-postgres}"']
     interval: 30s
     timeout: 10s
     retries: 3
@@ -81,7 +82,9 @@ postgres:
 
 - PostgreSQL 16 for latest features and performance
 - Master password is required (`:?` syntax)
-- Initialization script creates all databases on first run
+- User defaults to `postgres` but can be overridden via `POSTGRES_USER`
+- Initialization script (`deployment/docker-init-db.sh`) creates all databases on first run
+- Health check dynamically uses the configured `POSTGRES_USER`
 - Persistent storage via named volume
 - Health check ensures database is accepting connections
 
@@ -228,27 +231,52 @@ networks:
 Must be set before deployment:
 
 ```bash
+# API Keys
 OPENAI_API_KEY          # OpenAI API key for chat and gift ideas
 BRIGHTDATA_API_KEY      # BrightData API key for web scraping
+
+# Database
 POSTGRES_PASSWORD       # PostgreSQL master password
+
+# Message Queue - Must provide credentials (no defaults)
+RABBITMQ_USER           # RabbitMQ username (required)
+RABBITMQ_PASS           # RabbitMQ password (required)
 ```
+
+**Note on RabbitMQ**: For security, no default credentials are provided. You must explicitly set both `RABBITMQ_USER` and `RABBITMQ_PASS` before deploying.
+
+**Note on CLOUDAMQP_URL**: You can either:
+
+1. Set `RABBITMQ_USER` and `RABBITMQ_PASS` (connection URL will be constructed as `amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672`), OR
+2. Provide a complete `CLOUDAMQP_URL` directly (overrides the constructed URL)
 
 ### Optional Variables (with defaults)
 
 ```bash
-# RabbitMQ
-RABBITMQ_USER=admin
-RABBITMQ_PASS=admin
-
 # PostgreSQL
-POSTGRES_USER=postgres
+POSTGRES_USER=postgres  # Can be overridden if needed
 
-# Database URLs (auto-constructed)
-RERANKING_DATABASE_URL=postgresql://reranking_user:password@postgres:5432/reranking_service
-FETCH_DATABASE_URL=postgresql://fetch_user:password@postgres:5432/fetch_service
-STALKING_DATABASE_URL=postgresql://stalking_user:password@postgres:5432/stalking_service
-CHAT_DATABASE_URL=postgresql://chat_user:password@postgres:5432/chat_service
-GIFT_IDEAS_DATABASE_URL=postgresql://gift_ideas_user:password@postgres:5432/gift_ideas_service
+# Database URLs (auto-constructed from user/password variables)
+# Each service has separate credentials with defaults shown below
+RERANKING_DB_USER=reranking_user
+RERANKING_DB_PASSWORD=reranking_password
+RERANKING_DATABASE_URL=postgresql://${RERANKING_DB_USER}:${RERANKING_DB_PASSWORD}@postgres:5432/reranking_service
+
+FETCH_DB_USER=fetch_user
+FETCH_DB_PASSWORD=fetch_password
+FETCH_DATABASE_URL=postgresql://${FETCH_DB_USER}:${FETCH_DB_PASSWORD}@postgres:5432/fetch_service
+
+STALKING_DB_USER=stalking_user
+STALKING_DB_PASSWORD=stalking_password
+STALKING_DATABASE_URL=postgresql://${STALKING_DB_USER}:${STALKING_DB_PASSWORD}@postgres:5432/stalking_service
+
+CHAT_DB_USER=chat_user
+CHAT_DB_PASSWORD=chat_password
+CHAT_DATABASE_URL=postgresql://${CHAT_DB_USER}:${CHAT_DB_PASSWORD}@postgres:5432/chat_service
+
+GIFT_IDEAS_DB_USER=gift_ideas_user
+GIFT_IDEAS_DB_PASSWORD=gift_ideas_password
+GIFT_IDEAS_DATABASE_URL=postgresql://${GIFT_IDEAS_DB_USER}:${GIFT_IDEAS_DB_PASSWORD}@postgres:5432/gift_ideas_service
 
 # Service Ports (internal)
 RESTAPI_PORT=3000

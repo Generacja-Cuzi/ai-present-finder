@@ -6,26 +6,29 @@ RUN corepack enable && corepack prepare pnpm@10.0.0 --activate
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json pnpm-lock.yaml ./
+# Copy workspace configuration
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
+# Copy frontend package files
+COPY frontend/package.json ./frontend/
 
-# Copy source files
-COPY . .
+# Install dependencies for the entire workspace
+RUN pnpm install --frozen-lockfile --filter frontend...
 
-# Build the application
-RUN pnpm run build
+# Copy frontend source files
+COPY frontend ./frontend
+
+# Build the frontend application
+RUN pnpm --filter frontend build
 
 # Production stage
 FROM nginx:alpine
 
 # Copy built files to nginx
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/frontend/dist /usr/share/nginx/html
 
 # Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY deployment/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80
 EXPOSE 80

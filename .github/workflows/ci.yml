@@ -128,7 +128,7 @@ jobs:
       - name: Build frontend Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./frontend
+          context: .
           file: ./deployment/frontend.Dockerfile
           push: false
           tags: ai-present-finder-frontend:test

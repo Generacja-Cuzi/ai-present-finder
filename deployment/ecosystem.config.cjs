@@ -38,7 +38,7 @@ module.exports = {
     {
       name: "gift-microservice",
       cwd: "./backend/gift-microservice",
-      script: "dist/main.js",
+      script: "dist/backend/gift-microservice/src/main.js",
       instances: 1,
       exec_mode: "cluster",
       env: {

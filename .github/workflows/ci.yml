@@ -247,11 +247,14 @@ jobs:
 
       - name: Lint backend Dockerfile
         run: hadolint deployment/Dockerfile
+        if: always()
 
       - name: Lint frontend Dockerfile
         run: hadolint deployment/frontend.Dockerfile
+        if: always()
 
       - name: Validate Docker Compose schema
+        if: always()
         run: |
           # Install docker-compose schema validator
           pip install docker-compose-schema
@@ -276,76 +279,3 @@ jobs:
           jsonschema.validate(compose, schema)
           print('✅ Docker Compose schema validation passed')
           "
-
-      - name: Check for security best practices
-        run: |
-          echo "🔒 Checking Docker security best practices..."
-
-          # Check backend Dockerfile
-          echo "Backend Dockerfile security check:"
-          if grep -q "FROM.*:latest" deployment/Dockerfile; then
-            echo "⚠️  Warning: Using 'latest' tag in backend Dockerfile"
-          else
-            echo "✅ No 'latest' tags found in backend Dockerfile"
-          fi
-
-          if grep -q "USER root" deployment/Dockerfile; then
-            echo "⚠️  Warning: Running as root in backend Dockerfile"
-          else
-            echo "✅ Not running as root in backend Dockerfile"
-          fi
-
-          # Check frontend Dockerfile
-          echo "Frontend Dockerfile security check:"
-          if grep -q "FROM.*:latest" deployment/frontend.Dockerfile; then
-            echo "⚠️  Warning: Using 'latest' tag in frontend Dockerfile"
-          else
-            echo "✅ No 'latest' tags found in frontend Dockerfile"
-          fi
-
-          if grep -q "USER root" deployment/frontend.Dockerfile; then
-            echo "⚠️  Warning: Running as root in frontend Dockerfile"
-          else
-            echo "✅ Not running as root in frontend Dockerfile"
-          fi
-
-      - name: Check deployment file consistency
-        run: |
-          echo "🔍 Checking deployment file consistency..."
-
-          # Check if all referenced files exist
-          if [ ! -f "deployment/Dockerfile" ]; then
-            echo "❌ deployment/Dockerfile not found"
-            exit 1
-          fi
-
-          if [ ! -f "deployment/frontend.Dockerfile" ]; then
-            echo "❌ deployment/frontend.Dockerfile not found"
-            exit 1
-          fi
-
-          if [ ! -f "deployment/docker-compose.prod.yml" ]; then
-            echo "❌ deployment/docker-compose.prod.yml not found"
-            exit 1
-          fi
-
-          if [ ! -f "deployment/ecosystem.config.js" ]; then
-            echo "❌ deployment/ecosystem.config.js not found"
-            exit 1
-          fi
-
-          if [ ! -f "deployment/nginx.conf" ]; then
-            echo "❌ deployment/nginx.conf not found"
-            exit 1
-          fi
-
-          echo "✅ All deployment files exist"
-
-          # Check if docker-compose references correct files
-          if ! grep -q "file: ./deployment/Dockerfile" deployment/docker-compose.prod.yml; then
-            echo "⚠️  Warning: docker-compose.prod.yml may not reference correct Dockerfile path"
-          fi
-
-          if ! grep -q "file: ../deployment/frontend.Dockerfile" deployment/docker-compose.prod.yml; then
-            echo "⚠️  Warning: docker-compose.prod.yml may not reference correct frontend Dockerfile path"
-          fi

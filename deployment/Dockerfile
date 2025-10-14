@@ -13,18 +13,16 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend ./backend
 COPY core ./core
 
-# Install all dependencies
-RUN pnpm install --frozen-lockfile
-
-# Build all services
-RUN pnpm run build
+# Install dependencies and build all services in one layer to optimize caching
+RUN pnpm install --frozen-lockfile && \
+  pnpm run build
 
 # Production stage
 FROM node:22-alpine
 
 # Install pnpm and process manager
 RUN corepack enable && corepack prepare pnpm@10.0.0 --activate && \
-    npm install -g pm2
+  npm install -g pm2@5.4.2
 
 WORKDIR /app
 
@@ -36,7 +34,7 @@ COPY --from=builder /app/backend ./backend
 COPY --from=builder /app/core ./core
 
 # Copy PM2 ecosystem file
-COPY ecosystem.config.js ./
+COPY deployment/ecosystem.config.js ./ecosystem.config.js
 
 # Expose ports (for documentation, not used by Coolify)
 EXPOSE 3000 3010 3020 3030 3040 3050 8011 8012 8013 8014

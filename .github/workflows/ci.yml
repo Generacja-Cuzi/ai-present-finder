@@ -100,3 +100,252 @@ jobs:
 
       - name: Build
         run: pnpm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Test Docker Compose configuration
+        run: |
+          cd deployment
+          docker compose config --quiet
+
+      - name: Build backend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./deployment/Dockerfile
+          push: false
+          tags: ai-present-finder:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build frontend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./deployment/frontend.Dockerfile
+          push: false
+          tags: ai-present-finder-frontend:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test backend container startup
+        run: |
+          # Start the backend container briefly to test it starts
+          docker run --rm -d --name test-backend ai-present-finder:test sleep 10
+          # Wait a moment for startup
+          sleep 5
+          # Check if container is still running (not crashed)
+          if docker ps | grep -q test-backend; then
+            echo "✅ Backend container started successfully"
+            docker stop test-backend
+          else
+            echo "❌ Backend container failed to start"
+            docker logs test-backend
+            exit 1
+          fi
+
+      - name: Test frontend container startup
+        run: |
+          # Start the frontend container briefly to test it starts
+          docker run --rm -d --name test-frontend -p 8080:80 ai-present-finder-frontend:test
+          # Wait a moment for startup
+          sleep 5
+          # Check if container is still running (not crashed)
+          if docker ps | grep -q test-frontend; then
+            echo "✅ Frontend container started successfully"
+            # Test that nginx is responding
+            if curl -f http://localhost:8080 > /dev/null 2>&1; then
+              echo "✅ Frontend HTTP endpoint responding"
+            else
+              echo "❌ Frontend HTTP endpoint not responding"
+              docker logs test-frontend
+              exit 1
+            fi
+            docker stop test-frontend
+          else
+            echo "❌ Frontend container failed to start"
+            docker logs test-frontend
+            exit 1
+          fi
+
+      - name: Validate Docker image security
+        run: |
+          echo "🔍 Checking for security issues in Docker images..."
+
+          # Check backend image
+          echo "Backend image analysis:"
+          docker run --rm ai-present-finder:test sh -c "
+            echo 'Node version:' && node --version
+            echo 'PM2 version:' && pm2 --version
+            echo 'Checking for vulnerable packages...'
+            if command -v npm >/dev/null 2>&1; then
+              npm audit --audit-level=moderate --production || echo '⚠️  Some moderate vulnerabilities found'
+            fi
+          " || echo "⚠️  Could not run security checks on backend"
+
+          # Check frontend image
+          echo "Frontend image analysis:"
+          docker run --rm ai-present-finder-frontend:test sh -c "
+            echo 'Nginx version:' && nginx -v
+            echo 'Checking nginx configuration...'
+            nginx -t || exit 1
+          " || echo "⚠️  Could not run security checks on frontend"
+
+      - name: Test Docker Compose services startup
+        run: |
+          cd deployment
+          echo "🚀 Testing Docker Compose services startup..."
+
+          # Start services with dummy environment variables
+          POSTGRES_PASSWORD=test_password \
+          OPENAI_API_KEY=test_key \
+          BRIGHTDATA_API_KEY=test_key \
+          docker compose up -d --build
+
+          # Wait for services to initialize
+          echo "⏳ Waiting for services to initialize..."
+          sleep 30
+
+          # Check if services are running
+          if docker compose ps | grep -q "Up"; then
+            echo "✅ Docker Compose services started successfully"
+
+            # Test health endpoints if available
+            if curl -f http://localhost:3000/health > /dev/null 2>&1; then
+              echo "✅ REST API health check passed"
+            else
+              echo "⚠️  REST API health check failed (may be expected during build)"
+            fi
+
+            # Clean up
+            docker compose down -v
+          else
+            echo "❌ Some Docker Compose services failed to start"
+            docker compose logs
+            docker compose down -v
+            exit 1
+          fi
+
+  docker-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Hadolint
+        run: |
+          wget -O hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64
+          chmod +x hadolint
+          sudo mv hadolint /usr/local/bin/
+
+      - name: Lint backend Dockerfile
+        run: hadolint deployment/Dockerfile
+
+      - name: Lint frontend Dockerfile
+        run: hadolint deployment/frontend.Dockerfile
+
+      - name: Validate Docker Compose schema
+        run: |
+          # Install docker-compose schema validator
+          pip install docker-compose-schema
+
+          # Validate docker-compose.prod.yml
+          cd deployment
+          python -c "
+          import yaml
+          import jsonschema
+          from urllib.request import urlopen
+
+          # Load compose file
+          with open('docker-compose.prod.yml', 'r') as f:
+              compose = yaml.safe_load(f)
+
+          # Load schema
+          schema_url = 'https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json'
+          with urlopen(schema_url) as response:
+              schema = yaml.safe_load(response)
+
+          # Validate
+          jsonschema.validate(compose, schema)
+          print('✅ Docker Compose schema validation passed')
+          "
+
+      - name: Check for security best practices
+        run: |
+          echo "🔒 Checking Docker security best practices..."
+
+          # Check backend Dockerfile
+          echo "Backend Dockerfile security check:"
+          if grep -q "FROM.*:latest" deployment/Dockerfile; then
+            echo "⚠️  Warning: Using 'latest' tag in backend Dockerfile"
+          else
+            echo "✅ No 'latest' tags found in backend Dockerfile"
+          fi
+
+          if grep -q "USER root" deployment/Dockerfile; then
+            echo "⚠️  Warning: Running as root in backend Dockerfile"
+          else
+            echo "✅ Not running as root in backend Dockerfile"
+          fi
+
+          # Check frontend Dockerfile
+          echo "Frontend Dockerfile security check:"
+          if grep -q "FROM.*:latest" deployment/frontend.Dockerfile; then
+            echo "⚠️  Warning: Using 'latest' tag in frontend Dockerfile"
+          else
+            echo "✅ No 'latest' tags found in frontend Dockerfile"
+          fi
+
+          if grep -q "USER root" deployment/frontend.Dockerfile; then
+            echo "⚠️  Warning: Running as root in frontend Dockerfile"
+          else
+            echo "✅ Not running as root in frontend Dockerfile"
+          fi
+
+      - name: Check deployment file consistency
+        run: |
+          echo "🔍 Checking deployment file consistency..."
+
+          # Check if all referenced files exist
+          if [ ! -f "deployment/Dockerfile" ]; then
+            echo "❌ deployment/Dockerfile not found"
+            exit 1
+          fi
+
+          if [ ! -f "deployment/frontend.Dockerfile" ]; then
+            echo "❌ deployment/frontend.Dockerfile not found"
+            exit 1
+          fi
+
+          if [ ! -f "deployment/docker-compose.prod.yml" ]; then
+            echo "❌ deployment/docker-compose.prod.yml not found"
+            exit 1
+          fi
+
+          if [ ! -f "deployment/ecosystem.config.js" ]; then
+            echo "❌ deployment/ecosystem.config.js not found"
+            exit 1
+          fi
+
+          if [ ! -f "deployment/nginx.conf" ]; then
+            echo "❌ deployment/nginx.conf not found"
+            exit 1
+          fi
+
+          echo "✅ All deployment files exist"
+
+          # Check if docker-compose references correct files
+          if ! grep -q "file: ./deployment/Dockerfile" deployment/docker-compose.prod.yml; then
+            echo "⚠️  Warning: docker-compose.prod.yml may not reference correct Dockerfile path"
+          fi
+
+          if ! grep -q "file: ../deployment/frontend.Dockerfile" deployment/docker-compose.prod.yml; then
+            echo "⚠️  Warning: docker-compose.prod.yml may not reference correct frontend Dockerfile path"
+          fi

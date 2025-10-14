@@ -33,8 +33,8 @@ services:
   # Single application container running all microservices
   app:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: ./deployment/Dockerfile
     environment:
       NODE_ENV: production
       # RabbitMQ
@@ -69,8 +69,8 @@ services:
   # Frontend
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: ../frontend
+      dockerfile: ../deployment/frontend.Dockerfile
     environment:
       NODE_ENV: production
       VITE_API_URL: ${SERVICE_URL_APP:-http://localhost:3000}

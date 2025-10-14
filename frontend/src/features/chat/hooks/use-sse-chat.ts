@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import { SSE_EVENTS, useSse } from "@/lib/sse";
 
-import type { ChatState, SseMessageDto } from "../types";
+import type { ChatSseMessage, ChatState } from "../types";
 
 export const useSseChat = ({ clientId }: { clientId: string }) => {
   const initialState: ChatState = useMemo(
@@ -15,7 +15,7 @@ export const useSseChat = ({ clientId }: { clientId: string }) => {
     [],
   );
 
-  const state = useSse<ChatState, SseMessageDto>(
+  const state = useSse<ChatState, ChatSseMessage>(
     SSE_EVENTS.UI_UPDATE,
     initialState,
     {
@@ -23,7 +23,7 @@ export const useSseChat = ({ clientId }: { clientId: string }) => {
         switch (action.data.type) {
           case "chat-interview-completed": {
             return {
-              type: "waiting-for-gift-ideas",
+              type: "chat-interview-completed",
             };
           }
           case "chat-inappropriate-request": {
@@ -41,12 +41,6 @@ export const useSseChat = ({ clientId }: { clientId: string }) => {
               data: {
                 messages: [...previousState.data.messages, action.data.message],
               },
-            };
-          }
-          case "gift-ready": {
-            return {
-              type: "gift-ready",
-              data: { giftIdeas: action.data.data.giftIdeas },
             };
           }
           default: {

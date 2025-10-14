@@ -14,6 +14,8 @@ import { Route as SavedRouteImport } from './routes/saved'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RecommendationIdRouteImport } from './routes/recommendation/$id'
+import { Route as GiftSearchingIdRouteImport } from './routes/gift-searching/$id'
 import { Route as ChatIdRouteImport } from './routes/chat/$id'
 
 const StalkingRoute = StalkingRouteImport.update({
@@ -41,6 +43,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecommendationIdRoute = RecommendationIdRouteImport.update({
+  id: '/recommendation/$id',
+  path: '/recommendation/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GiftSearchingIdRoute = GiftSearchingIdRouteImport.update({
+  id: '/gift-searching/$id',
+  path: '/gift-searching/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChatIdRoute = ChatIdRouteImport.update({
   id: '/chat/$id',
   path: '/chat/$id',
@@ -54,6 +66,8 @@ export interface FileRoutesByFullPath {
   '/saved': typeof SavedRoute
   '/stalking': typeof StalkingRoute
   '/chat/$id': typeof ChatIdRoute
+  '/gift-searching/$id': typeof GiftSearchingIdRoute
+  '/recommendation/$id': typeof RecommendationIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +76,8 @@ export interface FileRoutesByTo {
   '/saved': typeof SavedRoute
   '/stalking': typeof StalkingRoute
   '/chat/$id': typeof ChatIdRoute
+  '/gift-searching/$id': typeof GiftSearchingIdRoute
+  '/recommendation/$id': typeof RecommendationIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,6 +87,8 @@ export interface FileRoutesById {
   '/saved': typeof SavedRoute
   '/stalking': typeof StalkingRoute
   '/chat/$id': typeof ChatIdRoute
+  '/gift-searching/$id': typeof GiftSearchingIdRoute
+  '/recommendation/$id': typeof RecommendationIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,8 +99,18 @@ export interface FileRouteTypes {
     | '/saved'
     | '/stalking'
     | '/chat/$id'
+    | '/gift-searching/$id'
+    | '/recommendation/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/history' | '/profile' | '/saved' | '/stalking' | '/chat/$id'
+  to:
+    | '/'
+    | '/history'
+    | '/profile'
+    | '/saved'
+    | '/stalking'
+    | '/chat/$id'
+    | '/gift-searching/$id'
+    | '/recommendation/$id'
   id:
     | '__root__'
     | '/'
@@ -91,6 +119,8 @@ export interface FileRouteTypes {
     | '/saved'
     | '/stalking'
     | '/chat/$id'
+    | '/gift-searching/$id'
+    | '/recommendation/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -100,6 +130,8 @@ export interface RootRouteChildren {
   SavedRoute: typeof SavedRoute
   StalkingRoute: typeof StalkingRoute
   ChatIdRoute: typeof ChatIdRoute
+  GiftSearchingIdRoute: typeof GiftSearchingIdRoute
+  RecommendationIdRoute: typeof RecommendationIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -139,6 +171,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recommendation/$id': {
+      id: '/recommendation/$id'
+      path: '/recommendation/$id'
+      fullPath: '/recommendation/$id'
+      preLoaderRoute: typeof RecommendationIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gift-searching/$id': {
+      id: '/gift-searching/$id'
+      path: '/gift-searching/$id'
+      fullPath: '/gift-searching/$id'
+      preLoaderRoute: typeof GiftSearchingIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/chat/$id': {
       id: '/chat/$id'
       path: '/chat/$id'
@@ -156,6 +202,8 @@ const rootRouteChildren: RootRouteChildren = {
   SavedRoute: SavedRoute,
   StalkingRoute: StalkingRoute,
   ChatIdRoute: ChatIdRoute,
+  GiftSearchingIdRoute: GiftSearchingIdRoute,
+  RecommendationIdRoute: RecommendationIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

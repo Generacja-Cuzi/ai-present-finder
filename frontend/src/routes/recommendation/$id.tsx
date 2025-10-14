@@ -1,19 +1,48 @@
 import type { ListingDto } from "@core/types";
-import { createFileRoute, useLocation } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 
 import { RecommendationView } from "../../features/recommendation/views/recommendation-view";
 
+const priceSchema = z.object({
+  value: z.number().nullable(),
+  label: z.string().nullable(),
+  currency: z.string().nullable(),
+  negotiable: z.boolean().nullable(),
+});
+
+const listingDtoSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  link: z.string(),
+  price: priceSchema,
+  image: z.string().nullable(),
+  description: z.string(),
+}) satisfies z.ZodType<ListingDto>;
+
+const locationStateSchema = z.object({
+  giftIdeas: z.array(listingDtoSchema).optional(),
+});
+
+const parametersSchema = z.object({
+  id: z.string().min(1, "Client ID is required"),
+});
+
 export const Route = createFileRoute("/recommendation/$id")({
+  beforeLoad: ({ params, location }) => {
+    const validatedParameters = parametersSchema.parse(params);
+    const validatedState = locationStateSchema.parse(location.state);
+
+    return {
+      clientId: validatedParameters.id,
+      giftIdeas: validatedState.giftIdeas ?? [],
+    };
+  },
   component: RecommendationPage,
 });
 
 function RecommendationPage() {
-  const parameters = Route.useParams();
-  const clientId = parameters.id;
-  const location = useLocation();
-  const giftIdeas =
-    (location.state as { giftIdeas?: ListingDto[] } | undefined)?.giftIdeas ??
-    [];
+  const { clientId, giftIdeas } = Route.useRouteContext();
 
   return <RecommendationView clientId={clientId} giftIdeas={giftIdeas} />;
 }

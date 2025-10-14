@@ -20,6 +20,7 @@ module.exports = {
       env: {
         NODE_ENV: "production",
         PORT: process.env.STALKING_PORT || 3010,
+        USE_MOCK_DATA: process.env.USE_MOCK_DATA || "false",
         DATABASE_URL: process.env.STALKING_DATABASE_URL,
       },
     },

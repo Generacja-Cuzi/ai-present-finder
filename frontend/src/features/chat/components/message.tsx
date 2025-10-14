@@ -18,7 +18,7 @@ export function Message({ message }: { message: ChatMessage }) {
         className={`max-w-[75%] rounded-2xl px-5 py-3 ${
           isUser
             ? "bg-primary text-primary-foreground"
-            : "text-foreground bg-[#F5F1E8]"
+            : "bg-secondary text-secondary-foreground"
         }`}
       >
         <p className="text-base leading-relaxed">{message.content}</p>

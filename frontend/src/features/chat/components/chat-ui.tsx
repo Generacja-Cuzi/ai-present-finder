@@ -48,7 +48,7 @@ export function ChatUI({ clientId }: { clientId: string }) {
   const currentStep = Math.min(messages.length, 10);
 
   return (
-    <div className="bg-secondary flex h-screen flex-col pb-20">
+    <div className="flex h-screen flex-col pb-20">
       <ChatHeader currentStep={currentStep} />
 
       <ChatMessages messages={messages} isProcessing={isChatbotProcessing} />

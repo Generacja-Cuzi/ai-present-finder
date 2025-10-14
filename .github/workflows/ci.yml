@@ -113,7 +113,20 @@ jobs:
       - name: Test Docker Compose configuration
         run: |
           cd deployment
-          docker compose config --quiet
+          # Create minimal env file for config validation
+          cat > .env.test <<EOF
+          RABBITMQ_USER=test_user
+          RABBITMQ_PASS=test_password
+          POSTGRES_PASSWORD=test_password
+          OPENAI_API_KEY=sk-test-dummy-key
+          BRIGHTDATA_API_KEY=test-brightdata-key
+          EOF
+
+          # Validate configuration can be parsed
+          docker compose -f docker-compose.prod.yml --env-file .env.test config --quiet
+          echo "✅ Docker Compose configuration is valid"
+
+          rm .env.test
 
       - name: Build backend Docker image
         uses: docker/build-push-action@v5
@@ -121,6 +134,7 @@ jobs:
           context: .
           file: ./deployment/Dockerfile
           push: false
+          load: true
           tags: ai-present-finder:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -131,23 +145,42 @@ jobs:
           context: .
           file: ./deployment/frontend.Dockerfile
           push: false
+          load: true
           tags: ai-present-finder-frontend:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Test backend container startup
         run: |
-          # Start the backend container briefly to test it starts
-          docker run --rm -d --name test-backend ai-present-finder:test sleep 10
-          # Wait a moment for startup
-          sleep 5
-          # Check if container is still running (not crashed)
+          # Start the backend container with minimal required env vars
+          docker run -d --name test-backend \
+            -e NODE_ENV=production \
+            -e CLOUDAMQP_URL=amqp://guest:guest@localhost:5672 \
+            -e OPENAI_API_KEY=sk-test-dummy-key \
+            -e BRIGHTDATA_API_KEY=test-key \
+            ai-present-finder:test
+
+          # Wait for PM2 to start services
+          sleep 10
+
+          # Check if container is still running
           if docker ps | grep -q test-backend; then
-            echo "✅ Backend container started successfully"
+            echo "✅ Backend container is running"
+            
+            # Check PM2 process status
+            echo "📊 PM2 process status:"
+            docker exec test-backend pm2 list || echo "⚠️  Could not get PM2 status"
+            
+            # Show logs
+            echo "📝 Container logs (last 30 lines):"
+            docker logs test-backend --tail=30
+            
             docker stop test-backend
+            docker rm test-backend
           else
-            echo "❌ Backend container failed to start"
+            echo "❌ Backend container crashed"
             docker logs test-backend
+            docker rm -f test-backend
             exit 1
           fi
 
@@ -203,35 +236,60 @@ jobs:
           cd deployment
           echo "🚀 Testing Docker Compose services startup..."
 
-          # Start services with dummy environment variables
-          POSTGRES_PASSWORD=test_password \
-          OPENAI_API_KEY=test_key \
-          BRIGHTDATA_API_KEY=test_key \
-          docker compose up -d --build
+          # Create test environment file
+          cat > .env.test <<EOF
+          RABBITMQ_USER=test_user
+          RABBITMQ_PASS=test_password
+          POSTGRES_PASSWORD=test_password
+          OPENAI_API_KEY=sk-test-dummy-key
+          BRIGHTDATA_API_KEY=test-brightdata-key
+          SERVICE_URL_APP=http://localhost:3000
+          EOF
 
-          # Wait for services to initialize
-          echo "⏳ Waiting for services to initialize..."
-          sleep 30
+          # Start services with production compose file
+          docker compose -f docker-compose.prod.yml --env-file .env.test up -d
 
-          # Check if services are running
-          if docker compose ps | grep -q "Up"; then
-            echo "✅ Docker Compose services started successfully"
-
-            # Test health endpoints if available
-            if curl -f http://localhost:3000/health > /dev/null 2>&1; then
-              echo "✅ REST API health check passed"
-            else
-              echo "⚠️  REST API health check failed (may be expected during build)"
+          # Wait for infrastructure services to be healthy
+          echo "⏳ Waiting for infrastructure services..."
+          timeout=60
+          elapsed=0
+          while [ $elapsed -lt $timeout ]; do
+            if docker compose -f docker-compose.prod.yml --env-file .env.test ps | grep -q "healthy"; then
+              echo "✅ Infrastructure services are healthy"
+              break
             fi
+            sleep 2
+            elapsed=$((elapsed + 2))
+          done
 
-            # Clean up
-            docker compose down -v
+          # Check overall services status
+          echo "📊 Service status:"
+          docker compose -f docker-compose.prod.yml --env-file .env.test ps
+
+          # Verify critical services are running
+          if docker compose -f docker-compose.prod.yml --env-file .env.test ps | grep -E "(postgres|rabbitmq)" | grep -q "Up"; then
+            echo "✅ Docker Compose infrastructure services started successfully"
           else
-            echo "❌ Some Docker Compose services failed to start"
-            docker compose logs
-            docker compose down -v
+            echo "❌ Infrastructure services failed to start"
+            docker compose -f docker-compose.prod.yml --env-file .env.test logs
+            docker compose -f docker-compose.prod.yml --env-file .env.test down -v
             exit 1
           fi
+
+          # Check if app container is created (may not be fully healthy in CI)
+          if docker compose -f docker-compose.prod.yml --env-file .env.test ps -a | grep -q "app"; then
+            echo "✅ Application container created"
+            # Show app logs for debugging
+            echo "📝 Application logs (last 20 lines):"
+            docker compose -f docker-compose.prod.yml --env-file .env.test logs app --tail=20
+          else
+            echo "⚠️  Application container not found"
+          fi
+
+          # Clean up
+          echo "🧹 Cleaning up..."
+          docker compose -f docker-compose.prod.yml --env-file .env.test down -v
+          rm .env.test
 
   docker-lint:
     runs-on: ubuntu-latest

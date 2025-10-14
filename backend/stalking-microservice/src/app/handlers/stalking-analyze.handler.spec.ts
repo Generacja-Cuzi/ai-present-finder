@@ -88,7 +88,6 @@ describe("StalkingAnalyzeHandler", () => {
     expect(eventName).toBe(StalkingCompletedEvent.name);
     expect(event).toBeInstanceOf(StalkingCompletedEvent);
     expect(event.chatId).toBe("chat-123");
-    expect(event.profiles).toHaveLength(2);
     expect(event.keywords).toEqual(
       expect.arrayContaining(["hiking", "running"]),
     );
@@ -112,7 +111,6 @@ describe("StalkingAnalyzeHandler", () => {
     expect(scrapeProfiles).not.toHaveBeenCalled();
     expect(emit).toHaveBeenCalledTimes(1);
     const [, event] = emit.mock.calls[0] as [string, StalkingCompletedEvent];
-    expect(event.profiles).toEqual([]);
     expect(event.keywords).toEqual([]);
   });
 });

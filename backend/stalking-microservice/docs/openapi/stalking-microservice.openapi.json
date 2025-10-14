@@ -1,29 +1,6 @@
 {
   "openapi": "3.0.0",
-  "paths": {
-    "/": {
-      "get": {
-        "operationId": "AppController_getHello",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Welcome message",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "summary": "Returns the welcome message for the Stalking microservice",
-        "tags": [
-          "Stalking"
-        ]
-      }
-    }
-  },
+  "paths": {},
   "info": {
     "title": "AI Present Finder - Stalking Microservice",
     "description": "Endpoints for requesting stalking/analyze jobs and retrieving status.",

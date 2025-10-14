@@ -1,3 +1,7 @@
+import type { InstagramProfileResponse } from "./instagram.types";
+import type { TikTokProfileResponse } from "./tiktok.types";
+import type { XPostsResponse } from "./x-posts.types";
+
 export interface ProfileScrapeResultBase {
   url: string;
   fetchedAt: string;
@@ -5,17 +9,17 @@ export interface ProfileScrapeResultBase {
 
 export interface InstagramProfileScrapeResult extends ProfileScrapeResultBase {
   type: "instagram";
-  raw: unknown[]; // InstagramProfileResponse
+  raw: InstagramProfileResponse; // InstagramProfileResponse
 }
 
 export interface XProfileScrapeResult extends ProfileScrapeResultBase {
   type: "x";
-  raw: unknown[]; // XPostsResponse
+  raw: XPostsResponse; // XPostsResponse
 }
 
 export interface TikTokProfileScrapeResult extends ProfileScrapeResultBase {
   type: "tiktok";
-  raw: unknown[]; // TikTokProfileResponse
+  raw: TikTokProfileResponse; // TikTokProfileResponse
 }
 
 export type AnyProfileScrapeResult =

@@ -137,6 +137,10 @@ components:
           chatId:
             type: string
             description: Unique identifier for the chat session
+          completedAt:
+            type: string
+            format: date-time
+            description: Timestamp when the stalking analysis was completed
     ChatInterviewCompleted:
       name: ChatInterviewCompletedEvent
       title: ChatInterviewCompleted

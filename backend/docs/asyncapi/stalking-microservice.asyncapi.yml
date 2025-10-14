@@ -104,14 +104,8 @@ components:
             description: Keywords and interests extracted from social media
           chatId:
             type: string
-          profiles:
-            type: array
-            items:
-              type: object
-              properties:
-                source: { type: string }
-                url: { type: string }
-                fetchedAt:
-                  type: string
-                  format: date-time
-                raw: {}
+            description: Unique identifier for the chat session
+          completedAt:
+            type: string
+            format: date-time
+            description: Timestamp when the stalking analysis was completed

@@ -256,18 +256,19 @@ jobs:
       - name: Validate Docker Compose schema
         if: always()
         run: |
-          # Install docker-compose schema validator
-          pip install docker-compose-schema
+          # Install dependencies for schema validation
+          python -m pip install --upgrade pip
+          python -m pip install pyyaml jsonschema
 
           # Validate docker-compose.prod.yml
           cd deployment
-          python -c "
+          python - <<'PYTHON'
           import yaml
           import jsonschema
           from urllib.request import urlopen
 
           # Load compose file
-          with open('docker-compose.prod.yml', 'r') as f:
+          with open('docker-compose.prod.yml', 'r', encoding='utf-8') as f:
               compose = yaml.safe_load(f)
 
           # Load schema
@@ -278,4 +279,4 @@ jobs:
           # Validate
           jsonschema.validate(compose, schema)
           print('✅ Docker Compose schema validation passed')
-          "
+          PYTHON

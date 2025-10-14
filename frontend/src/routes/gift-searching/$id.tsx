@@ -8,6 +8,6 @@ export const Route = createFileRoute("/gift-searching/$id")({
 
 function GiftSearchingPage() {
   const parameters = Route.useParams();
-  const clientId = String(parameters.id);
+  const clientId = parameters.id;
   return <GiftSearchingView clientId={clientId} />;
 }

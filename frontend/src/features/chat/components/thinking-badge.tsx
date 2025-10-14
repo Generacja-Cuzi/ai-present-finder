@@ -1,18 +1,23 @@
+import { Avatar } from "@/components/ui/avatar";
+
 export function ThinkingBadge() {
   return (
-    <div className="flex animate-pulse items-center space-x-2 rounded-lg bg-gray-50 p-3">
-      <div className="flex space-x-1">
-        <div className="h-2 w-2 animate-bounce rounded-full bg-gray-400"></div>
-        <div
-          className="h-2 w-2 animate-bounce rounded-full bg-gray-400"
-          style={{ animationDelay: "0.1s" }}
-        ></div>
-        <div
-          className="h-2 w-2 animate-bounce rounded-full bg-gray-400"
-          style={{ animationDelay: "0.2s" }}
-        ></div>
+    <div className="flex gap-3">
+      <Avatar alt="AI Present Finder" className="mt-1 flex-shrink-0" />
+      <div className="flex animate-pulse items-center space-x-2 rounded-2xl bg-[#F5F1E8] px-5 py-3">
+        <div className="flex space-x-1">
+          <div className="bg-primary/60 size-2 animate-bounce rounded-full"></div>
+          <div
+            className="bg-primary/60 size-2 animate-bounce rounded-full"
+            style={{ animationDelay: "0.1s" }}
+          ></div>
+          <div
+            className="bg-primary/60 size-2 animate-bounce rounded-full"
+            style={{ animationDelay: "0.2s" }}
+          ></div>
+        </div>
+        <span className="text-muted-foreground text-sm">Thinking...</span>
       </div>
-      <span className="text-sm text-gray-500">Thinking...</span>
     </div>
   );
 }

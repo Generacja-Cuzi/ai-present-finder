@@ -36,17 +36,6 @@ module.exports = {
       },
     },
     {
-      name: "gift-microservice",
-      cwd: "./backend/gift-microservice",
-      script: "dist/backend/gift-microservice/src/main.js",
-      instances: 1,
-      exec_mode: "cluster",
-      env: {
-        NODE_ENV: "production",
-        PORT: process.env.GIFT_PORT || 3030,
-      },
-    },
-    {
       name: "gift-ideas-microservice",
       cwd: "./backend/gift-ideas-microservice",
       script: "dist/backend/gift-ideas-microservice/src/main.js",

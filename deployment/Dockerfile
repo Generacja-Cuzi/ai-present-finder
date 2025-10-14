@@ -14,8 +14,8 @@ COPY backend ./backend
 COPY core ./core
 
 # Install dependencies and build all services in one layer to optimize caching
-RUN pnpm install && \
-  pnpm run build
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
+RUN pnpm run build
 
 # Production stage
 FROM node:22-alpine

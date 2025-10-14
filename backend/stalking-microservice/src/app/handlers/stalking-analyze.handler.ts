@@ -1,12 +1,10 @@
 import { StalkingCompletedEvent } from "@core/events";
+import type { UserContent } from "ai";
 import { extractFacts } from "src/app/ai/flow";
 import { BrightDataService } from "src/app/services/brightdata.service";
 import type { ScrapeRequestItem } from "src/app/services/brightdata.service";
 import { StalkingAnalyzeCommand } from "src/domain/commands/stalking-analyze.command";
 import type { AnyProfileScrapeResult } from "src/domain/models/profile-scrape-result.model";
-import type { InstagramProfileResponse } from "src/domain/types/instagram.types";
-import type { TikTokProfileResponse } from "src/domain/types/tiktok.types";
-import type { XPostsResponse } from "src/domain/types/x-posts.types";
 
 import { Inject, Logger } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
@@ -43,12 +41,11 @@ export class StalkingAnalyzeHandler
     const event = new StalkingCompletedEvent(
       keywords,
       command.stalkingAnalyzeRequestDto.chatId,
-      profiles,
     );
 
     this.eventBus.emit(StalkingCompletedEvent.name, event);
     this.logger.log(
-      `Published StalkingCompletedEvent with ${keywords.length.toString()} keywords and ${profiles.length.toString()} profiles scraped.`,
+      `Published StalkingCompletedEvent with ${keywords.length.toString()} keywords.`,
     );
   }
 
@@ -113,10 +110,7 @@ export class StalkingAnalyzeHandler
       const { textSummary, imageUrls } = this.extractProfileContent(profile);
 
       // Build multimodal content array with text and images
-      const content: (
-        | { type: "text"; text: string }
-        | { type: "image"; image: string }
-      )[] = [
+      const content: UserContent = [
         {
           type: "text",
           text: `Analyze this social media profile and extract relevant facts for gift suggestions:\n\n${textSummary}`,
@@ -130,7 +124,7 @@ export class StalkingAnalyzeHandler
       for (const imageUrl of imagesToProcess) {
         content.push({
           type: "image",
-          image: imageUrl,
+          image: new URL(imageUrl),
         });
       }
 
@@ -146,6 +140,10 @@ export class StalkingAnalyzeHandler
         },
       });
 
+      this.logger.log(
+        `Extracted ${result.facts.length.toString()} facts from profile ${profile.url}`,
+        { detail: result.facts },
+      );
       return result.facts;
     } catch (error) {
       this.logger.error(
@@ -160,16 +158,14 @@ export class StalkingAnalyzeHandler
     textSummary: string;
     imageUrls: string[];
   } {
-    const { type, raw, url } = profile;
-
-    switch (type) {
+    switch (profile.type) {
       case "instagram": {
         // Instagram response is an array, take first account
-        const account = (raw as InstagramProfileResponse).at(0);
+        const account = profile.raw.at(0);
 
         if (account === undefined) {
           return {
-            textSummary: `Instagram Profile (${url}): No data available`,
+            textSummary: `Instagram Profile (${profile.url}): No data available`,
             imageUrls: [],
           };
         }
@@ -187,18 +183,18 @@ export class StalkingAnalyzeHandler
           ...account.posts.slice(0, 15).map((post) => post.image_url),
         ].filter(Boolean);
 
-        const textSummary = `Instagram Profile (${url}):\nName: ${fullName}\nBio: ${bio}\nRecent posts: ${posts}`;
+        const textSummary = `Instagram Profile (${profile.url}):\nName: ${fullName}\nBio: ${bio}\nRecent posts: ${posts}`;
 
         return { textSummary, imageUrls };
       }
       case "x": {
         // X response is an array of posts
-        const posts = (raw as XPostsResponse).slice(0, 10);
-        const userInfo = (raw as XPostsResponse).at(0);
+        const posts = profile.raw.slice(0, 10);
+        const userInfo = profile.raw.at(0);
 
         if (userInfo === undefined) {
           return {
-            textSummary: `X/Twitter Profile (${url}): No data available`,
+            textSummary: `X/Twitter Profile (${profile.url}): No data available`,
             imageUrls: [],
           };
         }
@@ -215,17 +211,17 @@ export class StalkingAnalyzeHandler
           ...posts.flatMap((post) => post.photos),
         ].filter(Boolean);
 
-        const textSummary = `X/Twitter Profile (${url}):\nName: ${name}\nBio: ${bio}\nRecent posts: ${descriptions}`;
+        const textSummary = `X/Twitter Profile (${profile.url}):\nName: ${name}\nBio: ${bio}\nRecent posts: ${descriptions}`;
 
         return { textSummary, imageUrls };
       }
       case "tiktok": {
         // TikTok response is an array, take first profile
-        const tikTokProfile = (raw as TikTokProfileResponse).at(0);
+        const tikTokProfile = profile.raw.at(0);
 
         if (tikTokProfile === undefined) {
           return {
-            textSummary: `TikTok Profile (${url}): No data available`,
+            textSummary: `TikTok Profile (${profile.url}): No data available`,
             imageUrls: [],
           };
         }
@@ -247,13 +243,14 @@ export class StalkingAnalyzeHandler
             .map((video) => video.cover_image),
         ].filter(Boolean);
 
-        const textSummary = `TikTok Profile (${url}):\nNickname: ${nickname}\nBio: ${bio}\nSignature: ${signature}\nTop posts: ${topPosts}`;
+        const textSummary = `TikTok Profile (${profile.url}):\nNickname: ${nickname}\nBio: ${bio}\nSignature: ${signature}\nTop posts: ${topPosts}`;
 
         return { textSummary, imageUrls };
       }
       default: {
-        // Exhaustive check - this should never be reached
-        throw new Error(`Unhandled profile type: ${type as string}`);
+        const _exhaustiveCheck: never = profile;
+        // @ts-expect-error - This is to ensure exhaustive checking
+        throw new Error(`Unhandled profile type: ${profile.type as string}`);
       }
     }
   }

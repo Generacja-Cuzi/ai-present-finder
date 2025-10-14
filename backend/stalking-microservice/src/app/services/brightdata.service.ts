@@ -147,7 +147,7 @@ export class BrightDataService {
     }
 
     const results: AnyProfileScrapeResult[] = [];
-    const settled = await Promise.allSettled(
+    const settled = await Promise.all(
       filteredItems.map(async (item) => {
         try {
           const scrapeResult = await this.scrapeSingle(item);
@@ -159,27 +159,19 @@ export class BrightDataService {
     );
 
     for (const outcome of settled) {
-      if (outcome.status === "fulfilled") {
-        const result = outcome.value;
-        if (result.success) {
-          if (result.scrapeResult != null) {
-            results.push(result.scrapeResult);
-          }
-        } else {
-          const error =
-            result.error instanceof Error
-              ? result.error
-              : new Error(String(result.error));
-          this.logger.error(
-            `Failed to scrape ${result.item.url}: ${error.message}`,
-            error.stack,
-          );
+      const result = outcome;
+      if (result.success) {
+        if (result.scrapeResult != null) {
+          results.push(result.scrapeResult);
         }
       } else {
-        // This shouldn't happen since we catch all errors
+        const error =
+          result.error instanceof Error
+            ? result.error
+            : new Error(String(result.error));
         this.logger.error(
-          "Unexpected rejection in Promise.allSettled",
-          outcome.reason,
+          `Failed to scrape ${result.item.url}: ${error.message}`,
+          error.stack,
         );
       }
     }

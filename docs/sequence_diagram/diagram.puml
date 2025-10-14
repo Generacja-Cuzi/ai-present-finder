@@ -15,7 +15,7 @@ end box
 participant "Reranking Service" as RERANK
 
 == Start sesji ==
-U -> REST: POST /stalking-request\n{chatId, social URLs}
+U -> REST: POST /restapi/stalking-request\n{chatId, social URLs}
 activate REST
 REST -> REST: **StartProcessingCommand**
 
@@ -34,7 +34,7 @@ loop Dopóki AI nie zdecyduje zakończyć lub niewłaściwe zachowanie usera
   CHAT --> REST: **ChatQuestionAskedEvent**\n{chatId, question}
   REST -> REST: **NotifyUserSseCommand**
   REST -> U: SSE: chatbot-message
-  U -> REST: POST /send-message\n{chatId, answer}
+  U -> REST: POST /restapi/send-message\n{chatId, messages}
   REST -> REST: **SendUserMessageCommand**
   REST -> REST: **NotifyUserSseCommand**
   REST -> U: SSE: chatbot-message\n(echo wiadomości użytkownika)
@@ -61,7 +61,7 @@ end
 deactivate CHAT
 
 == Zakończenie Stalkingu ==
-STALK -> GIFT: **StalkingCompletedEvent**\n{chatId, keywords}
+STALK -> GIFT: **StalkingCompletedEvent**\n{keywords, chatId, completedAt}
 deactivate STALK
 GIFT -> GIFT: **UpdateStalkingStatusCommand**\n(zapisz keywords, sprawdź czy wywiad gotowy)
 
@@ -69,10 +69,10 @@ GIFT -> GIFT: **UpdateStalkingStatusCommand**\n(zapisz keywords, sprawdź czy wy
 note over GIFT: Gdy oba eventy otrzymane
 
 alt Zarówno stalking jak i wywiad zakończone
-  GIFT -> GIFT: **GenerateGiftIdeasCommand**\n{profile, keywords, chatId}
+  GIFT -> GIFT: **GenerateGiftIdeasCommand**\n{userProfile, keywords, chatId}
   note right: AI generuje zapytania wyszukiwania\ndla wielu serwisów
   
-  GIFT -> RERANK: **GiftContextInitializedEvent**\n{profile, keywords, chatId, eventId, totalEvents}
+  GIFT -> RERANK: **GiftContextInitializedEvent**\n{userProfile, keywords, chatId, eventId, totalEvents}
   activate RERANK
  
   par Równoległe Żądania FETCH
@@ -96,13 +96,13 @@ deactivate GIFT
 == Zbieranie Produktów i Rerankowanie ==
 par Odpowiedzi od wszystkich serwisów
 else OLX
-  FETCH_OLX -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "olx", eventId, totalEvents}
+  FETCH_OLX -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "olx", success, eventId, totalEvents}
 else Allegro
-  FETCH_ALLEGRO -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "allegro", eventId, totalEvents}
+  FETCH_ALLEGRO -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "allegro", success, eventId, totalEvents}
 else eBay
-  FETCH_EBAY -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "ebay", eventId, totalEvents}
+  FETCH_EBAY -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "ebay", success, eventId, totalEvents}
 else Amazon
-  FETCH_AMAZON -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "amazon", eventId, totalEvents}
+  FETCH_AMAZON -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "amazon", success, eventId, totalEvents}
 end
 deactivate FETCH_OLX
 deactivate FETCH_ALLEGRO

@@ -18,20 +18,45 @@ import { GiftSession } from "../domain/entities/gift-session.entity";
     }),
     ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({
-      useFactory: (configService: ConfigService) => ({
-        type: "postgres" as const,
-        host: configService.get<string>("DATABASE_HOST"),
-        port: Number.parseInt(
-          configService.get<string>("DATABASE_PORT") ?? "",
-          10,
-        ),
-        username: configService.get<string>("DATABASE_USERNAME") ?? "",
-        password: configService.get<string>("DATABASE_PASSWORD") ?? "",
-        database: configService.get<string>("DATABASE_NAME") ?? "",
-        entities: [GiftSession],
-        synchronize: true, // Only for development
-        logging: false,
-      }),
+      useFactory: (configService: ConfigService) => {
+        // Parse DATABASE_URL if provided, otherwise fall back to individual vars
+        const databaseUrl = configService.get<string>("DATABASE_URL") ?? "";
+
+        if (databaseUrl.length > 0) {
+          const url = new URL(databaseUrl);
+          return {
+            type: "postgres" as const,
+            host: url.hostname,
+            port: Number.parseInt(url.port, 10) || 5432,
+            username: url.username,
+            password: url.password,
+            database: url.pathname.slice(1), // Remove leading '/'
+            entities: [GiftSession],
+            synchronize: true, // Only for development
+            logging: false,
+          };
+        }
+
+        // Fallback to individual environment variables
+        return {
+          type: "postgres" as const,
+          host: configService.get<string>("DATABASE_HOST") ?? "localhost",
+          port: Number.parseInt(
+            configService.get<string>("DATABASE_PORT") ?? "5432",
+            10,
+          ),
+          username:
+            configService.get<string>("DATABASE_USERNAME") ?? "reranking_user",
+          password:
+            configService.get<string>("DATABASE_PASSWORD") ??
+            "reranking_password",
+          database:
+            configService.get<string>("DATABASE_NAME") ?? "reranking_service",
+          entities: [GiftSession],
+          synchronize: true, // Only for development
+          logging: false,
+        };
+      },
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([GiftSession]),

@@ -19,24 +19,45 @@ import { TypeOrmModule } from "@nestjs/typeorm";
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
-      useFactory: (configService: ConfigService) => ({
-        type: "postgres" as const,
-        host: configService.get<string>("DATABASE_HOST") ?? "localhost",
-        port: Number.parseInt(
-          configService.get<string>("DATABASE_PORT") ?? "6096",
-          10,
-        ),
-        username:
-          configService.get<string>("DATABASE_USERNAME") ?? "gift_ideas_user",
-        password:
-          configService.get<string>("DATABASE_PASSWORD") ??
-          "gift_ideas_password",
-        database:
-          configService.get<string>("DATABASE_NAME") ?? "gift_ideas_service",
-        entities: [ChatSession],
-        synchronize: true, // Only for development
-        logging: false,
-      }),
+      useFactory: (configService: ConfigService) => {
+        // Parse DATABASE_URL if provided, otherwise fall back to individual vars
+        const databaseUrl = configService.get<string>("DATABASE_URL") ?? "";
+
+        if (databaseUrl.length > 0) {
+          const url = new URL(databaseUrl);
+          return {
+            type: "postgres" as const,
+            host: url.hostname,
+            port: Number.parseInt(url.port, 10) || 5432,
+            username: url.username,
+            password: url.password,
+            database: url.pathname.slice(1), // Remove leading '/'
+            entities: [ChatSession],
+            synchronize: true, // Only for development
+            logging: false,
+          };
+        }
+
+        // Fallback to individual environment variables
+        return {
+          type: "postgres" as const,
+          host: configService.get<string>("DATABASE_HOST") ?? "localhost",
+          port: Number.parseInt(
+            configService.get<string>("DATABASE_PORT") ?? "5432",
+            10,
+          ),
+          username:
+            configService.get<string>("DATABASE_USERNAME") ?? "gift_ideas_user",
+          password:
+            configService.get<string>("DATABASE_PASSWORD") ??
+            "gift_ideas_password",
+          database:
+            configService.get<string>("DATABASE_NAME") ?? "gift_ideas_service",
+          entities: [ChatSession],
+          synchronize: true, // Only for development
+          logging: false,
+        };
+      },
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([ChatSession]),

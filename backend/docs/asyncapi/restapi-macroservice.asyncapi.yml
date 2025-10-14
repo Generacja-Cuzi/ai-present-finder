@@ -205,21 +205,6 @@ components:
                     - assistant
                 content:
                   type: string
-    ChatQuestionAsked:
-      name: ChatQuestionAskedEvent
-      title: ChatQuestionAsked
-      summary: Question asked by chat service (forwarded to user via SSE).
-      contentType: application/json
-      payload:
-        type: object
-        required:
-          - chatId
-          - question
-        properties:
-          chatId:
-            type: string
-          question:
-            type: string
     ChatCompletedNotifyUser:
       name: ChatCompletedNotifyUserEvent
       title: ChatCompletedNotifyUser
@@ -232,50 +217,13 @@ components:
         properties:
           chatId:
             type: string
-    ChatInappropriateRequest:
-      name: ChatInappropriateRequestEvent
-      title: ChatInappropriateRequest
-      summary: Inappropriate behavior detected (forwarded to user via SSE).
-      contentType: application/json
-      payload:
-        type: object
-        required:
-          - reason
-          - chatId
-        properties:
-          reason:
-            type: string
-          chatId:
-            type: string
+
+    # zewnętrzne komunikaty z innych speców (PLIKI W TYM SAMYM KATALOGU!)
+    ChatQuestionAsked:
+      $ref: "./chat-microservice.asyncapi.yml#/components/messages/ChatQuestionAsked"
+    ChatInterviewCompleted:
+      $ref: "./chat-microservice.asyncapi.yml#/components/messages/ChatInterviewCompleted"
     GiftReady:
-      name: GiftReadyEvent
-      title: GiftReady
-      summary: Gift recommendations ready (forwarded to user via SSE).
-      contentType: application/json
-      payload:
-        type: object
-        required:
-          - chatId
-          - giftIdeas
-        properties:
-          giftIdeas:
-            type: array
-            items:
-              type: object
-              properties:
-                image:
-                  type: string
-                  format: uri
-                  nullable: true
-                title:
-                  type: string
-                description:
-                  type: string
-                link:
-                  type: string
-                  format: uri
-                price:
-                  type: object
-                  nullable: true
-          chatId:
-            type: string
+      $ref: "./gift-microservice.asyncapi.yml#/components/messages/GiftReady"
+    ChatInappropriateRequest:
+      $ref: "./chat-microservice.asyncapi.yml#/components/messages/ChatInappropriateRequest"

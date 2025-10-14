@@ -13,4 +13,8 @@ onlyBuiltDependencies:
   - "@nestjs/core"
   - "@swc/core"
   - "@tailwindcss/oxide"
+  - cpu-features
   - esbuild
+  - msw
+  - protobufjs
+  - ssh2

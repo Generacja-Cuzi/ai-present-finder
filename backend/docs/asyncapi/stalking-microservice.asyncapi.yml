@@ -104,4 +104,14 @@ components:
             description: Keywords and interests extracted from social media
           chatId:
             type: string
-            description: Unique identifier for the chat session
+          profiles:
+            type: array
+            items:
+              type: object
+              properties:
+                source: { type: string }
+                url: { type: string }
+                fetchedAt:
+                  type: string
+                  format: date-time
+                raw: {}

@@ -59,6 +59,7 @@ services:
       FETCH_ALLEGRO_PORT: 8012
       FETCH_EBAY_PORT: 8013
       FETCH_AMAZON_PORT: 8014
+      USE_MOCK_DATA: false
       SERVICE_FQDN_APP_3000: # Coolify FQDN magic variable for routing
     depends_on:
       rabbitmq:

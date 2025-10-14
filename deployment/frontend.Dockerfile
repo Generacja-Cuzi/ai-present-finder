@@ -7,7 +7,7 @@ RUN corepack enable && corepack prepare pnpm@10.0.0 --activate
 WORKDIR /app
 
 COPY . /app
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --filter=frontend --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --filter=frontend
 RUN pnpm run --filter=frontend build
 
 # Production stage

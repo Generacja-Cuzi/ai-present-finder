@@ -14,7 +14,7 @@ COPY backend ./backend
 COPY core ./core
 
 # Install dependencies and build all services in one layer to optimize caching
-RUN pnpm install --frozen-lockfile && \
+RUN pnpm install && \
   pnpm run build
 
 # Production stage

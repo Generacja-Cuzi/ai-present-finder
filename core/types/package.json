@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "description": "Core types package for AI Present Finder microservices",
-  "type": "module",
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist",

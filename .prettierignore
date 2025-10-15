@@ -1,3 +1,5 @@
 backend/docs/*
 frontend/src/routeTree.gen.ts
 *.openapi.json
+backend/**/*.openapi.json
+frontend/src/lib/api/types.ts

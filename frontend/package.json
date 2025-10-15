@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "gift-ai-client",
   "private": true,
   "type": "module",
   "scripts": {

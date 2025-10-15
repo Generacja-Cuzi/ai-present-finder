@@ -2,6 +2,7 @@ import { ChatMessage } from "@core/types";
 
 import { ApiProperty } from "@nestjs/swagger";
 
+// needed for swagger
 export class ChatMessageDto implements ChatMessage {
   @ApiProperty({
     description: "Unique message identifier",

@@ -124,13 +124,18 @@
             "description": "X (Twitter) profile URL",
             "example": "https://x.com/example"
           },
+          "occasion": {
+            "type": "string",
+            "description": "Occasion",
+            "example": "birthday"
+          },
           "chatId": {
             "type": "string",
             "description": "Chat identifier",
             "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           }
         },
-        "required": ["chatId"]
+        "required": ["occasion", "chatId"]
       },
       "ChatMessageDto": {
         "type": "object",

@@ -1,3 +1,5 @@
+import type { ListingDto } from "@core/types";
+
 export type GiftSearchingState =
   | {
       type: "searching";
@@ -5,19 +7,11 @@ export type GiftSearchingState =
   | {
       type: "ready";
       data: {
-        recommendations: Recommendation[];
+        giftIdeas: ListingDto[];
       };
     };
 
-export interface Recommendation {
-  id: string;
-  title: string;
-  description: string;
-  imageUrl?: string;
-  price?: number;
-}
-
 export interface GiftSearchingSseMessage {
-  type: "recommendation-ready";
-  recommendations: Recommendation[];
+  type: "gift-ready";
+  data: { giftIdeas: ListingDto[] };
 }

@@ -52,14 +52,7 @@ export class StalkingAnalyzeHandler
   private buildScrapeRequests(
     dto: StalkingAnalyzeCommand["stalkingAnalyzeRequestDto"],
   ): ScrapeRequestItem[] {
-    const urls = [
-      dto.facebookUrl,
-      dto.instagramUrl,
-      dto.tiktokUrl,
-      dto.youtubeUrl,
-      dto.xUrl,
-      dto.linkedinUrl,
-    ]
+    const urls = [dto.instagramUrl, dto.tiktokUrl, dto.xUrl]
       .filter((url): url is string => typeof url === "string")
       .map((url) => url.trim())
       .filter((url) => url.length > 0);

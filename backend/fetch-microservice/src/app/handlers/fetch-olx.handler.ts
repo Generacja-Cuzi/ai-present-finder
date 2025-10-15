@@ -222,7 +222,13 @@ export class FetchOlxHandler {
           : null;
 
         return {
-          image: item.photos?.[0]?.link ?? null,
+          image: (() => {
+            const link = item.photos?.[0]?.link;
+            if (typeof link === "string" && link.length > 0) {
+              return link.replace(/;s=.*$/, "");
+            }
+            return null;
+          })(),
           title: item.title ?? "",
           description: item.description ?? item.title ?? "",
           link: item.url ?? "",

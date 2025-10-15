@@ -1,24 +1,25 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
 import { Cron, CronExpression } from "@nestjs/schedule";
 
-import { EventTrackingService } from "./event-tracking.service";
-import { SessionCompletionService } from "./session-completion.service";
+import { EmitGiftReadyCommand } from "../../domain/commands/emit-gift-ready.command";
+import { MarkTimeoutSessionsCommand } from "../../domain/commands/mark-timeout-sessions.command";
 
 @Injectable()
 export class TimeoutSchedulerService {
   private readonly logger = new Logger(TimeoutSchedulerService.name);
 
-  constructor(
-    private readonly eventTrackingService: EventTrackingService,
-    private readonly sessionCompletionService: SessionCompletionService,
-  ) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   @Cron(CronExpression.EVERY_30_SECONDS)
   async handleTimeouts() {
     this.logger.debug("Checking for timed out events...");
 
     try {
-      const sessionIds = await this.eventTrackingService.markTimeoutEvents();
+      const sessionIds = await this.commandBus.execute<
+        MarkTimeoutSessionsCommand,
+        string[]
+      >(new MarkTimeoutSessionsCommand());
 
       if (sessionIds.length > 0) {
         this.logger.log(
@@ -26,7 +27,7 @@ export class TimeoutSchedulerService {
         );
 
         for (const sessionId of sessionIds) {
-          await this.sessionCompletionService.emitSessionProducts(sessionId);
+          await this.commandBus.execute(new EmitGiftReadyCommand(sessionId));
         }
       } else {
         this.logger.debug("No timed out events found");

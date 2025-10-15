@@ -26,10 +26,13 @@ export function StalkingView() {
 
       await sendRequest(
         {
-          instagramUrl: data.instagramUrl,
-          tiktokUrl: data.tiktokUrl,
-          xUrl: data.xUrl,
-          chatId: clientId,
+          body: {
+            instagramUrl: data.instagramUrl,
+            tiktokUrl: data.tiktokUrl,
+            xUrl: data.xUrl,
+            chatId: clientId,
+            occasion: data.occasion,
+          },
         },
         {
           onSuccess: () => {

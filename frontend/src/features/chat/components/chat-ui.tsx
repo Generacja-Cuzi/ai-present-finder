@@ -43,11 +43,13 @@ export function ChatUI({ clientId }: { clientId: string }) {
       throw new Error("Chat state is not chatting");
     }
     await sendMessage.mutateAsync({
-      messages: [
-        ...chatState.data.messages,
-        { id: uuidv4(), content: inputValue, sender: "user" },
-      ],
-      chatId: clientId,
+      body: {
+        messages: [
+          ...chatState.data.messages,
+          { id: uuidv4(), content: inputValue, sender: "user" },
+        ],
+        chatId: clientId,
+      },
     });
   };
 

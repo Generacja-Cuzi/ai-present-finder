@@ -23,9 +23,7 @@ export class GiftReadyHandler {
     await this.commandBus.execute(
       new NotifyUserSseCommand(event.chatId, {
         type: "gift-ready",
-        data: {
-          giftIdeas,
-        },
+        data: giftIdeas,
       }),
     );
   }

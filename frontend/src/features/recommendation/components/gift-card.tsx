@@ -1,4 +1,4 @@
-import type { ListingDto } from "@core/types";
+import type { ListingPayload } from "@core/types";
 import { Bookmark, Image as ImageIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -9,7 +9,7 @@ export function GiftCard({
   gift,
   provider,
 }: {
-  gift: ListingDto;
+  gift: ListingPayload;
   provider: string;
 }) {
   const [isBookmarked, setIsBookmarked] = useState(false);

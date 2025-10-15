@@ -143,7 +143,6 @@
           "id": {
             "type": "string",
             "description": "Unique message identifier",
-            "format": "uuid",
             "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           },
           "content": {
@@ -153,8 +152,8 @@
           },
           "sender": {
             "type": "string",
-            "enum": ["user", "assistant"],
             "description": "Message sender",
+            "enum": ["user", "assistant"],
             "example": "user"
           }
         },
@@ -187,13 +186,17 @@
             "example": "chatbot-message"
           },
           "message": {
-            "type": "object",
             "description": "Chat message from the bot",
             "example": {
               "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
               "content": "Hello!",
               "sender": "user"
-            }
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ChatMessageDto"
+              }
+            ]
           }
         },
         "required": ["type", "message"]
@@ -225,6 +228,72 @@
         },
         "required": ["type", "reason"]
       },
+      "PriceDto": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number",
+            "description": "Price value",
+            "example": 10
+          },
+          "label": {
+            "type": "string",
+            "description": "Price label",
+            "example": "10"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency",
+            "example": "USD"
+          },
+          "negotiable": {
+            "type": "boolean",
+            "description": "Whether price is negotiable",
+            "example": false
+          }
+        },
+        "required": ["value", "label", "currency", "negotiable"]
+      },
+      "ListingDto": {
+        "type": "object",
+        "properties": {
+          "image": {
+            "type": "string",
+            "description": "Image URL",
+            "example": "https://example.com/image.jpg"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title",
+            "example": "Book"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description",
+            "example": "Great book"
+          },
+          "link": {
+            "type": "string",
+            "description": "Link",
+            "example": "https://example.com/book"
+          },
+          "price": {
+            "description": "Price",
+            "example": {
+              "value": 10,
+              "label": "10",
+              "currency": "USD",
+              "negotiable": false
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PriceDto"
+              }
+            ]
+          }
+        },
+        "required": ["image", "title", "description", "link", "price"]
+      },
       "SseGiftReadyDto": {
         "type": "object",
         "properties": {
@@ -234,7 +303,6 @@
             "example": "gift-ready"
           },
           "data": {
-            "type": "object",
             "description": "Gift ideas payload",
             "example": {
               "giftIdeas": [
@@ -251,6 +319,10 @@
                   "link": "https://example.com/pen"
                 }
               ]
+            },
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListingDto"
             }
           }
         },

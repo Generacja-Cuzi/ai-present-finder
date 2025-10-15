@@ -20,7 +20,7 @@ export const useSseGiftSearching = ({ clientId }: { clientId: string }) => {
         return {
           type: "ready",
           data: {
-            recommendations: action.data.recommendations,
+            giftIdeas: action.data.data.giftIdeas,
           },
         };
       },

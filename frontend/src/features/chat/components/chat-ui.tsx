@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import { useSendMessage } from "../api/send-message";
@@ -6,13 +7,14 @@ import { useSseChat } from "../hooks/use-sse-chat";
 import { ChatHeader } from "./chat-header";
 import { ChatInput } from "./chat-input";
 import { ChatMessages } from "./chat-messages";
-import { NonChatIndicator } from "./non-chat-indicator";
+import { InappropriateRequestMessage } from "./inappropriate-request-message";
 
 export function ChatUI({ clientId }: { clientId: string }) {
   const { state: chatState } = useSseChat({
     clientId,
   });
   const sendMessage = useSendMessage();
+  const navigate = useNavigate();
 
   const [inputValue, setInputValue] = useState("");
 
@@ -21,6 +23,15 @@ export function ChatUI({ clientId }: { clientId: string }) {
     (chatState.type === "chatting" &&
       (chatState.data.messages.at(-1)?.sender === "user" ||
         chatState.data.messages.length === 0));
+
+  useEffect(() => {
+    if (chatState.type === "chat-interview-completed") {
+      void navigate({
+        to: "/gift-searching/$id",
+        params: { id: clientId },
+      });
+    }
+  }, [chatState.type, clientId, navigate]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isChatbotProcessing) {
@@ -40,11 +51,13 @@ export function ChatUI({ clientId }: { clientId: string }) {
     });
   };
 
-  if (chatState.type !== "chatting") {
-    return <NonChatIndicator state={chatState} />;
+  if (chatState.type === "chat-inappropriate-request") {
+    return <InappropriateRequestMessage reason={chatState.data.reason} />;
   }
 
-  const messages = chatState.data.messages;
+  // At this point, chatState.type must be "chatting" or "chat-interview-completed"
+
+  const messages = chatState.type === "chatting" ? chatState.data.messages : [];
   const currentStep = Math.min(messages.length, 10);
 
   return (

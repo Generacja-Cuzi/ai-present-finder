@@ -81,12 +81,9 @@ describe("Stalking Microservice (e2e)", () => {
       const instagramUrl = "https://instagram.com/testuser";
 
       const event = new StalkingAnalyzeRequestedEvent(
-        "", // facebookUrl
         instagramUrl, // instagramUrl
         "", // tiktokUrl
-        "", // youtubeUrl
         "", // xUrl
-        "", // linkedinUrl
         chatId, // chatId
       );
 

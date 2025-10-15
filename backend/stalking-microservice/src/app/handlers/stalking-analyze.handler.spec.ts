@@ -68,7 +68,6 @@ describe("StalkingAnalyzeHandler", () => {
     );
 
     const command = new StalkingAnalyzeCommand({
-      facebookUrl: " https://facebook.com/test ",
       instagramUrl: "https://instagram.com/runner",
       chatId: "chat-123",
     });
@@ -76,7 +75,6 @@ describe("StalkingAnalyzeHandler", () => {
     await handler.execute(command);
 
     expect(scrapeProfiles).toHaveBeenCalledWith([
-      { url: "https://facebook.com/test" },
       { url: "https://instagram.com/runner" },
     ]);
 

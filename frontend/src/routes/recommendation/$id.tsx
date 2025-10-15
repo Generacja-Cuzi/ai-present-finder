@@ -12,7 +12,7 @@ const priceSchema = z.object({
 });
 
 const listingDtoSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   title: z.string(),
   link: z.string(),
   price: priceSchema,

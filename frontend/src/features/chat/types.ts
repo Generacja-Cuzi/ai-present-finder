@@ -1,4 +1,4 @@
-import type { ChatMessage, ListingDto } from "@core/types";
+import type { ChatMessage } from "@core/types";
 
 /**
  * Chat-specific state type
@@ -10,8 +10,7 @@ export type ChatState =
         messages: ChatMessage[];
       };
     }
-  | { type: "waiting-for-gift-ideas" }
-  | { type: "gift-ready"; data: { giftIdeas: ListingDto[] } }
+  | { type: "chat-interview-completed" }
   | { type: "chat-inappropriate-request"; data: { reason: string } };
 
 /**
@@ -28,10 +27,6 @@ export type ChatSseMessage =
   | {
       type: "chat-inappropriate-request";
       reason: string;
-    }
-  | {
-      type: "gift-ready";
-      data: { giftIdeas: ListingDto[] };
     };
 
 // Re-export for backwards compatibility if needed

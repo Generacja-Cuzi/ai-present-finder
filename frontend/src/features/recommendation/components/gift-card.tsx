@@ -5,12 +5,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-interface GiftCardProps {
+export function GiftCard({
+  gift,
+  provider,
+}: {
   gift: ListingDto;
   provider: string;
-}
-
-export function GiftCard({ gift, provider }: GiftCardProps) {
+}) {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -28,7 +29,7 @@ export function GiftCard({ gift, provider }: GiftCardProps) {
           {provider}
         </div>
 
-        <button
+        <Button
           onClick={handleBookmark}
           className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-800/80 backdrop-blur-sm transition-colors hover:bg-gray-700/80"
           aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"}
@@ -36,7 +37,7 @@ export function GiftCard({ gift, provider }: GiftCardProps) {
           <Bookmark
             className={`h-4 w-4 ${isBookmarked ? "fill-white text-white" : "text-white"}`}
           />
-        </button>
+        </Button>
       </div>
 
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">

@@ -1,9 +1,11 @@
+/* eslint-disable unicorn/consistent-function-scoping */
 /* eslint-disable no-console */
 import type { ListingDto } from "@core/types";
 import { useState } from "react";
 
+import { Navbar } from "@/components/ui/navbar";
+
 import {
-  BottomNavigation,
   FilterButton,
   GiftCard,
   RecommendationHeader,
@@ -74,7 +76,7 @@ export function RecommendationView({ giftIdeas }: RecommendationViewProps) {
         )}
       </main>
 
-      <BottomNavigation />
+      <Navbar />
     </div>
   );
 }

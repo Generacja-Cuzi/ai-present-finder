@@ -2,12 +2,13 @@ import { ChevronDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-interface FilterButtonProps {
+export function FilterButton({
+  label,
+  onClick,
+}: {
   label: string;
   onClick: () => void;
-}
-
-export function FilterButton({ label, onClick }: FilterButtonProps) {
+}) {
   return (
     <Button
       variant="secondary"

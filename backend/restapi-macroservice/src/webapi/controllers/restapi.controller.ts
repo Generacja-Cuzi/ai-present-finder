@@ -6,7 +6,7 @@ import {
   StalkingAnalyzeRequestDto as StalkingAnalyzeRequestDtoDocument,
 } from "src/domain/models/stalking-analyze-request.dto";
 
-import { Body, Controller, Logger, Post } from "@nestjs/common";
+import { Body, Controller, Logger, Post, UseGuards } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import {
   ApiExtraModels,
@@ -14,6 +14,8 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
+
+import { JwtAuthGuard } from "../../app/guards/jwt-auth.guard";
 
 @ApiTags("restapi")
 @ApiExtraModels(StalkingAnalyzeRequestDtoDocument)
@@ -24,6 +26,7 @@ export class RestApiController {
   constructor(private readonly commandBus: CommandBus) {}
 
   @Post("stalking-request")
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: "Request stalking analysis for provided social profiles",
   })
@@ -37,6 +40,7 @@ export class RestApiController {
   }
 
   @Post("send-message")
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "Send chat messages to the system" })
   @ApiOkResponse({ description: "Message accepted" })
   async sendMessage(@Body() sendMessageDto: SendMessageDto): Promise<void> {

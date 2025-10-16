@@ -1,8 +1,9 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { GoogleService } from "./app/services/google-service";
 import { RestApiModule } from "./webapi/modules/restapi.module";
 
 @Module({
@@ -13,6 +14,6 @@ import { RestApiModule } from "./webapi/modules/restapi.module";
     RestApiModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, GoogleService, ConfigService],
 })
 export class AppModule {}

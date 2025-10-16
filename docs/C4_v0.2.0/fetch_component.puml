@@ -1,6 +1,8 @@
 @startuml C4_Component_Fetch
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
+LAYOUT_LEFT_RIGHT()
+
 Container_Boundary(fetch, "Fetch Microservice (NestJS)") {
   Component(allegro_handler, "FetchAllegroHandler", "NestJS Handler", "Handles FetchAllegroEvent from RabbitMQ")
   Component(amazon_handler, "FetchAmazonHandler", "NestJS Handler", "Handles FetchAmazonEvent from RabbitMQ")
@@ -8,31 +10,27 @@ Container_Boundary(fetch, "Fetch Microservice (NestJS)") {
   Component(olx_handler, "FetchOlxHandler", "NestJS Handler", "Handles FetchOlxEvent from RabbitMQ")
 }
 
-Component_Ext(rabbitmq_in_allegro, "RabbitMQ", "Message Broker", "FetchAllegroEvent queue")
-Component_Ext(rabbitmq_in_amazon, "RabbitMQ", "Message Broker", "FetchAmazonEvent queue")
-Component_Ext(rabbitmq_in_ebay, "RabbitMQ", "Message Broker", "FetchEbayEvent queue")
-Component_Ext(rabbitmq_in_olx, "RabbitMQ", "Message Broker", "FetchOlxEvent queue")
-Component_Ext(rabbitmq_out, "RabbitMQ", "Message Broker", "ProductFetchedEvent queue")
+Component_Ext(rabbitmq_in, "RabbitMQ In", "Message Broker", "Fetch*Event queues")
+Component_Ext(rabbitmq_out, "RabbitMQ Out", "Message Broker", "ProductFetchedEvent queue")
 Component_Ext(allegro_api, "Allegro API", "E-commerce API", "Product listings")
 Component_Ext(amazon_api, "Amazon API", "E-commerce API", "Product listings")
 Component_Ext(ebay_api, "eBay API", "E-commerce API", "Product listings")
 Component_Ext(olx_api, "OLX API", "E-commerce API", "Product listings")
 
-Rel(rabbitmq_in_allegro, allegro_handler, "Consumes event", "AMQP @EventPattern")
-Rel(allegro_handler, allegro_api, "Fetches products", "HTTPS/API")
-Rel(allegro_handler, rabbitmq_out, "Publishes ProductFetchedEvent", "AMQP ClientProxy.emit")
+Rel(rabbitmq_in, allegro_handler, "FetchAllegroEvent", "AMQP")
+Rel(rabbitmq_in, amazon_handler, "FetchAmazonEvent", "AMQP")
+Rel(rabbitmq_in, ebay_handler, "FetchEbayEvent", "AMQP")
+Rel(rabbitmq_in, olx_handler, "FetchOlxEvent", "AMQP")
 
-Rel(rabbitmq_in_amazon, amazon_handler, "Consumes event", "AMQP @EventPattern")
-Rel(amazon_handler, amazon_api, "Fetches products", "HTTPS/API")
-Rel(amazon_handler, rabbitmq_out, "Publishes ProductFetchedEvent", "AMQP ClientProxy.emit")
+Rel(allegro_handler, allegro_api, "Fetch", "HTTPS")
+Rel(amazon_handler, amazon_api, "Fetch", "HTTPS")
+Rel(ebay_handler, ebay_api, "Fetch", "HTTPS")
+Rel(olx_handler, olx_api, "Fetch", "HTTPS")
 
-Rel(rabbitmq_in_ebay, ebay_handler, "Consumes event", "AMQP @EventPattern")
-Rel(ebay_handler, ebay_api, "Fetches products", "HTTPS/API")
-Rel(ebay_handler, rabbitmq_out, "Publishes ProductFetchedEvent", "AMQP ClientProxy.emit")
-
-Rel(rabbitmq_in_olx, olx_handler, "Consumes event", "AMQP @EventPattern")
-Rel(olx_handler, olx_api, "Fetches products", "HTTPS/API")
-Rel(olx_handler, rabbitmq_out, "Publishes ProductFetchedEvent", "AMQP ClientProxy.emit")
+Rel(allegro_handler, rabbitmq_out, "ProductFetchedEvent", "AMQP")
+Rel(amazon_handler, rabbitmq_out, "ProductFetchedEvent", "AMQP")
+Rel(ebay_handler, rabbitmq_out, "ProductFetchedEvent", "AMQP")
+Rel(olx_handler, rabbitmq_out, "ProductFetchedEvent", "AMQP")
 
 SHOW_LEGEND()
 @enduml

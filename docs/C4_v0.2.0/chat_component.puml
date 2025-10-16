@@ -5,7 +5,10 @@ Container_Boundary(chat, "Chat Microservice (NestJS)") {
   Component(start_handler, "ChatStartInterviewHandler", "NestJS Handler", "Handles ChatStartInterviewEvent from RabbitMQ")
   Component(answer_handler, "ChatUserAnsweredHandler", "NestJS Handler", "Handles ChatUserAnsweredEvent from RabbitMQ")
   Component(question_handler, "GenerateQuestionHandler", "CQRS Command Handler", "Generates interview questions")
+  Component(set_occasion_handler, "SetOccasionHandler", "CQRS Command Handler", "Stores occasion for chat session")
+  Component(get_occasion_handler, "GetOccasionHandler", "CQRS Query Handler", "Retrieves occasion for chat session")
   Component(ai_flow, "AI Flow Service", "ai-sdk + OpenAI", "Uses OpenAI to generate contextual interview questions")
+  Component(chat_session_db, "ChatSession", "TypeORM Entity", "Stores chat session data including occasion")
 }
 
 Component_Ext(rabbitmq_in_start, "RabbitMQ", "Message Broker", "ChatStartInterviewEvent queue")
@@ -25,6 +28,9 @@ Rel(rabbitmq_in_answer, answer_handler, "Consumes event", "AMQP @EventPattern")
 Rel(answer_handler, question_handler, "Dispatches command", "CQRS CommandBus")
 Rel(answer_handler, rabbitmq_out_completed, "Publishes ChatInterviewCompletedEvent", "AMQP ClientProxy.emit")
 Rel(answer_handler, rabbitmq_out_inappropriate, "Publishes ChatInappropriateRequestEvent", "AMQP ClientProxy.emit")
+
+Rel(set_occasion_handler, chat_session_db, "Stores occasion", "TypeORM")
+Rel(get_occasion_handler, chat_session_db, "Retrieves occasion", "TypeORM")
 
 SHOW_LEGEND()
 @enduml

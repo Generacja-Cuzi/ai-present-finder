@@ -35,10 +35,10 @@ Rel(rabbitmq, rest_api, "Consumes events", "AMQP")
 
 ' Stalking flow
 Rel(rabbitmq, stalking_svc, "StalkingAnalyzeRequestedEvent", "AMQP")
-Rel(stalking_svc, brightdata, "Scrapes via", "HTTPS")
-Rel(stalking_svc, instagram, "Extracts data", "via BrightData")
-Rel(stalking_svc, tiktok, "Extracts data", "via BrightData")
-Rel(stalking_svc, x, "Extracts data", "via BrightData")
+Rel(stalking_svc, brightdata, "Requests scraping", "HTTPS")
+Rel(brightdata, instagram, "Scrapes", "HTTPS")
+Rel(brightdata, tiktok, "Scrapes", "HTTPS")
+Rel(brightdata, x, "Scrapes", "HTTPS")
 Rel(stalking_svc, openai, "Analyzes content", "HTTPS")
 Rel(stalking_svc, rabbitmq, "StalkingCompletedEvent", "AMQP")
 

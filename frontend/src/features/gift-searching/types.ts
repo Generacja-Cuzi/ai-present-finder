@@ -1,4 +1,6 @@
-import type { ListingDto } from "@core/types";
+import type { ListingPayload } from "@core/types";
+
+import type { components } from "@/lib/api/types";
 
 export type GiftSearchingState =
   | {
@@ -7,11 +9,8 @@ export type GiftSearchingState =
   | {
       type: "ready";
       data: {
-        giftIdeas: ListingDto[];
+        giftIdeas: ListingPayload[];
       };
     };
 
-export interface GiftSearchingSseMessage {
-  type: "gift-ready";
-  data: { giftIdeas: ListingDto[] };
-}
+export type SseGiftReadyDto = components["schemas"]["SseGiftReadyDto"];

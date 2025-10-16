@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import { SSE_EVENTS, useSse } from "@/lib/sse";
 
-import type { GiftSearchingSseMessage, GiftSearchingState } from "../types";
+import type { GiftSearchingState, SseGiftReadyDto } from "../types";
 
 export const useSseGiftSearching = ({ clientId }: { clientId: string }) => {
   const initialState: GiftSearchingState = useMemo(
@@ -12,7 +12,7 @@ export const useSseGiftSearching = ({ clientId }: { clientId: string }) => {
     [],
   );
 
-  const state = useSse<GiftSearchingState, GiftSearchingSseMessage>(
+  const state = useSse<GiftSearchingState, SseGiftReadyDto>(
     SSE_EVENTS.UI_UPDATE,
     initialState,
     {
@@ -20,7 +20,7 @@ export const useSseGiftSearching = ({ clientId }: { clientId: string }) => {
         return {
           type: "ready",
           data: {
-            giftIdeas: action.data.data.giftIdeas,
+            giftIdeas: action.data.data,
           },
         };
       },

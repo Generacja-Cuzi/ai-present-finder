@@ -1,4 +1,4 @@
-import type { ListingDto } from "@core/types";
+import type { ListingPayload } from "@core/types";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
@@ -18,7 +18,7 @@ const listingDtoSchema = z.object({
   price: priceSchema,
   image: z.string().nullable(),
   description: z.string(),
-}) satisfies z.ZodType<ListingDto>;
+}) satisfies z.ZodType<ListingPayload>;
 
 const locationStateSchema = z.object({
   giftIdeas: z.array(listingDtoSchema).optional(),

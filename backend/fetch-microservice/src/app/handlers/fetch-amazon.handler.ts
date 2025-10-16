@@ -1,5 +1,5 @@
 import { FetchAmazonEvent, ProductFetchedEvent } from "@core/events";
-import { ListingDto } from "@core/types";
+import { ListingPayload } from "@core/types";
 
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -108,7 +108,7 @@ export class FetchAmazonHandler {
 
   private async fetchAmazonProducts(
     event: FetchAmazonEvent,
-  ): Promise<ListingDto[]> {
+  ): Promise<ListingPayload[]> {
     const { query, limit, offset, country, page } = event;
     let attempt = 0;
 
@@ -135,7 +135,7 @@ export class FetchAmazonHandler {
         const items = data.data.products ?? [];
         const paginatedItems = items.slice(offset, offset + limit);
 
-        const listings: ListingDto[] = paginatedItems.map((item) => {
+        const listings: ListingPayload[] = paginatedItems.map((item) => {
           return {
             image: item.product_photo ?? null,
             title: item.product_title ?? "",
@@ -147,7 +147,7 @@ export class FetchAmazonHandler {
               currency: item.currency ?? "PLN",
               negotiable: false,
             },
-          } as ListingDto;
+          } as ListingPayload;
         });
 
         this.logger.log(

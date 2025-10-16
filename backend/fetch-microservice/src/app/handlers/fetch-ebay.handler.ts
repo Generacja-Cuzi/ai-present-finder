@@ -1,5 +1,5 @@
 import { FetchEbayEvent, ProductFetchedEvent } from "@core/events";
-import { ListingDto } from "@core/types";
+import { ListingPayload } from "@core/types";
 
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -196,7 +196,7 @@ export class FetchEbayHandler {
     return response.json() as Promise<EbaySearchResponse>;
   }
 
-  private processEbayResponse(data: EbaySearchResponse): ListingDto[] {
+  private processEbayResponse(data: EbaySearchResponse): ListingPayload[] {
     const items = data.itemSummaries ?? [];
 
     return items
@@ -225,13 +225,13 @@ export class FetchEbayHandler {
             currency: priceInfo.currency ?? null,
             negotiable: false, // eBay prices are typically fixed
           },
-        } satisfies ListingDto;
+        } satisfies ListingPayload;
       });
   }
 
   private async fetchEbayProducts(
     event: FetchEbayEvent,
-  ): Promise<ListingDto[]> {
+  ): Promise<ListingPayload[]> {
     const { query, limit, offset } = event;
     let attempt = 0;
 

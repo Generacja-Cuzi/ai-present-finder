@@ -1,5 +1,5 @@
 import { GiftReadyEvent } from "@core/events";
-import type { ListingDto } from "@core/types";
+import type { ListingPayload } from "@core/types";
 import { Repository } from "typeorm";
 
 import { Inject, Injectable, Logger } from "@nestjs/common";
@@ -12,7 +12,7 @@ import { GiftSession } from "../../domain/entities/gift-session.entity";
 export class SessionCompletionService {
   private readonly logger = new Logger(SessionCompletionService.name);
 
-  private readonly sessionProducts = new Map<string, ListingDto[]>();
+  private readonly sessionProducts = new Map<string, ListingPayload[]>();
 
   constructor(
     @Inject("GIFT_READY_EVENT") private readonly giftReadyEventBus: ClientProxy,
@@ -20,7 +20,7 @@ export class SessionCompletionService {
     private readonly giftSessionRepository: Repository<GiftSession>,
   ) {}
 
-  addProductsToSession(eventId: string, products: ListingDto[]): void {
+  addProductsToSession(eventId: string, products: ListingPayload[]): void {
     const existingProducts = this.sessionProducts.get(eventId) ?? [];
     existingProducts.push(...products);
     this.sessionProducts.set(eventId, existingProducts);

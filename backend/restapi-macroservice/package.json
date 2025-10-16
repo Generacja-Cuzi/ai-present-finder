@@ -9,6 +9,7 @@
     "build": "nest build",
     "dev": "nest start --watch",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "generate:openapi": "ts-node -r tsconfig-paths/register scripts/generate-openapi.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "start": "nest start",
     "start:debug": "nest start --debug --watch",
@@ -70,6 +71,7 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
+    "@nestjs/platform-fastify": "^11.1.6",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
     "@solvro/config": "^2.0.7",

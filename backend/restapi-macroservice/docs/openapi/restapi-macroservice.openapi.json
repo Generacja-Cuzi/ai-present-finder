@@ -23,6 +23,28 @@
         ]
       }
     },
+    "/health": {
+      "get": {
+        "operationId": "AppController_health",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns service health status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Health check endpoint",
+        "tags": [
+          "Gift"
+        ]
+      }
+    },
     "/restapi/stalking-request": {
       "post": {
         "operationId": "RestApiController_create",

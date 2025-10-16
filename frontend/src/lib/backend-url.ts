@@ -17,5 +17,10 @@ export function getBackendUrl() {
     | undefined;
   const url: string = runtimeUrl ?? buildTimeUrl ?? "http://localhost:3000";
 
-  return z.string().trim().parse(url);
+  const result = z.url().safeParse(url);
+  if (!result.success) {
+    console.warn("Invalid backend URL:", url, "falling back to default");
+    return "http://localhost:3000";
+  }
+  return result.data;
 }

@@ -564,10 +564,10 @@ docker exec -it <container-name> sh
 
 ```bash
 # All services
-docker-compose -f deployment/docker-compose.prod.yml logs -f
+docker compose -f deployment/docker-compose.prod.yml logs -f
 
 # Specific service
-docker-compose -f deployment/docker-compose.prod.yml logs -f app
+docker compose -f deployment/docker-compose.prod.yml logs -f app
 ```
 
 ### Check Container Health
@@ -672,7 +672,7 @@ If everything is broken:
 1. **Stop all services**
 
    ```bash
-   docker-compose -f docker-compose.prod.yml down
+   docker compose -f deployment/docker-compose.prod.yml down
    ```
 
 2. **Backup data**
@@ -684,7 +684,7 @@ If everything is broken:
 3. **Clean slate**
 
    ```bash
-   docker-compose -f docker-compose.prod.yml down -v
+   docker compose -f deployment/docker-compose.prod.yml down -v
    docker system prune -a
    ```
 

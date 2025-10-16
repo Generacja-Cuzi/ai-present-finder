@@ -47,6 +47,5 @@ docs
 private_key
 
 # Docker
-Dockerfile
-docker-compose*.yml
-.dockerignore
+# Keep Docker files in context to avoid build surprises
+# (no ignores here)

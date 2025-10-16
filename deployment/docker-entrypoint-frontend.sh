@@ -10,7 +10,7 @@ echo "API_URL: $API_URL"
 # Create runtime config file
 cat > /usr/share/nginx/html/config.js <<EOF
 window.__RUNTIME_CONFIG__ = {
-  apiUrl: "${API_URL}"
+  apiUrl: "$(printf '%s' "${API_URL}" | sed 's/"/\\"/g')"
 };
 EOF
 

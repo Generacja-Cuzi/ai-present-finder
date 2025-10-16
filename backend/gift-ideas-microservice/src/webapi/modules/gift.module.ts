@@ -33,7 +33,9 @@ import { TypeOrmModule } from "@nestjs/typeorm";
             password: url.password,
             database: url.pathname.slice(1), // Remove leading '/'
             entities: [ChatSession],
-            synchronize: true, // Only for development
+            // Never enable in production; opt-in via env
+            synchronize:
+              configService.get<string>("TYPEORM_SYNCHRONIZE") === "true",
             logging: false,
           };
         }

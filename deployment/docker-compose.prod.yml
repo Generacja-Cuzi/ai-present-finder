@@ -2,6 +2,7 @@ services:
   # Infrastructure Services
   rabbitmq:
     image: rabbitmq:3.12-management
+    restart: unless-stopped
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:?}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:?}
@@ -16,6 +17,7 @@ services:
   # Single PostgreSQL instance with multiple databases
   postgres:
     image: postgres:16
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
@@ -35,6 +37,7 @@ services:
     build:
       context: ..
       dockerfile: ./deployment/Dockerfile
+    restart: unless-stopped
     environment:
       NODE_ENV: production
       # RabbitMQ - Construct URL from required credentials or use provided URL
@@ -74,6 +77,7 @@ services:
       dockerfile: ./deployment/frontend.Dockerfile
       args:
         VITE_BACKEND_URL: ${VITE_BACKEND_URL:-http://localhost:3000}
+    restart: unless-stopped
     environment:
       NODE_ENV: production
       # Runtime API URL configuration - Coolify will set SERVICE_URL_APP

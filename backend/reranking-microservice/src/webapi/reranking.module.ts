@@ -32,7 +32,9 @@ import { GiftSession } from "../domain/entities/gift-session.entity";
             password: url.password,
             database: url.pathname.slice(1), // Remove leading '/'
             entities: [GiftSession],
-            synchronize: true, // Only for development
+            // Never enable in production; opt-in via env
+            synchronize:
+              configService.get<string>("TYPEORM_SYNCHRONIZE") === "true",
             logging: false,
           };
         }

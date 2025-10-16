@@ -26,6 +26,9 @@ FROM nginx:alpine
 # Copy built files to nginx
 COPY --from=builder /app/frontend/dist /usr/share/nginx/html
 
+# Ensure nginx user owns the html directory
+RUN chown -R nginx:nginx /usr/share/nginx/html
+
 # Copy nginx configuration
 COPY deployment/nginx.conf /etc/nginx/conf.d/default.conf
 
@@ -35,9 +38,6 @@ RUN chmod +x /docker-entrypoint-frontend.sh
 
 # Expose port 80
 EXPOSE 80
-
-# Switch to nginx user for security
-USER nginx
 
 # Health check - use 127.0.0.1 to ensure IPv4
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \

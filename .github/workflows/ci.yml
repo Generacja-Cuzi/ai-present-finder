@@ -189,15 +189,15 @@ jobs:
           # Start the frontend container briefly to test it starts
           docker run --rm -d --name test-frontend -p 8080:80 ai-present-finder-frontend:test
           # Wait a moment for startup
-          sleep 5
+          sleep 10
           # Check if container is still running (not crashed)
           if docker ps | grep -q test-frontend; then
             echo "✅ Frontend container started successfully"
-            # Test that nginx is responding
-            if curl -f http://localhost:8080 > /dev/null 2>&1; then
-              echo "✅ Frontend HTTP endpoint responding"
+            # Test that nginx health endpoint is responding
+            if curl -f http://localhost:8080/health > /dev/null 2>&1; then
+              echo "✅ Frontend HTTP health endpoint responding"
             else
-              echo "❌ Frontend HTTP endpoint not responding"
+              echo "❌ Frontend HTTP health endpoint not responding"
               docker logs test-frontend
               exit 1
             fi

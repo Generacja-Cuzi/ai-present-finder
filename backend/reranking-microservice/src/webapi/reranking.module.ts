@@ -14,7 +14,9 @@ import { InitializeGiftContextHandler } from "../app/handlers/initialize-gift-co
 import { MarkTimeoutSessionsHandler } from "../app/handlers/mark-timeout-sessions.handler";
 import { ProductFetchedHandler } from "../app/handlers/product-fetched.handler";
 import { TimeoutSchedulerService } from "../app/services/timeout-scheduler.service";
+import { GiftSessionProduct } from "../domain/entities/gift-session-product.entity";
 import { GiftSession } from "../domain/entities/gift-session.entity";
+import { Product } from "../domain/entities/product.entity";
 
 const CommandHandlers = [
   CreateSessionHandler,
@@ -43,13 +45,13 @@ const CommandHandlers = [
         username: configService.get<string>("DATABASE_USERNAME") ?? "",
         password: configService.get<string>("DATABASE_PASSWORD") ?? "",
         database: configService.get<string>("DATABASE_NAME") ?? "",
-        entities: [GiftSession],
+        entities: [GiftSession, GiftSessionProduct, Product],
         synchronize: true, // Only for development
         logging: false,
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([GiftSession]),
+    TypeOrmModule.forFeature([GiftSession, GiftSessionProduct, Product]),
     ClientsModule.register([
       {
         name: "GIFT_READY_EVENT",

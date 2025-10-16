@@ -1,4 +1,5 @@
 import { GiftReadyEvent } from "@core/events";
+import type { ListingDto } from "@core/types";
 import { Repository } from "typeorm";
 
 import { Inject, Logger } from "@nestjs/common";
@@ -7,8 +8,8 @@ import { ClientProxy } from "@nestjs/microservices";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { EmitGiftReadyCommand } from "../../domain/commands/emit-gift-ready.command";
+import { GiftSessionProduct } from "../../domain/entities/gift-session-product.entity";
 import { GiftSession } from "../../domain/entities/gift-session.entity";
-import { AddProductsToSessionHandler } from "./add-products-to-session.handler";
 
 @CommandHandler(EmitGiftReadyCommand)
 export class EmitGiftReadyHandler
@@ -20,13 +21,12 @@ export class EmitGiftReadyHandler
     @Inject("GIFT_READY_EVENT") private readonly giftReadyEventBus: ClientProxy,
     @InjectRepository(GiftSession)
     private readonly giftSessionRepository: Repository<GiftSession>,
-    private readonly productsHandler: AddProductsToSessionHandler,
+    @InjectRepository(GiftSessionProduct)
+    private readonly giftSessionProductRepository: Repository<GiftSessionProduct>,
   ) {}
 
   async execute(command: EmitGiftReadyCommand): Promise<void> {
     const { eventId } = command;
-
-    const allProducts = this.productsHandler.getSessionProducts(eventId);
 
     const session = await this.giftSessionRepository.findOne({
       where: { eventId },
@@ -36,6 +36,25 @@ export class EmitGiftReadyHandler
       this.logger.error(`Session ${eventId} not found in database`);
       return;
     }
+
+    const productRows = await this.giftSessionProductRepository.find({
+      where: { session: { eventId } },
+      relations: ["product"],
+      order: { createdAt: "ASC" },
+    });
+
+    const allProducts = productRows.map((row) => ({
+      image: row.product.image,
+      title: row.product.title,
+      description: row.product.description,
+      link: row.product.link,
+      price: {
+        value: row.product.priceValue,
+        label: row.product.priceLabel,
+        currency: row.product.priceCurrency,
+        negotiable: row.product.priceNegotiable,
+      },
+    })) satisfies ListingDto[];
 
     const chatId = session.chatId;
 
@@ -53,7 +72,5 @@ export class EmitGiftReadyHandler
       const giftReadyEvent = new GiftReadyEvent([], chatId);
       this.giftReadyEventBus.emit(GiftReadyEvent.name, giftReadyEvent);
     }
-
-    this.productsHandler.clearSessionProducts(eventId);
   }
 }

@@ -27,7 +27,13 @@ export class ProductFetchedHandler {
     );
 
     await this.commandBus.execute(
-      new AddProductsToSessionCommand(eventId, event.products),
+      new AddProductsToSessionCommand(
+        eventId,
+        event.products,
+        ProductFetchedEvent.name,
+        event.provider,
+        event.success,
+      ),
     );
 
     const { completed } = await this.commandBus.execute<

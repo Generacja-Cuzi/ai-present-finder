@@ -7,17 +7,20 @@ This document summarizes the changes made to the C4 architecture diagrams to ref
 ### Microservices Architecture
 
 **Added (New in v0.1.0):**
+
 - **Fetch Microservice** - Dedicated service for fetching products from multiple e-commerce providers
 - **Reranking Microservice** - Aggregates and reranks products from all providers
 - **Component diagrams** - 6 detailed component diagrams for all major services
 
 **Updated:**
+
 - **Gift Microservice** → **Gift Ideas Microservice** - Clarified name and responsibilities
 - **REST API Macroservice** - Added SSE (Server-Sent Events) for real-time updates
 
 ### External Systems
 
 **Removed:**
+
 - Temu - Not used in current implementation
 - AliExpress - Not used in current implementation
 - Facebook - Not currently scraped
@@ -26,16 +29,19 @@ This document summarizes the changes made to the C4 architecture diagrams to ref
 - Threads - Not currently scraped
 
 **Updated:**
+
 - **LLM Integration** - Unified as OpenAI (was split into Chatbot LLM, Vision LLM, Gift LLM)
 - **Scraping** - Explicitly shows BrightData as the scraping proxy service
 
 **Current Providers:**
+
 - Allegro ✓
 - Amazon ✓ (disabled in production but code exists)
 - eBay ✓
 - OLX ✓
 
 **Current Social Platforms:**
+
 - Instagram ✓
 - TikTok ✓
 - X (Twitter) ✓
@@ -43,15 +49,18 @@ This document summarizes the changes made to the C4 architecture diagrams to ref
 ### Technology Stack Corrections
 
 **Frontend:**
+
 - ~~Next.js~~ → **React + Vite** (correct as per actual implementation)
 
 **Communication:**
+
 - Added **RabbitMQ** as central message broker for event-driven architecture
 - Added **SSE** for real-time user notifications
 
 ### Architecture Pattern
 
 **Event-Driven with CQRS:**
+
 - All microservices communicate via RabbitMQ events
 - Queue names equal event class names
 - Events defined in shared `core/events` workspace
@@ -85,14 +94,14 @@ This document summarizes the changes made to the C4 architecture diagrams to ref
 
 ## Service Ports
 
-| Service | Port | HTTP Exposed |
-|---------|------|--------------|
-| REST API Macroservice | 3000 | ✓ |
-| Stalking Microservice | 3010 | ✓ (Swagger) |
-| Chat Microservice | 3020 | ✓ (Swagger) |
-| Gift Ideas Microservice | 3030 | ✓ (Swagger) |
-| Reranking Microservice | 3091 | ✓ (Swagger) |
-| Fetch Microservice | - | ✗ (RabbitMQ only) |
+| Service                 | Port | HTTP Exposed      |
+| ----------------------- | ---- | ----------------- |
+| REST API Macroservice   | 3000 | ✓                 |
+| Stalking Microservice   | 3010 | ✓ (Swagger)       |
+| Chat Microservice       | 3020 | ✓ (Swagger)       |
+| Gift Ideas Microservice | 3030 | ✓ (Swagger)       |
+| Reranking Microservice  | 3091 | ✓ (Swagger)       |
+| Fetch Microservice      | -    | ✗ (RabbitMQ only) |
 
 ## Files Updated
 

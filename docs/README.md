@@ -17,6 +17,7 @@ C4 architecture diagrams document the system structure at different levels of de
 [View C4 v0.1.0 Documentation →](./C4_v0.1.0/README.md)
 
 **Previous Versions:**
+
 - [C4_v0.0.1](./C4_v0.0.1/) - Initial architecture (outdated)
 
 ## 📊 Other Documentation

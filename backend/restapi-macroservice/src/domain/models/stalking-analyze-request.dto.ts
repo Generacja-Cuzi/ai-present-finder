@@ -23,6 +23,13 @@ export class StalkingAnalyzeRequestDto {
   xUrl: string;
 
   @ApiProperty({
+    description: "Occasion",
+    example: "birthday",
+    required: true,
+  })
+  occasion: string;
+
+  @ApiProperty({
     description: "Chat identifier",
     example: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   })

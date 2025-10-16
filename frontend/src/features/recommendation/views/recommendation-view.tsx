@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/consistent-function-scoping */
 /* eslint-disable no-console */
-import type { ListingDto } from "@core/types";
+import type { ListingPayload } from "@core/types";
 import { useState } from "react";
 
 import { Navbar } from "@/components/ui/navbar";
@@ -14,7 +14,7 @@ import {
 
 interface RecommendationViewProps {
   clientId: string;
-  giftIdeas: ListingDto[];
+  giftIdeas: ListingPayload[];
 }
 
 export function RecommendationView({ giftIdeas }: RecommendationViewProps) {

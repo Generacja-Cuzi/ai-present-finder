@@ -1,5 +1,7 @@
 import type { ChatMessage } from "@core/types";
 
+import type { components } from "@/lib/api/types";
+
 /**
  * Chat-specific state type
  */
@@ -17,17 +19,6 @@ export type ChatState =
  * Chat-specific SSE message types
  */
 export type ChatSseMessage =
-  | {
-      type: "chatbot-message";
-      message: ChatMessage;
-    }
-  | {
-      type: "chat-interview-completed";
-    }
-  | {
-      type: "chat-inappropriate-request";
-      reason: string;
-    };
-
-// Re-export for backwards compatibility if needed
-export type { SseMessageDto } from "../../../../backend/restapi-macroservice/src/domain/models/sse-message.dto";
+  | components["schemas"]["SseChatbotMessageDto"]
+  | components["schemas"]["SseChatInterviewCompletedDto"]
+  | components["schemas"]["SseChatInappropriateRequestDto"];

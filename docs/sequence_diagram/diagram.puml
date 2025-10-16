@@ -15,7 +15,7 @@ end box
 participant "Reranking Service" as RERANK
 
 == Start sesji ==
-U -> REST: POST /restapi/stalking-request\n{chatId, social URLs}
+U -> REST: POST /restapi/stalking-request\n{chatId, social URLs, occasion}
 activate REST
 REST -> REST: **StartProcessingCommand**
 

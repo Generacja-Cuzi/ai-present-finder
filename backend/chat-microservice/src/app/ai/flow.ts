@@ -8,10 +8,12 @@ import { getTools } from "./tools";
 import type { EndConversationOutput } from "./types";
 
 export async function giftInterviewFlow({
+  occasion,
   messages,
   closeInterview,
   flagInappropriateRequest,
 }: {
+  occasion: string;
   messages: ModelMessage[];
   closeInterview: (output: EndConversationOutput) => void;
   flagInappropriateRequest: (reason: string) => void;
@@ -19,7 +21,7 @@ export async function giftInterviewFlow({
   return generateText({
     model: openai("gpt-5-nano"),
     messages,
-    system: giftConsultantPrompt,
+    system: giftConsultantPrompt(occasion),
     stopWhen: stepCountIs(5),
     tools: getTools(closeInterview, flagInappropriateRequest),
   });

@@ -24,8 +24,9 @@ par Przetwarzanie Równoległe
   activate STALK
   STALK -> STALK: **StalkingAnalyzeCommand**\n(analiza profili social media)
 else
-  REST -> CHAT: **ChatStartInterviewEvent**\n{chatId}
+  REST -> CHAT: **ChatStartInterviewEvent**\n{chatId, occasion}
   activate CHAT
+  CHAT -> CHAT: **SetOccasionCommand**\n{chatId, occasion}
 end
 
 == Interview loop ==
@@ -39,6 +40,7 @@ loop Dopóki AI nie zdecyduje zakończyć lub niewłaściwe zachowanie usera
   REST -> REST: **NotifyUserSseCommand**
   REST -> U: SSE: chatbot-message\n(echo wiadomości użytkownika)
   REST -> CHAT: **ChatUserAnsweredEvent**\n{chatId, messages}
+  CHAT -> CHAT: **GetOccasionQuery**\n{chatId}
 end
 
 alt Wywiad zakończony pomyślnie

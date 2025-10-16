@@ -43,6 +43,7 @@ export class StartProcessingCommandHandler
 
     const interviewEvent = new ChatStartInterviewEvent(
       analyzeRequestedDto.chatId,
+      analyzeRequestedDto.occasion,
     );
     this.chatEventBus.emit(ChatStartInterviewEvent.name, interviewEvent);
     this.logger.log(

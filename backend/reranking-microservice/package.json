@@ -48,7 +48,7 @@
     "@nestjs/cqrs": "^11.0.3",
     "@nestjs/microservices": "^11.0.13",
     "@nestjs/platform-express": "^11.0.13",
-    "@nestjs/schedule": "^4.0.0",
+    "@nestjs/schedule": "^6.0.1",
     "@nestjs/swagger": "^11.2.0",
     "@nestjs/typeorm": "^11.0.0",
     "amqp-connection-manager": "^4.1.14",

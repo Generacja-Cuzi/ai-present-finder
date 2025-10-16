@@ -18,7 +18,31 @@
           }
         },
         "summary": "Returns the welcome message for the Gift microservice",
-        "tags": ["Gift"]
+        "tags": [
+          "Gift"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "AppController_health",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns service health status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Health check endpoint",
+        "tags": [
+          "Gift"
+        ]
       }
     },
     "/restapi/stalking-request": {
@@ -41,7 +65,9 @@
           }
         },
         "summary": "Request stalking analysis for provided social profiles",
-        "tags": ["restapi"]
+        "tags": [
+          "restapi"
+        ]
       }
     },
     "/restapi/send-message": {
@@ -64,7 +90,9 @@
           }
         },
         "summary": "Send chat messages to the system",
-        "tags": ["restapi"]
+        "tags": [
+          "restapi"
+        ]
       }
     },
     "/sse": {
@@ -88,7 +116,9 @@
           }
         },
         "summary": "Subscribe to server-sent events stream",
-        "tags": ["sse"]
+        "tags": [
+          "sse"
+        ]
       }
     }
   },
@@ -135,7 +165,10 @@
             "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           }
         },
-        "required": ["occasion", "chatId"]
+        "required": [
+          "occasion",
+          "chatId"
+        ]
       },
       "ChatMessageDto": {
         "type": "object",
@@ -153,11 +186,18 @@
           "sender": {
             "type": "string",
             "description": "Message sender",
-            "enum": ["user", "assistant"],
+            "enum": [
+              "user",
+              "assistant"
+            ],
             "example": "user"
           }
         },
-        "required": ["id", "content", "sender"]
+        "required": [
+          "id",
+          "content",
+          "sender"
+        ]
       },
       "SendMessageDto": {
         "type": "object",
@@ -175,14 +215,19 @@
             "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           }
         },
-        "required": ["messages", "chatId"]
+        "required": [
+          "messages",
+          "chatId"
+        ]
       },
       "SseChatbotMessageDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": ["chatbot-message"],
+            "enum": [
+              "chatbot-message"
+            ],
             "example": "chatbot-message"
           },
           "message": {
@@ -199,25 +244,34 @@
             ]
           }
         },
-        "required": ["type", "message"]
+        "required": [
+          "type",
+          "message"
+        ]
       },
       "SseChatInterviewCompletedDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": ["chat-interview-completed"],
+            "enum": [
+              "chat-interview-completed"
+            ],
             "example": "chat-interview-completed"
           }
         },
-        "required": ["type"]
+        "required": [
+          "type"
+        ]
       },
       "SseChatInappropriateRequestDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": ["chat-inappropriate-request"],
+            "enum": [
+              "chat-inappropriate-request"
+            ],
             "example": "chat-inappropriate-request"
           },
           "reason": {
@@ -226,7 +280,10 @@
             "example": "inappropriate content"
           }
         },
-        "required": ["type", "reason"]
+        "required": [
+          "type",
+          "reason"
+        ]
       },
       "PriceDto": {
         "type": "object",
@@ -252,7 +309,12 @@
             "example": false
           }
         },
-        "required": ["value", "label", "currency", "negotiable"]
+        "required": [
+          "value",
+          "label",
+          "currency",
+          "negotiable"
+        ]
       },
       "ListingDto": {
         "type": "object",
@@ -292,14 +354,22 @@
             ]
           }
         },
-        "required": ["image", "title", "description", "link", "price"]
+        "required": [
+          "image",
+          "title",
+          "description",
+          "link",
+          "price"
+        ]
       },
       "SseGiftReadyDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": ["gift-ready"],
+            "enum": [
+              "gift-ready"
+            ],
             "example": "gift-ready"
           },
           "data": {
@@ -326,7 +396,10 @@
             }
           }
         },
-        "required": ["type", "data"]
+        "required": [
+          "type",
+          "data"
+        ]
       }
     }
   }

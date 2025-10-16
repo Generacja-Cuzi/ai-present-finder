@@ -1,0 +1,51 @@
+# Dependencies
+node_modules
+*/node_modules
+
+# Build outputs
+dist
+*/dist
+build
+*/build
+.next
+*/out
+
+# Development files
+.git
+.github
+.vscode
+.idea
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Testing
+coverage
+*.test.ts
+*.spec.ts
+test
+*/test
+
+# Documentation
+docs
+*.md
+!README.md
+
+# Misc
+.DS_Store
+*.pem
+private_key
+
+# Docker
+# Keep Docker files in context to avoid build surprises
+# (no ignores here)

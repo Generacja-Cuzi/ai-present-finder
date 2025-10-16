@@ -10,6 +10,7 @@ export async function sendMessage(data: SendMessageDto) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include", // Important: send cookies for authentication
     body: JSON.stringify(data),
   });
 }

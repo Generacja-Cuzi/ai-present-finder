@@ -21,6 +21,41 @@
         "tags": ["Gift"]
       }
     },
+    "/google-auth": {
+      "get": {
+        "operationId": "AppController_googleAuth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Redirects to Google OAuth URL"
+          }
+        },
+        "summary": "Redirects to Google OAuth authentication",
+        "tags": ["Gift"]
+      }
+    },
+    "/google-callback": {
+      "get": {
+        "operationId": "AppController_googleAuthCallback",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Redirects to login page after successful authentication"
+          }
+        },
+        "summary": "Handles Google OAuth callback",
+        "tags": ["Gift"]
+      }
+    },
     "/restapi/stalking-request": {
       "post": {
         "operationId": "RestApiController_create",
@@ -65,6 +100,95 @@
         },
         "summary": "Send chat messages to the system",
         "tags": ["restapi"]
+      }
+    },
+    "/auth/google/url": {
+      "get": {
+        "operationId": "AuthController_getGoogleAuthUrl",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns Google OAuth authorization URL"
+          }
+        },
+        "summary": "Get Google OAuth URL",
+        "tags": ["auth"]
+      }
+    },
+    "/auth/google/callback": {
+      "post": {
+        "operationId": "AuthController_googleCallback",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleAuthDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sets JWT token in httpOnly cookie and returns user info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Handle Google OAuth callback",
+        "tags": ["auth"]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successfully logged out"
+          }
+        },
+        "summary": "Logout user by clearing auth cookie",
+        "tags": ["auth"]
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "operationId": "AuthController_getCurrentUser",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns current user info"
+          }
+        },
+        "summary": "Get current user from cookie",
+        "tags": ["auth"]
+      }
+    },
+    "/chats": {
+      "get": {
+        "operationId": "ChatController_getUserChats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns list of user's chats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get user's chat history",
+        "tags": ["chats"]
       }
     },
     "/sse": {
@@ -172,6 +296,45 @@
           }
         },
         "required": ["messages", "chatId"]
+      },
+      "GoogleAuthDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Google OAuth authorization code",
+            "example": "4/0AY0e-g7..."
+          }
+        },
+        "required": ["code"]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "JWT access token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "user": {
+            "type": "object",
+            "description": "User information"
+          }
+        },
+        "required": ["accessToken", "user"]
+      },
+      "ChatsResponseDto": {
+        "type": "object",
+        "properties": {
+          "chats": {
+            "description": "List of user's chats",
+            "items": {
+              "type": "array"
+            },
+            "type": "array"
+          }
+        },
+        "required": ["chats"]
       },
       "SseChatbotMessageDto": {
         "type": "object",

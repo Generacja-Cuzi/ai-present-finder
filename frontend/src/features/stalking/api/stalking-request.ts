@@ -16,6 +16,7 @@ async function createStalkingRequest(data: StalkingRequestData): Promise<void> {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include", // Important: send cookies for authentication
     body: JSON.stringify(data),
   });
 

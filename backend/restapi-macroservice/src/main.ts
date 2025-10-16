@@ -5,6 +5,7 @@ import {
   ChatQuestionAskedEvent,
   GiftReadyEvent,
 } from "@core/events";
+import * as cookieParser from "cookie-parser";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 import { Logger } from "@nestjs/common";
@@ -17,6 +18,8 @@ import { AppModule } from "./app.module";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger("AppLogger");
+
+  app.use(cookieParser());
 
   const port = Number(process.env.PORT ?? 3000);
   const portString = String(port);

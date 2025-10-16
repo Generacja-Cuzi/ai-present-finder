@@ -36,6 +36,9 @@ RUN chmod +x /docker-entrypoint-frontend.sh
 # Expose port 80
 EXPOSE 80
 
+# Switch to nginx user for security
+USER nginx
+
 # Health check - use 127.0.0.1 to ensure IPv4
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://127.0.0.1/health || exit 1

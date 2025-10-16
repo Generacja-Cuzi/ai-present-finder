@@ -49,7 +49,7 @@ Common issues and solutions for deploying AI Present Finder on Coolify.
    - Try redeploying (temporary network issue)
    - Use a different npm registry:
    ```dockerfile
-   RUN npm config set registry https://registry.npmjs.org/
+   RUN pnpm config set registry https://registry.npmjs.org/
    ```
 
 ### Services Won't Start

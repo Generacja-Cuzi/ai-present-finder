@@ -1,0 +1,42 @@
+@startuml C4_Component_RestAPI
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(restapi, "REST API Macroservice (NestJS)") {
+  Component(restapi_controller, "RestApiController", "NestJS Controller", "REST endpoints: POST /restapi/stalking-request, POST /restapi/send-message")
+  Component(sse_controller, "SSEController", "NestJS Controller", "SSE endpoint: GET /sse?clientId=...")
+  Component(start_command_handler, "StartProcessingHandler", "CQRS Command Handler", "Initiates stalking and chat flows")
+  Component(send_message_handler, "SendUserMessageHandler", "CQRS Command Handler", "Handles user chat messages")
+  Component(notify_user_handler, "NotifyUserSSEHandler", "CQRS Command Handler", "Sends SSE messages to users")
+  Component(sse_service, "SSEService", "NestJS Service", "Manages SSE connections and message fanout")
+}
+
+Component_Ext(user, "User", "Browser/Client", "Provides social links and chat messages")
+Component_Ext(rabbitmq_out_stalking, "RabbitMQ", "Message Broker", "StalkingAnalyzeRequestedEvent queue")
+Component_Ext(rabbitmq_out_chat_start, "RabbitMQ", "Message Broker", "ChatStartInterviewEvent queue")
+Component_Ext(rabbitmq_out_chat_answer, "RabbitMQ", "Message Broker", "ChatUserAnsweredEvent queue")
+Component_Ext(rabbitmq_in_question, "RabbitMQ", "Message Broker", "ChatQuestionAskedEvent queue")
+Component_Ext(rabbitmq_in_gift, "RabbitMQ", "Message Broker", "GiftReadyEvent queue")
+Component_Ext(rabbitmq_in_completed_notify, "RabbitMQ", "Message Broker", "ChatCompletedNotifyUserEvent queue")
+Component_Ext(rabbitmq_in_inappropriate, "RabbitMQ", "Message Broker", "ChatInappropriateRequestEvent queue")
+
+Rel(user, restapi_controller, "POST /restapi/stalking-request", "HTTPS/JSON")
+Rel(user, restapi_controller, "POST /restapi/send-message", "HTTPS/JSON")
+Rel(user, sse_controller, "GET /sse?clientId=...", "HTTPS/SSE")
+Rel(sse_controller, sse_service, "Registers client")
+Rel(sse_service, user, "Sends real-time updates", "SSE")
+
+Rel(restapi_controller, start_command_handler, "Dispatches command", "CQRS CommandBus")
+Rel(start_command_handler, rabbitmq_out_stalking, "Publishes StalkingAnalyzeRequestedEvent", "AMQP ClientProxy.emit")
+Rel(start_command_handler, rabbitmq_out_chat_start, "Publishes ChatStartInterviewEvent", "AMQP ClientProxy.emit")
+
+Rel(restapi_controller, send_message_handler, "Dispatches command", "CQRS CommandBus")
+Rel(send_message_handler, rabbitmq_out_chat_answer, "Publishes ChatUserAnsweredEvent", "AMQP ClientProxy.emit")
+
+Rel(rabbitmq_in_question, notify_user_handler, "Consumes event", "AMQP @EventPattern")
+Rel(rabbitmq_in_gift, notify_user_handler, "Consumes event", "AMQP @EventPattern")
+Rel(rabbitmq_in_completed_notify, notify_user_handler, "Consumes event", "AMQP @EventPattern")
+Rel(rabbitmq_in_inappropriate, notify_user_handler, "Consumes event", "AMQP @EventPattern")
+Rel(notify_user_handler, sse_service, "Sends message")
+
+SHOW_LEGEND()
+@enduml

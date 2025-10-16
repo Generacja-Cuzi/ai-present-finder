@@ -1,0 +1,33 @@
+@startuml C4_Component_GiftIdeas
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(gift, "Gift Ideas Microservice (NestJS)") {
+  Component(stalking_completed_handler, "StalkingCompletedHandler", "NestJS Handler", "Handles StalkingCompletedEvent, updates gift context state")
+  Component(chat_completed_handler, "ChatInterviewCompletedHandler", "NestJS Handler", "Handles ChatInterviewCompletedEvent, updates gift context state")
+  Component(generate_handler, "GenerateGiftIdeasHandler", "CQRS Command Handler", "Orchestrates gift idea generation flow")
+  Component(ai_flow, "AI Flow Service", "ai-sdk + OpenAI", "Generates gift ideas based on keywords and preferences")
+  Component(update_stalking_handler, "UpdateStalkingStatusHandler", "CQRS Command Handler", "Updates stalking completion status")
+  Component(update_interview_handler, "UpdateInterviewStatusHandler", "CQRS Command Handler", "Updates interview completion status")
+}
+
+Component_Ext(rabbitmq_in_stalking, "RabbitMQ", "Message Broker", "StalkingCompletedEvent queue")
+Component_Ext(rabbitmq_in_interview, "RabbitMQ", "Message Broker", "ChatInterviewCompletedEvent queue")
+Component_Ext(rabbitmq_out_context, "RabbitMQ", "Message Broker", "GiftContextInitializedEvent queue")
+Component_Ext(rabbitmq_out_fetch, "RabbitMQ", "Message Broker", "FetchAllegroEvent, FetchAmazonEvent, FetchEbayEvent, FetchOlxEvent queues")
+Component_Ext(openai, "OpenAI", "LLM", "Gift idea generation")
+
+Rel(rabbitmq_in_stalking, stalking_completed_handler, "Consumes event", "AMQP @EventPattern")
+Rel(stalking_completed_handler, update_stalking_handler, "Dispatches command", "CQRS CommandBus")
+Rel(update_stalking_handler, generate_handler, "Triggers when both complete")
+
+Rel(rabbitmq_in_interview, chat_completed_handler, "Consumes event", "AMQP @EventPattern")
+Rel(chat_completed_handler, update_interview_handler, "Dispatches command", "CQRS CommandBus")
+Rel(update_interview_handler, generate_handler, "Triggers when both complete")
+
+Rel(generate_handler, ai_flow, "Generates gift ideas")
+Rel(ai_flow, openai, "LLM call", "HTTPS")
+Rel(generate_handler, rabbitmq_out_context, "Publishes GiftContextInitializedEvent", "AMQP ClientProxy.emit")
+Rel(generate_handler, rabbitmq_out_fetch, "Publishes Fetch*Event for each provider", "AMQP ClientProxy.emit")
+
+SHOW_LEGEND()
+@enduml

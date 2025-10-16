@@ -327,13 +327,22 @@
         },
         "required": ["accessToken", "user"]
       },
+      "ChatDto": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "title": { "type": "string" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "title", "updatedAt"]
+      },
       "ChatsResponseDto": {
         "type": "object",
         "properties": {
           "chats": {
             "description": "List of user's chats",
             "items": {
-              "type": "array"
+              "$ref": "#/components/schemas/ChatDto"
             },
             "type": "array"
           }

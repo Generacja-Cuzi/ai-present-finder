@@ -21,41 +21,6 @@
         "tags": ["Gift"]
       }
     },
-    "/google-auth": {
-      "get": {
-        "operationId": "AppController_googleAuth",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Redirects to Google OAuth URL"
-          }
-        },
-        "summary": "Redirects to Google OAuth authentication",
-        "tags": ["Gift"]
-      }
-    },
-    "/google-callback": {
-      "get": {
-        "operationId": "AppController_googleAuthCallback",
-        "parameters": [
-          {
-            "name": "code",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Redirects to login page after successful authentication"
-          }
-        },
-        "summary": "Handles Google OAuth callback",
-        "tags": ["Gift"]
-      }
-    },
     "/restapi/stalking-request": {
       "post": {
         "operationId": "RestApiController_create",
@@ -327,22 +292,13 @@
         },
         "required": ["accessToken", "user"]
       },
-      "ChatDto": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "title": { "type": "string" },
-          "updatedAt": { "type": "string", "format": "date-time" }
-        },
-        "required": ["id", "title", "updatedAt"]
-      },
       "ChatsResponseDto": {
         "type": "object",
         "properties": {
           "chats": {
             "description": "List of user's chats",
             "items": {
-              "$ref": "#/components/schemas/ChatDto"
+              "type": "array"
             },
             "type": "array"
           }

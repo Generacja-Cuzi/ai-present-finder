@@ -6,6 +6,10 @@ Container_Boundary(restapi, "REST API Macroservice (NestJS)") {
   Component(sse_controller, "SSEController", "NestJS Controller", "SSE endpoint: GET /sse?clientId=...")
   Component(start_command_handler, "StartProcessingHandler", "CQRS Command Handler", "Initiates stalking and chat flows")
   Component(send_message_handler, "SendUserMessageHandler", "CQRS Command Handler", "Handles user chat messages")
+  Component(gift_ready_handler, "GiftReadyHandler", "Event Handler", "Handles GiftReadyEvent from RabbitMQ")
+  Component(chat_question_handler, "ChatQuestionAskedHandler", "Event Handler", "Handles ChatQuestionAskedEvent from RabbitMQ")
+  Component(chat_completed_handler, "ChatCompletedNotifyUserHandler", "Event Handler", "Handles ChatCompletedNotifyUserEvent from RabbitMQ")
+  Component(chat_inappropriate_handler, "ChatInappropriateRequestHandler", "Event Handler", "Handles ChatInappropriateRequestEvent from RabbitMQ")
   Component(notify_user_handler, "NotifyUserSSEHandler", "CQRS Command Handler", "Sends SSE messages to users")
   Component(sse_service, "SSEService", "NestJS Service", "Manages SSE connections and message fanout")
 }
@@ -32,10 +36,16 @@ Rel(start_command_handler, rabbitmq_out_chat_start, "Publishes ChatStartIntervie
 Rel(restapi_controller, send_message_handler, "Dispatches command", "CQRS CommandBus")
 Rel(send_message_handler, rabbitmq_out_chat_answer, "Publishes ChatUserAnsweredEvent", "AMQP ClientProxy.emit")
 
-Rel(rabbitmq_in_question, notify_user_handler, "Consumes event", "AMQP @EventPattern")
-Rel(rabbitmq_in_gift, notify_user_handler, "Consumes event", "AMQP @EventPattern")
-Rel(rabbitmq_in_completed_notify, notify_user_handler, "Consumes event", "AMQP @EventPattern")
-Rel(rabbitmq_in_inappropriate, notify_user_handler, "Consumes event", "AMQP @EventPattern")
+Rel(rabbitmq_in_question, chat_question_handler, "Consumes event", "AMQP @EventPattern")
+Rel(rabbitmq_in_gift, gift_ready_handler, "Consumes event", "AMQP @EventPattern")
+Rel(rabbitmq_in_completed_notify, chat_completed_handler, "Consumes event", "AMQP @EventPattern")
+Rel(rabbitmq_in_inappropriate, chat_inappropriate_handler, "Consumes event", "AMQP @EventPattern")
+
+Rel(gift_ready_handler, notify_user_handler, "Dispatches NotifyUserSseCommand", "CQRS CommandBus")
+Rel(chat_question_handler, notify_user_handler, "Dispatches NotifyUserSseCommand", "CQRS CommandBus")
+Rel(chat_completed_handler, notify_user_handler, "Dispatches NotifyUserSseCommand", "CQRS CommandBus")
+Rel(chat_inappropriate_handler, notify_user_handler, "Dispatches NotifyUserSseCommand", "CQRS CommandBus")
+
 Rel(notify_user_handler, sse_service, "Sends message")
 
 SHOW_LEGEND()

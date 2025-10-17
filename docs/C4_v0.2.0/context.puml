@@ -26,10 +26,10 @@ Rel(system_rest_api, system_stalking_microservice, "Initiates stalking analysis"
 Rel(system_rest_api, system_chat_microservice, "Initiates interview", "RabbitMQ")
 Rel(system_rest_api, user, "Sends real-time updates", "SSE")
 
-Rel(system_stalking_microservice, brightdata, "Scrapes social profiles", "HTTPS")
-Rel(system_stalking_microservice, instagram_ext, "Extracts data via", "BrightData")
-Rel(system_stalking_microservice, tiktok_ext, "Extracts data via", "BrightData")
-Rel(system_stalking_microservice, x_ext, "Extracts data via", "BrightData")
+Rel(system_stalking_microservice, brightdata, "Requests scraping", "HTTPS")
+Rel(brightdata, instagram_ext, "Scrapes", "HTTPS")
+Rel(brightdata, tiktok_ext, "Scrapes", "HTTPS")
+Rel(brightdata, x_ext, "Scrapes", "HTTPS")
 Rel(system_stalking_microservice, openai_llm, "Analyzes content for keywords", "HTTPS")
 Rel(system_stalking_microservice, system_gift_microservice, "Sends keywords", "RabbitMQ")
 

@@ -19,18 +19,19 @@ Component_Ext(rabbitmq_out_inappropriate, "RabbitMQ", "Message Broker", "ChatIna
 Component_Ext(openai, "OpenAI", "LLM", "Interview question generation and context analysis")
 
 Rel(rabbitmq_in_start, start_handler, "Consumes event", "AMQP @EventPattern")
-Rel(start_handler, question_handler, "Dispatches command", "CQRS CommandBus")
+Rel(start_handler, set_occasion_handler, "Dispatches SetOccasionCommand", "CQRS CommandBus")
+Rel(set_occasion_handler, chat_session_db, "Stores occasion", "TypeORM")
+Rel(start_handler, question_handler, "Dispatches GenerateQuestionCommand", "CQRS CommandBus")
 Rel(question_handler, ai_flow, "Generates questions")
 Rel(ai_flow, openai, "LLM call", "HTTPS")
 Rel(question_handler, rabbitmq_out_question, "Publishes ChatQuestionAskedEvent", "AMQP ClientProxy.emit")
 
 Rel(rabbitmq_in_answer, answer_handler, "Consumes event", "AMQP @EventPattern")
-Rel(answer_handler, question_handler, "Dispatches command", "CQRS CommandBus")
+Rel(answer_handler, get_occasion_handler, "Executes GetOccasionQuery", "CQRS QueryBus")
+Rel(get_occasion_handler, chat_session_db, "Retrieves occasion", "TypeORM")
+Rel(answer_handler, question_handler, "Dispatches GenerateQuestionCommand", "CQRS CommandBus")
 Rel(answer_handler, rabbitmq_out_completed, "Publishes ChatInterviewCompletedEvent", "AMQP ClientProxy.emit")
 Rel(answer_handler, rabbitmq_out_inappropriate, "Publishes ChatInappropriateRequestEvent", "AMQP ClientProxy.emit")
-
-Rel(set_occasion_handler, chat_session_db, "Stores occasion", "TypeORM")
-Rel(get_occasion_handler, chat_session_db, "Retrieves occasion", "TypeORM")
 
 SHOW_LEGEND()
 @enduml

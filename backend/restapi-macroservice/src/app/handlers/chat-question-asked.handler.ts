@@ -14,7 +14,6 @@ export class ChatQuestionAskedHandler {
   @EventPattern(ChatQuestionAskedEvent.name)
   async handle(event: ChatQuestionAskedEvent) {
     this.logger.log(`sending assistant message to user`);
-
     await this.commandBus.execute(
       new NotifyUserSseCommand(event.chatId, {
         type: "chatbot-message",
@@ -22,6 +21,7 @@ export class ChatQuestionAskedHandler {
           id: ulid(),
           content: event.question,
           sender: "assistant",
+          potentialAnswers: event.potentialAnswers ?? undefined,
         },
       }),
     );

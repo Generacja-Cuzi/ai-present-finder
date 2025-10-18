@@ -10,6 +10,7 @@ export type ChatState =
       type: "chatting";
       data: {
         messages: ChatMessage[];
+        potentialAnswers?: components["schemas"]["PotencialAnswerChoiceDto"][];
       };
     }
   | { type: "chat-interview-completed" }

@@ -36,10 +36,15 @@ export const useSseChat = ({ clientId }: { clientId: string }) => {
             if (previousState.type !== "chatting") {
               throw new Error("Previous state is not chatting");
             }
+            const potentialAnswers =
+              action.data.message.potentialAnswers?.type === "select"
+                ? action.data.message.potentialAnswers.answers
+                : undefined;
             return {
               type: "chatting",
               data: {
                 messages: [...previousState.data.messages, action.data.message],
+                potentialAnswers,
               },
             };
           }

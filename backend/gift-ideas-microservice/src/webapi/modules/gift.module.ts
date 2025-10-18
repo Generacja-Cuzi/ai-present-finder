@@ -45,7 +45,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
           type: "postgres" as const,
           host: configService.get<string>("DATABASE_HOST") ?? "localhost",
           port: Number.parseInt(
-            configService.get<string>("DATABASE_PORT") ?? "5432",
+            configService.get<string>("DATABASE_PORT") ?? "6096",
             10,
           ),
           username:

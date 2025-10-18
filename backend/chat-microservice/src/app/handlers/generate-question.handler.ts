@@ -11,6 +11,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { ClientProxy } from "@nestjs/microservices";
 
 import { giftInterviewFlow } from "../ai/flow";
+import type { PotencialAnswers } from "../ai/types";
 
 @CommandHandler(GenerateQuestionCommand)
 export class GenerateQuestionHandler
@@ -30,6 +31,7 @@ export class GenerateQuestionHandler
   async execute(command: GenerateQuestionCommand) {
     const { chatId, occasion, history } = command;
     let shouldStop = false as boolean;
+    let potencialAnswers: PotencialAnswers | null = null;
 
     const result = await giftInterviewFlow({
       occasion,
@@ -37,6 +39,9 @@ export class GenerateQuestionHandler
         ...message,
         role: message.sender,
       })),
+      proposeAnswers: (potentialAnswers) => {
+        potencialAnswers = potentialAnswers;
+      },
       closeInterview: (output) => {
         const event = new ChatInterviewCompletedEvent(chatId, output);
         this.chatInterviewCompletedEventEventBus.emit(
@@ -58,11 +63,16 @@ export class GenerateQuestionHandler
         shouldStop = true;
       },
     });
+
     if (shouldStop) {
       return;
     }
-    const event = new ChatQuestionAskedEvent(chatId, result.text);
 
+    const event = new ChatQuestionAskedEvent(
+      chatId,
+      result.text,
+      potencialAnswers,
+    );
     this.eventBus.emit(ChatQuestionAskedEvent.name, event);
   }
 }

@@ -1,11 +1,12 @@
 import { SendUserMessageCommand } from "src/domain/commands/send-user-message.command";
 import { StartProcessingCommand } from "src/domain/commands/start-processing.command";
 import type { AuthenticatedRequest } from "src/domain/models/auth.types";
-import { SendMessageDto } from "src/domain/models/send-message.dto";
 import {
-  StalkingAnalyzeRequestDto,
-  StalkingAnalyzeRequestDto as StalkingAnalyzeRequestDtoDocument,
-} from "src/domain/models/stalking-analyze-request.dto";
+  PotencialAnswersFreeTextDto,
+  PotencialAnswersSelectDto,
+} from "src/domain/models/chat-message.dto";
+import { SendMessageDto } from "src/domain/models/send-message.dto";
+import { StalkingAnalyzeRequestDto } from "src/domain/models/stalking-analyze-request.dto";
 
 import { Body, Controller, Logger, Post, Req, UseGuards } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
@@ -19,7 +20,7 @@ import {
 import { JwtAuthGuard } from "../../app/guards/jwt-auth.guard";
 
 @ApiTags("restapi")
-@ApiExtraModels(StalkingAnalyzeRequestDtoDocument)
+@ApiExtraModels(PotencialAnswersSelectDto, PotencialAnswersFreeTextDto)
 @Controller("restapi")
 export class RestApiController {
   private readonly logger = new Logger(RestApiController.name);

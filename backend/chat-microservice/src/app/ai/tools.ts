@@ -1,14 +1,38 @@
 import type { InferUITools } from "ai";
 import { tool } from "ai";
-import { endConversationOutputSchema } from "src/app/ai/types";
-import type { EndConversationOutput } from "src/app/ai/types";
+import {
+  endConversationOutputSchema,
+  potencialAnswersSchema,
+} from "src/app/ai/types";
+import type { EndConversationOutput, PotencialAnswers } from "src/app/ai/types";
 import { z } from "zod";
 
 export function getTools(
   closeInterview: (output: EndConversationOutput) => void,
   flagInappropriateRequest: (reason: string) => void,
+  proposeAnswers: (potentialAnswers: PotencialAnswers) => void,
 ) {
   return {
+    propose_answers: tool({
+      description:
+        "Provide 4 potential answers that user can choose from to anwser the question you've just asked. This makes the conversation faster and more structured.",
+      inputSchema: z.object({
+        potentialAnswers: potencialAnswersSchema.describe(
+          "4 potential answers for the user to choose from or a long free text answer",
+        ),
+      }),
+      execute: ({ potentialAnswers }) => {
+        proposeAnswers(potentialAnswers);
+        return {
+          success: true,
+          potentialAnswers,
+          message:
+            potentialAnswers.type === "select"
+              ? `Proposed ${potentialAnswers.answers.length.toString()} answer options`
+              : "Proposed a long free text answer",
+        };
+      },
+    }),
     proceed_to_next_phase: tool({
       description:
         "Call this tool to signal moving from Part I to Part II, or from Part II to Part III of the conversation.",

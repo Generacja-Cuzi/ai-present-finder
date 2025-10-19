@@ -16,7 +16,7 @@ Container_Boundary(restapi, "REST API Macroservice (NestJS)") {
   Component(chat_inappropriate_handler, "ChatInappropriateRequestHandler", "Event Handler", "Handles ChatInappropriateRequestEvent from RabbitMQ")
   Component(notify_user_handler, "NotifyUserSSEHandler", "CQRS Command Handler", "Sends SSE messages to users")
   Component(sse_service, "SSEService", "NestJS Service", "Manages SSE connections and message fanout")
-  Component(user_repository, "UserRepository", "Prisma Repository", "Persists and retrieves user data")
+  Component(user_repository, "UserRepository", "TypeORM Repository", "Persists and retrieves user data")
 }
 
 Component_Ext(user, "User", "Browser/Client", "Authenticates and provides social links and chat messages")

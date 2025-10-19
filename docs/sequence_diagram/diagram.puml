@@ -3,6 +3,8 @@ title AI Present Finder System - Sequence Diagram of Events and Commands
 
 actor User as U
 participant "REST API" as REST
+participant "Google OAuth" as GOOGLE
+database "PostgreSQL" as DB
 participant "Chat Service" as CHAT
 participant "Stalking Service" as STALK
 participant "Gift Ideas Service" as GIFT
@@ -14,9 +16,39 @@ box "Fetch Microservices" #LightBlue
 end box
 participant "Reranking Service" as RERANK
 
-== Start sesji ==
-U -> REST: POST /restapi/stalking-request\n{chatId, social URLs, occasion}
+== Autoryzacja użytkownika ==
+U -> REST: GET /auth/google/url
 activate REST
+REST -> REST: **GenerateGoogleOAuthUrlQuery**
+REST --> U: {url: "https://accounts.google.com/..."}
+deactivate REST
+note left: Użytkownik przekierowuje\ndo Google OAuth
+
+U -> GOOGLE: Autoryzacja w Google
+activate GOOGLE
+GOOGLE --> U: Redirect z kodem autoryzacyjnym
+deactivate GOOGLE
+
+U -> REST: POST /auth/google/callback\n{code}
+activate REST
+REST -> REST: **ValidateGoogleTokenCommand**
+REST -> GOOGLE: Wymiana kodu na token
+activate GOOGLE
+GOOGLE --> REST: {accessToken, refreshToken, email, name}
+deactivate GOOGLE
+REST -> DB: Upsert user (email, name, googleTokens)
+activate DB
+DB --> REST: User entity
+deactivate DB
+REST -> REST: Generate JWT token
+REST --> U: Set-Cookie: access_token (httpOnly)\n{user: {id, email, name}}
+deactivate REST
+note left: JWT zapisany w httpOnly cookie\nDostęp do chronionych endpointów
+
+== Start sesji (użytkownik zalogowany) ==
+U -> REST: POST /restapi/stalking-request\n{chatId, social URLs, occasion}\n+ JWT cookie
+activate REST
+REST -> REST: **JwtAuthGuard** - weryfikacja tokena
 REST -> REST: **StartProcessingCommand**
 
 par Przetwarzanie Równoległe
@@ -36,6 +68,7 @@ loop Dopóki AI nie zdecyduje zakończyć lub niewłaściwe zachowanie usera
   REST -> REST: **NotifyUserSseCommand**
   REST -> U: SSE: chatbot-message
   U -> REST: POST /restapi/send-message\n{chatId, messages}
+  REST -> REST: **JwtAuthGuard** - weryfikacja tokena
   REST -> REST: **SendUserMessageCommand**
   REST -> REST: **NotifyUserSseCommand**
   REST -> U: SSE: chatbot-message\n(echo wiadomości użytkownika)
@@ -66,6 +99,13 @@ deactivate CHAT
 STALK -> GIFT: **StalkingCompletedEvent**\n{keywords, chatId, completedAt}
 deactivate STALK
 GIFT -> GIFT: **UpdateStalkingStatusCommand**\n(zapisz keywords, sprawdź czy wywiad gotowy)
+
+note over U, REST
+  Użytkownik pozostaje zalogowany przez cały proces.
+  JWT token w httpOnly cookie jest weryfikowany przy każdym
+  żądaniu do chronionych endpointów.
+  SSE używa clientId do identyfikacji, niezależnie od sesji.
+end note
 
 == Koordynacja Generowania Prezentów ==
 note over GIFT: Gdy oba eventy otrzymane

@@ -5,15 +5,17 @@ Person(user, "User", "Person searching for a gift")
 
 System_Boundary(sys, "AI Present Finder System") {
   Container(frontend, "Web Frontend", "React + Vite", "User interface with real-time updates via SSE")
-  Container(rest_api, "REST API Macroservice", "NestJS", "HTTP entry point + SSE fanout for real-time communication")
+  Container(rest_api, "REST API Macroservice", "NestJS", "HTTP entry point, authentication (JWT + Google OAuth), and SSE fanout for real-time communication")
   Container(stalking_svc, "Stalking Microservice", "NestJS", "Scrapes social media profiles via BrightData and extracts keywords using AI")
   Container(chat_svc, "Chat Microservice", "NestJS", "Conducts AI-driven interviews to gather additional context")
   Container(gift_svc, "Gift Ideas Microservice", "NestJS", "Orchestrates gift recommendation flow")
   Container(fetch_svc, "Fetch Microservice", "NestJS", "Fetches product listings from multiple e-commerce providers")
   Container(reranking_svc, "Reranking Microservice", "NestJS", "Reranks and filters products based on preferences")
   ContainerQueue(rabbitmq, "Message Broker", "RabbitMQ", "Asynchronous event-driven communication")
+  ContainerDb(postgres, "Database", "PostgreSQL + Prisma", "Stores user accounts and session data")
 }
 
+System_Ext(google_oauth, "Google OAuth", "Authentication provider")
 System_Ext(openai, "OpenAI", "LLM for chat, analysis, and gift ideas")
 System_Ext(brightdata, "BrightData", "Web scraping proxy")
 System_Ext(instagram, "Instagram", "Social media")
@@ -28,6 +30,10 @@ System_Ext(olx, "OLX", "E-commerce provider")
 Rel(user, frontend, "Uses", "HTTPS")
 Rel(frontend, rest_api, "Calls REST API", "HTTPS/JSON")
 Rel(rest_api, user, "Real-time updates", "SSE")
+
+' Authentication flow
+Rel(rest_api, google_oauth, "Validates OAuth code", "HTTPS")
+Rel(rest_api, postgres, "Stores/retrieves user data", "SQL/Prisma")
 
 ' REST API to message broker
 Rel(rest_api, rabbitmq, "Publishes events", "AMQP")

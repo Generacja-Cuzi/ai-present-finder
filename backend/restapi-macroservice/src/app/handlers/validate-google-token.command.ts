@@ -1,15 +1,18 @@
 import { GoogleService } from "src/app/services/google-service";
+import { ValidateGoogleTokenCommand } from "src/domain/commands/validate-google-token.command";
 import type { User } from "src/domain/entities/user.entity";
+import type { JwtPayload } from "src/domain/models/auth.types";
 import { IUserRepository } from "src/domain/repositories/iuser.repository";
 
-import { Injectable, Logger } from "@nestjs/common";
+import { Logger } from "@nestjs/common";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { JwtService } from "@nestjs/jwt";
 
-import type { JwtPayload } from "../../domain/models/auth.types";
-
-@Injectable()
-export class AuthService {
-  private readonly logger = new Logger(AuthService.name);
+@CommandHandler(ValidateGoogleTokenCommand)
+export class ValidateGoogleTokenHandler
+  implements ICommandHandler<ValidateGoogleTokenCommand>
+{
+  private readonly logger = new Logger(ValidateGoogleTokenHandler.name);
 
   constructor(
     private readonly userRepository: IUserRepository,
@@ -17,10 +20,11 @@ export class AuthService {
     private readonly googleService: GoogleService,
   ) {}
 
-  async validateGoogleToken(code: string): Promise<{
-    accessToken: string;
-    user: User;
-  }> {
+  async execute(
+    command: ValidateGoogleTokenCommand,
+  ): Promise<{ accessToken: string; user: User }> {
+    const { code } = command;
+
     this.logger.log(
       `validateGoogleToken called with code: ${code.slice(0, 10)}...`,
     );
@@ -59,7 +63,7 @@ export class AuthService {
     return { accessToken: jwt, user };
   }
 
-  generateJwt(user: User): string {
+  private generateJwt(user: User): string {
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,

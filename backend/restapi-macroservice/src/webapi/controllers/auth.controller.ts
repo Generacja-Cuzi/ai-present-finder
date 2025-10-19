@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { GoogleAuthCommand } from "src/domain/commands/google-auth.command";
+import { ValidateGoogleTokenCommand } from "src/domain/commands/validate-google-token.command";
 import type { User } from "src/domain/entities/user.entity";
 import { IUserRepository } from "src/domain/repositories/iuser.repository";
 
@@ -56,9 +56,9 @@ export class AuthController {
   ): Promise<Omit<AuthResponseDto, "accessToken">> {
     this.logger.log("googleCallback called with code:", googleAuthDto.code);
     const result = await this.commandBus.execute<
-      GoogleAuthCommand,
+      ValidateGoogleTokenCommand,
       GoogleAuthResult
-    >(new GoogleAuthCommand(googleAuthDto.code));
+    >(new ValidateGoogleTokenCommand(googleAuthDto.code));
     this.logger.log("User authenticated via Google OAuth");
 
     response.cookie("access_token", result.accessToken, {

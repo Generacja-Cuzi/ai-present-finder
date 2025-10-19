@@ -9,20 +9,19 @@ import { ChatInappropriateRequestHandler } from "src/app/handlers/chat-inappropr
 import { ChatQuestionAskedHandler } from "src/app/handlers/chat-question-asked.handler";
 import { GetUserChatsHandler } from "src/app/handlers/get-user-chats.handler";
 import { GiftReadyHandler } from "src/app/handlers/gift-ready.handler";
-import { GoogleAuthHandler } from "src/app/handlers/google-auth.handler";
 import { NotifyUserSseHandler } from "src/app/handlers/notify-user-sse.handler";
 import { SendUserMessageHandler } from "src/app/handlers/send-user-message.handler";
 import { StartProcessingCommandHandler } from "src/app/handlers/start-processing.handler";
-import { AuthService } from "src/app/services/auth.service";
+import { ValidateGoogleTokenHandler } from "src/app/handlers/validate-google-token.command";
 import { GoogleService } from "src/app/services/google-service";
 import { SseService } from "src/app/services/sse-service";
 import { JwtStrategy } from "src/app/strategies/jwt.strategy";
+import { ChatDatabaseRepository } from "src/data/chat.database.repository";
+import { UserDatabaseRepository } from "src/data/user.database.repository";
 import { Chat } from "src/domain/entities/chat.entity";
 import { User } from "src/domain/entities/user.entity";
 import { IChatRepository } from "src/domain/repositories/ichat.repository";
 import { IUserRepository } from "src/domain/repositories/iuser.repository";
-import { ChatDatabaseRepository } from "src/persistence/chat.database.repository";
-import { UserDatabaseRepository } from "src/persistence/user.database.repository";
 
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
@@ -130,13 +129,12 @@ import { SseController } from "../controllers/sse.controller";
     StartProcessingCommandHandler,
     NotifyUserSseHandler,
     SendUserMessageHandler,
-    GoogleAuthHandler,
+    ValidateGoogleTokenHandler,
     GetUserChatsHandler,
 
     // Services
     SseService,
     GoogleService,
-    AuthService,
 
     // Auth
     JwtStrategy,

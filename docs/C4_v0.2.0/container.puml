@@ -12,7 +12,6 @@ System_Boundary(sys, "AI Present Finder System") {
   Container(fetch_svc, "Fetch Microservice", "NestJS", "Fetches product listings from multiple e-commerce providers")
   Container(reranking_svc, "Reranking Microservice", "NestJS", "Reranks and filters products based on preferences")
   ContainerQueue(rabbitmq, "Message Broker", "RabbitMQ", "Asynchronous event-driven communication")
-  ContainerDb(postgres, "Database", "PostgreSQL + TypeORM", "Stores user accounts and session data")
 }
 
 System_Ext(google_oauth, "Google OAuth", "Authentication provider")
@@ -33,7 +32,6 @@ Rel(rest_api, user, "Real-time updates", "SSE")
 
 ' Authentication flow
 Rel(rest_api, google_oauth, "Validates OAuth code", "HTTPS")
-Rel(rest_api, postgres, "Stores/retrieves user data", "SQL/TypeORM")
 
 ' REST API to message broker
 Rel(rest_api, rabbitmq, "Publishes events", "AMQP")

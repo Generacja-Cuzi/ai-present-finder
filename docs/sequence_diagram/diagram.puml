@@ -100,13 +100,6 @@ STALK -> GIFT: **StalkingCompletedEvent**\n{keywords, chatId, completedAt}
 deactivate STALK
 GIFT -> GIFT: **UpdateStalkingStatusCommand**\n(zapisz keywords, sprawdź czy wywiad gotowy)
 
-note over U, REST
-  Użytkownik pozostaje zalogowany przez cały proces.
-  JWT token w httpOnly cookie jest weryfikowany przy każdym
-  żądaniu do chronionych endpointów.
-  SSE używa clientId do identyfikacji, niezależnie od sesji.
-end note
-
 == Koordynacja Generowania Prezentów ==
 note over GIFT: Gdy oba eventy otrzymane
 

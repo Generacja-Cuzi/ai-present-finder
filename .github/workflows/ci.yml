@@ -25,6 +25,11 @@ jobs:
           node-version: 22
           cache: "pnpm"
 
+      - name: Setup PostgreSQL
+        uses: ./.github/actions/setup-postgres
+        with:
+          container-name: "postgres-ci-lint"
+
       - name: Write Google credentials file
         shell: bash
         env:
@@ -74,6 +79,11 @@ jobs:
       - name: Pull rabbitmq alpine image
         run: docker pull rabbitmq:3.12.11-alpine
 
+      - name: Setup PostgreSQL
+        uses: ./.github/actions/setup-postgres
+        with:
+          container-name: "postgres-ci-test"
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -108,6 +118,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup PostgreSQL
+        uses: ./.github/actions/setup-postgres
+        with:
+          container-name: "postgres-ci-build"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4

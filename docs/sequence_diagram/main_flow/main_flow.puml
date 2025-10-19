@@ -1,5 +1,5 @@
-@startuml sequence_diagram
-title AI Present Finder System - Sequence Diagram of Events and Commands
+@startuml main_flow
+title AI Present Finder - Main Flow (Complete with Commands & Events)
 
 actor User as U
 participant "REST API" as REST
@@ -20,6 +20,7 @@ participant "Reranking Service" as RERANK
 U -> REST: GET /auth/google/url
 activate REST
 REST -> REST: **GenerateGoogleOAuthUrlQuery**
+REST -> GOOGLE: Get OAuth URL
 REST --> U: {url: "https://accounts.google.com/..."}
 deactivate REST
 note left: Użytkownik przekierowuje\ndo Google OAuth
@@ -50,6 +51,10 @@ U -> REST: POST /restapi/stalking-request\n{chatId, social URLs, occasion}\n+ JW
 activate REST
 REST -> REST: **JwtAuthGuard** - weryfikacja tokena
 REST -> REST: **StartProcessingCommand**
+REST -> DB: Create chat session
+activate DB
+DB --> REST: Chat entity
+deactivate DB
 
 par Przetwarzanie Równoległe
   REST -> STALK: **StalkingAnalyzeRequestedEvent**\n{chatId, URLs}
@@ -59,6 +64,10 @@ else
   REST -> CHAT: **ChatStartInterviewEvent**\n{chatId, occasion}
   activate CHAT
   CHAT -> CHAT: **SetOccasionCommand**\n{chatId, occasion}
+  CHAT -> DB: Create chat session record
+  activate DB
+  DB --> CHAT: Chat session
+  deactivate DB
 end
 
 == Interview loop ==
@@ -66,14 +75,26 @@ loop Dopóki AI nie zdecyduje zakończyć lub niewłaściwe zachowanie usera
   CHAT -> CHAT: **GenerateQuestionCommand**\n(AI decyduje o następnym pytaniu)
   CHAT --> REST: **ChatQuestionAskedEvent**\n{chatId, question}
   REST -> REST: **NotifyUserSseCommand**
+  REST -> DB: Save message to database
+  activate DB
+  DB --> REST: Message entity
+  deactivate DB
   REST -> U: SSE: chatbot-message
   U -> REST: POST /restapi/send-message\n{chatId, messages}
   REST -> REST: **JwtAuthGuard** - weryfikacja tokena
   REST -> REST: **SendUserMessageCommand**
+  REST -> DB: Save user message to database
+  activate DB
+  DB --> REST: Message entity
+  deactivate DB
   REST -> REST: **NotifyUserSseCommand**
   REST -> U: SSE: chatbot-message\n(echo wiadomości użytkownika)
   REST -> CHAT: **ChatUserAnsweredEvent**\n{chatId, messages}
   CHAT -> CHAT: **GetOccasionQuery**\n{chatId}
+  CHAT -> DB: Fetch occasion from session
+  activate DB
+  DB --> CHAT: Occasion data
+  deactivate DB
 end
 
 alt Wywiad zakończony pomyślnie
@@ -81,6 +102,10 @@ alt Wywiad zakończony pomyślnie
   CHAT -> GIFT: **ChatInterviewCompletedEvent**\n{chatId, profile}
   activate GIFT
   GIFT -> GIFT: **UpdateInterviewStatusCommand**\n(zapisz profil usera, sprawdź czy stalking gotowy)
+  GIFT -> DB: Update chat interview status
+  activate DB
+  DB --> GIFT: Updated chat
+  deactivate DB
   CHAT -> REST: **ChatCompletedNotifyUserEvent**\n{chatId}
   REST -> REST: **NotifyUserSseCommand**
   REST -> U: SSE: chat-interview-completed
@@ -90,7 +115,7 @@ else Wykryto niewłaściwe zachowanie
   CHAT -> REST: **ChatInappropriateRequestEvent**\n{chatId, reason}
   REST -> REST: **NotifyUserSseCommand**
   REST -> U: SSE: chat-inappropriate-request
-    note left: Wywiad zakończony, nagana dla użytkownika
+  note left: Wywiad zakończony,\nnagana dla użytkownika
 end
 
 deactivate CHAT
@@ -99,6 +124,10 @@ deactivate CHAT
 STALK -> GIFT: **StalkingCompletedEvent**\n{keywords, chatId, completedAt}
 deactivate STALK
 GIFT -> GIFT: **UpdateStalkingStatusCommand**\n(zapisz keywords, sprawdź czy wywiad gotowy)
+GIFT -> DB: Update chat stalking status
+activate DB
+DB --> GIFT: Updated chat
+deactivate DB
 
 == Koordynacja Generowania Prezentów ==
 note over GIFT: Gdy oba eventy otrzymane
@@ -156,9 +185,20 @@ alt Wszystkie produkty zebrane (lub timeout)
   RERANK -> RERANK: AI rerankowanie i filtrowanie\n(na podstawie profilu + słów kluczowych)
   RERANK -> REST: **GiftReadyEvent**\n{chatId, giftIdeas[]}
   deactivate RERANK
+  activate REST
+  REST -> REST: **SaveListingsCommand**\n{chatId, listings[]}
+  REST -> DB: Save all product listings
+  activate DB
+  DB --> REST: Saved listings with IDs
+  deactivate DB
+  REST -> DB: Associate listings with chat
+  activate DB
+  DB --> REST: Chat with listings
+  deactivate DB
   REST -> REST: **NotifyUserSseCommand**
-  REST -> U: SSE: gift-ready
+  REST -> U: SSE: gift-ready\n{listings with database IDs}
   deactivate REST
+  note left: Produkty gotowe do wyświetlenia\nużytkownik może dodać do ulubionych
 end
 
 @enduml

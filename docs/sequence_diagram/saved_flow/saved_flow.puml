@@ -1,0 +1,150 @@
+@startuml saved_flow
+title AI Present Finder - Saved/Favorite Products Management Flow
+
+actor User as U
+participant "REST API\nFavoritesController" as FAV
+participant "REST API\nChatController" as CHAT
+database "PostgreSQL" as DB
+
+note over U, DB
+  Ten flow pozwala użytkownikowi przeglądać
+  i zarządzać swoimi ulubionymi produktami
+  oraz historią wyszukiwań.
+end note
+
+== Przeglądanie wszystkich ulubionych produktów ==
+U -> FAV: GET /favorites\n+ JWT cookie
+activate FAV
+FAV -> FAV: **JwtAuthGuard**\n(weryfikacja tokena, extract userId)
+FAV -> FAV: **GetUserFavoritesQuery**\n{userId}
+
+FAV -> DB: Pobierz user.favoriteListings\nz relacjami (chat, images)
+activate DB
+DB --> FAV: List<Listing> with relations
+deactivate DB
+
+FAV --> U: 200 OK\n{favorites: [{id, title, price,\nimageUrl, provider, productUrl,\nchatId, chatOccasion, createdAt}]}
+deactivate FAV
+note left: Użytkownik widzi wszystkie\nulubione produkty\nz różnych sesji wyszukiwania
+
+== Wyświetlanie szczegółów produktu ==
+U -> U: Kliknięcie na produkt z listy ulubionych
+U -> U: Wyświetla szczegóły:\n- Tytuł, cena, zdjęcie\n- Link do sklepu\n- Z jakiej sesji pochodzi (occasion)\n- Przycisk "Usuń z ulubionych"
+
+== Usunięcie z ulubionych (z widoku saved) ==
+U -> FAV: DELETE /favorites/:listingId\n+ JWT cookie
+activate FAV
+FAV -> FAV: **JwtAuthGuard**
+FAV -> FAV: **RemoveFromFavoritesCommand**\n{userId, listingId}
+
+FAV -> DB: Usuń listing z user.favoriteListings
+activate DB
+DB --> FAV: Success
+deactivate DB
+
+FAV --> U: 200 OK\n{message: "Removed from favorites"}
+note left: Produkt usunięty,\nlista odświeżona
+deactivate FAV
+
+U -> FAV: GET /favorites\n(odświeżenie listy)
+activate FAV
+FAV -> FAV: **GetUserFavoritesQuery**\n{userId}
+FAV -> DB: Pobierz zaktualizowaną listę
+activate DB
+DB --> FAV: Updated list
+deactivate DB
+FAV --> U: 200 OK\n{favorites: [...]}
+deactivate FAV
+
+== Dodanie z powrotem do ulubionych ==
+note over U, DB
+  Użytkownik może ponownie dodać produkt
+  z historii wyszukiwań (jeśli ma dostęp do listingId)
+end note
+
+U -> CHAT: GET /chats/:chatId/listings\n+ JWT cookie
+activate CHAT
+CHAT -> CHAT: **JwtAuthGuard**
+CHAT -> CHAT: **GetChatListingsQuery**\n{chatId, userId}
+
+alt Użytkownik jest właścicielem chatu
+  CHAT -> DB: Pobierz listings dla tego chatu
+  activate DB
+  DB --> CHAT: List<Listing> with favorite status
+  deactivate DB
+  
+  CHAT --> U: 200 OK\n{listings: [{id, title, price,\nisFavorite: true/false, ...}]}
+  note left: Każdy produkt ma flagę\nczy jest w ulubionych
+else Użytkownik NIE jest właścicielem
+  CHAT -> DB: Sprawdź właściciela chatu
+  activate DB
+  DB --> CHAT: Different user
+  deactivate DB
+  CHAT --> U: 403 Forbidden
+end
+deactivate CHAT
+
+U -> U: Kliknięcie na produkt\nktóry NIE jest w ulubionych
+U -> FAV: POST /favorites\n{listingId}\n+ JWT cookie
+activate FAV
+FAV -> FAV: **AddToFavoritesCommand**\n{userId, listingId}
+FAV -> DB: Dodaj do user.favoriteListings
+activate DB
+DB --> FAV: Success
+deactivate DB
+FAV --> U: 201 Created
+deactivate FAV
+note left: Produkt ponownie\ndodany do ulubionych
+
+== Przeglądanie historii sesji wyszukiwania ==
+U -> CHAT: GET /chats\n+ JWT cookie
+activate CHAT
+CHAT -> CHAT: **JwtAuthGuard**
+CHAT -> CHAT: **GetUserChatsQuery**\n{userId}
+
+CHAT -> DB: Pobierz wszystkie chaty użytkownika\nz licznikiem produktów
+activate DB
+DB --> CHAT: List<Chat> with listing counts
+deactivate DB
+
+CHAT --> U: 200 OK\n{chats: [{id, occasion,\ncreatedAt, listingsCount,\nstatus, ...}]}
+deactivate CHAT
+note left: Użytkownik widzi historię\nwszystkich sesji wyszukiwania
+
+U -> U: Wybiera konkretną sesję (chat)
+
+U -> CHAT: GET /chats/:chatId/listings\n+ JWT cookie
+activate CHAT
+CHAT -> CHAT: **GetChatListingsQuery**\n{chatId, userId}
+CHAT -> DB: Pobierz produkty z tej sesji
+activate DB
+DB --> CHAT: List<Listing> with favorite status
+deactivate DB
+CHAT --> U: 200 OK\n{listings: [...]}
+deactivate CHAT
+note left: Użytkownik widzi produkty\nz wybranej sesji\ni może dodać/usunąć ulubione
+
+== Przeglądanie wiadomości z sesji ==
+U -> CHAT: GET /chats/:chatId/messages\n+ JWT cookie
+activate CHAT
+CHAT -> CHAT: **JwtAuthGuard**
+CHAT -> CHAT: **GetChatMessagesQuery**\n{chatId, userId}
+
+alt Użytkownik jest właścicielem chatu
+  CHAT -> DB: Pobierz messages dla tego chatu
+  activate DB
+  DB --> CHAT: List<Message> ordered by timestamp
+  deactivate DB
+  
+  CHAT --> U: 200 OK\n{messages: [{id, content,\nrole, timestamp, ...}]}
+  note left: Historia konwersacji\nz chatbotem
+else Użytkownik NIE jest właścicielem
+  CHAT -> DB: Sprawdź właściciela
+  activate DB
+  DB --> CHAT: Different user
+  deactivate DB
+  CHAT --> U: 403 Forbidden
+end
+deactivate CHAT
+
+@enduml

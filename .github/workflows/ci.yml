@@ -25,6 +25,14 @@ jobs:
           node-version: 22
           cache: "pnpm"
 
+      - name: Write Google credentials file
+        run: echo "$GCP_SA_JSON" > "$RUNNER_TEMP/gcp-sa.json"
+        env:
+          GCP_SA_JSON: ${{ secrets.GCP_SA_JSON }}
+
+      - name: Export GOOGLE_CREDENTIALS_PATH
+        run: echo "GOOGLE_CREDENTIALS_PATH=$RUNNER_TEMP/gcp-sa.json" >> $GITHUB_ENV
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 

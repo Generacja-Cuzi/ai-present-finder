@@ -36,6 +36,8 @@ import { ChatController } from "../controllers/chat.controller";
 import { RestApiController } from "../controllers/restapi.controller";
 import { SseController } from "../controllers/sse.controller";
 
+const isCI = process.env.NODE_ENV === "ci";
+
 @Module({
   imports: [
     CqrsModule,
@@ -52,26 +54,33 @@ import { SseController } from "../controllers/sse.controller";
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forRootAsync({
-      useFactory: (configService: ConfigService) => ({
-        type: "postgres" as const,
-        host: configService.get<string>("DATABASE_HOST") ?? "localhost",
-        port: Number.parseInt(
-          configService.get<string>("DATABASE_PORT") ?? "5433",
-          10,
-        ),
-        username:
-          configService.get<string>("DATABASE_USERNAME") ?? "restapi_user",
-        password:
-          configService.get<string>("DATABASE_PASSWORD") ?? "restapi_password",
-        database: configService.get<string>("DATABASE_NAME") ?? "restapi_db",
-        entities: [User, Chat],
-        synchronize: true, // Only for development
-        logging: false,
-      }),
-      inject: [ConfigService],
-    }),
-    TypeOrmModule.forFeature([User, Chat]),
+    ...(isCI
+      ? []
+      : [
+          TypeOrmModule.forRootAsync({
+            useFactory: (configService: ConfigService) => ({
+              type: "postgres" as const,
+              host: configService.get<string>("DATABASE_HOST") ?? "localhost",
+              port: Number.parseInt(
+                configService.get<string>("DATABASE_PORT") ?? "5433",
+                10,
+              ),
+              username:
+                configService.get<string>("DATABASE_USERNAME") ??
+                "restapi_user",
+              password:
+                configService.get<string>("DATABASE_PASSWORD") ??
+                "restapi_password",
+              database:
+                configService.get<string>("DATABASE_NAME") ?? "restapi_db",
+              entities: [User, Chat],
+              synchronize: true,
+              logging: false,
+            }),
+            inject: [ConfigService],
+          }),
+          TypeOrmModule.forFeature([User, Chat]),
+        ]),
     ClientsModule.register([
       {
         name: "STALKING_ANALYZE_REQUESTED_EVENT",

@@ -1,0 +1,31 @@
+@startuml C4_Component_Stalking
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(stalking, "Stalking Microservice (NestJS)") {
+  Component(stalking_handler, "StalkingAnalyzeRequestHandler", "NestJS Handler", "Handles StalkingAnalyzeRequestedEvent from RabbitMQ")
+  Component(stalking_command_handler, "StalkingAnalyzeHandler", "CQRS Command Handler", "Executes stalking analysis command")
+  Component(brightdata_service, "BrightDataService", "NestJS Service", "Orchestrates web scraping via BrightData proxy")
+  Component(ai_flow, "AI Flow Service", "ai-sdk + OpenAI", "Uses generateObject with zod schema to analyze content and extract keywords")
+}
+
+Component_Ext(rabbitmq_in, "RabbitMQ", "Message Broker", "StalkingAnalyzeRequestedEvent queue")
+Component_Ext(rabbitmq_out, "RabbitMQ", "Message Broker", "StalkingCompletedEvent queue")
+Component_Ext(brightdata, "BrightData", "Scraping Service", "Proxy for social media scraping")
+Component_Ext(openai, "OpenAI", "LLM", "Content analysis and keyword extraction")
+Component_Ext(instagram, "Instagram", "Social Media")
+Component_Ext(tiktok, "TikTok", "Social Media")
+Component_Ext(x, "X", "Social Media")
+
+Rel(rabbitmq_in, stalking_handler, "Consumes event", "AMQP @EventPattern")
+Rel(stalking_handler, stalking_command_handler, "Dispatches command", "CQRS CommandBus")
+Rel(stalking_command_handler, brightdata_service, "Requests scraping")
+Rel(brightdata_service, brightdata, "Scrapes profiles", "HTTPS")
+Rel(brightdata, instagram, "Fetches posts/photos")
+Rel(brightdata, tiktok, "Fetches posts/videos")
+Rel(brightdata, x, "Fetches tweets")
+Rel(stalking_command_handler, ai_flow, "Analyzes content")
+Rel(ai_flow, openai, "generateObject(schema)", "HTTPS")
+Rel(stalking_command_handler, rabbitmq_out, "Publishes StalkingCompletedEvent", "AMQP ClientProxy.emit")
+
+SHOW_LEGEND()
+@enduml

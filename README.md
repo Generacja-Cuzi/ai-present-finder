@@ -1,6 +1,10 @@
 # Gift AI Present Finder
 
-## Prerequisites
+AI-powered gift recommendation system with microservices architecture.
+
+## Quick Start
+
+### Development
 
 1. Change `.env` in the `backend/chat-microservice` and paste your OPENAI API KEY there.
 
@@ -11,6 +15,17 @@ pnpm i
 docker compose up
 pnpm dev
 ```
+
+### Production Deployment
+
+For production deployment to Coolify, see the comprehensive guides in `docs/deployment/`:
+
+- **[Coolify Deployment Guide](./docs/deployment/coolify-deployment.md)** - Step-by-step deployment instructions
+- **[Architecture Overview](./docs/deployment/architecture.md)** - Production architecture details
+- **[Troubleshooting](./docs/deployment/troubleshooting.md)** - Common issues and solutions
+- **[Docker Compose Details](./docs/deployment/docker-compose-production.md)** - Configuration reference
+
+**Deployment files are located in the `deployment/` directory.**
 
 ## git-crypt setup
 

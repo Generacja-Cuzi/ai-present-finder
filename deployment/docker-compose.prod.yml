@@ -1,0 +1,92 @@
+services:
+  # Infrastructure Services
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:?}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:?}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  # Single PostgreSQL instance with multiple databases
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+      POSTGRES_DB: postgres
+      POSTGRES_MULTIPLE_DATABASES: reranking_service,fetch_service,stalking_service,chat_service,gift_ideas_service
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker-init-db.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", 'pg_isready -U "$${POSTGRES_USER:-postgres}"']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Single application container running all microservices
+  app:
+    build:
+      context: ..
+      dockerfile: ./deployment/Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      # RabbitMQ - Construct URL from required credentials or use provided URL
+      CLOUDAMQP_URL: ${CLOUDAMQP_URL:-amqp://${RABBITMQ_USER:?}:${RABBITMQ_PASS:?}@rabbitmq:5672}
+      # API Keys
+      OPENAI_API_KEY: ${OPENAI_API_KEY:?}
+      BRIGHTDATA_API_KEY: ${BRIGHTDATA_API_KEY:?}
+      # Database URLs
+      RERANKING_DATABASE_URL: postgresql://${RERANKING_DB_USER:-reranking_user}:${RERANKING_DB_PASSWORD:-reranking_password}@postgres:5432/reranking_service
+      FETCH_DATABASE_URL: postgresql://${FETCH_DB_USER:-fetch_user}:${FETCH_DB_PASSWORD:-fetch_password}@postgres:5432/fetch_service
+      STALKING_DATABASE_URL: postgresql://${STALKING_DB_USER:-stalking_user}:${STALKING_DB_PASSWORD:-stalking_password}@postgres:5432/stalking_service
+      CHAT_DATABASE_URL: postgresql://${CHAT_DB_USER:-chat_user}:${CHAT_DB_PASSWORD:-chat_password}@postgres:5432/chat_service
+      GIFT_IDEAS_DATABASE_URL: postgresql://${GIFT_IDEAS_DB_USER:-gift_ideas_user}:${GIFT_IDEAS_DB_PASSWORD:-gift_ideas_password}@postgres:5432/gift_ideas_service
+      # Service ports (internal)
+      RESTAPI_PORT: 3000
+      STALKING_PORT: 3010
+      CHAT_PORT: 3020
+      GIFT_PORT: 3030
+      GIFT_IDEAS_PORT: 3040
+      RERANKING_PORT: 3050
+      FETCH_OLX_PORT: 8011
+      FETCH_ALLEGRO_PORT: 8012
+      FETCH_EBAY_PORT: 8013
+      FETCH_AMAZON_PORT: 8014
+      USE_MOCK_DATA: false
+      SERVICE_FQDN_APP_3000: # Coolify FQDN magic variable for routing
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  # Frontend
+  frontend:
+    build:
+      context: ..
+      dockerfile: ./deployment/frontend.Dockerfile
+      args:
+        VITE_BACKEND_URL: ${VITE_BACKEND_URL:-http://localhost:3000}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      # Runtime API URL configuration - Coolify will set SERVICE_URL_APP
+      VITE_BACKEND_URL: ${VITE_BACKEND_URL:-}
+      SERVICE_FQDN_FRONTEND_80: # Coolify FQDN magic variable
+    depends_on:
+      - app
+
+volumes:
+  rabbitmq_data:
+  postgres_data:

@@ -51,6 +51,7 @@ These notes make AI coding agents immediately productive in this repo. Keep edit
 - Don't write README.md files about new features. The root README.md covers everything.
 - Try to use the least amount of mocks that you can get away with in tests. Prefer real instances. If that's too slow, fake the external dependencies, but keep our code - just mock http requests or packages directly.
 - Before running commands - always "cd" into the relevant package folder
+- When changing events or communication patterns, update the AsyncAPI docs in backend/docs/asyncapi/\*.asyncapi.yml and sequence diagrams in backend/docs/diagrams/ if applicable.
 
 ### **Project Architectural Guidelines & File Structure**
 

@@ -17,6 +17,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as RecommendationIdRouteImport } from './routes/recommendation/$id'
 import { Route as GiftSearchingIdRouteImport } from './routes/gift-searching/$id'
 import { Route as ChatIdRouteImport } from './routes/chat/$id'
+import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google/callback'
 
 const StalkingRoute = StalkingRouteImport.update({
   id: '/stalking',
@@ -58,6 +59,11 @@ const ChatIdRoute = ChatIdRouteImport.update({
   path: '/chat/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthGoogleCallbackRoute = AuthGoogleCallbackRouteImport.update({
+  id: '/auth/google/callback',
+  path: '/auth/google/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/chat/$id': typeof ChatIdRoute
   '/gift-searching/$id': typeof GiftSearchingIdRoute
   '/recommendation/$id': typeof RecommendationIdRoute
+  '/auth/google/callback': typeof AuthGoogleCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/chat/$id': typeof ChatIdRoute
   '/gift-searching/$id': typeof GiftSearchingIdRoute
   '/recommendation/$id': typeof RecommendationIdRoute
+  '/auth/google/callback': typeof AuthGoogleCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/chat/$id': typeof ChatIdRoute
   '/gift-searching/$id': typeof GiftSearchingIdRoute
   '/recommendation/$id': typeof RecommendationIdRoute
+  '/auth/google/callback': typeof AuthGoogleCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/chat/$id'
     | '/gift-searching/$id'
     | '/recommendation/$id'
+    | '/auth/google/callback'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/chat/$id'
     | '/gift-searching/$id'
     | '/recommendation/$id'
+    | '/auth/google/callback'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/chat/$id'
     | '/gift-searching/$id'
     | '/recommendation/$id'
+    | '/auth/google/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   ChatIdRoute: typeof ChatIdRoute
   GiftSearchingIdRoute: typeof GiftSearchingIdRoute
   RecommendationIdRoute: typeof RecommendationIdRoute
+  AuthGoogleCallbackRoute: typeof AuthGoogleCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/google/callback': {
+      id: '/auth/google/callback'
+      path: '/auth/google/callback'
+      fullPath: '/auth/google/callback'
+      preLoaderRoute: typeof AuthGoogleCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChatIdRoute: ChatIdRoute,
   GiftSearchingIdRoute: GiftSearchingIdRoute,
   RecommendationIdRoute: RecommendationIdRoute,
+  AuthGoogleCallbackRoute: AuthGoogleCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -30,6 +30,7 @@
     "@tanstack/router-plugin": "^1.132.25",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "jotai": "^2.15.0",
     "lucide-react": "^0.544.0",
     "openapi-fetch": "^0.15.0",
     "openapi-react-query": "^0.5.1",

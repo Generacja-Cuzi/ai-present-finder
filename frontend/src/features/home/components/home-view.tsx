@@ -1,6 +1,21 @@
-import { Link as RouterLink } from "@tanstack/react-router";
-
 import { Button } from "@/components/ui/button";
+
+import { fetchClient } from "../../../lib/api/client";
+
+const handleLogin = async () => {
+  try {
+    const { data, error } = await fetchClient.GET("/auth/google/url");
+
+    if (data === undefined) {
+      console.error("Failed to get Google auth URL:", error);
+      return;
+    }
+
+    window.location.href = data.url;
+  } catch (error) {
+    console.error("Failed to get Google auth URL:", error);
+  }
+};
 
 export function HomeView() {
   return (
@@ -26,10 +41,10 @@ export function HomeView() {
         </p>
 
         <Button
-          asChild
+          onClick={handleLogin}
           className="bg-primary text-primary-foreground hover:bg-primary/90 w-full max-w-sm rounded-full py-7 text-lg font-semibold shadow-lg transition-all active:scale-95"
         >
-          <RouterLink to="/stalking">Get Started</RouterLink>
+          Sign in with Google
         </Button>
       </div>
     </div>

@@ -18,9 +18,7 @@
           }
         },
         "summary": "Returns the welcome message for the Gift microservice",
-        "tags": [
-          "Gift"
-        ]
+        "tags": ["Gift"]
       }
     },
     "/health": {
@@ -40,9 +38,7 @@
           }
         },
         "summary": "Health check endpoint",
-        "tags": [
-          "Gift"
-        ]
+        "tags": ["Gift"]
       }
     },
     "/restapi/stalking-request": {
@@ -65,9 +61,7 @@
           }
         },
         "summary": "Request stalking analysis for provided social profiles",
-        "tags": [
-          "restapi"
-        ]
+        "tags": ["restapi"]
       }
     },
     "/restapi/send-message": {
@@ -90,9 +84,103 @@
           }
         },
         "summary": "Send chat messages to the system",
-        "tags": [
-          "restapi"
-        ]
+        "tags": ["restapi"]
+      }
+    },
+    "/auth/google/url": {
+      "get": {
+        "operationId": "AuthController_getGoogleAuthUrl",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns Google OAuth authorization URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoogleAuthUrlDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get Google OAuth URL",
+        "tags": ["auth"]
+      }
+    },
+    "/auth/google/callback": {
+      "post": {
+        "operationId": "AuthController_googleCallback",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleAuthDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sets JWT token in httpOnly cookie and returns user info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Handle Google OAuth callback",
+        "tags": ["auth"]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successfully logged out"
+          }
+        },
+        "summary": "Logout user by clearing auth cookie",
+        "tags": ["auth"]
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "operationId": "AuthController_getCurrentUser",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns current user info"
+          }
+        },
+        "summary": "Get current user from cookie",
+        "tags": ["auth"]
+      }
+    },
+    "/chats": {
+      "get": {
+        "operationId": "ChatController_getUserChats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns list of user's chats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get user's chat history",
+        "tags": ["chats"]
       }
     },
     "/sse": {
@@ -116,9 +204,7 @@
           }
         },
         "summary": "Subscribe to server-sent events stream",
-        "tags": [
-          "sse"
-        ]
+        "tags": ["sse"]
       }
     }
   },
@@ -165,10 +251,7 @@
             "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           }
         },
-        "required": [
-          "occasion",
-          "chatId"
-        ]
+        "required": ["occasion", "chatId"]
       },
       "ChatMessageDto": {
         "type": "object",
@@ -186,18 +269,11 @@
           "sender": {
             "type": "string",
             "description": "Message sender",
-            "enum": [
-              "user",
-              "assistant"
-            ],
+            "enum": ["user", "assistant"],
             "example": "user"
           }
         },
-        "required": [
-          "id",
-          "content",
-          "sender"
-        ]
+        "required": ["id", "content", "sender"]
       },
       "SendMessageDto": {
         "type": "object",
@@ -215,19 +291,90 @@
             "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           }
         },
-        "required": [
-          "messages",
-          "chatId"
-        ]
+        "required": ["messages", "chatId"]
+      },
+      "GoogleAuthUrlDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Google OAuth authorization URL",
+            "example": "https://accounts.google.com/o/oauth2/v2/auth?..."
+          }
+        },
+        "required": ["url"]
+      },
+      "GoogleAuthDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Google OAuth authorization code",
+            "example": "4/0AY0e-g7..."
+          }
+        },
+        "required": ["code"]
+      },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User ID",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email",
+            "example": "user@example.com"
+          },
+          "name": {
+            "type": "string",
+            "description": "User name",
+            "example": "John Doe",
+            "nullable": true
+          }
+        },
+        "required": ["id", "email", "name"]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "JWT access token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "user": {
+            "description": "User information",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserDto"
+              }
+            ]
+          }
+        },
+        "required": ["accessToken", "user"]
+      },
+      "ChatsResponseDto": {
+        "type": "object",
+        "properties": {
+          "chats": {
+            "description": "List of user's chats",
+            "items": {
+              "type": "array"
+            },
+            "type": "array"
+          }
+        },
+        "required": ["chats"]
       },
       "SseChatbotMessageDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "chatbot-message"
-            ],
+            "enum": ["chatbot-message"],
             "example": "chatbot-message"
           },
           "message": {
@@ -244,34 +391,25 @@
             ]
           }
         },
-        "required": [
-          "type",
-          "message"
-        ]
+        "required": ["type", "message"]
       },
       "SseChatInterviewCompletedDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "chat-interview-completed"
-            ],
+            "enum": ["chat-interview-completed"],
             "example": "chat-interview-completed"
           }
         },
-        "required": [
-          "type"
-        ]
+        "required": ["type"]
       },
       "SseChatInappropriateRequestDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "chat-inappropriate-request"
-            ],
+            "enum": ["chat-inappropriate-request"],
             "example": "chat-inappropriate-request"
           },
           "reason": {
@@ -280,10 +418,7 @@
             "example": "inappropriate content"
           }
         },
-        "required": [
-          "type",
-          "reason"
-        ]
+        "required": ["type", "reason"]
       },
       "PriceDto": {
         "type": "object",
@@ -309,12 +444,7 @@
             "example": false
           }
         },
-        "required": [
-          "value",
-          "label",
-          "currency",
-          "negotiable"
-        ]
+        "required": ["value", "label", "currency", "negotiable"]
       },
       "ListingDto": {
         "type": "object",
@@ -354,22 +484,14 @@
             ]
           }
         },
-        "required": [
-          "image",
-          "title",
-          "description",
-          "link",
-          "price"
-        ]
+        "required": ["image", "title", "description", "link", "price"]
       },
       "SseGiftReadyDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "gift-ready"
-            ],
+            "enum": ["gift-ready"],
             "example": "gift-ready"
           },
           "data": {
@@ -396,10 +518,7 @@
             }
           }
         },
-        "required": [
-          "type",
-          "data"
-        ]
+        "required": ["type", "data"]
       }
     }
   }

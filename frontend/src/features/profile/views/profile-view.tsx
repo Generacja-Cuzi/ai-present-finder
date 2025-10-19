@@ -1,21 +1,22 @@
 import { useNavigate } from "@tanstack/react-router";
+import { useAtom } from "jotai";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
-import { authApi } from "../../login/api/auth.api";
-import { useAuthStore } from "../../login/store/auth.store";
+import { fetchClient } from "../../../lib/api/client";
+import { userAtom } from "../../../lib/login/auth.store";
 
 export function ProfileView() {
   const navigate = useNavigate();
-  const { user, clearAuth } = useAuthStore();
+  const [user, setUser] = useAtom(userAtom);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      await authApi.logout();
-      clearAuth();
+      await fetchClient.POST("/auth/logout");
+      setUser(null);
       void navigate({ to: "/" });
     } catch (error) {
       console.error("Failed to logout:", error);

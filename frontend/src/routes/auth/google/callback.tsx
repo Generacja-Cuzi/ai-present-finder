@@ -1,33 +1,46 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { getDefaultStore } from "jotai";
 
-import { authApi } from "../../../features/login/api/auth.api";
-import { useAuthStore } from "../../../features/login/store/auth.store";
+import { fetchClient } from "../../../lib/api/client";
+import { oauthHandledAtom, userAtom } from "../../../lib/login/auth.store";
+
+const store = getDefaultStore();
 
 export const Route = createFileRoute("/auth/google/callback")({
-  beforeLoad: ({ search }) => {
-    const { setAuth } = useAuthStore.getState();
+  beforeLoad: async ({ search }) => {
     const code = (search as Record<string, string | undefined>)?.code;
 
     if (!code) {
       throw redirect({ to: "/", replace: true });
     }
 
-    if (sessionStorage.getItem("oauth:google:handled") === "1") {
+    // Sprawdź czy callback został już obsłużony
+    const handled = store.get(oauthHandledAtom);
+    if (handled) {
       throw redirect({ to: "/stalking", replace: true });
     }
 
-    return authApi
-      .handleGoogleCallback(code)
-      .then((authResponse) => {
-        setAuth(authResponse.user);
-        sessionStorage.setItem("oauth:google:handled", "1");
-        throw redirect({ to: "/stalking", replace: true });
-      })
-      .catch((error) => {
-        console.error("OAuth error:", error);
-        sessionStorage.removeItem("oauth:google:handled");
-        throw redirect({ to: "/", replace: true });
+    try {
+      // Wywołaj endpoint callback używając openapi-fetch
+      const { data, error } = await fetchClient.POST("/auth/google/callback", {
+        body: { code },
       });
+
+      if (error || !data) {
+        console.error("OAuth error:", error);
+        store.set(oauthHandledAtom, false);
+        throw redirect({ to: "/", replace: true });
+      }
+
+      // Zapisz użytkownika i oznacz jako obsłużone
+      store.set(userAtom, data.user);
+      store.set(oauthHandledAtom, true);
+      throw redirect({ to: "/stalking", replace: true });
+    } catch (error) {
+      console.error("OAuth error:", error);
+      store.set(oauthHandledAtom, false);
+      throw redirect({ to: "/", replace: true });
+    }
   },
   component: () => null,
 });

@@ -1,11 +1,14 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { getDefaultStore } from "jotai";
 
 import { HomeView } from "../features/home/components/home-view";
-import { useAuthStore } from "../features/login/store/auth.store";
+import { isAuthenticatedAtom } from "../lib/login/auth.store";
+
+const store = getDefaultStore();
 
 export const Route = createFileRoute("/")({
   beforeLoad: () => {
-    const { isAuthenticated } = useAuthStore.getState();
+    const isAuthenticated = store.get(isAuthenticatedAtom);
 
     if (isAuthenticated) {
       throw redirect({ to: "/stalking", replace: true });

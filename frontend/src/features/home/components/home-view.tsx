@@ -1,16 +1,20 @@
 import { Button } from "@/components/ui/button";
 
-import { authApi } from "../../login/api/auth.api";
+import { fetchClient } from "../../../lib/api/client";
 
-const handleLogin = () => {
-  authApi
-    .getGoogleAuthUrl()
-    .then(({ url }) => {
-      window.location.href = url;
-    })
-    .catch((error) => {
+const handleLogin = async () => {
+  try {
+    const { data, error } = await fetchClient.GET("/auth/google/url");
+
+    if (error || !data) {
       console.error("Failed to get Google auth URL:", error);
-    });
+      return;
+    }
+
+    window.location.href = data.url;
+  } catch (error) {
+    console.error("Failed to get Google auth URL:", error);
+  }
 };
 
 export function HomeView() {

@@ -1,12 +1,13 @@
 import { SendUserMessageCommand } from "src/domain/commands/send-user-message.command";
 import { StartProcessingCommand } from "src/domain/commands/start-processing.command";
+import type { AuthenticatedRequest } from "src/domain/models/auth.types";
 import { SendMessageDto } from "src/domain/models/send-message.dto";
 import {
   StalkingAnalyzeRequestDto,
   StalkingAnalyzeRequestDto as StalkingAnalyzeRequestDtoDocument,
 } from "src/domain/models/stalking-analyze-request.dto";
 
-import { Body, Controller, Logger, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Logger, Post, Req, UseGuards } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import {
   ApiExtraModels,
@@ -33,9 +34,10 @@ export class RestApiController {
   @ApiOkResponse({ description: "Analysis requested" })
   async create(
     @Body() analyzeRequestedDto: StalkingAnalyzeRequestDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<void> {
     await this.commandBus.execute(
-      new StartProcessingCommand(analyzeRequestedDto), // TODO(simon-the-shark): validate analyzeRequestedDto
+      new StartProcessingCommand(analyzeRequestedDto, request.user.id), // TODO(simon-the-shark): validate analyzeRequestedDto
     );
   }
 

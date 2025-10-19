@@ -70,3 +70,12 @@ export class ListingDto implements ListingPayload {
   })
   price: PriceDto;
 }
+
+export class ListingWithIdDto extends ListingDto {
+  @ApiProperty({
+    type: String,
+    description: "Listing ID from database",
+    example: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  })
+  listingId: string;
+}

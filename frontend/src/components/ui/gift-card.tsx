@@ -1,23 +1,68 @@
-import type { ListingPayload } from "@core/types";
+import type { ListingPayload, ListingWithId } from "@core/types";
 import { Bookmark, Image as ImageIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
+import {
+  useAddToFavoritesMutation,
+  useRemoveFromFavoritesMutation,
+} from "../../lib/favorites/favorites.api";
+
 export function GiftCard({
   gift,
   provider,
+  listingId,
+  initialIsFavorited = false,
 }: {
-  gift: ListingPayload;
+  gift: ListingPayload | ListingWithId;
   provider: string;
+  listingId?: string;
+  initialIsFavorited?: boolean;
 }) {
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(initialIsFavorited);
   const [imageError, setImageError] = useState(false);
 
-  const handleBookmark = () => {
-    // TODO: Implement bookmark functionality
-    setIsBookmarked(!isBookmarked);
+  const addToFavorites = useAddToFavoritesMutation();
+  const removeFromFavorites = useRemoveFromFavoritesMutation();
+
+  useEffect(() => {
+    setIsBookmarked(initialIsFavorited);
+  }, [initialIsFavorited]);
+
+  const handleBookmark = async () => {
+    if (!listingId) {
+      toast.error("Cannot bookmark this item");
+      return;
+    }
+
+    const newBookmarkState = !isBookmarked;
+    setIsBookmarked(newBookmarkState);
+
+    try {
+      if (newBookmarkState) {
+        await addToFavorites.mutateAsync({
+          body: { listingId },
+        });
+        toast.success("Added to favorites");
+      } else {
+        await removeFromFavorites.mutateAsync({
+          params: { path: { listingId } },
+        });
+        toast.success("Removed from favorites");
+      }
+    } catch (error) {
+      // Revert the state on error
+      setIsBookmarked(!newBookmarkState);
+      toast.error(
+        newBookmarkState
+          ? "Failed to add to favorites"
+          : "Failed to remove from favorites",
+      );
+      console.error("Bookmark error:", error);
+    }
   };
 
   const hasImage = gift.image !== null && gift.image.length > 0 && !imageError;
@@ -31,7 +76,9 @@ export function GiftCard({
 
         <Button
           onClick={handleBookmark}
-          className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-800/80 backdrop-blur-sm transition-colors hover:bg-gray-700/80"
+          variant="ghost"
+          size="icon"
+          className="relative z-20 h-8 w-8 flex-shrink-0 rounded-full bg-gray-800/80 p-0 backdrop-blur-sm transition-colors hover:bg-gray-700/80"
           aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"}
         >
           <Bookmark
@@ -62,7 +109,7 @@ export function GiftCard({
           <p className="text-xl font-semibold text-gray-900">
             {gift.price.value === null
               ? "Price not available"
-              : `${gift.price.value.toFixed(2)} ${gift.price.currency ?? "zł"}`}
+              : `${Number(gift.price.value).toFixed(2)} ${gift.price.currency ?? "zł"}`}
           </p>
           <h3 className="mt-1 line-clamp-2 text-sm font-medium text-gray-700">
             {gift.title}

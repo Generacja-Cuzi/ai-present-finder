@@ -10,3 +10,7 @@ export interface ListingPayload {
     negotiable: boolean | null;
   };
 }
+
+export interface ListingWithId extends ListingPayload {
+  listingId: string;
+}

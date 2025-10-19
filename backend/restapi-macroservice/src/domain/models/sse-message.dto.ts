@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 
 import { ChatMessageDto } from "./chat-message.dto";
-import { ListingDto } from "./listing.dto";
+import { ListingDto, ListingWithIdDto } from "./listing.dto";
 
 export const uiUpdateEvent = "ui-update";
 
@@ -48,27 +48,41 @@ export class SseGiftReadyDto {
   type!: "gift-ready";
 
   @ApiProperty({
-    type: ListingDto,
+    type: ListingWithIdDto,
     isArray: true,
-    description: "Gift ideas payload",
+    description: "Gift ideas payload with listing IDs",
     example: {
       giftIdeas: [
         {
+          listingId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
           image: "https://example.com/image.jpg",
           title: "Book",
           description: "Great book",
           link: "https://example.com/book",
+          price: {
+            value: 10,
+            label: "10 USD",
+            currency: "USD",
+            negotiable: false,
+          },
         },
         {
+          listingId: "4ga85f64-5717-4562-b3fc-2c963f66afa7",
           image: "https://example.com/image.jpg",
           title: "Pen",
           description: "Great pen",
           link: "https://example.com/pen",
+          price: {
+            value: 5,
+            label: "5 USD",
+            currency: "USD",
+            negotiable: false,
+          },
         },
       ],
     },
   })
-  data!: ListingDto[];
+  data!: ListingWithIdDto[];
 }
 
 export type SseMessageDto =

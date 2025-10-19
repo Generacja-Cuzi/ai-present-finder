@@ -1,5 +1,7 @@
 import { GiftReadyEvent } from "@core/events";
+import type { ListingWithId } from "@core/types";
 import { NotifyUserSseCommand } from "src/domain/commands/notify-user-sse.command";
+import { SaveListingsCommand } from "src/domain/commands/save-listings.command";
 
 import { Controller, Logger } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
@@ -20,10 +22,27 @@ export class GiftReadyHandler {
       `Pomysly na prezenty: ${giftIdeas.map((gift) => gift.title).join(";")}`,
     );
 
+    // Save listings to database and get their IDs
+    const savedListings = await this.commandBus.execute(
+      new SaveListingsCommand(event.chatId, giftIdeas),
+    );
+
+    // Map saved listings to include their IDs
+    const listingsWithIds: ListingWithId[] = savedListings.map(
+      (listing, index) => ({
+        ...giftIdeas[index],
+        listingId: listing.id,
+      }),
+    );
+
+    this.logger.log(
+      `Saved listings with IDs: ${listingsWithIds.map((l) => l.listingId).join(", ")}`,
+    );
+
     await this.commandBus.execute(
       new NotifyUserSseCommand(event.chatId, {
         type: "gift-ready",
-        data: giftIdeas,
+        data: listingsWithIds,
       }),
     );
   }

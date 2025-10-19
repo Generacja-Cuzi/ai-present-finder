@@ -26,15 +26,21 @@ jobs:
           cache: "pnpm"
 
       - name: Write Google credentials file
-        run: echo "$GCP_SA_JSON" > "$RUNNER_TEMP/gcp-sa.json"
+        shell: bash
         env:
           GCP_SA_JSON: ${{ secrets.GCP_SA_JSON }}
-
-      - name: Export GOOGLE_CREDENTIALS_PATH
-        run: echo "GOOGLE_CREDENTIALS_PATH=$RUNNER_TEMP/gcp-sa.json" >> $GITHUB_ENV
+        run: |
+          set -euo pipefail
+          # bezpieczne zapisanie wielolinijkowego JSON
+          printf '%s' "$GCP_SA_JSON" > "$RUNNER_TEMP/gcp-sa.json"
+          chmod 600 "$RUNNER_TEMP/gcp-sa.json"
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        env:
+          GOOGLE_CREDENTIALS_PATH: ${{ runner.temp }}/gcp-sa.json
+        run: |
+          echo "Using GOOGLE_CREDENTIALS_PATH=$GOOGLE_CREDENTIALS_PATH"
+          pnpm install --frozen-lockfile
 
       - name: Run prettier
         run: pnpm run format:check

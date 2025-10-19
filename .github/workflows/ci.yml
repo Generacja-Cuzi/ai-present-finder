@@ -37,7 +37,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          export NODE_ENV=ci
           export GOOGLE_CREDENTIALS_PATH="${{ runner.temp }}/gcp-sa.json"
           export GOOGLE_SCOPES_API="https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/userinfo.profile"
           pnpm install --frozen-lockfile
@@ -97,7 +96,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          export NODE_ENV=ci
           export GOOGLE_CREDENTIALS_PATH="${{ runner.temp }}/gcp-sa.json"
           export GOOGLE_SCOPES_API="https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/userinfo.profile"
           pnpm install --frozen-lockfile
@@ -133,7 +131,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          export NODE_ENV=ci
           export GOOGLE_CREDENTIALS_PATH="${{ runner.temp }}/gcp-sa.json"
           export GOOGLE_SCOPES_API="https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/userinfo.profile"
           pnpm install --frozen-lockfile

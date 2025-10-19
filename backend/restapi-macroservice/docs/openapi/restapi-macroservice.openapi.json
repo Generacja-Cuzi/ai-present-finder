@@ -73,7 +73,14 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Returns Google OAuth authorization URL"
+            "description": "Returns Google OAuth authorization URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoogleAuthUrlDto"
+                }
+              }
+            }
           }
         },
         "summary": "Get Google OAuth URL",
@@ -266,6 +273,17 @@
         },
         "required": ["messages", "chatId"]
       },
+      "GoogleAuthUrlDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Google OAuth authorization URL",
+            "example": "https://accounts.google.com/o/oauth2/v2/auth?..."
+          }
+        },
+        "required": ["url"]
+      },
       "GoogleAuthDto": {
         "type": "object",
         "properties": {
@@ -277,6 +295,28 @@
         },
         "required": ["code"]
       },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User ID",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email",
+            "example": "user@example.com"
+          },
+          "name": {
+            "type": "string",
+            "description": "User name",
+            "example": "John Doe",
+            "nullable": true
+          }
+        },
+        "required": ["id", "email", "name"]
+      },
       "AuthResponseDto": {
         "type": "object",
         "properties": {
@@ -286,8 +326,12 @@
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
           },
           "user": {
-            "type": "object",
-            "description": "User information"
+            "description": "User information",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserDto"
+              }
+            ]
           }
         },
         "required": ["accessToken", "user"]

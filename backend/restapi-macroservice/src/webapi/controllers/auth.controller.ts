@@ -18,7 +18,11 @@ import { JwtService } from "@nestjs/jwt";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { GoogleService } from "../../app/services/google-service";
-import { AuthResponseDto, GoogleAuthDto } from "../../domain/models/auth.dto";
+import {
+  AuthResponseDto,
+  GoogleAuthDto,
+  GoogleAuthUrlDto,
+} from "../../domain/models/auth.dto";
 import type { JwtPayload } from "../../domain/models/auth.types";
 
 interface GoogleAuthResult {
@@ -39,8 +43,11 @@ export class AuthController {
 
   @Get("google/url")
   @ApiOperation({ summary: "Get Google OAuth URL" })
-  @ApiOkResponse({ description: "Returns Google OAuth authorization URL" })
-  getGoogleAuthUrl(): { url: string } {
+  @ApiOkResponse({
+    description: "Returns Google OAuth authorization URL",
+    type: GoogleAuthUrlDto,
+  })
+  getGoogleAuthUrl(): GoogleAuthUrlDto {
     return this.googleService.getOAuth2ClientUrl();
   }
 

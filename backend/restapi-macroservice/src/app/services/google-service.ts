@@ -7,6 +7,8 @@ import { join } from "node:path";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
+import type { GoogleAuthUrlDto } from "../../domain/models/auth.dto";
+
 @Injectable()
 export class GoogleService {
   private readonly scopesAPI: string[];
@@ -32,7 +34,7 @@ export class GoogleService {
     const content: string = fs.readFileSync(filePath, "utf8");
     return JSON.parse(content) as IGoogleAuthCredentials;
   }
-  getOAuth2ClientUrl(): { url: string } {
+  getOAuth2ClientUrl(): GoogleAuthUrlDto {
     const authClient = this.getAuthClient();
     return this.getAuthUrl(authClient);
   }
@@ -47,7 +49,7 @@ export class GoogleService {
     );
     return authClient;
   }
-  getAuthUrl(authClient: OAuth2Client): { url: string } {
+  getAuthUrl(authClient: OAuth2Client): GoogleAuthUrlDto {
     const authorizeUrl = authClient.generateAuthUrl({
       access_type: "offline",
       scope: this.scopesAPI,

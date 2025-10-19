@@ -6,7 +6,7 @@ const handleLogin = async () => {
   try {
     const { data, error } = await fetchClient.GET("/auth/google/url");
 
-    if (error || !data) {
+    if (data === undefined) {
       console.error("Failed to get Google auth URL:", error);
       return;
     }

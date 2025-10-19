@@ -11,7 +11,7 @@ export const Route = createFileRoute("/")({
     const isAuthenticated = store.get(isAuthenticatedAtom);
 
     if (isAuthenticated) {
-      throw redirect({ to: "/stalking", replace: true });
+      return redirect({ to: "/stalking", replace: true });
     }
   },
   component: App,

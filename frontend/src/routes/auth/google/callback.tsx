@@ -8,15 +8,16 @@ const store = getDefaultStore();
 
 export const Route = createFileRoute("/auth/google/callback")({
   beforeLoad: async ({ search }) => {
-    const code = (search as Record<string, string | undefined>)?.code;
+    const code = (search as Record<string, string | undefined | null> | null)
+      ?.code;
 
-    if (!code) {
-      throw redirect({ to: "/", replace: true });
+    if (code === undefined || code === "" || code === null) {
+      return redirect({ to: "/", replace: true });
     }
 
     const handled = store.get(oauthHandledAtom);
     if (handled) {
-      throw redirect({ to: "/stalking", replace: true });
+      return redirect({ to: "/stalking", replace: true });
     }
 
     try {
@@ -24,19 +25,19 @@ export const Route = createFileRoute("/auth/google/callback")({
         body: { code },
       });
 
-      if (error || !data) {
+      if (data === undefined) {
         console.error("OAuth error:", error);
         store.set(oauthHandledAtom, false);
-        throw redirect({ to: "/", replace: true });
+        return redirect({ to: "/", replace: true });
       }
 
       store.set(userAtom, data.user);
       store.set(oauthHandledAtom, true);
-      throw redirect({ to: "/stalking", replace: true });
+      return redirect({ to: "/stalking", replace: true });
     } catch (error) {
       console.error("OAuth error:", error);
       store.set(oauthHandledAtom, false);
-      throw redirect({ to: "/", replace: true });
+      return redirect({ to: "/", replace: true });
     }
   },
   component: () => null,

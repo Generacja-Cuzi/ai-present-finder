@@ -89,6 +89,7 @@ export class EmitGiftReadyHandler
         `AI ranking completed for session ${eventId}. Top score: ${String(rankedProductsWithScores[0]?.score ?? "N/A")}`,
       );
 
+      // Update existing products with ratings and reasoning
       const productsToUpdate: Product[] = [];
       for (const rankedProduct of rankedProductsWithScores) {
         const productEntity = productEntityMap.get(rankedProduct.link);

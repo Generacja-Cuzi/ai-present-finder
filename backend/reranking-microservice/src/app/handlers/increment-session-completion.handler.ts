@@ -28,8 +28,9 @@ export class IncrementSessionCompletionHandler
     const { eventId } = command;
 
     return this.giftSessionRepository.manager.transaction(async (manager) => {
+      const now = new Date();
       await manager.increment(GiftSession, { eventId }, "completedEvents", 1);
-
+      await manager.update(GiftSession, { eventId }, { updatedAt: now });
       const session = await manager.findOne(GiftSession, {
         where: { eventId },
       });
@@ -42,7 +43,7 @@ export class IncrementSessionCompletionHandler
         await manager.update(
           GiftSession,
           { eventId },
-          { status: SessionStatus.COMPLETED },
+          { status: SessionStatus.COMPLETED, updatedAt: now },
         );
         this.logger.log(`Session ${eventId} marked as completed`);
         return { completed: true };

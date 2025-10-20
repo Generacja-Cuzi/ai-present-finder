@@ -23,10 +23,15 @@ export class MarkTimeoutSessionsHandler
     private readonly giftSessionRepository: Repository<GiftSession>,
     private readonly configService: ConfigService,
   ) {
-    this.eventTimeoutMs = Number.parseInt(
-      this.configService.get<string>("EVENT_TIMEOUT_MS") ?? "120000",
-      10,
-    );
+    const configValue =
+      this.configService.get<string>("EVENT_TIMEOUT_MS") ?? "120000";
+    this.eventTimeoutMs = Number.parseInt(configValue, 10);
+    if (Number.isNaN(this.eventTimeoutMs)) {
+      this.logger.error(
+        `Invalid EVENT_TIMEOUT_MS value: ${configValue}, using default 120000`,
+      );
+      this.eventTimeoutMs = 120_000;
+    }
   }
 
   async execute(_command: MarkTimeoutSessionsCommand): Promise<string[]> {

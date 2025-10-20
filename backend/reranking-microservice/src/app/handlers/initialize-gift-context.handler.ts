@@ -26,12 +26,13 @@ export class InitializeGiftContextHandler
     await this.commandBus.execute(
       new CreateSessionCommand(eventId, chatId, totalEvents),
     );
-
+    const now = new Date();
     await this.giftSessionRepository.update(eventId, {
       giftContext: {
         userProfile,
         keywords,
       },
+      updatedAt: now,
     });
 
     this.logger.log(`Saved gift context for session ${eventId}`);

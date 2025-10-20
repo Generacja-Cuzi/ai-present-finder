@@ -29,6 +29,15 @@ export class AddProductsToSessionHandler
       sourceEventSuccess,
     } = command;
 
+    const sessionExists = await this.sessionProductRepository.manager
+      .getRepository(GiftSession)
+      .exists({ where: { eventId } });
+
+    if (!sessionExists) {
+      this.logger.error(`Session ${eventId} not found, cannot add products`);
+      throw new Error(`Session ${eventId} does not exist`);
+    }
+
     const productEntities = products.map((listing) => {
       const product = new Product();
       product.image = listing.image;
@@ -50,7 +59,12 @@ export class AddProductsToSessionHandler
       products: productEntities,
     });
 
-    await this.sessionProductRepository.save(sessionProduct);
+    try {
+      await this.sessionProductRepository.save(sessionProduct);
+    } catch (error) {
+      this.logger.error(`Failed to persist products for session ${eventId}`);
+      throw error;
+    }
 
     this.logger.log(
       `Persisted ${String(products.length)} products from ${sourceEventProvider} for session ${eventId}`,

@@ -113,6 +113,25 @@ services:
       timeout: 10s
       retries: 3
 
+  restapi-postgres:
+    image: postgres:16
+    container_name: ai-gift-finder-restapi-postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: restapi_db
+      POSTGRES_USER: restapi_user
+      POSTGRES_PASSWORD: restapi_password
+    volumes:
+      - restapi_postgres_data:/var/lib/postgresql/data
+    networks:
+      - ai-present-finder-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U restapi_user -d restapi_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 volumes:
   rabbitmq_data:
   reranking_postgres_data:
@@ -120,6 +139,7 @@ volumes:
   stalking_postgres_data:
   chat_postgres_data:
   gift_ideas_postgres_data:
+  restapi_postgres_data:
 
 networks:
   ai-present-finder-network:

@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { useSSE } from "react-hooks-sse";
 
-import { uiUpdateEvent } from "../types";
-import type { ChatState, SseMessageDto } from "../types";
+import { SSE_EVENTS, useSse } from "@/lib/sse";
+
+import type { ChatSseMessage, ChatState } from "../types";
 
 export const useSseChat = ({ clientId }: { clientId: string }) => {
   const initialState: ChatState = useMemo(
@@ -15,16 +15,15 @@ export const useSseChat = ({ clientId }: { clientId: string }) => {
     [],
   );
 
-  const state = useSSE<ChatState, SseMessageDto>(
-    uiUpdateEvent,
+  const state = useSse<ChatState, ChatSseMessage>(
+    SSE_EVENTS.UI_UPDATE,
     initialState,
-
     {
       stateReducer: (previousState, action) => {
         switch (action.data.type) {
           case "chat-interview-completed": {
             return {
-              type: "waiting-for-gift-ideas",
+              type: "chat-interview-completed",
             };
           }
           case "chat-inappropriate-request": {
@@ -42,12 +41,6 @@ export const useSseChat = ({ clientId }: { clientId: string }) => {
               data: {
                 messages: [...previousState.data.messages, action.data.message],
               },
-            };
-          }
-          case "gift-ready": {
-            return {
-              type: "gift-ready",
-              data: { giftIdeas: action.data.data.giftIdeas },
             };
           }
           default: {

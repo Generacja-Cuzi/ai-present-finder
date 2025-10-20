@@ -28,10 +28,11 @@ export class GenerateQuestionHandler
   ) {}
 
   async execute(command: GenerateQuestionCommand) {
-    const { chatId, history } = command;
+    const { chatId, occasion, history } = command;
     let shouldStop = false as boolean;
 
     const result = await giftInterviewFlow({
+      occasion,
       messages: history.map((message) => ({
         ...message,
         role: message.sender,

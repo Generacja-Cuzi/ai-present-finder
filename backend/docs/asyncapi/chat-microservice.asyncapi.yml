@@ -113,10 +113,14 @@ components:
         type: object
         required:
           - chatId
+          - occasion
         properties:
           chatId:
             type: string
             description: Unique identifier for the chat session
+          occasion:
+            type: string
+            description: The occasion for which the gift is being searched (e.g., birthday, anniversary, Christmas)
     ChatUserAnswered:
       name: ChatUserAnsweredEvent
       title: ChatUserAnswered

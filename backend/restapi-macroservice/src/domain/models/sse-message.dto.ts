@@ -1,6 +1,7 @@
-import type { ChatMessage, ListingDto } from "@core/types";
-
 import { ApiProperty } from "@nestjs/swagger";
+
+import { ChatMessageDto } from "./chat-message.dto";
+import { ListingDto } from "./listing.dto";
 
 export const uiUpdateEvent = "ui-update";
 
@@ -9,7 +10,7 @@ export class SseChatbotMessageDto {
   type!: "chatbot-message";
 
   @ApiProperty({
-    type: Object,
+    type: ChatMessageDto,
     description: "Chat message from the bot",
     example: {
       id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -17,7 +18,7 @@ export class SseChatbotMessageDto {
       sender: "user",
     },
   })
-  message!: ChatMessage;
+  message!: ChatMessageDto;
 }
 
 export class SseChatInterviewCompletedDto {
@@ -47,7 +48,8 @@ export class SseGiftReadyDto {
   type!: "gift-ready";
 
   @ApiProperty({
-    type: Object,
+    type: ListingDto,
+    isArray: true,
     description: "Gift ideas payload",
     example: {
       giftIdeas: [
@@ -66,9 +68,7 @@ export class SseGiftReadyDto {
       ],
     },
   })
-  data!: {
-    giftIdeas: ListingDto[];
-  };
+  data!: ListingDto[];
 }
 
 export type SseMessageDto =

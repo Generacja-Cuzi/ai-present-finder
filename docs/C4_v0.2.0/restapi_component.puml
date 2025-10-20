@@ -1,0 +1,79 @@
+@startuml C4_Component_RestAPI
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+skinparam linetype ortho
+skinparam ranksep 200
+skinparam nodesep 200
+top to bottom direction
+Container_Boundary(restapi, "REST API Macroservice (NestJS)") {
+  Component(auth_controller, "AuthController", "NestJS Controller", "Auth endpoints: GET /auth/google/url, POST /auth/google/callback, GET /auth/me, POST /auth/logout")
+  Component(restapi_controller, "RestApiController", "NestJS Controller", "REST endpoints: POST /restapi/stalking-request, POST /restapi/send-message (protected by JWT)")
+  Component(sse_controller, "SSEController", "NestJS Controller", "SSE endpoint: GET /sse?clientId=...")
+  Component(jwt_auth_guard, "JwtAuthGuard", "NestJS Guard", "Validates JWT tokens from httpOnly cookies")
+  Component(validate_google_token_handler, "ValidateGoogleTokenHandler", "CQRS Command Handler", "Validates Google OAuth code and creates/updates user")
+  Component(google_service, "GoogleService", "NestJS Service", "Handles Google OAuth flow and token exchange")
+  Component(start_command_handler, "StartProcessingHandler", "CQRS Command Handler", "Initiates stalking and chat flows")
+  Component(send_message_handler, "SendUserMessageHandler", "CQRS Command Handler", "Handles user chat messages")
+  Component(gift_ready_handler, "GiftReadyHandler", "Event Handler", "Handles GiftReadyEvent from RabbitMQ")
+  Component(chat_question_handler, "ChatQuestionAskedHandler", "Event Handler", "Handles ChatQuestionAskedEvent from RabbitMQ")
+  Component(chat_completed_handler, "ChatCompletedNotifyUserHandler", "Event Handler", "Handles ChatCompletedNotifyUserEvent from RabbitMQ")
+  Component(chat_inappropriate_handler, "ChatInappropriateRequestHandler", "Event Handler", "Handles ChatInappropriateRequestEvent from RabbitMQ")
+  Component(notify_user_handler, "NotifyUserSSEHandler", "CQRS Command Handler", "Sends SSE messages to users")
+  Component(sse_service, "SSEService", "NestJS Service", "Manages SSE connections and message fanout")
+  Component(user_repository, "UserRepository", "TypeORM Repository", "Persists and retrieves user data")
+}
+
+Component_Ext(user, "User", "Browser/Client", "Authenticates and provides social links and chat messages")
+Component_Ext(google_oauth, "Google OAuth", "OAuth Provider", "Validates OAuth codes and returns user info")
+Component_Ext(postgres, "PostgreSQL", "Database", "Stores user accounts")
+Component_Ext(rabbitmq_out_stalking, "RabbitMQ", "Message Broker", "StalkingAnalyzeRequestedEvent queue")
+Component_Ext(rabbitmq_out_chat_start, "RabbitMQ", "Message Broker", "ChatStartInterviewEvent queue")
+Component_Ext(rabbitmq_out_chat_answer, "RabbitMQ", "Message Broker", "ChatUserAnsweredEvent queue")
+Component_Ext(rabbitmq_in_question, "RabbitMQ", "Message Broker", "ChatQuestionAskedEvent queue")
+Component_Ext(rabbitmq_in_gift, "RabbitMQ", "Message Broker", "GiftReadyEvent queue")
+Component_Ext(rabbitmq_in_completed_notify, "RabbitMQ", "Message Broker", "ChatCompletedNotifyUserEvent queue")
+Component_Ext(rabbitmq_in_inappropriate, "RabbitMQ", "Message Broker", "ChatInappropriateRequestEvent queue")
+
+' Authentication flow
+Rel(user, auth_controller, "GET /auth/google/url", "HTTPS")
+Rel(auth_controller, google_service, "Gets OAuth URL")
+Rel(user, auth_controller, "POST /auth/google/callback", "HTTPS/JSON")
+Rel(auth_controller, validate_google_token_handler, "Dispatches command", "CQRS CommandBus")
+Rel(validate_google_token_handler, google_service, "Validates OAuth code")
+Rel(google_service, google_oauth, "Exchanges code for token", "HTTPS")
+Rel(validate_google_token_handler, user_repository, "Creates/updates user")
+Rel(user_repository, postgres, "Persists user", "Prisma/SQL")
+Rel(auth_controller, user, "Sets JWT in httpOnly cookie", "Set-Cookie")
+Rel(user, auth_controller, "GET /auth/me", "HTTPS with cookie")
+Rel(auth_controller, user_repository, "Retrieves user info")
+Rel(user, auth_controller, "POST /auth/logout", "HTTPS")
+
+' Protected endpoints
+Rel(user, restapi_controller, "POST /restapi/stalking-request (with JWT cookie)", "HTTPS/JSON")
+Rel(user, restapi_controller, "POST /restapi/send-message (with JWT cookie)", "HTTPS/JSON")
+Rel(restapi_controller, jwt_auth_guard, "Validates JWT")
+Rel(jwt_auth_guard, user_repository, "Verifies user exists")
+Rel(user, sse_controller, "GET /sse?clientId=...", "HTTPS/SSE")
+Rel(sse_controller, sse_service, "Registers client")
+Rel(sse_service, user, "Sends real-time updates", "SSE")
+
+Rel(restapi_controller, start_command_handler, "Dispatches command", "CQRS CommandBus")
+Rel(start_command_handler, rabbitmq_out_stalking, "Publishes StalkingAnalyzeRequestedEvent", "AMQP ClientProxy.emit")
+Rel(start_command_handler, rabbitmq_out_chat_start, "Publishes ChatStartInterviewEvent", "AMQP ClientProxy.emit")
+
+Rel(restapi_controller, send_message_handler, "Dispatches command", "CQRS CommandBus")
+Rel(send_message_handler, rabbitmq_out_chat_answer, "Publishes ChatUserAnsweredEvent", "AMQP ClientProxy.emit")
+
+Rel(rabbitmq_in_question, chat_question_handler, "Consumes event", "AMQP @EventPattern")
+Rel(rabbitmq_in_gift, gift_ready_handler, "Consumes event", "AMQP @EventPattern")
+Rel(rabbitmq_in_completed_notify, chat_completed_handler, "Consumes event", "AMQP @EventPattern")
+Rel(rabbitmq_in_inappropriate, chat_inappropriate_handler, "Consumes event", "AMQP @EventPattern")
+
+Rel(gift_ready_handler, notify_user_handler, "Dispatches NotifyUserSseCommand", "CQRS CommandBus")
+Rel(chat_question_handler, notify_user_handler, "Dispatches NotifyUserSseCommand", "CQRS CommandBus")
+Rel(chat_completed_handler, notify_user_handler, "Dispatches NotifyUserSseCommand", "CQRS CommandBus")
+Rel(chat_inappropriate_handler, notify_user_handler, "Dispatches NotifyUserSseCommand", "CQRS CommandBus")
+
+Rel(notify_user_handler, sse_service, "Sends message")
+
+SHOW_LEGEND()
+@enduml

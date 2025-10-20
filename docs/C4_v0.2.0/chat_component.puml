@@ -1,0 +1,37 @@
+@startuml C4_Component_Chat
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(chat, "Chat Microservice (NestJS)") {
+  Component(start_handler, "ChatStartInterviewHandler", "NestJS Handler", "Handles ChatStartInterviewEvent from RabbitMQ")
+  Component(answer_handler, "ChatUserAnsweredHandler", "NestJS Handler", "Handles ChatUserAnsweredEvent from RabbitMQ")
+  Component(question_handler, "GenerateQuestionHandler", "CQRS Command Handler", "Generates interview questions")
+  Component(set_occasion_handler, "SetOccasionHandler", "CQRS Command Handler", "Stores occasion for chat session")
+  Component(get_occasion_handler, "GetOccasionHandler", "CQRS Query Handler", "Retrieves occasion for chat session")
+  Component(ai_flow, "AI Flow Service", "ai-sdk + OpenAI", "Uses OpenAI to generate contextual interview questions")
+  Component(chat_session_db, "ChatSession", "TypeORM Entity", "Stores chat session data including occasion")
+}
+
+Component_Ext(rabbitmq_in_start, "RabbitMQ", "Message Broker", "ChatStartInterviewEvent queue")
+Component_Ext(rabbitmq_in_answer, "RabbitMQ", "Message Broker", "ChatUserAnsweredEvent queue")
+Component_Ext(rabbitmq_out_question, "RabbitMQ", "Message Broker", "ChatQuestionAskedEvent queue")
+Component_Ext(rabbitmq_out_completed, "RabbitMQ", "Message Broker", "ChatInterviewCompletedEvent queue")
+Component_Ext(rabbitmq_out_inappropriate, "RabbitMQ", "Message Broker", "ChatInappropriateRequestEvent queue")
+Component_Ext(openai, "OpenAI", "LLM", "Interview question generation and context analysis")
+
+Rel(rabbitmq_in_start, start_handler, "Consumes event", "AMQP @EventPattern")
+Rel(start_handler, set_occasion_handler, "Dispatches SetOccasionCommand", "CQRS CommandBus")
+Rel(set_occasion_handler, chat_session_db, "Stores occasion", "TypeORM")
+Rel(start_handler, question_handler, "Dispatches GenerateQuestionCommand", "CQRS CommandBus")
+Rel(question_handler, ai_flow, "Generates questions")
+Rel(ai_flow, openai, "LLM call", "HTTPS")
+Rel(question_handler, rabbitmq_out_question, "Publishes ChatQuestionAskedEvent", "AMQP ClientProxy.emit")
+
+Rel(rabbitmq_in_answer, answer_handler, "Consumes event", "AMQP @EventPattern")
+Rel(answer_handler, get_occasion_handler, "Executes GetOccasionQuery", "CQRS QueryBus")
+Rel(get_occasion_handler, chat_session_db, "Retrieves occasion", "TypeORM")
+Rel(answer_handler, question_handler, "Dispatches GenerateQuestionCommand", "CQRS CommandBus")
+Rel(answer_handler, rabbitmq_out_completed, "Publishes ChatInterviewCompletedEvent", "AMQP ClientProxy.emit")
+Rel(answer_handler, rabbitmq_out_inappropriate, "Publishes ChatInappropriateRequestEvent", "AMQP ClientProxy.emit")
+
+SHOW_LEGEND()
+@enduml

@@ -1,5 +1,5 @@
 import { FetchOlxEvent, ProductFetchedEvent } from "@core/events";
-import { ListingDto } from "@core/types";
+import { ListingPayload } from "@core/types";
 
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -188,7 +188,7 @@ export class FetchOlxHandler {
     return json;
   }
 
-  private processOlxResponse(json: OlxGraphQLResponse): ListingDto[] {
+  private processOlxResponse(json: OlxGraphQLResponse): ListingPayload[] {
     const payload =
       json.data?.clientCompatibleListings ?? json.clientCompatibleListings;
 
@@ -222,7 +222,13 @@ export class FetchOlxHandler {
           : null;
 
         return {
-          image: item.photos?.[0]?.link ?? null,
+          image: (() => {
+            const link = item.photos?.[0]?.link;
+            if (typeof link === "string" && link.length > 0) {
+              return link.replace(/;s=.*$/, "");
+            }
+            return null;
+          })(),
           title: item.title ?? "",
           description: item.description ?? item.title ?? "",
           link: item.url ?? "",
@@ -232,11 +238,13 @@ export class FetchOlxHandler {
             currency: validPriceParameter?.currency ?? "PLN",
             negotiable: validPriceParameter?.negotiable ?? false,
           },
-        } satisfies ListingDto;
+        } satisfies ListingPayload;
       });
   }
 
-  private async fetchOlxProducts(event: FetchOlxEvent): Promise<ListingDto[]> {
+  private async fetchOlxProducts(
+    event: FetchOlxEvent,
+  ): Promise<ListingPayload[]> {
     const { query, limit, offset } = event;
     let attempt = 0;
 

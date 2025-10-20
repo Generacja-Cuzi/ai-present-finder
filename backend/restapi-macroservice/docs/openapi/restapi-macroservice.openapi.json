@@ -21,6 +21,26 @@
         "tags": ["Gift"]
       }
     },
+    "/health": {
+      "get": {
+        "operationId": "AppController_health",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns service health status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Health check endpoint",
+        "tags": ["Gift"]
+      }
+    },
     "/restapi/stalking-request": {
       "post": {
         "operationId": "RestApiController_create",
@@ -67,6 +87,102 @@
         "tags": ["restapi"]
       }
     },
+    "/auth/google/url": {
+      "get": {
+        "operationId": "AuthController_getGoogleAuthUrl",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns Google OAuth authorization URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoogleAuthUrlDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get Google OAuth URL",
+        "tags": ["auth"]
+      }
+    },
+    "/auth/google/callback": {
+      "post": {
+        "operationId": "AuthController_googleCallback",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleAuthDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sets JWT token in httpOnly cookie and returns user info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Handle Google OAuth callback",
+        "tags": ["auth"]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successfully logged out"
+          }
+        },
+        "summary": "Logout user by clearing auth cookie",
+        "tags": ["auth"]
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "operationId": "AuthController_getCurrentUser",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns current user info"
+          }
+        },
+        "summary": "Get current user from cookie",
+        "tags": ["auth"]
+      }
+    },
+    "/chats": {
+      "get": {
+        "operationId": "ChatController_getUserChats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns list of user's chats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get user's chat history",
+        "tags": ["chats"]
+      }
+    },
     "/sse": {
       "get": {
         "operationId": "SseController_sse",
@@ -109,11 +225,6 @@
       "StalkingAnalyzeRequestDto": {
         "type": "object",
         "properties": {
-          "facebookUrl": {
-            "type": "string",
-            "description": "Facebook profile URL",
-            "example": "https://facebook.com/example"
-          },
           "instagramUrl": {
             "type": "string",
             "description": "Instagram profile URL",
@@ -124,20 +235,15 @@
             "description": "TikTok profile URL",
             "example": "https://tiktok.com/@example"
           },
-          "youtubeUrl": {
-            "type": "string",
-            "description": "YouTube channel URL",
-            "example": "https://youtube.com/channel/ABC"
-          },
           "xUrl": {
             "type": "string",
             "description": "X (Twitter) profile URL",
             "example": "https://x.com/example"
           },
-          "linkedinUrl": {
+          "occasion": {
             "type": "string",
-            "description": "LinkedIn profile URL",
-            "example": "https://linkedin.com/in/example"
+            "description": "Occasion",
+            "example": "birthday"
           },
           "chatId": {
             "type": "string",
@@ -145,7 +251,7 @@
             "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           }
         },
-        "required": ["chatId"]
+        "required": ["occasion", "chatId"]
       },
       "ChatMessageDto": {
         "type": "object",
@@ -153,7 +259,6 @@
           "id": {
             "type": "string",
             "description": "Unique message identifier",
-            "format": "uuid",
             "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           },
           "content": {
@@ -163,8 +268,8 @@
           },
           "sender": {
             "type": "string",
-            "enum": ["user", "assistant"],
             "description": "Message sender",
+            "enum": ["user", "assistant"],
             "example": "user"
           }
         },
@@ -188,6 +293,82 @@
         },
         "required": ["messages", "chatId"]
       },
+      "GoogleAuthUrlDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Google OAuth authorization URL",
+            "example": "https://accounts.google.com/o/oauth2/v2/auth?..."
+          }
+        },
+        "required": ["url"]
+      },
+      "GoogleAuthDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Google OAuth authorization code",
+            "example": "4/0AY0e-g7..."
+          }
+        },
+        "required": ["code"]
+      },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User ID",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email",
+            "example": "user@example.com"
+          },
+          "name": {
+            "type": "string",
+            "description": "User name",
+            "example": "John Doe",
+            "nullable": true
+          }
+        },
+        "required": ["id", "email", "name"]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "JWT access token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "user": {
+            "description": "User information",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserDto"
+              }
+            ]
+          }
+        },
+        "required": ["accessToken", "user"]
+      },
+      "ChatsResponseDto": {
+        "type": "object",
+        "properties": {
+          "chats": {
+            "description": "List of user's chats",
+            "items": {
+              "type": "array"
+            },
+            "type": "array"
+          }
+        },
+        "required": ["chats"]
+      },
       "SseChatbotMessageDto": {
         "type": "object",
         "properties": {
@@ -197,13 +378,17 @@
             "example": "chatbot-message"
           },
           "message": {
-            "type": "object",
             "description": "Chat message from the bot",
             "example": {
               "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
               "content": "Hello!",
               "sender": "user"
-            }
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ChatMessageDto"
+              }
+            ]
           }
         },
         "required": ["type", "message"]
@@ -235,6 +420,72 @@
         },
         "required": ["type", "reason"]
       },
+      "PriceDto": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number",
+            "description": "Price value",
+            "example": 10
+          },
+          "label": {
+            "type": "string",
+            "description": "Price label",
+            "example": "10"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency",
+            "example": "USD"
+          },
+          "negotiable": {
+            "type": "boolean",
+            "description": "Whether price is negotiable",
+            "example": false
+          }
+        },
+        "required": ["value", "label", "currency", "negotiable"]
+      },
+      "ListingDto": {
+        "type": "object",
+        "properties": {
+          "image": {
+            "type": "string",
+            "description": "Image URL",
+            "example": "https://example.com/image.jpg"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title",
+            "example": "Book"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description",
+            "example": "Great book"
+          },
+          "link": {
+            "type": "string",
+            "description": "Link",
+            "example": "https://example.com/book"
+          },
+          "price": {
+            "description": "Price",
+            "example": {
+              "value": 10,
+              "label": "10",
+              "currency": "USD",
+              "negotiable": false
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PriceDto"
+              }
+            ]
+          }
+        },
+        "required": ["image", "title", "description", "link", "price"]
+      },
       "SseGiftReadyDto": {
         "type": "object",
         "properties": {
@@ -244,7 +495,6 @@
             "example": "gift-ready"
           },
           "data": {
-            "type": "object",
             "description": "Gift ideas payload",
             "example": {
               "giftIdeas": [
@@ -261,6 +511,10 @@
                   "link": "https://example.com/pen"
                 }
               ]
+            },
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListingDto"
             }
           }
         },

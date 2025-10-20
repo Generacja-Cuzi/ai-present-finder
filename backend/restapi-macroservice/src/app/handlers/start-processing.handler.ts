@@ -27,12 +27,9 @@ export class StartProcessingCommandHandler
 
     // Start stalking
     const stalkingEvent = new StalkingAnalyzeRequestedEvent(
-      analyzeRequestedDto.facebookUrl,
       analyzeRequestedDto.instagramUrl,
       analyzeRequestedDto.tiktokUrl,
-      analyzeRequestedDto.youtubeUrl,
       analyzeRequestedDto.xUrl,
-      analyzeRequestedDto.linkedinUrl,
       analyzeRequestedDto.chatId,
     );
 
@@ -46,6 +43,7 @@ export class StartProcessingCommandHandler
 
     const interviewEvent = new ChatStartInterviewEvent(
       analyzeRequestedDto.chatId,
+      analyzeRequestedDto.occasion,
     );
     this.chatEventBus.emit(ChatStartInterviewEvent.name, interviewEvent);
     this.logger.log(

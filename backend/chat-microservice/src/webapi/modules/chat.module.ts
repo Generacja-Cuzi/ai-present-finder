@@ -7,11 +7,15 @@ import {
 import { ChatStartInterviewHandler } from "src/app/handlers/chat-start-interview.handler";
 import { ChatUserAnsweredHandler } from "src/app/handlers/chat-user-answered.handler";
 import { GenerateQuestionHandler } from "src/app/handlers/generate-question.handler";
+import { GetOccasionHandler } from "src/app/handlers/get-occasion.handler";
+import { SetOccasionHandler } from "src/app/handlers/set-occasion.handler";
+import { ChatSession } from "src/domain/entities/chat-session.entity";
 
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
 import { ClientsModule, Transport } from "@nestjs/microservices";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
 @Module({
   imports: [
@@ -19,6 +23,25 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    TypeOrmModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        type: "postgres" as const,
+        host: configService.get<string>("DATABASE_HOST") ?? "localhost",
+        port: Number.parseInt(
+          configService.get<string>("DATABASE_PORT") ?? "6436",
+          10,
+        ),
+        username: configService.get<string>("DATABASE_USERNAME") ?? "chat_user",
+        password:
+          configService.get<string>("DATABASE_PASSWORD") ?? "chat_password",
+        database: configService.get<string>("DATABASE_NAME") ?? "chat_service",
+        entities: [ChatSession],
+        synchronize: true, // Only for development
+        logging: false,
+      }),
+      inject: [ConfigService],
+    }),
+    TypeOrmModule.forFeature([ChatSession]),
     ClientsModule.register([
       {
         name: "CHAT_QUESTION_ASKED_EVENT",
@@ -75,6 +98,6 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
     ]),
   ],
   controllers: [ChatStartInterviewHandler, ChatUserAnsweredHandler],
-  providers: [GenerateQuestionHandler],
+  providers: [GenerateQuestionHandler, SetOccasionHandler, GetOccasionHandler],
 })
 export class ChatModule {}

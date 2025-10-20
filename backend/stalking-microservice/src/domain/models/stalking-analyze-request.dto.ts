@@ -1,59 +1,32 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class StalkingAnalyzeRequestDto {
-  @ApiProperty({
-    type: String,
-    format: "url",
-    description: "Facebook profile URL",
-    example: "https://facebook.com/example",
-    required: false,
-  })
-  facebookUrl: string;
-
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     format: "url",
     description: "Instagram profile URL",
     example: "https://instagram.com/example",
     required: false,
   })
-  instagramUrl: string;
+  instagramUrl?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     format: "url",
     description: "TikTok profile URL",
     example: "https://tiktok.com/@example",
     required: false,
   })
-  tiktokUrl: string;
+  tiktokUrl?: string;
 
-  @ApiProperty({
-    type: String,
-    format: "url",
-    description: "YouTube channel URL",
-    example: "https://youtube.com/channel/ABC",
-    required: false,
-  })
-  youtubeUrl: string;
-
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     format: "url",
     description: "X (Twitter) profile URL",
     example: "https://x.com/example",
     required: false,
   })
-  xUrl: string;
-
-  @ApiProperty({
-    type: String,
-    format: "url",
-    description: "LinkedIn profile URL",
-    example: "https://linkedin.com/in/example",
-    required: false,
-  })
-  linkedinUrl: string;
+  xUrl?: string;
 
   @ApiProperty({
     type: String,

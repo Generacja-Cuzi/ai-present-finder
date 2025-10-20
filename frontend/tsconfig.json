@@ -23,6 +23,7 @@
     "experimentalDecorators": true,
 
     /* Linting */
+    "noUncheckedIndexedAccess": true,
     "skipLibCheck": true,
     "strict": true,
     "noUnusedLocals": true,

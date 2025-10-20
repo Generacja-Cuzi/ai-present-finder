@@ -25,8 +25,26 @@ jobs:
           node-version: 22
           cache: "pnpm"
 
+      - name: Setup PostgreSQL
+        uses: ./.github/actions/setup-postgres
+        with:
+          container-name: "postgres-ci-lint"
+
+      - name: Write Google credentials file
+        shell: bash
+        env:
+          GCP_SA_JSON: ${{ secrets.GCP_SA_JSON }}
+        run: |
+          set -euo pipefail
+          # bezpieczne zapisanie wielolinijkowego JSON
+          printf '%s' "$GCP_SA_JSON" > "$RUNNER_TEMP/gcp-sa.json"
+          chmod 600 "$RUNNER_TEMP/gcp-sa.json"
+
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          export GOOGLE_CREDENTIALS_PATH="${{ runner.temp }}/gcp-sa.json"
+          export GOOGLE_SCOPES_API="https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/userinfo.profile"
+          pnpm install --frozen-lockfile
 
       - name: Run prettier
         run: pnpm run format:check
@@ -51,3 +69,324 @@ jobs:
       - name: Run commitlint check
         if: always() && github.event_name == 'pull_request'
         run: npx commitlint -f ${{ github.event.pull_request.base.sha }}
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Pull rabbitmq alpine image
+        run: docker pull rabbitmq:3.12.11-alpine
+
+      - name: Setup PostgreSQL
+        uses: ./.github/actions/setup-postgres
+        with:
+          container-name: "postgres-ci-test"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Write Google credentials file
+        shell: bash
+        env:
+          GCP_SA_JSON: ${{ secrets.GCP_SA_JSON }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$GCP_SA_JSON" > "$RUNNER_TEMP/gcp-sa.json"
+          chmod 600 "$RUNNER_TEMP/gcp-sa.json"
+
+      - name: Install dependencies
+        run: |
+          export GOOGLE_CREDENTIALS_PATH="${{ runner.temp }}/gcp-sa.json"
+          export GOOGLE_SCOPES_API="https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/userinfo.profile"
+          pnpm install --frozen-lockfile
+
+      - name: Run tests
+        run: pnpm -r --filter '!fetch-microservice' test
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PostgreSQL
+        uses: ./.github/actions/setup-postgres
+        with:
+          container-name: "postgres-ci-build"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Write Google credentials file
+        shell: bash
+        env:
+          GCP_SA_JSON: ${{ secrets.GCP_SA_JSON }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$GCP_SA_JSON" > "$RUNNER_TEMP/gcp-sa.json"
+          chmod 600 "$RUNNER_TEMP/gcp-sa.json"
+
+      - name: Install dependencies
+        run: |
+          export GOOGLE_CREDENTIALS_PATH="${{ runner.temp }}/gcp-sa.json"
+          export GOOGLE_SCOPES_API="https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/userinfo.profile"
+          pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Test Docker Compose configuration
+        run: |
+          cd deployment
+          # Create minimal env file for config validation
+          cat > .env.test <<EOF
+          RABBITMQ_USER=test_user
+          RABBITMQ_PASS=test_password
+          POSTGRES_PASSWORD=test_password
+          OPENAI_API_KEY=sk-test-dummy-key
+          BRIGHTDATA_API_KEY=test-brightdata-key
+          EOF
+
+          # Validate configuration can be parsed
+          docker compose -f docker-compose.prod.yml --env-file .env.test config --quiet
+          echo "✅ Docker Compose configuration is valid"
+
+          rm .env.test
+
+      - name: Build backend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./deployment/Dockerfile
+          push: false
+          load: true
+          tags: ai-present-finder:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build frontend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./deployment/frontend.Dockerfile
+          push: false
+          load: true
+          tags: ai-present-finder-frontend:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test backend container startup
+        run: |
+          # Start the backend container with minimal required env vars
+          docker run -d --name test-backend \
+            -e NODE_ENV=production \
+            -e CLOUDAMQP_URL=amqp://guest:guest@localhost:5672 \
+            -e OPENAI_API_KEY=sk-test-dummy-key \
+            -e BRIGHTDATA_API_KEY=test-key \
+            ai-present-finder:test
+
+          # Wait for PM2 to start services
+          sleep 10
+
+          # Check if container is still running
+          if docker ps | grep -q test-backend; then
+            echo "✅ Backend container is running"
+            
+            # Check PM2 process status
+            echo "📊 PM2 process status:"
+            docker exec test-backend pm2 list || echo "⚠️  Could not get PM2 status"
+            
+            # Show logs
+            echo "📝 Container logs (last 30 lines):"
+            docker logs test-backend --tail=30
+            
+            docker stop test-backend
+            docker rm test-backend
+          else
+            echo "❌ Backend container crashed"
+            docker logs test-backend
+            docker rm -f test-backend
+            exit 1
+          fi
+
+      - name: Test frontend container startup
+        run: |
+          # Start the frontend container briefly to test it starts
+          docker run --rm -d --name test-frontend -p 8080:80 ai-present-finder-frontend:test
+          # Wait a moment for startup
+          sleep 10
+          # Check if container is still running (not crashed)
+          if docker ps | grep -q test-frontend; then
+            echo "✅ Frontend container started successfully"
+            # Test that nginx health endpoint is responding
+            if curl -f http://localhost:8080/health > /dev/null 2>&1; then
+              echo "✅ Frontend HTTP health endpoint responding"
+            else
+              echo "❌ Frontend HTTP health endpoint not responding"
+              docker logs test-frontend
+              exit 1
+            fi
+            docker stop test-frontend
+          else
+            echo "❌ Frontend container failed to start"
+            docker logs test-frontend
+            exit 1
+          fi
+
+      - name: Validate Docker image security
+        run: |
+          echo "🔍 Checking for security issues in Docker images..."
+
+          # Check backend image
+          echo "Backend image analysis:"
+          docker run --rm ai-present-finder:test sh -c "
+            echo 'Node version:' && node --version
+            echo 'PM2 version:' && pm2 --version
+            echo 'Checking for vulnerable packages...'
+            if command -v npm >/dev/null 2>&1; then
+              npm audit --audit-level=moderate --production || echo '⚠️  Some moderate vulnerabilities found'
+            fi
+          " || echo "⚠️  Could not run security checks on backend"
+
+          # Check frontend image
+          echo "Frontend image analysis:"
+          docker run --rm ai-present-finder-frontend:test sh -c "
+            echo 'Nginx version:' && nginx -v
+            echo 'Checking nginx configuration...'
+            nginx -t || exit 1
+          " || echo "⚠️  Could not run security checks on frontend"
+
+      - name: Test Docker Compose services startup
+        run: |
+          cd deployment
+          echo "🚀 Testing Docker Compose services startup..."
+
+          # Create test environment file
+          cat > .env.test <<EOF
+          RABBITMQ_USER=test_user
+          RABBITMQ_PASS=test_password
+          POSTGRES_PASSWORD=test_password
+          OPENAI_API_KEY=sk-test-dummy-key
+          BRIGHTDATA_API_KEY=test-brightdata-key
+          SERVICE_URL_APP=http://localhost:3000
+          EOF
+
+          # Start services with production compose file
+          docker compose -f docker-compose.prod.yml --env-file .env.test up -d
+
+          # Wait for infrastructure services to be healthy
+          echo "⏳ Waiting for infrastructure services..."
+          timeout=60
+          elapsed=0
+          while [ $elapsed -lt $timeout ]; do
+            if docker compose -f docker-compose.prod.yml --env-file .env.test ps | grep -q "healthy"; then
+              echo "✅ Infrastructure services are healthy"
+              break
+            fi
+            sleep 2
+            elapsed=$((elapsed + 2))
+          done
+
+          # Check overall services status
+          echo "📊 Service status:"
+          docker compose -f docker-compose.prod.yml --env-file .env.test ps
+
+          # Verify critical services are running
+          if docker compose -f docker-compose.prod.yml --env-file .env.test ps | grep -E "(postgres|rabbitmq)" | grep -q "Up"; then
+            echo "✅ Docker Compose infrastructure services started successfully"
+          else
+            echo "❌ Infrastructure services failed to start"
+            docker compose -f docker-compose.prod.yml --env-file .env.test logs
+            docker compose -f docker-compose.prod.yml --env-file .env.test down -v
+            exit 1
+          fi
+
+          # Check if app container is created (may not be fully healthy in CI)
+          if docker compose -f docker-compose.prod.yml --env-file .env.test ps -a | grep -q "app"; then
+            echo "✅ Application container created"
+            # Show app logs for debugging
+            echo "📝 Application logs (last 20 lines):"
+            docker compose -f docker-compose.prod.yml --env-file .env.test logs app --tail=20
+          else
+            echo "⚠️  Application container not found"
+          fi
+
+          # Clean up
+          echo "🧹 Cleaning up..."
+          docker compose -f docker-compose.prod.yml --env-file .env.test down -v
+          rm .env.test
+
+  docker-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Hadolint
+        run: |
+          wget -O hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64
+          chmod +x hadolint
+          sudo mv hadolint /usr/local/bin/
+
+      - name: Lint backend Dockerfile
+        run: hadolint deployment/Dockerfile
+        if: always()
+
+      - name: Lint frontend Dockerfile
+        run: hadolint deployment/frontend.Dockerfile
+        if: always()
+
+      - name: Validate Docker Compose schema
+        if: always()
+        run: |
+          # Install dependencies for schema validation
+          python -m pip install --upgrade pip
+          python -m pip install pyyaml jsonschema
+
+          # Validate docker-compose.prod.yml
+          cd deployment
+          python - <<'PYTHON'
+          import yaml
+          import jsonschema
+          from urllib.request import urlopen
+
+          # Load compose file
+          with open('docker-compose.prod.yml', 'r', encoding='utf-8') as f:
+              compose = yaml.safe_load(f)
+
+          # Load schema
+          schema_url = 'https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json'
+          with urlopen(schema_url) as response:
+              schema = yaml.safe_load(response)
+
+          # Validate
+          jsonschema.validate(compose, schema)
+          print('✅ Docker Compose schema validation passed')
+          PYTHON

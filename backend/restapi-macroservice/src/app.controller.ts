@@ -19,4 +19,16 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+
+  @Get("health")
+  @ApiOperation({
+    summary: "Health check endpoint",
+  })
+  @ApiOkResponse({
+    description: "Returns service health status",
+    type: Object,
+  })
+  health(): { status: string } {
+    return { status: "ok" };
+  }
 }

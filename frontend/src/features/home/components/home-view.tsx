@@ -1,78 +1,52 @@
-import { useNavigate } from "@tanstack/react-router";
-import { toast } from "sonner";
-import { v7 as uuidv7 } from "uuid";
-
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
-import { useStalkingRequestMutation } from "../api/stalking-request";
+import { fetchClient } from "../../../lib/api/client";
+
+const handleLogin = async () => {
+  try {
+    const { data, error } = await fetchClient.GET("/auth/google/url");
+
+    if (data === undefined) {
+      console.error("Failed to get Google auth URL:", error);
+      return;
+    }
+
+    window.location.href = data.url;
+  } catch (error) {
+    console.error("Failed to get Google auth URL:", error);
+  }
+};
 
 export function HomeView() {
-  const navigate = useNavigate();
-  const stalkingRequestMutation = useStalkingRequestMutation();
-
-  const handleStart = async () => {
-    try {
-      // Generate a unique client ID for this session
-      const clientId = uuidv7();
-
-      // TODO(simon-the-shark): someone needs to add this later
-      await stalkingRequestMutation.mutateAsync(
-        {
-          facebookUrl: "",
-          instagramUrl: "",
-          tiktokUrl: "",
-          youtubeUrl: "",
-          xUrl: "",
-          linkedinUrl: "",
-          chatId: clientId,
-        },
-        {
-          onSuccess: () => {
-            void navigate({ to: "/chat/$id", params: { id: clientId } });
-          },
-        },
-      );
-    } catch (error) {
-      console.error("Failed to start:", error);
-      toast.error("Failed to start gift search. Please try again.", {
-        id: "stalking-request",
-        dismissible: true,
-      });
-    }
-  };
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-      <Card className="mx-4 w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold text-gray-900 dark:text-white">
-            Hello! 👋
-          </CardTitle>
-          <CardDescription className="text-lg text-gray-600 dark:text-gray-300">
-            Welcome to AI Present Finder
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="text-center">
-          <p className="mb-6 text-gray-600 dark:text-gray-300">
-            Let&apos;s help you find the perfect gift for your loved ones!
-          </p>
-          <Button
-            size="lg"
-            className="w-full"
-            onClick={handleStart}
-            disabled={stalkingRequestMutation.isPending}
-          >
-            {stalkingRequestMutation.isPending ? "Starting..." : "Start →"}
-          </Button>
-        </CardContent>
-      </Card>
+    <div className="bg-background flex min-h-screen flex-col">
+      <div className="flex flex-1 flex-col items-center justify-center px-6 pb-24">
+        <div className="mb-8 w-full max-w-sm">
+          <div className="bg-secondary aspect-square w-full overflow-hidden rounded-3xl shadow-lg">
+            <img
+              src="/logo192.png"
+              alt="Gift box"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+
+        <h1 className="text-foreground mb-4 text-center text-4xl font-bold">
+          Find the perfect gift
+        </h1>
+
+        <p className="text-muted-foreground mb-8 text-center text-lg">
+          Answer a few questions and we&apos;ll suggest personalized gifts your
+          loved ones will adore.
+        </p>
+
+        <Button
+          onClick={handleLogin}
+          className="bg-primary text-primary-foreground hover:bg-primary/90 w-full max-w-sm rounded-full py-7 text-lg font-semibold shadow-lg transition-all active:scale-95"
+        >
+          Sign in with Google
+        </Button>
+      </div>
     </div>
   );
 }

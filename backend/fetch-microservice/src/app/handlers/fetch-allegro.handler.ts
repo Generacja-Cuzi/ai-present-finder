@@ -1,5 +1,5 @@
 import { FetchAllegroEvent, ProductFetchedEvent } from "@core/events";
-import { ListingDto } from "@core/types";
+import { ListingPayload } from "@core/types";
 
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -196,7 +196,7 @@ export class FetchAllegroHandler {
 
   private async fetchAllegroProducts(
     event: FetchAllegroEvent,
-  ): Promise<ListingDto[]> {
+  ): Promise<ListingPayload[]> {
     const { query, limit, offset } = event;
     let attempt = 0;
 
@@ -216,7 +216,7 @@ export class FetchAllegroHandler {
           ...(results.items?.regular ?? []),
         ];
 
-        const listings: ListingDto[] = offers.map((offer) => {
+        const listings: ListingPayload[] = offers.map((offer) => {
           const priceAmount = offer.sellingMode?.price?.amount;
           const priceCurrency = offer.sellingMode?.price?.currency ?? "PLN";
 
@@ -232,7 +232,7 @@ export class FetchAllegroHandler {
               currency: priceCurrency,
               negotiable: false,
             },
-          } as ListingDto;
+          } as ListingPayload;
         });
 
         this.logger.log(

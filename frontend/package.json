@@ -1,5 +1,5 @@
 {
-  "name": "gift-ai-client",
+  "name": "frontend",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,6 +8,7 @@
     "dev": "vite --port 5713",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "generate:openapi": "openapi-typescript ../backend/restapi-macroservice/docs/openapi/restapi-macroservice.openapi.json -o src/lib/api/types.ts",
     "lint": "eslint",
     "serve": "vite preview",
     "start": "vite --port 5713",
@@ -15,6 +16,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-scroll-area": "^1.2.10",
     "@radix-ui/react-slot": "^1.2.3",
     "@t3-oss/env-core": "^0.13.8",
@@ -27,9 +30,13 @@
     "@tanstack/router-plugin": "^1.132.25",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "jotai": "^2.15.0",
     "lucide-react": "^0.544.0",
+    "openapi-fetch": "^0.15.0",
+    "openapi-react-query": "^0.5.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-hook-form": "^7.65.0",
     "react-hooks-sse": "^2.1.0",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
@@ -47,6 +54,7 @@
     "@vitejs/plugin-react": "^5.0.4",
     "eslint": "^9.36.0",
     "jsdom": "^27.0.0",
+    "openapi-typescript": "^7.10.1",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
     "vitest": "^3.2.4"

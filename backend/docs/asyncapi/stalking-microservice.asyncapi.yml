@@ -62,10 +62,6 @@ components:
           chatId:
             type: string
             description: Unique identifier for the chat session
-          facebookUrl:
-            type: string
-            nullable: true
-            description: Facebook profile URL
           instagramUrl:
             type: string
             nullable: true
@@ -74,18 +70,10 @@ components:
             type: string
             nullable: true
             description: TikTok profile URL
-          youtubeUrl:
-            type: string
-            nullable: true
-            description: YouTube channel URL
           xUrl:
             type: string
             nullable: true
             description: X (Twitter) profile URL
-          linkedinUrl:
-            type: string
-            nullable: true
-            description: LinkedIn profile URL
     StalkingCompleted:
       name: StalkingCompletedEvent
       title: StalkingCompleted
@@ -105,3 +93,7 @@ components:
           chatId:
             type: string
             description: Unique identifier for the chat session
+          completedAt:
+            type: string
+            format: date-time
+            description: Timestamp when the stalking analysis was completed

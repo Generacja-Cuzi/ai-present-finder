@@ -1,0 +1,24 @@
+# Docker Compose override for local testing
+# This file adds port mappings for local development/testing
+
+services:
+  app:
+    ports:
+      - "3000:3000" # REST API
+      - "3010:3010" # Stalking microservice
+      - "3020:3020" # Chat microservice
+      - "3030:3030" # Gift microservice
+      - "3040:3040" # Gift Ideas microservice
+      - "3050:3050" # Reranking microservice
+      - "8011:8011" # Fetch OLX
+      - "8012:8012" # Fetch Allegro
+      - "8013:8013" # Fetch eBay
+      - "8014:8014" # Fetch Amazon
+
+  frontend:
+    ports:
+      - "8080:80" # Frontend (mapped to 8080 to avoid conflicts)
+
+  postgres:
+    ports:
+      - "5432:5432" # PostgreSQL

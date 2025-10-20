@@ -1,21 +1,20 @@
-import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { useSendMessage } from "../api/send-message";
 import { useSseChat } from "../hooks/use-sse-chat";
+import { ChatHeader } from "./chat-header";
 import { ChatInput } from "./chat-input";
-import { Message } from "./message";
-import { NonChatIndicator } from "./non-chat-indicator";
-import { ThinkingBadge } from "./thinking-badge";
+import { ChatMessages } from "./chat-messages";
+import { InappropriateRequestMessage } from "./inappropriate-request-message";
 
 export function ChatUI({ clientId }: { clientId: string }) {
   const { state: chatState } = useSseChat({
     clientId,
   });
   const sendMessage = useSendMessage();
+  const navigate = useNavigate();
 
   const [inputValue, setInputValue] = useState("");
 
@@ -24,6 +23,15 @@ export function ChatUI({ clientId }: { clientId: string }) {
     (chatState.type === "chatting" &&
       (chatState.data.messages.at(-1)?.sender === "user" ||
         chatState.data.messages.length === 0));
+
+  useEffect(() => {
+    if (chatState.type === "chat-interview-completed") {
+      void navigate({
+        to: "/gift-searching/$id",
+        params: { id: clientId },
+      });
+    }
+  }, [chatState.type, clientId, navigate]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isChatbotProcessing) {
@@ -35,43 +43,39 @@ export function ChatUI({ clientId }: { clientId: string }) {
       throw new Error("Chat state is not chatting");
     }
     await sendMessage.mutateAsync({
-      messages: [
-        ...chatState.data.messages,
-        { id: uuidv4(), content: inputValue, sender: "user" },
-      ],
-      chatId: clientId,
+      body: {
+        messages: [
+          ...chatState.data.messages,
+          { id: uuidv4(), content: inputValue, sender: "user" },
+        ],
+        chatId: clientId,
+      },
     });
   };
 
-  if (chatState.type !== "chatting") {
-    return <NonChatIndicator state={chatState} />;
+  if (chatState.type === "chat-inappropriate-request") {
+    return <InappropriateRequestMessage reason={chatState.data.reason} />;
   }
 
-  const messages = chatState.data.messages;
+  // At this point, chatState.type must be "chatting" or "chat-interview-completed"
+
+  const messages = chatState.type === "chatting" ? chatState.data.messages : [];
+  const currentStep = Math.min(messages.length, 10);
 
   return (
-    <Card className="mx-auto flex h-[90vh] w-full max-w-2xl flex-col">
-      <CardHeader className="flex-shrink-0">
-        <CardTitle>Chat</CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-1 flex-col overflow-hidden p-0">
-        <ScrollArea className="min-h-0 flex-1">
-          <div className="space-y-4 p-4">
-            {messages.map((message) => (
-              <Message key={message.id} message={message} />
-            ))}
-            {isChatbotProcessing ? <ThinkingBadge /> : null}
-          </div>
-        </ScrollArea>
-        <div className="flex-shrink-0">
-          <ChatInput
-            inputValue={inputValue}
-            setInputValue={setInputValue}
-            handleSendMessage={handleSendMessage}
-            isLoading={isChatbotProcessing}
-          />
-        </div>
-      </CardContent>
-    </Card>
+    <div className="flex h-screen flex-col pb-20">
+      <ChatHeader currentStep={currentStep} />
+
+      <ChatMessages messages={messages} isProcessing={isChatbotProcessing} />
+
+      <div className="fixed bottom-20 left-0 right-0 bg-transparent">
+        <ChatInput
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          handleSendMessage={handleSendMessage}
+          isLoading={isChatbotProcessing}
+        />
+      </div>
+    </div>
   );
 }

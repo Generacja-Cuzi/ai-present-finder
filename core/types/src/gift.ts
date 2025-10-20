@@ -1,4 +1,4 @@
-export interface ListingDto {
+export interface ListingPayload {
   image: string | null;
   title: string;
   description: string;

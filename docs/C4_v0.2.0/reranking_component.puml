@@ -1,0 +1,28 @@
+@startuml C4_Component_Reranking
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(reranking, "Reranking Microservice (NestJS)") {
+  Component(context_handler, "GiftContextInitializedHandler", "NestJS Handler", "Handles GiftContextInitializedEvent, stores gift context for session")
+  Component(product_handler, "ProductFetchedHandler", "NestJS Handler", "Handles ProductFetchedEvent, aggregates products from all providers")
+  Component(event_tracking, "EventTrackingService", "NestJS Service", "Tracks event completion and triggers reranking when all providers respond")
+  Component(reranking_service, "RerankingService", "NestJS Service", "Reranks products based on user preferences and context")
+  Component(gift_session, "GiftSessionEntity", "Domain Entity", "Maintains session state with products and context")
+}
+
+Component_Ext(rabbitmq_in_context, "RabbitMQ", "Message Broker", "GiftContextInitializedEvent queue")
+Component_Ext(rabbitmq_in_product, "RabbitMQ", "Message Broker", "ProductFetchedEvent queue")
+Component_Ext(rabbitmq_out, "RabbitMQ", "Message Broker", "GiftReadyEvent queue")
+
+Rel(rabbitmq_in_context, context_handler, "Consumes event", "AMQP @EventPattern")
+Rel(context_handler, gift_session, "Initializes session")
+Rel(context_handler, event_tracking, "Registers expected events")
+
+Rel(rabbitmq_in_product, product_handler, "Consumes event", "AMQP @EventPattern")
+Rel(product_handler, gift_session, "Stores products")
+Rel(product_handler, event_tracking, "Marks event complete")
+Rel(event_tracking, reranking_service, "Triggers when all complete")
+Rel(reranking_service, gift_session, "Retrieves products & context")
+Rel(reranking_service, rabbitmq_out, "Publishes GiftReadyEvent with ranked products", "AMQP ClientProxy.emit")
+
+SHOW_LEGEND()
+@enduml

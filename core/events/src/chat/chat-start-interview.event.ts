@@ -1,3 +1,6 @@
 export class ChatStartInterviewEvent {
-  constructor(public readonly chatId: string) {}
+  constructor(
+    public readonly chatId: string,
+    public readonly occasion: string,
+  ) {}
 }

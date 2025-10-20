@@ -1,7 +1,10 @@
-import type { ChatMessage, ListingDto } from "@core/types";
+import type { ChatMessage } from "@core/types";
 
-export const uiUpdateEvent = "ui-update";
+import type { components } from "@/lib/api/types";
 
+/**
+ * Chat-specific state type
+ */
 export type ChatState =
   | {
       type: "chatting";
@@ -9,8 +12,13 @@ export type ChatState =
         messages: ChatMessage[];
       };
     }
-  | { type: "waiting-for-gift-ideas" }
-  | { type: "gift-ready"; data: { giftIdeas: ListingDto[] } }
+  | { type: "chat-interview-completed" }
   | { type: "chat-inappropriate-request"; data: { reason: string } };
 
-export type { SseMessageDto } from "../../../../backend/restapi-macroservice/src/domain/models/sse-message.dto";
+/**
+ * Chat-specific SSE message types
+ */
+export type ChatSseMessage =
+  | components["schemas"]["SseChatbotMessageDto"]
+  | components["schemas"]["SseChatInterviewCompletedDto"]
+  | components["schemas"]["SseChatInappropriateRequestDto"];

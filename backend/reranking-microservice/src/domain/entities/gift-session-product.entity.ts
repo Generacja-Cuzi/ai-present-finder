@@ -4,6 +4,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   RelationId,
 } from "typeorm";
@@ -34,18 +35,11 @@ export class GiftSessionProduct {
   @Column({ name: "source_event_success" })
   sourceEventSuccess: boolean;
 
-  @ManyToOne(() => Product, {
+  @OneToMany(() => Product, (product) => product.giftSessionProduct, {
     cascade: ["insert", "remove"],
     eager: true,
-    onDelete: "CASCADE",
   })
-  @JoinColumn({ name: "product_id" })
-  product: Product;
-
-  @RelationId(
-    (giftSessionProduct: GiftSessionProduct) => giftSessionProduct.product,
-  )
-  productId: string;
+  products: Product[];
 
   @CreateDateColumn({ name: "created_at", type: "timestamp" })
   createdAt: Date;

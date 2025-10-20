@@ -2,9 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
+  RelationId,
   UpdateDateColumn,
 } from "typeorm";
+
+import { GiftSessionProduct } from "./gift-session-product.entity";
 
 @Entity("products")
 export class Product {
@@ -39,6 +44,25 @@ export class Product {
 
   @Column({ name: "price_negotiable", type: "boolean", nullable: true })
   priceNegotiable: boolean | null;
+
+  @Column({ name: "rating", type: "integer", nullable: true })
+  rating: number | null;
+
+  @Column({ name: "reasoning", type: "text", nullable: true })
+  reasoning: string | null;
+
+  @ManyToOne(
+    () => GiftSessionProduct,
+    (giftSessionProduct) => giftSessionProduct.products,
+    {
+      onDelete: "CASCADE",
+    },
+  )
+  @JoinColumn({ name: "gift_session_product_id" })
+  giftSessionProduct: GiftSessionProduct;
+
+  @RelationId((product: Product) => product.giftSessionProduct)
+  giftSessionProductId: string;
 
   @CreateDateColumn({ name: "created_at", type: "timestamp" })
   createdAt: Date;

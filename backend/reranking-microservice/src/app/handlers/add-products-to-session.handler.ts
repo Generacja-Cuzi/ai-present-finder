@@ -6,6 +6,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 
 import { AddProductsToSessionCommand } from "../../domain/commands/add-products-to-session.command";
 import { GiftSessionProduct } from "../../domain/entities/gift-session-product.entity";
+import { GiftSession } from "../../domain/entities/gift-session.entity";
 import { Product } from "../../domain/entities/product.entity";
 
 @CommandHandler(AddProductsToSessionCommand)
@@ -28,28 +29,35 @@ export class AddProductsToSessionHandler
       sourceEventSuccess,
     } = command;
 
-    const records = products.map((listing) => {
-      const productEntity = Object.assign(new Product(), {
-        image: listing.image,
-        title: listing.title,
-        description: listing.description,
-        link: listing.link,
-        priceValue: listing.price.value ?? null,
-        priceLabel: listing.price.label ?? null,
-        priceCurrency: listing.price.currency ?? null,
-        priceNegotiable: listing.price.negotiable ?? null,
-      });
+    if (products.length === 0) {
+      this.logger.warn(
+        `Cleared existing products from ${sourceEventProvider} for session ${eventId} (no new products received)`,
+      );
+      return;
+    }
 
-      return this.sessionProductRepository.create({
-        session: { eventId },
-        sourceEventName,
-        sourceEventProvider,
-        sourceEventSuccess,
-        product: productEntity,
-      });
+    const productEntities = products.map((listing) => {
+      const product = new Product();
+      product.image = listing.image;
+      product.title = listing.title;
+      product.description = listing.description;
+      product.link = listing.link;
+      product.priceValue = listing.price.value ?? null;
+      product.priceLabel = listing.price.label ?? null;
+      product.priceCurrency = listing.price.currency ?? null;
+      product.priceNegotiable = listing.price.negotiable ?? null;
+      return product;
     });
 
-    await this.sessionProductRepository.save(records);
+    const sessionProduct = this.sessionProductRepository.create({
+      session: { eventId } as GiftSession,
+      sourceEventName,
+      sourceEventProvider,
+      sourceEventSuccess,
+      products: productEntities,
+    });
+
+    await this.sessionProductRepository.save(sessionProduct);
 
     this.logger.log(
       `Persisted ${String(products.length)} products from ${sourceEventProvider} for session ${eventId}`,

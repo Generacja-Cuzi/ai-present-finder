@@ -1,5 +1,5 @@
 import { openai } from "@ai-sdk/openai";
-import type { ListingDto, RecipientProfile } from "@core/types";
+import type { ListingPayload, RecipientProfile } from "@core/types";
 import { generateObject } from "ai";
 
 import { productRankingPrompt } from "./prompt";
@@ -11,7 +11,7 @@ export async function rankProducts({
   recipientProfile,
   keywords,
 }: {
-  products: ListingDto[];
+  products: ListingPayload[];
   recipientProfile: RecipientProfile | null;
   keywords: string[];
 }): Promise<ProductWithScore[]> {

@@ -1,4 +1,4 @@
-import type { ListingDto } from "@core/types";
+import type { ListingPayload } from "@core/types";
 import { z } from "zod";
 
 const priceSchema = z.object({
@@ -28,7 +28,7 @@ export const rankedProductsOutputSchema = z.object({
 export type ProductRanking = z.infer<typeof productRankingSchema>;
 export type RankedProductsOutput = z.infer<typeof rankedProductsOutputSchema>;
 
-export interface ProductWithScore extends ListingDto {
+export interface ProductWithScore extends ListingPayload {
   score: number;
   reasoning: string;
 }

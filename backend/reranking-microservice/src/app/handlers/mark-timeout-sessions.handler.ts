@@ -26,9 +26,9 @@ export class MarkTimeoutSessionsHandler
     const configValue =
       this.configService.get<string>("EVENT_TIMEOUT_MS") ?? "120000";
     this.eventTimeoutMs = Number.parseInt(configValue, 10);
-    if (Number.isNaN(this.eventTimeoutMs)) {
+    if (Number.isNaN(this.eventTimeoutMs) || this.eventTimeoutMs <= 0) {
       this.logger.error(
-        `Invalid EVENT_TIMEOUT_MS value: ${configValue}, using default 120000`,
+        `Invalid EVENT_TIMEOUT_MS value: ${configValue} (must be positive), using default 120000`,
       );
       this.eventTimeoutMs = 120_000;
     }
@@ -48,7 +48,7 @@ export class MarkTimeoutSessionsHandler
     if (timeoutSessions.length > 0) {
       await this.giftSessionRepository.update(
         { eventId: In(timeoutSessions.map((s) => s.eventId)) },
-        { status: SessionStatus.TIMEOUT },
+        { status: SessionStatus.TIMEOUT, updatedAt: now },
       );
 
       this.logger.log(

@@ -1,5 +1,5 @@
 import { GiftReadyEvent } from "@core/events";
-import type { ListingDto } from "@core/types";
+import type { ListingPayload } from "@core/types";
 import { Repository } from "typeorm";
 
 import { Inject, Logger } from "@nestjs/common";
@@ -67,7 +67,7 @@ export class EmitGiftReadyHandler
           negotiable: product.priceNegotiable,
         },
       })),
-    ) satisfies ListingDto[];
+    ) satisfies ListingPayload[];
 
     const chatId = session.chatId;
 

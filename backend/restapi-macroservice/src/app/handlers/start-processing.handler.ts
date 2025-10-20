@@ -30,7 +30,7 @@ export class StartProcessingCommandHandler
     const chat = await this.chatRepository.create({
       chatId: analyzeRequestedDto.chatId,
       chatName: `Chat ${new Date().toLocaleDateString()}`,
-      userId: userId,
+      userId,
     });
 
     this.logger.log(`Created chat: ${JSON.stringify(chat)}`);
@@ -39,7 +39,7 @@ export class StartProcessingCommandHandler
     const verifiedChat = await this.chatRepository.findByChatId(
       analyzeRequestedDto.chatId,
     );
-    if (!verifiedChat) {
+    if (verifiedChat === null) {
       throw new Error(
         `Failed to create chat with chatId: ${analyzeRequestedDto.chatId}`,
       );

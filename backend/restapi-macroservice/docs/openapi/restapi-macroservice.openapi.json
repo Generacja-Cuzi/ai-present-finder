@@ -519,13 +519,13 @@
             "example": "123e4567-e89b-12d3-a456-426614174000"
           },
           "chatId": {
-            "type": "object",
+            "type": "string",
             "description": "Chat ID this listing belongs to",
             "example": "cm123abc",
             "nullable": true
           },
           "image": {
-            "type": "object",
+            "type": "string",
             "description": "Image URL",
             "example": "https://example.com/image.jpg",
             "nullable": true
@@ -546,19 +546,19 @@
             "example": "https://example.com/product/123"
           },
           "priceValue": {
-            "type": "object",
+            "type": "number",
             "description": "Price value",
             "example": 99.99,
             "nullable": true
           },
           "priceLabel": {
-            "type": "object",
+            "type": "string",
             "description": "Price label",
             "example": "$99.99",
             "nullable": true
           },
           "priceCurrency": {
-            "type": "object",
+            "type": "string",
             "description": "Price currency",
             "example": "USD",
             "nullable": true
@@ -632,6 +632,11 @@
         },
         "required": ["listingId"]
       },
+      "MessageRoleDto": {
+        "type": "string",
+        "enum": ["user", "assistant", "system"],
+        "description": "Message role"
+      },
       "MessageDto": {
         "type": "object",
         "properties": {
@@ -646,10 +651,13 @@
             "example": "cm123abc"
           },
           "role": {
-            "type": "string",
             "description": "Message role",
-            "enum": ["user", "assistant", "system"],
-            "example": "user"
+            "example": "user",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MessageRoleDto"
+              }
+            ]
           },
           "content": {
             "type": "string",

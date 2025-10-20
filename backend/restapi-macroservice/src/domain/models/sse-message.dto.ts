@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 
 import { ChatMessageDto } from "./chat-message.dto";
-import { ListingDto, ListingWithIdDto } from "./listing.dto";
+import { ListingWithIdDto } from "./listing.dto";
 
 export const uiUpdateEvent = "ui-update";
 

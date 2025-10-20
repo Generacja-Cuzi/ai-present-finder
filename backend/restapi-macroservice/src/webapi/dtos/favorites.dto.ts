@@ -26,6 +26,7 @@ export class ListingResponseDto {
   @ApiProperty({
     description: "Chat ID this listing belongs to",
     example: "cm123abc",
+    type: String,
     nullable: true,
   })
   chatId: string | null;
@@ -33,6 +34,7 @@ export class ListingResponseDto {
   @ApiProperty({
     description: "Image URL",
     example: "https://example.com/image.jpg",
+    type: String,
     nullable: true,
   })
   image: string | null;
@@ -58,6 +60,7 @@ export class ListingResponseDto {
   @ApiProperty({
     description: "Price value",
     example: 99.99,
+    type: Number,
     nullable: true,
   })
   priceValue: number | null;
@@ -65,6 +68,7 @@ export class ListingResponseDto {
   @ApiProperty({
     description: "Price label",
     example: "$99.99",
+    type: String,
     nullable: true,
   })
   priceLabel: string | null;
@@ -72,6 +76,7 @@ export class ListingResponseDto {
   @ApiProperty({
     description: "Price currency",
     example: "USD",
+    type: String,
     nullable: true,
   })
   priceCurrency: string | null;

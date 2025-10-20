@@ -16,7 +16,9 @@ export class SaveListingsHandler
   async execute(command: SaveListingsCommand): Promise<Listing[]> {
     const { chatId, listings } = command;
 
-    this.logger.log(`Saving ${listings.length} listings for chat ${chatId}`);
+    this.logger.log(
+      `Saving ${String(listings.length)} listings for chat ${chatId}`,
+    );
 
     const savedListings: Listing[] = [];
     for (const listing of listings) {
@@ -34,7 +36,7 @@ export class SaveListingsHandler
       savedListings.push(savedListing);
     }
 
-    this.logger.log(`Successfully saved ${listings.length} listings`);
+    this.logger.log(`Successfully saved ${String(listings.length)} listings`);
 
     return savedListings;
   }

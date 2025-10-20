@@ -22,6 +22,7 @@ export class MessageDto {
   @ApiProperty({
     description: "Message role",
     enum: MessageRoleDto,
+    enumName: "MessageRoleDto",
     example: MessageRoleDto.USER,
   })
   role: MessageRoleDto;

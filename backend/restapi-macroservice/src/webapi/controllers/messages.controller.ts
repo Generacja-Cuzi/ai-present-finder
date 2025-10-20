@@ -2,6 +2,7 @@ import { GetChatMessagesQuery } from "src/domain/queries/get-chat-messages.query
 import {
   ChatMessagesResponseDto,
   MessageDto,
+  MessageRoleDto,
 } from "src/webapi/dtos/message.dto";
 
 import { Controller, Get, Param, UseGuards } from "@nestjs/common";
@@ -35,12 +36,12 @@ export class MessagesController {
       new GetChatMessagesQuery(chatId),
     );
 
-    const messageDtos: MessageDto[] = messages.map((msg) => ({
-      id: msg.id,
-      chatId: msg.chatId,
-      role: msg.role as any,
-      content: msg.content,
-      createdAt: msg.createdAt,
+    const messageDtos: MessageDto[] = messages.map((message) => ({
+      id: message.id,
+      chatId: message.chatId,
+      role: message.role as unknown as MessageRoleDto,
+      content: message.content,
+      createdAt: message.createdAt,
     }));
 
     return { messages: messageDtos };

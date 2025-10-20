@@ -1,5 +1,4 @@
 import type { Chat } from "src/domain/entities/chat.entity";
-import type { User } from "src/domain/entities/user.entity";
 import type { AuthenticatedRequest } from "src/domain/models/auth.types";
 import { GetChatListingsQuery } from "src/domain/queries/get-chat-listings.query";
 import { GetUserChatsQuery } from "src/domain/queries/get-user-chats.query";
@@ -59,7 +58,7 @@ export class ChatController {
       new GetChatListingsQuery(chatId, request.user.id),
     );
 
-    const user = request.user as User;
+    const user = request.user;
 
     const listingsWithFavoriteStatus = await Promise.all(
       listings.map(async (listing) => {

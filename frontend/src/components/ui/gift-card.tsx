@@ -22,18 +22,19 @@ export function GiftCard({
   listingId?: string;
   initialIsFavorited?: boolean;
 }) {
-  const [isBookmarked, setIsBookmarked] = useState(initialIsFavorited);
   const [imageError, setImageError] = useState(false);
 
   const addToFavorites = useAddToFavoritesMutation();
   const removeFromFavorites = useRemoveFromFavoritesMutation();
+
+  const [isBookmarked, setIsBookmarked] = useState(initialIsFavorited);
 
   useEffect(() => {
     setIsBookmarked(initialIsFavorited);
   }, [initialIsFavorited]);
 
   const handleBookmark = async () => {
-    if (!listingId) {
+    if (listingId === undefined || listingId === "") {
       toast.error("Cannot bookmark this item");
       return;
     }
@@ -109,7 +110,7 @@ export function GiftCard({
           <p className="text-xl font-semibold text-gray-900">
             {gift.price.value === null
               ? "Price not available"
-              : `${Number(gift.price.value).toFixed(2)} ${gift.price.currency ?? "zł"}`}
+              : `${gift.price.value.toFixed(2)} ${gift.price.currency ?? "zł"}`}
           </p>
           <h3 className="mt-1 line-clamp-2 text-sm font-medium text-gray-700">
             {gift.title}

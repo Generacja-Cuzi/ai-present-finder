@@ -64,7 +64,7 @@ export class ListingDatabaseRepository implements IListingRepository {
       relations: ["favoriteListings"],
     });
 
-    if (!user) {
+    if (user === null) {
       throw new NotFoundException(`User with id ${userId} not found`);
     }
 
@@ -72,7 +72,7 @@ export class ListingDatabaseRepository implements IListingRepository {
       where: { id: listingId },
     });
 
-    if (!listing) {
+    if (listing === null) {
       throw new NotFoundException(`Listing with id ${listingId} not found`);
     }
 
@@ -96,7 +96,7 @@ export class ListingDatabaseRepository implements IListingRepository {
       relations: ["favoriteListings"],
     });
 
-    if (!user) {
+    if (user === null) {
       throw new NotFoundException(`User with id ${userId} not found`);
     }
 
@@ -115,7 +115,7 @@ export class ListingDatabaseRepository implements IListingRepository {
       relations: ["favoriteListings"],
     });
 
-    if (!user) {
+    if (user === null) {
       return false;
     }
 

@@ -46,28 +46,28 @@ export class FavoritesController {
     description: "List of favorite listings",
     type: FavoritesResponseDto,
   })
-  async getFavorites(@Request() req: any): Promise<FavoritesResponseDto> {
-    const user = req.user as User;
+  async getFavorites(
+    @Request() request: { user: User },
+  ): Promise<FavoritesResponseDto> {
+    const user = request.user;
     const listings = await this.queryBus.execute(
       new GetUserFavoritesQuery(user.id),
     );
 
-    const favorites: ListingResponseDto[] = await Promise.all(
-      listings.map(async (listing) => ({
-        id: listing.id,
-        chatId: listing.chatId,
-        image: listing.image,
-        title: listing.title,
-        description: listing.description,
-        link: listing.link,
-        priceValue: listing.priceValue,
-        priceLabel: listing.priceLabel,
-        priceCurrency: listing.priceCurrency,
-        priceNegotiable: listing.priceNegotiable,
-        isFavorited: true, // All items in this list are favorited
-        createdAt: listing.createdAt,
-      })),
-    );
+    const favorites: ListingResponseDto[] = listings.map((listing) => ({
+      id: listing.id,
+      chatId: listing.chatId,
+      image: listing.image,
+      title: listing.title,
+      description: listing.description,
+      link: listing.link,
+      priceValue: listing.priceValue,
+      priceLabel: listing.priceLabel,
+      priceCurrency: listing.priceCurrency,
+      priceNegotiable: listing.priceNegotiable,
+      isFavorited: true, // All items in this list are favorited
+      createdAt: listing.createdAt,
+    }));
 
     return { favorites };
   }
@@ -76,10 +76,10 @@ export class FavoritesController {
   @ApiOperation({ summary: "Add a listing to favorites" })
   @ApiOkResponse({ description: "Listing added to favorites" })
   async addToFavorites(
-    @Request() req: any,
+    @Request() request: { user: User },
     @Body() dto: AddToFavoritesDto,
   ): Promise<void> {
-    const user = req.user as User;
+    const user = request.user;
     await this.commandBus.execute(
       new AddToFavoritesCommand(user.id, dto.listingId),
     );
@@ -89,10 +89,10 @@ export class FavoritesController {
   @ApiOperation({ summary: "Remove a listing from favorites" })
   @ApiOkResponse({ description: "Listing removed from favorites" })
   async removeFromFavorites(
-    @Request() req: any,
+    @Request() request: { user: User },
     @Param("listingId") listingId: string,
   ): Promise<void> {
-    const user = req.user as User;
+    const user = request.user;
     await this.commandBus.execute(
       new RemoveFromFavoritesCommand(user.id, listingId),
     );

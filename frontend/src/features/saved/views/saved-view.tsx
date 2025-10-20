@@ -19,16 +19,21 @@ export function SavedView() {
     );
   }
 
-  if (error) {
+  if (data === undefined) {
+    const hasError = Boolean(error);
     return (
       <div className="flex min-h-screen flex-col bg-gray-50">
         <SavedHeader />
         <div className="flex flex-1 items-center justify-center">
           <div className="text-center">
             <p className="text-lg font-medium text-gray-900">
-              Failed to load saved gifts
+              {hasError ? "Failed to load saved gifts" : "No data available"}
             </p>
-            <p className="mt-1 text-sm text-gray-500">Please try again later</p>
+            {hasError ? (
+              <p className="mt-1 text-sm text-gray-500">
+                Please try again later
+              </p>
+            ) : null}
           </div>
         </div>
         <Navbar />
@@ -36,7 +41,7 @@ export function SavedView() {
     );
   }
 
-  const favorites = data?.favorites ?? [];
+  const favorites = data.favorites;
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
@@ -48,23 +53,14 @@ export function SavedView() {
             <GiftCard
               key={listing.id}
               gift={{
-                image: listing.image !== null ? String(listing.image) : null,
+                image: listing.image,
                 title: listing.title,
                 description: listing.description,
                 link: listing.link,
                 price: {
-                  value:
-                    listing.priceValue !== null
-                      ? Number(listing.priceValue)
-                      : null,
-                  label:
-                    listing.priceLabel !== null
-                      ? String(listing.priceLabel)
-                      : null,
-                  currency:
-                    listing.priceCurrency !== null
-                      ? String(listing.priceCurrency)
-                      : null,
+                  value: listing.priceValue,
+                  label: listing.priceLabel,
+                  currency: listing.priceCurrency,
                   negotiable: listing.priceNegotiable,
                 },
               }}

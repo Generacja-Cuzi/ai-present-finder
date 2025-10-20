@@ -102,7 +102,7 @@ export class EmitGiftReadyHandler
       if (productsToUpdate.length > 0) {
         await this.productRepository.save(productsToUpdate);
         this.logger.log(
-          `Saved ratings and reasoning for ${String(productsToUpdate.length)} products in session ${eventId}`,
+          `Updated ${String(productsToUpdate.length)} products with ratings and reasoning in session ${eventId}`,
         );
       }
 

@@ -29,13 +29,6 @@ export class AddProductsToSessionHandler
       sourceEventSuccess,
     } = command;
 
-    if (products.length === 0) {
-      this.logger.warn(
-        `Cleared existing products from ${sourceEventProvider} for session ${eventId} (no new products received)`,
-      );
-      return;
-    }
-
     const productEntities = products.map((listing) => {
       const product = new Product();
       product.image = listing.image;

@@ -2,12 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 
 import { Chat } from "./chat.entity";
+import { Listing } from "./listing.entity";
 
 @Entity("users")
 export class User {
@@ -37,4 +39,7 @@ export class User {
 
   @OneToMany(() => Chat, (chat) => chat.user)
   chats: Chat[];
+
+  @ManyToMany(() => Listing, (listing) => listing.favoritedBy)
+  favoriteListings: Listing[];
 }

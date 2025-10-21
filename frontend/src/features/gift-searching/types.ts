@@ -1,4 +1,4 @@
-import type { ListingPayload } from "@core/types";
+import type { ListingWithId } from "@core/types";
 
 import type { components } from "@/lib/api/types";
 
@@ -9,7 +9,7 @@ export type GiftSearchingState =
   | {
       type: "ready";
       data: {
-        giftIdeas: ListingPayload[];
+        giftIdeas: ListingWithId[];
       };
     };
 

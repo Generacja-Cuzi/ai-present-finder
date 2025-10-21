@@ -5,10 +5,13 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 
+import { Listing } from "./listing.entity";
+import { Message } from "./message.entity";
 import { User } from "./user.entity";
 
 @Entity("chats")
@@ -29,6 +32,12 @@ export class Chat {
   @ManyToOne(() => User, (user) => user.chats, { onDelete: "CASCADE" })
   @JoinColumn({ name: "user_id" })
   user: User;
+
+  @OneToMany(() => Listing, (listing) => listing.chat)
+  listings: Listing[];
+
+  @OneToMany(() => Message, (message) => message.chat)
+  messages: Message[];
 
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;

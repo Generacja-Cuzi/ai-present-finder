@@ -12,22 +12,23 @@ export class GoogleService {
   private readonly credentials: IGoogleAuthCredentials;
 
   constructor(private configService: ConfigService) {
-    const credentialsJsonFromConfig =
-      this.configService.get<string>("GOOGLE_CREDENTIALS_JSON") ?? "";
-    if (credentialsJsonFromConfig.length === 0) {
+    const credentialsBase64FromConfig =
+      this.configService.get<string>("GOOGLE_CREDENTIALS_BASE64") ?? "";
+    if (credentialsBase64FromConfig.length === 0) {
       throw new Error(
-        "GOOGLE_CREDENTIALS_JSON is not set in the configuration",
+        "GOOGLE_CREDENTIALS_BASE64 is not set in the configuration",
       );
     }
 
     try {
-      this.credentials = JSON.parse(
-        credentialsJsonFromConfig,
-      ) as IGoogleAuthCredentials;
+      const credentialsJson = Buffer.from(
+        credentialsBase64FromConfig,
+        "base64",
+      ).toString("utf8");
+      this.credentials = JSON.parse(credentialsJson) as IGoogleAuthCredentials;
     } catch {
-      console.error(credentialsJsonFromConfig);
       throw new Error(
-        "GOOGLE_CREDENTIALS_JSON is not valid JSON in the configuration",
+        "GOOGLE_CREDENTIALS_BASE64 is not valid base64 or JSON in the configuration",
       );
     }
 

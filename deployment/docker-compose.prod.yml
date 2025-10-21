@@ -70,7 +70,7 @@ services:
       USE_MOCK_DATA: false
       # CORS Configuration - allowed origins for frontend requests
       # Automatically uses frontend domain via Coolify magic variable
-      CORS_ORIGINS: https://${SERVICE_FQDN_FRONTEND_80}
+      CORS_ORIGINS: ${CORS_ORIGINS}
       SERVICE_FQDN_APP_3000: # Coolify FQDN magic variable for routing
     depends_on:
       rabbitmq:

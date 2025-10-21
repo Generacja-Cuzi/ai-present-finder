@@ -1,0 +1,105 @@
+@startuml restapi_er_diagram
+
+title REST API Database - Entity Relationship Diagram
+
+entity "users" as users {
+  *id : UUID
+  --
+  email : VARCHAR(255)
+  google_id : VARCHAR(255)
+  name : VARCHAR(255)
+  access_token : TEXT
+  refresh_token : TEXT
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "chats" as chats {
+  *id : UUID
+  --
+  user_id : UUID
+  chat_id : VARCHAR(255)
+  chat_name : VARCHAR(255)
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "messages" as messages {
+  *id : UUID
+  --
+  chat_id : UUID
+  role : ENUM
+  content : TEXT
+  created_at : TIMESTAMP
+}
+
+entity "listings" as listings {
+  *id : UUID
+  --
+  chat_id : VARCHAR(255)
+  image : VARCHAR(500)
+  title : VARCHAR(500)
+  description : TEXT
+  link : VARCHAR(1000)
+  price_value : DECIMAL(10,2)
+  price_label : VARCHAR(100)
+  price_currency : VARCHAR(10)
+  price_negotiable : BOOLEAN
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "user_favorite_listings" as favorites {
+  *user_id : UUID
+  *listing_id : UUID
+  --
+  created_at : TIMESTAMP
+}
+
+users ||--o{ chats : "owns (1:M)"
+chats ||--o{ messages : "contains (1:M)"
+chats ||--o{ listings : "has (1:M)\nvia chat_id"
+users }o--o{ listings : "favorites (M:M)"
+favorites }o--|| users
+favorites }o--|| listings
+
+note right of users
+  **User Accounts**
+  - Google OAuth authentication
+  - Stores tokens for API access
+  - One user can have many chats
+  - Can favorite multiple listings
+end note
+
+note right of chats
+  **Chat Sessions**
+  - Each chat is a gift search session
+  - chat_id is business identifier
+  - id is database UUID
+  - CASCADE DELETE from users
+end note
+
+note bottom of messages
+  **Chat Messages**
+  - role: user | assistant | system
+  - CASCADE DELETE from chats
+  - Ordered by created_at
+end note
+
+note bottom of listings
+  **Product Recommendations**
+  - From multiple e-commerce providers
+  - References chats.chat_id (not id!)
+  - SET NULL if chat deleted
+  - Can be favorited by users
+end note
+
+note left of favorites
+  **Junction Table**
+  - Many-to-Many relationship
+  - Composite PK (user_id, listing_id)
+  - CASCADE DELETE from both sides
+  - Tracks when favorited
+end note
+
+@enduml

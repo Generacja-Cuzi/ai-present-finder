@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/consistent-function-scoping */
 /* eslint-disable no-console */
-import type { ListingPayload } from "@core/types";
+import type { ListingWithId } from "@core/types";
 import { useState } from "react";
 
 import { Navbar } from "@/components/ui/navbar";
@@ -14,7 +14,7 @@ import {
 
 interface RecommendationViewProps {
   clientId: string;
-  giftIdeas: ListingPayload[];
+  giftIdeas: ListingWithId[];
 }
 
 export function RecommendationView({ giftIdeas }: RecommendationViewProps) {
@@ -59,9 +59,10 @@ export function RecommendationView({ giftIdeas }: RecommendationViewProps) {
         <div className="grid grid-cols-2 gap-4 p-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {filteredGiftIdeas.map((gift, index) => (
             <GiftCard
-              key={gift.link || index}
+              key={gift.listingId || gift.link || index}
               gift={gift}
               provider="Unknown" // TODO: Add provider to ListingDto
+              listingId={gift.listingId}
             />
           ))}
         </div>

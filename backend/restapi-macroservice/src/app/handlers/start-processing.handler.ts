@@ -8,6 +8,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { ClientProxy } from "@nestjs/microservices";
 
 import { StartProcessingCommand } from "../../domain/commands/start-processing.command";
+import { IChatRepository } from "../../domain/repositories/ichat.repository";
 
 @CommandHandler(StartProcessingCommand)
 export class StartProcessingCommandHandler
@@ -19,13 +20,34 @@ export class StartProcessingCommandHandler
     private readonly stalkingEventBus: ClientProxy,
     @Inject("CHAT_START_INTERVIEW_EVENT")
     private readonly chatEventBus: ClientProxy,
+    private readonly chatRepository: IChatRepository,
   ) {}
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async execute(command: StartProcessingCommand) {
-    const { analyzeRequestedDto } = command;
+    const { analyzeRequestedDto, userId } = command;
 
-    // Start stalking
+    // Create chat entity at the beginning and ensure it's persisted before emitting events
+    const chat = await this.chatRepository.create({
+      chatId: analyzeRequestedDto.chatId,
+      chatName: `Chat ${new Date().toLocaleDateString()}`,
+      userId,
+    });
+
+    this.logger.log(`Created chat: ${JSON.stringify(chat)}`);
+
+    // Verify chat was created successfully
+    const verifiedChat = await this.chatRepository.findByChatId(
+      analyzeRequestedDto.chatId,
+    );
+    if (verifiedChat === null) {
+      throw new Error(
+        `Failed to create chat with chatId: ${analyzeRequestedDto.chatId}`,
+      );
+    }
+
+    this.logger.log(`Verified chat exists in DB: ${verifiedChat.id}`);
+
+    // Now it's safe to emit events - chat exists in database
     const stalkingEvent = new StalkingAnalyzeRequestedEvent(
       analyzeRequestedDto.instagramUrl,
       analyzeRequestedDto.tiktokUrl,

@@ -1,8 +1,11 @@
 import type { Chat } from "src/domain/entities/chat.entity";
 import type { AuthenticatedRequest } from "src/domain/models/auth.types";
+import { GetChatListingsQuery } from "src/domain/queries/get-chat-listings.query";
 import { GetUserChatsQuery } from "src/domain/queries/get-user-chats.query";
+import { IListingRepository } from "src/domain/repositories/ilisting.repository";
+import { ChatListingsResponseDto } from "src/webapi/dtos/chat-listings.dto";
 
-import { Controller, Get, Req, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, Req, UseGuards } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 
@@ -12,7 +15,10 @@ import { ChatsResponseDto } from "../../domain/models/chat.dto";
 @ApiTags("chats")
 @Controller("chats")
 export class ChatController {
-  constructor(private readonly queryBus: QueryBus) {}
+  constructor(
+    private readonly queryBus: QueryBus,
+    private readonly listingRepository: IListingRepository,
+  ) {}
 
   @Get()
   @UseGuards(JwtAuthGuard)
@@ -34,6 +40,53 @@ export class ChatController {
         chatName: chat.chatName,
         createdAt: chat.createdAt,
       })),
+    };
+  }
+
+  @Get(":chatId/listings")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Get listings for a specific chat" })
+  @ApiOkResponse({
+    description: "Returns list of listings with favorite status",
+    type: ChatListingsResponseDto,
+  })
+  async getChatListings(
+    @Param("chatId") chatId: string,
+    @Req() request: AuthenticatedRequest,
+  ): Promise<ChatListingsResponseDto> {
+    const listings = await this.queryBus.execute(
+      new GetChatListingsQuery(chatId, request.user.id),
+    );
+
+    const user = request.user;
+
+    const listingsWithFavoriteStatus = await Promise.all(
+      listings.map(async (listing) => {
+        const isFavorited =
+          await this.listingRepository.isListingFavoritedByUser(
+            user.id,
+            listing.id,
+          );
+
+        return {
+          id: listing.id,
+          chatId: listing.chatId,
+          image: listing.image,
+          title: listing.title,
+          description: listing.description,
+          link: listing.link,
+          priceValue: listing.priceValue,
+          priceLabel: listing.priceLabel,
+          priceCurrency: listing.priceCurrency,
+          priceNegotiable: listing.priceNegotiable,
+          isFavorited,
+          createdAt: listing.createdAt,
+        };
+      }),
+    );
+
+    return {
+      listings: listingsWithFavoriteStatus,
     };
   }
 }

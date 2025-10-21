@@ -1,0 +1,102 @@
+@startuml favorite_flow
+title AI Present Finder - Favorite Products Flow
+
+actor User as U
+participant "REST API\nFavoritesController" as REST
+database "PostgreSQL" as DB
+
+note over U, DB
+  Ten flow działa po otrzymaniu produktów z głównego flow.
+  Użytkownik ma listę produktów z ich database ID
+  i może dodawać/usuwać je z ulubionych.
+end note
+
+== Użytkownik otrzymał produkty z głównego flow ==
+U -> U: Wyświetla listę produktów\nz gift-ready event
+
+== Dodawanie produktu do ulubionych ==
+U -> REST: POST /favorites\n{listingId}\n+ JWT cookie
+activate REST
+REST -> REST: **JwtAuthGuard**\n(weryfikacja tokena, extract userId)
+REST -> REST: **AddToFavoritesCommand**\n{userId, listingId}
+
+alt Produkt istnieje w bazie
+  REST -> DB: Znajdź listing po ID
+  activate DB
+  DB --> REST: Listing entity
+  deactivate DB
+  
+  REST -> DB: Sprawdź czy już w ulubionych
+  activate DB
+  DB --> REST: Not favorited
+  deactivate DB
+  
+  REST -> DB: Dodaj listing do user.favoriteListings
+  activate DB
+  DB --> REST: Success
+  deactivate DB
+  
+  REST --> U: 201 Created\n{message: "Added to favorites"}
+  note left: Produkt dodany do ulubionych
+else Produkt nie istnieje
+  REST -> DB: Znajdź listing po ID
+  activate DB
+  DB --> REST: null
+  deactivate DB
+  REST --> U: 404 Not Found\n{message: "Listing not found"}
+else Już w ulubionych
+  REST -> DB: Sprawdź czy już w ulubionych
+  activate DB
+  DB --> REST: Already favorited
+  deactivate DB
+  REST --> U: 200 OK\n{message: "Already in favorites"}
+end
+deactivate REST
+
+== Usuwanie produktu z ulubionych ==
+U -> REST: DELETE /favorites/:listingId\n+ JWT cookie
+activate REST
+REST -> REST: **JwtAuthGuard**\n(weryfikacja tokena, extract userId)
+REST -> REST: **RemoveFromFavoritesCommand**\n{userId, listingId}
+
+alt Produkt w ulubionych
+  REST -> DB: Znajdź user z favoriteListings
+  activate DB
+  DB --> REST: User with favorites
+  deactivate DB
+  
+  REST -> DB: Usuń listing z user.favoriteListings
+  activate DB
+  DB --> REST: Success
+  deactivate DB
+  
+  REST --> U: 200 OK\n{message: "Removed from favorites"}
+  note left: Produkt usunięty z ulubionych
+else Produkt nie w ulubionych
+  REST -> DB: Znajdź user z favoriteListings
+  activate DB
+  DB --> REST: User without this favorite
+  deactivate DB
+  REST --> U: 404 Not Found\n{message: "Not in favorites"}
+end
+deactivate REST
+
+== Przełączanie stanu (toggle favorite) ==
+note over U, DB
+  Frontend może implementować toggle:
+  kliknięcie ikony serca wywołuje POST lub DELETE
+  w zależności od aktualnego stanu
+end note
+
+U -> U: Kliknięcie ikony serca\nna produkcie
+alt Produkt NIE jest w ulubionych
+  U -> REST: POST /favorites {listingId}
+  REST -> DB: Dodaj do ulubionych
+  REST --> U: Sukces (ikona wypełniona)
+else Produkt JUŻ JEST w ulubionych
+  U -> REST: DELETE /favorites/:listingId
+  REST -> DB: Usuń z ulubionych
+  REST --> U: Sukces (ikona pusta)
+end
+
+@enduml

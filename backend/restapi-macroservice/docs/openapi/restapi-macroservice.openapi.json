@@ -183,6 +183,147 @@
         "tags": ["chats"]
       }
     },
+    "/chats/{chatId}/listings": {
+      "get": {
+        "operationId": "ChatController_getChatListings",
+        "parameters": [
+          {
+            "name": "chatId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns list of listings with favorite status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatListingsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get listings for a specific chat",
+        "tags": ["chats"]
+      }
+    },
+    "/favorites": {
+      "get": {
+        "operationId": "FavoritesController_getFavorites",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of favorite listings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FavoritesResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all favorite listings for the current user",
+        "tags": ["favorites"]
+      },
+      "post": {
+        "operationId": "FavoritesController_addToFavorites",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddToFavoritesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Listing added to favorites"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add a listing to favorites",
+        "tags": ["favorites"]
+      }
+    },
+    "/favorites/{listingId}": {
+      "delete": {
+        "operationId": "FavoritesController_removeFromFavorites",
+        "parameters": [
+          {
+            "name": "listingId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Listing removed from favorites"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove a listing from favorites",
+        "tags": ["favorites"]
+      }
+    },
+    "/messages/chat/{chatId}": {
+      "get": {
+        "operationId": "MessagesController_getChatMessages",
+        "parameters": [
+          {
+            "name": "chatId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of chat messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatMessagesResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all messages for a specific chat",
+        "tags": ["messages"]
+      }
+    },
     "/sse": {
       "get": {
         "operationId": "SseController_sse",
@@ -369,6 +510,182 @@
         },
         "required": ["chats"]
       },
+      "ListingResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Listing ID",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "chatId": {
+            "type": "string",
+            "description": "Chat ID this listing belongs to",
+            "example": "cm123abc",
+            "nullable": true
+          },
+          "image": {
+            "type": "string",
+            "description": "Image URL",
+            "example": "https://example.com/image.jpg",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "description": "Product title",
+            "example": "Wireless Headphones"
+          },
+          "description": {
+            "type": "string",
+            "description": "Product description",
+            "example": "High-quality wireless headphones with noise cancellation"
+          },
+          "link": {
+            "type": "string",
+            "description": "Product link",
+            "example": "https://example.com/product/123"
+          },
+          "priceValue": {
+            "type": "number",
+            "description": "Price value",
+            "example": 99.99,
+            "nullable": true
+          },
+          "priceLabel": {
+            "type": "string",
+            "description": "Price label",
+            "example": "$99.99",
+            "nullable": true
+          },
+          "priceCurrency": {
+            "type": "string",
+            "description": "Price currency",
+            "example": "USD",
+            "nullable": true
+          },
+          "priceNegotiable": {
+            "type": "boolean",
+            "description": "Whether price is negotiable",
+            "example": false
+          },
+          "isFavorited": {
+            "type": "boolean",
+            "description": "Whether this listing is favorited by the current user",
+            "example": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Created at timestamp",
+            "example": "2025-01-15T10:30:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "chatId",
+          "image",
+          "title",
+          "description",
+          "link",
+          "priceValue",
+          "priceLabel",
+          "priceCurrency",
+          "priceNegotiable",
+          "isFavorited",
+          "createdAt"
+        ]
+      },
+      "ChatListingsResponseDto": {
+        "type": "object",
+        "properties": {
+          "listings": {
+            "description": "List of listings for the chat",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListingResponseDto"
+            }
+          }
+        },
+        "required": ["listings"]
+      },
+      "FavoritesResponseDto": {
+        "type": "object",
+        "properties": {
+          "favorites": {
+            "description": "List of favorite listings",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ListingResponseDto"
+            }
+          }
+        },
+        "required": ["favorites"]
+      },
+      "AddToFavoritesDto": {
+        "type": "object",
+        "properties": {
+          "listingId": {
+            "type": "string",
+            "description": "Listing ID to add to favorites",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        },
+        "required": ["listingId"]
+      },
+      "MessageRoleDto": {
+        "type": "string",
+        "enum": ["user", "assistant", "system"],
+        "description": "Message role"
+      },
+      "MessageDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Message ID",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "chatId": {
+            "type": "string",
+            "description": "Chat ID",
+            "example": "cm123abc"
+          },
+          "role": {
+            "description": "Message role",
+            "example": "user",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MessageRoleDto"
+              }
+            ]
+          },
+          "content": {
+            "type": "string",
+            "description": "Message content",
+            "example": "I'm looking for a gift for my mom"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Created at timestamp",
+            "example": "2025-01-15T10:30:00Z"
+          }
+        },
+        "required": ["id", "chatId", "role", "content", "createdAt"]
+      },
+      "ChatMessagesResponseDto": {
+        "type": "object",
+        "properties": {
+          "messages": {
+            "description": "List of chat messages",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageDto"
+            }
+          }
+        },
+        "required": ["messages"]
+      },
       "SseChatbotMessageDto": {
         "type": "object",
         "properties": {
@@ -446,7 +763,7 @@
         },
         "required": ["value", "label", "currency", "negotiable"]
       },
-      "ListingDto": {
+      "ListingWithIdDto": {
         "type": "object",
         "properties": {
           "image": {
@@ -482,9 +799,21 @@
                 "$ref": "#/components/schemas/PriceDto"
               }
             ]
+          },
+          "listingId": {
+            "type": "string",
+            "description": "Listing ID from database",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           }
         },
-        "required": ["image", "title", "description", "link", "price"]
+        "required": [
+          "image",
+          "title",
+          "description",
+          "link",
+          "price",
+          "listingId"
+        ]
       },
       "SseGiftReadyDto": {
         "type": "object",
@@ -495,26 +824,40 @@
             "example": "gift-ready"
           },
           "data": {
-            "description": "Gift ideas payload",
+            "description": "Gift ideas payload with listing IDs",
             "example": {
               "giftIdeas": [
                 {
+                  "listingId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
                   "image": "https://example.com/image.jpg",
                   "title": "Book",
                   "description": "Great book",
-                  "link": "https://example.com/book"
+                  "link": "https://example.com/book",
+                  "price": {
+                    "value": 10,
+                    "label": "10 USD",
+                    "currency": "USD",
+                    "negotiable": false
+                  }
                 },
                 {
+                  "listingId": "4ga85f64-5717-4562-b3fc-2c963f66afa7",
                   "image": "https://example.com/image.jpg",
                   "title": "Pen",
                   "description": "Great pen",
-                  "link": "https://example.com/pen"
+                  "link": "https://example.com/pen",
+                  "price": {
+                    "value": 5,
+                    "label": "5 USD",
+                    "currency": "USD",
+                    "negotiable": false
+                  }
                 }
               ]
             },
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ListingDto"
+              "$ref": "#/components/schemas/ListingWithIdDto"
             }
           }
         },

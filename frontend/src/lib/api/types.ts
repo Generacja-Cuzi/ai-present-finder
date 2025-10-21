@@ -157,6 +157,75 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/chats/{chatId}/listings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get listings for a specific chat */
+        get: operations["ChatController_getChatListings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/favorites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all favorite listings for the current user */
+        get: operations["FavoritesController_getFavorites"];
+        put?: never;
+        /** Add a listing to favorites */
+        post: operations["FavoritesController_addToFavorites"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/favorites/{listingId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a listing from favorites */
+        delete: operations["FavoritesController_removeFromFavorites"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/messages/chat/{chatId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all messages for a specific chat */
+        get: operations["MessagesController_getChatMessages"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sse": {
         parameters: {
             query?: never;
@@ -276,6 +345,121 @@ export interface components {
             /** @description List of user's chats */
             chats: unknown[][];
         };
+        ListingResponseDto: {
+            /**
+             * @description Listing ID
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * @description Chat ID this listing belongs to
+             * @example cm123abc
+             */
+            chatId: string | null;
+            /**
+             * @description Image URL
+             * @example https://example.com/image.jpg
+             */
+            image: string | null;
+            /**
+             * @description Product title
+             * @example Wireless Headphones
+             */
+            title: string;
+            /**
+             * @description Product description
+             * @example High-quality wireless headphones with noise cancellation
+             */
+            description: string;
+            /**
+             * @description Product link
+             * @example https://example.com/product/123
+             */
+            link: string;
+            /**
+             * @description Price value
+             * @example 99.99
+             */
+            priceValue: number | null;
+            /**
+             * @description Price label
+             * @example $99.99
+             */
+            priceLabel: string | null;
+            /**
+             * @description Price currency
+             * @example USD
+             */
+            priceCurrency: string | null;
+            /**
+             * @description Whether price is negotiable
+             * @example false
+             */
+            priceNegotiable: boolean;
+            /**
+             * @description Whether this listing is favorited by the current user
+             * @example true
+             */
+            isFavorited: boolean;
+            /**
+             * Format: date-time
+             * @description Created at timestamp
+             * @example 2025-01-15T10:30:00Z
+             */
+            createdAt: string;
+        };
+        ChatListingsResponseDto: {
+            /** @description List of listings for the chat */
+            listings: components["schemas"]["ListingResponseDto"][];
+        };
+        FavoritesResponseDto: {
+            /** @description List of favorite listings */
+            favorites: components["schemas"]["ListingResponseDto"][];
+        };
+        AddToFavoritesDto: {
+            /**
+             * @description Listing ID to add to favorites
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            listingId: string;
+        };
+        /**
+         * @description Message role
+         * @enum {string}
+         */
+        MessageRole: "user" | "assistant" | "system";
+        MessageDto: {
+            /**
+             * @description Message ID
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * @description Chat ID
+             * @example cm123abc
+             */
+            chatId: string;
+            /**
+             * @description Message role
+             * @example user
+             */
+            role: components["schemas"]["MessageRole"];
+            /**
+             * @description Message content
+             * @example I'm looking for a gift for my mom
+             */
+            content: string;
+            /**
+             * Format: date-time
+             * @description Created at timestamp
+             * @example 2025-01-15T10:30:00Z
+             */
+            createdAt: string;
+        };
+        ChatMessagesResponseDto: {
+            /** @description List of chat messages */
+            messages: components["schemas"]["MessageDto"][];
+        };
         SseChatbotMessageDto: {
             /**
              * @example chatbot-message
@@ -333,7 +517,7 @@ export interface components {
              */
             negotiable: boolean;
         };
-        ListingDto: {
+        ListingWithIdDto: {
             /**
              * @description Image URL
              * @example https://example.com/image.jpg
@@ -364,6 +548,11 @@ export interface components {
              *     }
              */
             price: components["schemas"]["PriceDto"];
+            /**
+             * @description Listing ID from database
+             * @example 3fa85f64-5717-4562-b3fc-2c963f66afa6
+             */
+            listingId: string;
         };
         SseGiftReadyDto: {
             /**
@@ -372,25 +561,39 @@ export interface components {
              */
             type: "gift-ready";
             /**
-             * @description Gift ideas payload
+             * @description Gift ideas payload with listing IDs
              * @example {
              *       "giftIdeas": [
              *         {
+             *           "listingId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
              *           "image": "https://example.com/image.jpg",
              *           "title": "Book",
              *           "description": "Great book",
-             *           "link": "https://example.com/book"
+             *           "link": "https://example.com/book",
+             *           "price": {
+             *             "value": 10,
+             *             "label": "10 USD",
+             *             "currency": "USD",
+             *             "negotiable": false
+             *           }
              *         },
              *         {
+             *           "listingId": "4ga85f64-5717-4562-b3fc-2c963f66afa7",
              *           "image": "https://example.com/image.jpg",
              *           "title": "Pen",
              *           "description": "Great pen",
-             *           "link": "https://example.com/pen"
+             *           "link": "https://example.com/pen",
+             *           "price": {
+             *             "value": 5,
+             *             "label": "5 USD",
+             *             "currency": "USD",
+             *             "negotiable": false
+             *           }
              *         }
              *       ]
              *     }
              */
-            data: components["schemas"]["ListingDto"][];
+            data: components["schemas"]["ListingWithIdDto"][];
         };
     };
     responses: never;
@@ -581,6 +784,112 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChatsResponseDto"];
+                };
+            };
+        };
+    };
+    ChatController_getChatListings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                chatId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns list of listings with favorite status */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatListingsResponseDto"];
+                };
+            };
+        };
+    };
+    FavoritesController_getFavorites: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of favorite listings */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FavoritesResponseDto"];
+                };
+            };
+        };
+    };
+    FavoritesController_addToFavorites: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddToFavoritesDto"];
+            };
+        };
+        responses: {
+            /** @description Listing added to favorites */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FavoritesController_removeFromFavorites: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                listingId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Listing removed from favorites */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MessagesController_getChatMessages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                chatId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of chat messages */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatMessagesResponseDto"];
                 };
             };
         };

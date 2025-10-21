@@ -83,6 +83,7 @@ services:
       NODE_ENV: production
       # Runtime API URL configuration - Coolify will set SERVICE_URL_APP
       VITE_BACKEND_URL: ${VITE_BACKEND_URL:-}
+      SERVICE_URL_APP: ${SERVICE_URL_APP:-}
       SERVICE_FQDN_FRONTEND_80: # Coolify FQDN magic variable
     depends_on:
       - app

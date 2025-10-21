@@ -79,7 +79,7 @@ export function ChatUI({ clientId }: { clientId: string }) {
 
   // At this point, chatState.type must be "chatting" or "chat-interview-completed"
   const messages = chatState.type === "chatting" ? chatState.data.messages : [];
-  const TOTAL_STEPS = 18;
+  const TOTAL_STEPS = 20;
   const currentStep = Math.min(
     messages.filter((message) => message.sender === "assistant").length,
     TOTAL_STEPS,

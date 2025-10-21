@@ -78,9 +78,12 @@ export function ChatUI({ clientId }: { clientId: string }) {
   }
 
   // At this point, chatState.type must be "chatting" or "chat-interview-completed"
-
   const messages = chatState.type === "chatting" ? chatState.data.messages : [];
-  const currentStep = Math.min(messages.length, 10);
+  const TOTAL_STEPS = 18;
+  const currentStep = Math.min(
+    messages.filter((message) => message.sender === "assistant").length,
+    TOTAL_STEPS,
+  );
 
   const potentialAnswers =
     chatState.type === "chatting" && chatState.data.potentialAnswers != null
@@ -89,7 +92,7 @@ export function ChatUI({ clientId }: { clientId: string }) {
 
   return (
     <div className="flex h-screen flex-col pb-20">
-      <ChatHeader currentStep={currentStep} />
+      <ChatHeader currentStep={currentStep} totalSteps={TOTAL_STEPS} />
 
       <ChatMessages messages={messages} isProcessing={isChatbotProcessing} />
 

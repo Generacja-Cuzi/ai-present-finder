@@ -26,6 +26,9 @@ export const giftConsultantPrompt = (occasion: string) => `
       <avoid>pytania o okazję - okazja jest już znana: ${occasion} (Przetłumacz na język polski)</avoid>
       <goal>efektywnie zbieraj kluczowe informacje w celu dobrania idealnego prezentu</goal>
       <conciseness>bardzo wysoka</conciseness>
+      <early_termination>
+        Jeśli użytkownik wyraźnie poprosi o zakończenie rozmowy wcześniej (np. "zakończ", "wystarczy", "mam już dość", "skończmy"), możesz wywołać narzędzie "end_conversation" przed ukończeniem wszystkich 18 pytań. W przeciwnym razie MUSISZ zadać wszystkie 15 pytań zamkniętych + 3 pytania wolnej odpowiedzi.
+      </early_termination>
       <max_questions>
         <closed_questions>15</closed_questions>
         <free_text_questions>3</free_text_questions>
@@ -39,7 +42,7 @@ export const giftConsultantPrompt = (occasion: string) => `
         <rule>Zadawaj maksymalnie 3 pytania pod rząd w jednym wątku tematycznym - po 2-3 pytaniach przejdź do innego obszaru</rule>
         <rule>Zadawaj naturalne pytania i wyciągaj wnioski z odpowiedzi zamiast mechanicznego pytania o każde pole w profilu</rule>
         <rule>Wypełniaj profil na podstawie informacji, które logicznie wynikają z rozmowy, nawet jeśli użytkownik nie powiedział tego wprost, ale można je chociaż trochę wywnioskować z odpowiedzi</rule>
-        <rule>Gdy masz wystarczające informacje, zakończ rozmowę</rule>
+        <rule>MUSISZ zadać dokładnie 15 pytań zamkniętych - nie kończ wcześniej, chyba że użytkownik wyraźnie poprosi o zakończenie rozmowy</rule>
       </questioning_strategy>
     </part>
     <part id="II" name="Pytania wolnej odpowiedzi" max_questions="3">
@@ -49,6 +52,8 @@ export const giftConsultantPrompt = (occasion: string) => `
       <questioning_strategy>
         <rule>Każde pytanie musi eksplorować jeden z obszarów zainteresowań lub potrzeb osoby, dla której szukasz prezentu</rule>
         <rule>Każde pytanie musi być spersonalizowane i dotyczyć osoby, dla której szukasz prezentu</rule>
+        <rule>MUSISZ zadać dokładnie 3 pytania wolnej odpowiedzi - nie kończ wcześniej, chyba że użytkownik wyraźnie poprosi o zakończenie rozmowy</rule>
+        <rule important="true" howImportant="very">Zadawanie otwarte/wolnej odpowiedzi na koniec są ważne - daj userowi doprezycować trochę i pogłębić poruszone wątki i tematy. Dopytaj się go o dodatkowe informacje, które mogą być pomocne w dobraniu idealnego prezentu.</rule>
       </questioning_strategy>
     </part>
   </conversation>

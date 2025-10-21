@@ -6,7 +6,7 @@ import {
 } from "@core/events";
 import { GenerateQuestionCommand } from "src/domain/commands/generate-question.command";
 
-import { Inject } from "@nestjs/common";
+import { Inject, Logger } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { ClientProxy } from "@nestjs/microservices";
 
@@ -27,9 +27,12 @@ export class GenerateQuestionHandler
     private readonly chatCompletedNotifyUserEventBus: ClientProxy,
   ) {}
 
+  private readonly logger = new Logger(GenerateQuestionHandler.name);
+
   async execute(command: GenerateQuestionCommand) {
     const { chatId, occasion, history } = command;
     await giftInterviewFlow({
+      logger: this.logger,
       occasion,
       messages: history.map((message) => ({
         ...message,

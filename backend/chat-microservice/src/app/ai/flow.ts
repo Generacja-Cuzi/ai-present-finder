@@ -2,18 +2,22 @@ import { google } from "@ai-sdk/google";
 import type { ModelMessage, UIDataTypes, UIMessage } from "ai";
 import { generateText, stepCountIs } from "ai";
 
+import type { Logger } from "@nestjs/common";
+
 import { giftConsultantPrompt } from "./prompt";
 import type { MyUITools } from "./tools";
 import { getTools } from "./tools";
 import type { EndConversationOutput, PotencialAnswers } from "./types";
 
 export async function giftInterviewFlow({
+  logger,
   occasion,
   messages,
   closeInterview,
   flagInappropriateRequest,
   askAQuestionWithAnswerSuggestions,
 }: {
+  logger: Logger;
   occasion: string;
   messages: ModelMessage[];
   closeInterview: (output: EndConversationOutput) => void;
@@ -23,7 +27,7 @@ export async function giftInterviewFlow({
     potentialAnswers: PotencialAnswers,
   ) => void;
 }) {
-  return generateText({
+  const results = await generateText({
     model: google("gemini-2.5-flash-lite"),
     messages,
     system: giftConsultantPrompt(occasion),
@@ -33,7 +37,10 @@ export async function giftInterviewFlow({
       flagInappropriateRequest,
       askAQuestionWithAnswerSuggestions,
     ),
+    toolChoice: "required", // This forces the AI to always call a tool
   });
+
+  logger.log(`AI response: ${JSON.stringify(results)}`);
 }
 
 export type MyUIMessage = UIMessage<never, UIDataTypes, MyUITools>;

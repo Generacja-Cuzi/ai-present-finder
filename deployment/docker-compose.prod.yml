@@ -22,7 +22,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
       POSTGRES_DB: postgres
-      POSTGRES_MULTIPLE_DATABASES: reranking_service,fetch_service,stalking_service,chat_service,gift_ideas_service
+      POSTGRES_MULTIPLE_DATABASES: restapi_service,reranking_service,fetch_service,stalking_service,chat_service,gift_ideas_service
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker-init-db.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
@@ -50,6 +50,7 @@ services:
       GOOGLE_CREDENTIALS_BASE64: ${GOOGLE_CREDENTIALS_BASE64:-}
       GOOGLE_SCOPES_API: ${GOOGLE_SCOPES_API:-https://www.googleapis.com/auth/userinfo.email}
       # Database URLs
+      RESTAPI_DATABASE_URL: postgresql://${RESTAPI_DB_USER:-restapi_user}:${RESTAPI_DB_PASSWORD:-restapi_password}@postgres:5432/restapi_service
       RERANKING_DATABASE_URL: postgresql://${RERANKING_DB_USER:-reranking_user}:${RERANKING_DB_PASSWORD:-reranking_password}@postgres:5432/reranking_service
       FETCH_DATABASE_URL: postgresql://${FETCH_DB_USER:-fetch_user}:${FETCH_DB_PASSWORD:-fetch_password}@postgres:5432/fetch_service
       STALKING_DATABASE_URL: postgresql://${STALKING_DB_USER:-stalking_user}:${STALKING_DB_PASSWORD:-stalking_password}@postgres:5432/stalking_service

@@ -47,7 +47,7 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY:?}
       BRIGHTDATA_API_KEY: ${BRIGHTDATA_API_KEY:?}
       # Google OAuth Configuration
-      GOOGLE_CREDENTIALS_JSON: ${GOOGLE_CREDENTIALS_JSON:-}
+      GOOGLE_CREDENTIALS_BASE64: ${GOOGLE_CREDENTIALS_BASE64:-}
       GOOGLE_SCOPES_API: ${GOOGLE_SCOPES_API:-https://www.googleapis.com/auth/userinfo.email}
       # Database URLs
       RERANKING_DATABASE_URL: postgresql://${RERANKING_DB_USER:-reranking_user}:${RERANKING_DB_PASSWORD:-reranking_password}@postgres:5432/reranking_service

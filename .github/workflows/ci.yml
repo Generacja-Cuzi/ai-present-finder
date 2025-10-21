@@ -172,6 +172,7 @@ jobs:
           POSTGRES_PASSWORD=test_password
           OPENAI_API_KEY=sk-test-dummy-key
           BRIGHTDATA_API_KEY=test-brightdata-key
+          GOOGLE_CREDENTIALS_BASE64=eyJ3ZWIiOnsiY2xpZW50X2lkIjoiZHVtbXktY2xpZW50LWlkIiwiY2xpZW50X3NlY3JldCI6ImR1bW15LXNlY3JldCIsInJlZGlyZWN0X3VyaXMiOlsiaHR0cDovL2xvY2FsaG9zdDozMDAwL2NhbGxiYWNrIl0sImF1dGhfdXJpIjoiaHR0cHM6Ly9hY2NvdW50cy5nb29nbGUuY29tL28vb2F1dGgyL2F1dGgiLCJ0b2tlbl91cmkiOiJodHRwczovL29hdXRoMi5nb29nbGVhcGlzLmNvbS90b2tlbiIsImF1dGhfcHJvdmlkZXJfeDUwOV9jZXJ0X3VybCI6Imh0dHBzOi8vd3d3Lmdvb2dsZWFwaXMuY29tL29hdXRoMi92MS9jZXJ0cyJ9fQ==
           EOF
 
           # Validate configuration can be parsed

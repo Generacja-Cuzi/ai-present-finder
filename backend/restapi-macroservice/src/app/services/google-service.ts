@@ -25,6 +25,7 @@ export class GoogleService {
         credentialsJsonFromConfig,
       ) as IGoogleAuthCredentials;
     } catch {
+      console.error(credentialsJsonFromConfig);
       throw new Error(
         "GOOGLE_CREDENTIALS_JSON is not valid JSON in the configuration",
       );

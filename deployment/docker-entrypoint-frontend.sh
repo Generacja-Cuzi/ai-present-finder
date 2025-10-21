@@ -17,5 +17,5 @@ EOF
 
 echo "Runtime configuration injected successfully"
 
-# Execute the original nginx entrypoint
-exec /docker-entrypoint.sh "$@"
+# Start nginx
+exec nginx -g "daemon off;"

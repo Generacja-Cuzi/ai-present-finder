@@ -38,9 +38,14 @@ export async function giftInterviewFlow({
       askAQuestionWithAnswerSuggestions,
     ),
     toolChoice: "required", // This forces the AI to always call a tool
+    maxRetries: 5,
+
+    temperature: 0.1,
   });
 
-  logger.log(`AI response: ${JSON.stringify(results)}`);
+  logger.log(
+    `AI response: ${JSON.stringify(results.response.messages[0].content)}`,
+  );
 }
 
 export type MyUIMessage = UIMessage<never, UIDataTypes, MyUITools>;

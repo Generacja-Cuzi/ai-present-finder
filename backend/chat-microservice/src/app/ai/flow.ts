@@ -1,4 +1,4 @@
-import { openai } from "@ai-sdk/openai";
+import { google } from "@ai-sdk/google";
 import type { ModelMessage, UIDataTypes, UIMessage } from "ai";
 import { generateText, stepCountIs } from "ai";
 
@@ -12,20 +12,27 @@ export async function giftInterviewFlow({
   messages,
   closeInterview,
   flagInappropriateRequest,
-  proposeAnswers,
+  askAQuestionWithAnswerSuggestions,
 }: {
   occasion: string;
   messages: ModelMessage[];
   closeInterview: (output: EndConversationOutput) => void;
   flagInappropriateRequest: (reason: string) => void;
-  proposeAnswers: (potentialAnswers: PotencialAnswers) => void;
+  askAQuestionWithAnswerSuggestions: (
+    question: string,
+    potentialAnswers: PotencialAnswers,
+  ) => void;
 }) {
   return generateText({
-    model: openai("gpt-5-nano"),
+    model: google("gemini-2.5-flash-lite"),
     messages,
     system: giftConsultantPrompt(occasion),
-    stopWhen: stepCountIs(5),
-    tools: getTools(closeInterview, flagInappropriateRequest, proposeAnswers),
+    stopWhen: stepCountIs(1),
+    tools: getTools(
+      closeInterview,
+      flagInappropriateRequest,
+      askAQuestionWithAnswerSuggestions,
+    ),
   });
 }
 

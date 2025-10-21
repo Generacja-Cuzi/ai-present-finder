@@ -10,19 +10,23 @@ import { z } from "zod";
 export function getTools(
   closeInterview: (output: EndConversationOutput) => void,
   flagInappropriateRequest: (reason: string) => void,
-  proposeAnswers: (potentialAnswers: PotencialAnswers) => void,
+  askAQuestionWithAnswerSuggestions: (
+    question: string,
+    potentialAnswers: PotencialAnswers,
+  ) => void,
 ) {
   return {
-    propose_answers: tool({
+    ask_a_question_with_answer_suggestions: tool({
       description:
         "Provide 4 potential answers that user can choose from to anwser the question you've just asked. This makes the conversation faster and more structured.",
       inputSchema: z.object({
+        question: z.string().describe("The question you want to ask the user"),
         potentialAnswers: potencialAnswersSchema.describe(
           "4 potential answers for the user to choose from or a long free text answer",
         ),
       }),
-      execute: ({ potentialAnswers }) => {
-        proposeAnswers(potentialAnswers);
+      execute: ({ question, potentialAnswers }) => {
+        askAQuestionWithAnswerSuggestions(question, potentialAnswers);
         return {
           success: true,
           potentialAnswers,

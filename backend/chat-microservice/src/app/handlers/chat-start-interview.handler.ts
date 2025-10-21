@@ -17,13 +17,7 @@ export class ChatStartInterviewHandler {
     );
 
     await this.commandBus.execute(
-      new GenerateQuestionCommand(event.chatId, event.occasion, [
-        {
-          sender: "user",
-          content: "Hi!",
-          id: "1",
-        },
-      ]),
+      new GenerateQuestionCommand(event.chatId, event.occasion, []),
     );
   }
 }

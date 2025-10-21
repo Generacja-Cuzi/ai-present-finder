@@ -29,11 +29,59 @@ export class GenerateQuestionHandler
 
   private readonly logger = new Logger(GenerateQuestionHandler.name);
 
+  private getOccasionLabel(occasion: string): string {
+    const occasionMap: Record<string, string> = {
+      birthday: "urodziny",
+      anniversary: "rocznicę",
+      holiday: "święta",
+      "just-because": "bez okazji",
+    };
+
+    return occasionMap[occasion] || occasion;
+  }
+
   async execute(command: GenerateQuestionCommand) {
     const { chatId, occasion, history } = command;
+
+    // Mock the first question if no history exists
+    if (history.length === 0) {
+      const occasionLabel = this.getOccasionLabel(occasion);
+      const mockQuestion = `Dla kogo szukasz prezentu na okazję: ${occasionLabel}`;
+      const mockAnswers = {
+        type: "select" as const,
+        answers: [
+          {
+            answerFullSentence: "Dla mojego partnera/partnerki",
+            answerShortForm: "Partner/Partnerka",
+          },
+          {
+            answerFullSentence:
+              "Dla członka rodziny (rodzice, rodzeństwo, dziadkowie)",
+            answerShortForm: "Rodzina",
+          },
+          {
+            answerFullSentence: "Dla przyjaciela/przyjaciółki",
+            answerShortForm: "Przyjaciel/Przyjaciółka",
+          },
+          {
+            answerFullSentence: "Dla kolegi/koleżanki z pracy",
+            answerShortForm: "Kolega/Koleżanka z pracy",
+          },
+        ],
+      };
+
+      const event = new ChatQuestionAskedEvent(
+        chatId,
+        mockQuestion,
+        mockAnswers,
+      );
+      this.eventBus.emit(ChatQuestionAskedEvent.name, event);
+      return;
+    }
+
     await giftInterviewFlow({
       logger: this.logger,
-      occasion,
+      occasion: this.getOccasionLabel(occasion),
       messages: history.map((message) => ({
         ...message,
         role: message.sender,

@@ -24,11 +24,12 @@ export class CreateSessionHandler
   async execute(command: CreateSessionCommand): Promise<string> {
     const { eventId, chatId, totalEvents } = command;
 
-    await this.giftSessionRepository
-      .createQueryBuilder()
-      .insert()
-      .into(GiftSession)
-      .values({
+    const existingSession = await this.giftSessionRepository.findOne({
+      where: { eventId },
+    });
+
+    if (existingSession === null) {
+      await this.giftSessionRepository.save({
         eventId,
         chatId,
         status: SessionStatus.ACTIVE,
@@ -36,9 +37,8 @@ export class CreateSessionHandler
         totalEvents,
         createdAt: new Date(),
         updatedAt: new Date(),
-      })
-      .orIgnore()
-      .execute();
+      });
+    }
 
     this.logger.log(
       `Session ${eventId} ensured for chat ${chatId} with ${String(totalEvents)} events`,

@@ -52,7 +52,7 @@ export class AddProductsToSessionHandler
     });
 
     const sessionProduct = this.sessionProductRepository.create({
-      session: { eventId } as GiftSession,
+      session: { eventId },
       sourceEventName,
       sourceEventProvider,
       sourceEventSuccess,

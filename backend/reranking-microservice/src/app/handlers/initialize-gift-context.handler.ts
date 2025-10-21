@@ -1,12 +1,14 @@
 import { Repository } from "typeorm";
 
 import { Logger } from "@nestjs/common";
-import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { InjectRepository } from "@nestjs/typeorm";
 
-import { CreateSessionCommand } from "../../domain/commands/create-session.command";
 import { InitializeGiftContextCommand } from "../../domain/commands/initialize-gift-context.command";
-import { GiftSession } from "../../domain/entities/gift-session.entity";
+import {
+  GiftSession,
+  SessionStatus,
+} from "../../domain/entities/gift-session.entity";
 
 @CommandHandler(InitializeGiftContextCommand)
 export class InitializeGiftContextHandler
@@ -17,24 +19,41 @@ export class InitializeGiftContextHandler
   constructor(
     @InjectRepository(GiftSession)
     private readonly giftSessionRepository: Repository<GiftSession>,
-    private readonly commandBus: CommandBus,
   ) {}
 
   async execute(command: InitializeGiftContextCommand): Promise<void> {
     const { eventId, chatId, totalEvents, userProfile, keywords } = command;
 
-    await this.commandBus.execute(
-      new CreateSessionCommand(eventId, chatId, totalEvents),
-    );
-    const now = new Date();
-    await this.giftSessionRepository.update(eventId, {
-      giftContext: {
-        userProfile,
-        keywords,
-      },
-      updatedAt: now,
+    const existingSession = await this.giftSessionRepository.findOne({
+      where: { eventId },
     });
 
-    this.logger.log(`Saved gift context for session ${eventId}`);
+    if (existingSession === null) {
+      await this.giftSessionRepository.save({
+        eventId,
+        chatId,
+        status: SessionStatus.ACTIVE,
+        completedEvents: 0,
+        totalEvents,
+        giftContext: {
+          userProfile,
+          keywords,
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      this.logger.log(
+        `Created session ${eventId} with gift context for chat ${chatId}`,
+      );
+    } else {
+      await this.giftSessionRepository.update(eventId, {
+        giftContext: {
+          userProfile,
+          keywords,
+        },
+        updatedAt: new Date(),
+      });
+      this.logger.log(`Updated gift context for existing session ${eventId}`);
+    }
   }
 }

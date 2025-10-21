@@ -18,7 +18,7 @@ COPY backend ./backend
 COPY frontend ./frontend
 
 # Install dependencies and build
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockfile
 RUN pnpm --filter frontend build
 
 # Production stage

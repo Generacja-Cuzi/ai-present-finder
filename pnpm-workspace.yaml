@@ -9,10 +9,13 @@ packages:
   - backend/reranking-microservice
   - frontend
 
+injectWorkspacePackages: true
+
 onlyBuiltDependencies:
   - "@nestjs/core"
   - "@swc/core"
   - "@tailwindcss/oxide"
+  - bcrypt
   - cpu-features
   - esbuild
   - msw
@@ -21,4 +24,3 @@ onlyBuiltDependencies:
 
 syncInjectedDepsAfterScripts:
   - build
-injectWorkspacePackages: true

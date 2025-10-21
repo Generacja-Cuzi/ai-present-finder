@@ -20,21 +20,21 @@ export class SaveListingsHandler
       `Saving ${String(listings.length)} listings for chat ${chatId}`,
     );
 
-    const savedListings: Listing[] = [];
-    for (const listing of listings) {
-      const savedListing = await this.listingRepository.create({
-        chatId,
-        image: listing.image,
-        title: listing.title,
-        description: listing.description,
-        link: listing.link,
-        priceValue: listing.price.value,
-        priceLabel: listing.price.label,
-        priceCurrency: listing.price.currency,
-        priceNegotiable: listing.price.negotiable ?? false,
-      });
-      savedListings.push(savedListing);
-    }
+    const savedListings = await Promise.all(
+      listings.map((listing) =>
+        this.listingRepository.create({
+          chatId,
+          image: listing.image,
+          title: listing.title,
+          description: listing.description,
+          link: listing.link,
+          priceValue: listing.price.value,
+          priceLabel: listing.price.label,
+          priceCurrency: listing.price.currency,
+          priceNegotiable: listing.price.negotiable ?? false,
+        }),
+      ),
+    );
 
     this.logger.log(`Successfully saved ${String(listings.length)} listings`);
 

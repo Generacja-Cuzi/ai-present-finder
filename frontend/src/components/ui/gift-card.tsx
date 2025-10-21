@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import {
   useAddToFavoritesMutation,
   useRemoveFromFavoritesMutation,
-} from "../../lib/favorites/favorites.api";
+} from "../../features/saved/api/favorites.api";
 
 export function GiftCard({
   gift,

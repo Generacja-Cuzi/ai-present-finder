@@ -1,10 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { MessageRole } from "src/domain/entities/message.entity";
 
-export enum MessageRoleDto {
-  USER = "user",
-  ASSISTANT = "assistant",
-  SYSTEM = "system",
-}
+import { ApiProperty } from "@nestjs/swagger";
 
 export class MessageDto {
   @ApiProperty({
@@ -21,11 +17,11 @@ export class MessageDto {
 
   @ApiProperty({
     description: "Message role",
-    enum: MessageRoleDto,
-    enumName: "MessageRoleDto",
-    example: MessageRoleDto.USER,
+    enum: MessageRole,
+    enumName: "MessageRole",
+    example: MessageRole.USER,
   })
-  role: MessageRoleDto;
+  role: MessageRole;
 
   @ApiProperty({
     description: "Message content",

@@ -65,7 +65,7 @@ export class FavoritesController {
       priceLabel: listing.priceLabel,
       priceCurrency: listing.priceCurrency,
       priceNegotiable: listing.priceNegotiable,
-      isFavorited: true, // All items in this list are favorited
+      isFavorited: true,
       createdAt: listing.createdAt,
     }));
 

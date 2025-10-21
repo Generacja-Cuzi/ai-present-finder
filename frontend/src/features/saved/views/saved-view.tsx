@@ -1,6 +1,6 @@
 import { GiftCard } from "@/components/ui/gift-card";
 import { Navbar } from "@/components/ui/navbar";
-import { useGetFavoritesQuery } from "@/lib/favorites/favorites.api";
+import { useGetFavoritesQuery } from "@/features/saved/api/favorites.api";
 
 import { SavedHeader } from "../components";
 

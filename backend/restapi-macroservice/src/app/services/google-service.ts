@@ -1,8 +1,5 @@
 import { OAuth2Client } from "google-auth-library";
 import { google } from "googleapis";
-import * as fs from "node:fs";
-// eslint-disable-next-line unicorn/import-style
-import { join } from "node:path";
 
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -12,16 +9,27 @@ import type { GoogleAuthUrlDto } from "../../domain/models/auth.dto";
 @Injectable()
 export class GoogleService {
   private readonly scopesAPI: string[];
-  private readonly credentialsPath: string;
+  private readonly credentials: IGoogleAuthCredentials;
+
   constructor(private configService: ConfigService) {
-    const credentialsPathFromConfig =
-      this.configService.get<string>("GOOGLE_CREDENTIALS_PATH") ?? "";
-    if (credentialsPathFromConfig.length === 0) {
+    const credentialsJsonFromConfig =
+      this.configService.get<string>("GOOGLE_CREDENTIALS_JSON") ?? "";
+    if (credentialsJsonFromConfig.length === 0) {
       throw new Error(
-        "GOOGLE_CREDENTIALS_PATH is not set in the configuration",
+        "GOOGLE_CREDENTIALS_JSON is not set in the configuration",
       );
     }
-    this.credentialsPath = join(process.cwd(), credentialsPathFromConfig);
+
+    try {
+      this.credentials = JSON.parse(
+        credentialsJsonFromConfig,
+      ) as IGoogleAuthCredentials;
+    } catch {
+      throw new Error(
+        "GOOGLE_CREDENTIALS_JSON is not valid JSON in the configuration",
+      );
+    }
+
     const scopesFromConfig =
       this.configService.get<string>("GOOGLE_SCOPES_API") ?? "";
     if (scopesFromConfig.length === 0) {
@@ -30,22 +38,16 @@ export class GoogleService {
     this.scopesAPI = scopesFromConfig.split(",");
   }
 
-  readCredentials(filePath: string): IGoogleAuthCredentials {
-    const content: string = fs.readFileSync(filePath, "utf8");
-    return JSON.parse(content) as IGoogleAuthCredentials;
-  }
   getOAuth2ClientUrl(): GoogleAuthUrlDto {
     const authClient = this.getAuthClient();
     return this.getAuthUrl(authClient);
   }
+
   getAuthClient(): OAuth2Client {
-    const keys: IGoogleAuthCredentials = this.readCredentials(
-      this.credentialsPath,
-    );
     const authClient = new OAuth2Client(
-      keys.web.client_id,
-      keys.web.client_secret,
-      keys.web.redirect_uris[0],
+      this.credentials.web.client_id,
+      this.credentials.web.client_secret,
+      this.credentials.web.redirect_uris[0],
     );
     return authClient;
   }

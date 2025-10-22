@@ -23,7 +23,7 @@ export class ChatDto {
 export class ChatsResponseDto {
   @ApiProperty({
     description: "List of user's chats",
-    type: [ChatDto],
+    type: ChatDto,
     isArray: true,
   })
   chats: ChatDto[];

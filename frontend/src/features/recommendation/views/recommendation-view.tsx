@@ -3,14 +3,12 @@
 import type { ListingWithId } from "@core/types";
 import { useState } from "react";
 
+import { FilterButton } from "@/components/filter-button";
+import { SearchBar } from "@/components/search-bar";
+import { GiftCard } from "@/components/ui/gift-card";
 import { Navbar } from "@/components/ui/navbar";
 
-import {
-  FilterButton,
-  GiftCard,
-  RecommendationHeader,
-  SearchBar,
-} from "../components";
+import { RecommendationHeader } from "../components";
 
 interface RecommendationViewProps {
   clientId: string;

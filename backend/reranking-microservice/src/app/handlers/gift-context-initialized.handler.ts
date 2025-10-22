@@ -1,15 +1,16 @@
 import { GiftContextInitializedEvent } from "@core/events";
 
 import { Controller, Logger } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
 import { EventPattern } from "@nestjs/microservices";
 
-import { EventTrackingService } from "../services/event-tracking.service";
+import { InitializeGiftContextCommand } from "../../domain/commands/initialize-gift-context.command";
 
 @Controller()
 export class GiftContextInitializedHandler {
   private readonly logger = new Logger(GiftContextInitializedHandler.name);
 
-  constructor(private readonly eventTrackingService: EventTrackingService) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   @EventPattern(GiftContextInitializedEvent.name)
   async handle(event: GiftContextInitializedEvent) {
@@ -17,12 +18,14 @@ export class GiftContextInitializedHandler {
       `Handling GiftContextInitializedEvent for chat ${event.chatId}`,
     );
 
-    await this.eventTrackingService.saveGiftContext(
-      event.eventId,
-      event.chatId,
-      event.totalEvents,
-      event.userProfile,
-      event.keywords,
+    await this.commandBus.execute(
+      new InitializeGiftContextCommand(
+        event.eventId,
+        event.chatId,
+        event.totalEvents,
+        event.userProfile,
+        event.keywords,
+      ),
     );
   }
 }

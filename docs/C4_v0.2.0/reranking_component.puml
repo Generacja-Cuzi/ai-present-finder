@@ -2,27 +2,56 @@
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
 Container_Boundary(reranking, "Reranking Microservice (NestJS)") {
-  Component(context_handler, "GiftContextInitializedHandler", "NestJS Handler", "Handles GiftContextInitializedEvent, stores gift context for session")
-  Component(product_handler, "ProductFetchedHandler", "NestJS Handler", "Handles ProductFetchedEvent, aggregates products from all providers")
-  Component(event_tracking, "EventTrackingService", "NestJS Service", "Tracks event completion and triggers reranking when all providers respond")
-  Component(reranking_service, "RerankingService", "NestJS Service", "Reranks products based on user preferences and context")
-  Component(gift_session, "GiftSessionEntity", "Domain Entity", "Maintains session state with products and context")
+  Component(context_handler, "GiftContextInitializedHandler", "Event Handler", "Consumes GiftContextInitializedEvent, delegates to InitializeGiftContextCommand")
+  Component(product_handler, "ProductFetchedHandler", "Event Handler", "Consumes ProductFetchedEvent, orchestrates session creation, product storage, and completion tracking")
+  
+  Component(create_session, "CreateSessionHandler", "Command Handler", "Creates or ensures session exists for eventId")
+  Component(init_context, "InitializeGiftContextHandler", "Command Handler", "Initializes or updates gift context with user profile and keywords")
+  Component(add_products, "AddProductsToSessionHandler", "Command Handler", "Stores products in session with source event metadata")
+  Component(increment_completion, "IncrementSessionCompletionHandler", "Command Handler", "Increments completed events counter, marks session as complete when done")
+  Component(emit_ready, "EmitGiftReadyHandler", "Command Handler", "Retrieves products, ranks them via AI, and emits GiftReadyEvent")
+  Component(mark_timeout, "MarkTimeoutSessionsHandler", "Command Handler", "Marks inactive sessions as timed out based on EVENT_TIMEOUT_MS")
+  
+  Component(ranking_service, "rankProducts", "AI Service", "Uses OpenAI via ai-sdk to rank products based on user profile and keywords")
+  Component(gift_session_entity, "GiftSession", "Domain Entity", "Session state with eventId, chatId, status, completion tracking, and gift context")
+  Component(product_entity, "Product", "Domain Entity", "Product details with image, title, description, price")
+  Component(session_product_entity, "GiftSessionProduct", "Domain Entity", "Join table linking sessions to products with source event metadata")
+  
+  ComponentDb(database, "PostgreSQL", "Database", "TypeORM persistence layer")
 }
 
 Component_Ext(rabbitmq_in_context, "RabbitMQ", "Message Broker", "GiftContextInitializedEvent queue")
 Component_Ext(rabbitmq_in_product, "RabbitMQ", "Message Broker", "ProductFetchedEvent queue")
 Component_Ext(rabbitmq_out, "RabbitMQ", "Message Broker", "GiftReadyEvent queue")
 
-Rel(rabbitmq_in_context, context_handler, "Consumes event", "AMQP @EventPattern")
-Rel(context_handler, gift_session, "Initializes session")
-Rel(context_handler, event_tracking, "Registers expected events")
+' Event handler relationships
+Rel(rabbitmq_in_context, context_handler, "Consumes", "AMQP @EventPattern")
+Rel(context_handler, init_context, "Executes", "CommandBus")
 
-Rel(rabbitmq_in_product, product_handler, "Consumes event", "AMQP @EventPattern")
-Rel(product_handler, gift_session, "Stores products")
-Rel(product_handler, event_tracking, "Marks event complete")
-Rel(event_tracking, reranking_service, "Triggers when all complete")
-Rel(reranking_service, gift_session, "Retrieves products & context")
-Rel(reranking_service, rabbitmq_out, "Publishes GiftReadyEvent with ranked products", "AMQP ClientProxy.emit")
+Rel(rabbitmq_in_product, product_handler, "Consumes", "AMQP @EventPattern")
+Rel(product_handler, create_session, "1. Creates session", "CommandBus")
+Rel(product_handler, add_products, "2. Adds products", "CommandBus")
+Rel(product_handler, increment_completion, "3. Increments counter", "CommandBus")
+Rel(product_handler, emit_ready, "4. Emits when complete", "CommandBus (conditional)")
+
+' Command handler to entity/database relationships
+Rel(create_session, gift_session_entity, "Creates/reads")
+Rel(create_session, database, "Persists", "TypeORM")
+Rel(init_context, gift_session_entity, "Creates/updates context")
+Rel(init_context, database, "Persists", "TypeORM")
+Rel(add_products, product_entity, "Creates")
+Rel(add_products, session_product_entity, "Creates")
+Rel(add_products, database, "Persists", "TypeORM")
+Rel(increment_completion, gift_session_entity, "Updates completion count")
+Rel(increment_completion, database, "Persists", "TypeORM")
+Rel(emit_ready, gift_session_entity, "Reads")
+Rel(emit_ready, session_product_entity, "Reads")
+Rel(emit_ready, product_entity, "Reads")
+Rel(emit_ready, database, "Queries", "TypeORM")
+Rel(emit_ready, ranking_service, "Ranks products", "AI via generateObject")
+Rel(emit_ready, rabbitmq_out, "Publishes", "AMQP ClientProxy.emit")
+Rel(mark_timeout, gift_session_entity, "Updates status")
+Rel(mark_timeout, database, "Persists", "TypeORM")
 
 SHOW_LEGEND()
 @enduml

@@ -1,5 +1,7 @@
 import { RecipientProfile } from "@core/types";
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+
+import { GiftSessionProduct } from "./gift-session-product.entity";
 
 export enum SessionStatus {
   ACTIVE = "active",
@@ -54,4 +56,7 @@ export class GiftSession {
     userProfile: RecipientProfile | null;
     keywords: string[];
   } | null;
+
+  @OneToMany(() => GiftSessionProduct, (product) => product.session)
+  products?: GiftSessionProduct[];
 }

@@ -108,9 +108,9 @@ export function GiftCard({
       <div className="flex flex-1 flex-col">
         <div className="flex-1 px-4 pt-4">
           <p className="text-xl font-semibold text-gray-900">
-            {gift.price.value === null
+            {gift.price.value === null || gift.price.value === undefined
               ? "Price not available"
-              : `${gift.price.value.toFixed(2)} ${gift.price.currency ?? "zł"}`}
+              : `${Number(gift.price.value).toFixed(2)} ${gift.price.currency ?? "zł"}`}
           </p>
           <h3 className="mt-1 line-clamp-2 text-sm font-medium text-gray-700">
             {gift.title}

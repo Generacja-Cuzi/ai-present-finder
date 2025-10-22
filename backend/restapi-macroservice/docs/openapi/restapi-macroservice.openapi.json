@@ -632,7 +632,7 @@
         },
         "required": ["listingId"]
       },
-      "MessageRoleDto": {
+      "MessageRole": {
         "type": "string",
         "enum": ["user", "assistant", "system"],
         "description": "Message role"
@@ -655,7 +655,7 @@
             "example": "user",
             "allOf": [
               {
-                "$ref": "#/components/schemas/MessageRoleDto"
+                "$ref": "#/components/schemas/MessageRole"
               }
             ]
           },

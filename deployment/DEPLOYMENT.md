@@ -54,6 +54,12 @@ POSTGRES_PASSWORD=your-secure-postgres-password-here
 RABBITMQ_USER=admin
 RABBITMQ_PASS=admin
 
+# CORS Configuration
+# Automatically uses the frontend domain via Coolify's SERVICE_FQDN_FRONTEND_80 variable
+# Or manually override with comma-separated list of allowed origins if needed
+# Example override: https://yourdomain.com,https://app.yourdomain.com
+CORS_ORIGINS=${SERVICE_FQDN_FRONTEND_80}
+
 # Database Configuration
 POSTGRES_USER=postgres
 RERANKING_DB_USER=reranking_user

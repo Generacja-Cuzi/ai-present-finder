@@ -1,8 +1,9 @@
 #!/bin/sh
 set -e
 
-# Get the API URL from environment variable, fallback to localhost if not set
-API_URL="${VITE_BACKEND_URL:-${SERVICE_URL_APP:-http://localhost:3000}}"
+# Get the API URL from environment variable
+# Priority: SERVICE_URL_APP (Coolify) > VITE_BACKEND_URL > localhost
+API_URL="${SERVICE_URL_APP:-${VITE_BACKEND_URL:-http://localhost:3000}}"
 
 echo "Injecting runtime configuration..."
 echo "API_URL: $API_URL"
@@ -16,5 +17,5 @@ EOF
 
 echo "Runtime configuration injected successfully"
 
-# Execute the original nginx entrypoint
-exec /docker-entrypoint.sh "$@"
+# Start nginx
+exec nginx -g "daemon off;"

@@ -14,7 +14,7 @@
     "generate:openapi": "pnpm --filter @backend/restapi-macroservice generate:openapi && pnpm --filter frontend generate:openapi",
     "install:all": "pnpm install",
     "lint": "pnpm -r --no-bail lint",
-    "prepare": "husky || true && pnpm run generate:openapi",
+    "prepare": "[ \"$CI\" = \"true\" ] || (husky || true && pnpm run generate:openapi)",
     "services:dev": "pnpm -r --filter=!@backend/fetch-microservice --parallel dev",
     "start": "pnpm -r --parallel start",
     "test": "pnpm -r --no-bail test",

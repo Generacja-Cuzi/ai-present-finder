@@ -9,6 +9,7 @@ module.exports = {
       env: {
         NODE_ENV: "production",
         PORT: process.env.RESTAPI_PORT || 3000,
+        DATABASE_URL: process.env.RESTAPI_DATABASE_URL,
       },
     },
     {

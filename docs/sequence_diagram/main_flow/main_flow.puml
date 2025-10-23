@@ -73,7 +73,7 @@ end
 == Interview loop ==
 loop Dopóki AI nie zdecyduje zakończyć lub niewłaściwe zachowanie usera
   CHAT -> CHAT: **GenerateQuestionCommand**\n(AI decyduje o następnym pytaniu)
-  CHAT --> REST: **ChatQuestionAskedEvent**\n{chatId, question}
+  CHAT --> REST: **ChatQuestionAskedEvent**\n{chatId, question, potentialAnswers}
   REST -> REST: **NotifyUserSseCommand**
   REST -> DB: Save message to database
   activate DB

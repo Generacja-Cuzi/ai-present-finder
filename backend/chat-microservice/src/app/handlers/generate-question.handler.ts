@@ -11,6 +11,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { ClientProxy } from "@nestjs/microservices";
 
 import { giftInterviewFlow } from "../ai/flow";
+import type { EndConversationOutput, PotencialAnswers } from "../ai/types";
 
 @CommandHandler(GenerateQuestionCommand)
 export class GenerateQuestionHandler
@@ -31,8 +32,8 @@ export class GenerateQuestionHandler
 
   private getOccasionLabel(occasion: string): string {
     const occasionMap: Record<string, string> = {
-      birthday: "urodziny",
-      anniversary: "rocznicę",
+      birthday: "urodzin",
+      anniversary: "rocznicy",
       holiday: "święta",
       "just-because": "bez okazji",
     };
@@ -45,8 +46,11 @@ export class GenerateQuestionHandler
 
     // Mock the first question if no history exists
     if (history.length === 0) {
+      this.logger.log(
+        `Mocking the first question for chat ${chatId} with occasion ${occasion}`,
+      );
       const occasionLabel = this.getOccasionLabel(occasion);
-      const mockQuestion = `Dla kogo szukasz prezentu na okazję: ${occasionLabel}`;
+      const mockQuestion = `Dla kogo szukasz prezentu z okazji ${occasionLabel}?`;
       const mockAnswers = {
         type: "select" as const,
         answers: [
@@ -80,25 +84,27 @@ export class GenerateQuestionHandler
     }
 
     await giftInterviewFlow({
-      logger: this.logger,
       occasion: this.getOccasionLabel(occasion),
       messages: history.map((message) => ({
         ...message,
         role: message.sender,
       })),
-      askAQuestionWithAnswerSuggestions: (questionn, potentialAnswerss) => {
+      onQuestionAsked: (
+        question: string,
+        potentialAnswers: PotencialAnswers,
+      ) => {
         const event = new ChatQuestionAskedEvent(
           chatId,
-          questionn,
-          potentialAnswerss,
+          question,
+          potentialAnswers,
         );
         this.eventBus.emit(ChatQuestionAskedEvent.name, event);
       },
-      closeInterview: (output) => {
-        const event = new ChatInterviewCompletedEvent(chatId, output);
+      onInterviewCompleted: (output: EndConversationOutput) => {
+        const interviewEvent = new ChatInterviewCompletedEvent(chatId, output);
         this.chatInterviewCompletedEventEventBus.emit(
           ChatInterviewCompletedEvent.name,
-          event,
+          interviewEvent,
         );
         const notifyEvent = new ChatCompletedNotifyUserEvent(chatId);
         this.chatCompletedNotifyUserEventBus.emit(
@@ -106,10 +112,14 @@ export class GenerateQuestionHandler
           notifyEvent,
         );
       },
-      flagInappropriateRequest: (reason) => {
+      onInappropriateRequest: (reason: string) => {
+        const inappropriateEvent = new ChatInappropriateRequestEvent(
+          reason,
+          chatId,
+        );
         this.inappropriateRequestEventBus.emit(
           ChatInappropriateRequestEvent.name,
-          new ChatInappropriateRequestEvent(reason, chatId),
+          inappropriateEvent,
         );
       },
     });

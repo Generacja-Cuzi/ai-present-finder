@@ -47,6 +47,9 @@ export class RestApiController {
   @ApiOperation({ summary: "Send chat messages to the system" })
   @ApiOkResponse({ description: "Message accepted" })
   async sendMessage(@Body() sendMessageDto: SendMessageDto): Promise<void> {
+    this.logger.log(
+      `Sending message to the system: ${JSON.stringify(sendMessageDto)}`,
+    );
     await this.commandBus.execute(new SendUserMessageCommand(sendMessageDto)); // TODO(simon-the-shark): validate sendMessageDto
   }
 }

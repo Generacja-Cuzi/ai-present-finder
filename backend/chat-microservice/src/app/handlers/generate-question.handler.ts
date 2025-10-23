@@ -84,6 +84,7 @@ export class GenerateQuestionHandler
     }
 
     await giftInterviewFlow({
+      logger: this.logger,
       occasion: this.getOccasionLabel(occasion),
       messages: history.map((message) => ({
         ...message,

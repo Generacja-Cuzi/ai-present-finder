@@ -1,4 +1,3 @@
-import type { InferUITools } from "ai";
 import { tool } from "ai";
 import {
   endConversationOutputSchema,

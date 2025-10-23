@@ -2,17 +2,21 @@ import { google } from "@ai-sdk/google";
 import type { ModelMessage } from "ai";
 import { generateText, stepCountIs } from "ai";
 
+import type { Logger } from "@nestjs/common";
+
 import { giftConsultantPrompt } from "./prompt";
 import { tools } from "./tools";
 import type { EndConversationOutput, PotencialAnswers } from "./types";
 
 export async function giftInterviewFlow({
+  logger,
   occasion,
   messages,
   onQuestionAsked,
   onInterviewCompleted,
   onInappropriateRequest,
 }: {
+  logger: Logger;
   occasion: string;
   messages: ModelMessage[];
   onQuestionAsked: (
@@ -29,8 +33,14 @@ export async function giftInterviewFlow({
     stopWhen: stepCountIs(1),
     tools,
     toolChoice: "required", // This forces the AI to always call a tool
+    onStepFinish: (step) => {
+      logger.log(`Step finished: ${JSON.stringify(step)}`);
+    },
+    maxRetries: 5,
   });
-
+  logger.log(
+    `results.toolResults.length: ${results.toolResults.length.toString()}`,
+  );
   for (const toolResult of results.toolResults) {
     if (toolResult.dynamic !== undefined && toolResult.dynamic) {
       continue; // rule out dynamic tool results

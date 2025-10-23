@@ -9,13 +9,9 @@ import { NavButton } from "@/components/ui/nav-button";
 
 import { useGetChatListingsQuery } from "../api/chats.api";
 
-interface ChatDetailsViewProps {
-  chatId: string;
-}
-
-export function ChatDetailsView({ chatId }: ChatDetailsViewProps) {
+export function ChatDetailsView({ chatId }: { chatId: string }) {
   const [searchQuery, setSearchQuery] = useState("");
-  const { data, isLoading, error } = useGetChatListingsQuery(chatId);
+  const { data, isLoading, isError } = useGetChatListingsQuery(chatId);
 
   const handleShopsFilter = () => {
     // TODO: Implement shops filter functionality
@@ -43,7 +39,7 @@ export function ChatDetailsView({ chatId }: ChatDetailsViewProps) {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="flex min-h-screen flex-col bg-gray-50">
         <ChatDetailsHeader />
@@ -59,7 +55,7 @@ export function ChatDetailsView({ chatId }: ChatDetailsViewProps) {
     );
   }
 
-  const listings = data?.listings || [];
+  const listings = data?.listings ?? [];
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
@@ -106,7 +102,7 @@ export function ChatDetailsView({ chatId }: ChatDetailsViewProps) {
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <p className="text-lg font-medium text-gray-900">No gifts found</p>
             <p className="mt-1 text-sm text-gray-500">
-              This chat doesn't have any gift recommendations yet
+              This chat doesn&apos;t have any gift recommendations yet
             </p>
           </div>
         )}

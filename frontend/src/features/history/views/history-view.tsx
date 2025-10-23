@@ -4,7 +4,7 @@ import { useGetChatsQuery } from "../api/chats.api";
 import { ChatCard, HistoryHeader } from "../components";
 
 export function HistoryView() {
-  const { data, isLoading, error } = useGetChatsQuery();
+  const { data, isLoading, isError } = useGetChatsQuery();
 
   if (isLoading) {
     return (
@@ -18,7 +18,7 @@ export function HistoryView() {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="flex min-h-screen flex-col bg-gray-50">
         <HistoryHeader />
@@ -35,7 +35,7 @@ export function HistoryView() {
     );
   }
 
-  const chats = data?.chats || [];
+  const chats = data?.chats ?? [];
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">

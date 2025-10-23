@@ -1,37 +1,24 @@
-import { useNavigate } from "@tanstack/react-router";
 import { X } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-
-interface ChatCardProps {
-  chatId: string;
-  chatName: string;
-  createdAt: Date;
-  giftCount?: number;
-  totalPrice?: number;
-}
+import { NavButton } from "@/components/ui/nav-button";
 
 export function ChatCard({
   chatId,
   chatName,
   createdAt,
   giftCount = 0,
-}: ChatCardProps) {
-  const navigate = useNavigate();
-
+}: {
+  chatId: string;
+  chatName: string;
+  createdAt: Date;
+  giftCount?: number;
+}) {
   const formattedDate = new Date(createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
-
-  const handleViewResults = () => {
-    navigate({
-      to: "/history/chat/$id",
-      params: { id: chatId },
-    });
-  };
 
   return (
     <Card className="relative overflow-hidden bg-white p-4 shadow-sm">
@@ -49,26 +36,23 @@ export function ChatCard({
 
       {giftCount > 0 && (
         <p className="mb-3 text-sm text-gray-600">
-          Found {giftCount} gift{giftCount !== 1 ? "s" : ""}
+          Found {giftCount} gift{giftCount === 1 ? "" : "s"}
         </p>
       )}
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm text-gray-500">
-          {/* Icons placeholder - matching the design */}
           <span className="text-gray-400">📷</span>
           <span className="text-gray-400">🛍️</span>
           <span className="text-gray-400">💬</span>
         </div>
         <span className="text-sm text-gray-600">{giftCount || 0}</span>
       </div>
-
-      <Button
-        className="mt-4 w-full bg-amber-500 text-white hover:bg-amber-600"
-        onClick={handleViewResults}
-      >
-        View Results
-      </Button>
+      <NavButton
+        to={`/history/chat/${chatId}`}
+        className="bg-primary mt-4 w-full text-white hover:bg-amber-600"
+        label="View Results"
+      />
     </Card>
   );
 }

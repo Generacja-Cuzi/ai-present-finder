@@ -1,6 +1,6 @@
 import type { ListingPayload, ListingWithId } from "@core/types";
 import { Bookmark, Image as ImageIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -28,10 +28,6 @@ export function GiftCard({
   const removeFromFavorites = useRemoveFromFavoritesMutation();
 
   const [isBookmarked, setIsBookmarked] = useState(initialIsFavorited);
-
-  useEffect(() => {
-    setIsBookmarked(initialIsFavorited);
-  }, [initialIsFavorited]);
 
   const handleBookmark = async () => {
     if (listingId === undefined || listingId === "") {
@@ -89,7 +85,7 @@ export function GiftCard({
       </div>
 
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
-        {hasImage && gift.image !== null ? (
+        {hasImage && gift.image !== null && gift.image.length > 0 ? (
           <img
             src={gift.image}
             alt={gift.title}
@@ -108,9 +104,9 @@ export function GiftCard({
       <div className="flex flex-1 flex-col">
         <div className="flex-1 px-4 pt-4">
           <p className="text-xl font-semibold text-gray-900">
-            {gift.price.value === null || gift.price.value === undefined
+            {gift.price.value === null
               ? "Price not available"
-              : `${Number(gift.price.value).toFixed(2)} ${gift.price.currency ?? "zł"}`}
+              : `${gift.price.value.toFixed(2)} ${gift.price.currency ?? "zł"}`}
           </p>
           <h3 className="mt-1 line-clamp-2 text-sm font-medium text-gray-700">
             {gift.title}

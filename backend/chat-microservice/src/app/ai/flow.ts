@@ -31,45 +31,68 @@ export async function giftInterviewFlow({
   let retryCount = 0;
 
   while (retryCount <= maxRetries) {
-    results = await generateText({
-      model: google("gemini-2.5-flash-lite"),
-      messages,
-      system: giftConsultantPrompt(occasion),
-      stopWhen: stepCountIs(1),
-      tools,
-      toolChoice: "required", // This forces the AI to always call a tool
-      onStepFinish: (step) => {
-        logger.log(`Step finished: ${JSON.stringify(step)}`);
-      },
-      temperature: 0.8, // Lower temperature for more consistent tool calling
-    });
+    try {
+      results = await generateText({
+        model: google("gemini-2.5-flash-lite"),
+        messages,
+        system: giftConsultantPrompt(occasion),
+        stopWhen: stepCountIs(1),
+        tools,
+        toolChoice: "required", // This forces the AI to always call a tool
+        onStepFinish: (step) => {
+          logger.log(`Step finished: ${JSON.stringify(step)}`);
+        },
+      });
 
-    logger.log(
-      `results.toolResults.length: ${results.toolResults.length.toString()}`,
-    );
-    logger.log(`Full results: ${JSON.stringify(results, null, 2)}`);
-
-    // If we have tool results, break out of the retry loop
-    if (results.toolResults.length > 0) {
-      break;
-    }
-
-    // If no tool results and we haven't exceeded max retries, try again
-    if (retryCount < maxRetries) {
-      retryCount++;
       logger.log(
-        `No tool calls found, retrying (attempt ${retryCount.toString()}/${maxRetries.toString()})`,
+        `results.toolResults.length: ${results.toolResults.length.toString()}`,
       );
-    } else {
-      logger.warn(
-        `No tool calls found after ${maxRetries.toString()} retries, proceeding with empty results`,
-      );
-      break;
+      logger.log(`Full results: ${JSON.stringify(results, null, 2)}`);
+
+      // If we have tool results, break out of the retry loop
+      if (results.toolResults.length > 0) {
+        break;
+      }
+
+      // If no tool results and we haven't exceeded max retries, try again
+      if (retryCount < maxRetries) {
+        retryCount++;
+        logger.log(
+          `No tool calls found, retrying (attempt ${retryCount.toString()}/${maxRetries.toString()})`,
+        );
+      } else {
+        logger.warn(
+          `No tool calls found after ${maxRetries.toString()} retries, proceeding with empty results`,
+        );
+        break;
+      }
+    } catch (error) {
+      // Check if this is a schema validation error
+      if (
+        error instanceof Error &&
+        error.message.includes("Type validation failed")
+      ) {
+        if (retryCount < maxRetries) {
+          retryCount++;
+          logger.warn(
+            `Schema validation error, retrying (attempt ${retryCount.toString()}/${maxRetries.toString()}): ${error.message}`,
+          );
+          continue;
+        } else {
+          logger.error(
+            `Schema validation error after ${maxRetries.toString()} retries: ${error.message}`,
+          );
+          throw error;
+        }
+      } else {
+        // Re-throw non-schema errors immediately
+        throw error;
+      }
     }
   }
 
   if (results === null || results.toolResults.length === 0) {
-    throw new Error("No results found");
+    throw new Error("No tool results found");
   }
 
   for (const toolResult of results.toolResults) {

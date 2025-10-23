@@ -578,6 +578,9 @@ importers:
       googleapis:
         specifier: ^163.0.0
         version: 163.0.0
+      p-retry:
+        specifier: ^7.1.0
+        version: 7.1.0
       passport:
         specifier: ^0.7.0
         version: 0.7.0
@@ -657,9 +660,6 @@ importers:
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.18.1)(ts-node@10.9.2(@swc/core@1.13.5)(@types/node@22.18.1)(typescript@5.9.2))
-      p-retry:
-        specifier: ^7.1.0
-        version: 7.1.0
       prettier:
         specifier: ^3.4.2
         version: 3.6.2

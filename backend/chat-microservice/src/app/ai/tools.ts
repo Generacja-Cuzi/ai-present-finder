@@ -8,9 +8,12 @@ import { z } from "zod";
 export const tools = {
   ask_a_question_with_answer_suggestions: tool({
     description:
-      "Provide 4 potential answers that user can choose from to anwser the question you've just asked. This makes the conversation faster and more structured.",
-    inputSchema: z.object({
-      question: z.string().describe("The question you want to ask the user"),
+      "Provide 4 potential answers that user can choose from to answer the question you've just asked. This makes the conversation faster and more structured.",
+    inputSchema: z.strictObject({
+      question: z
+        .string()
+        .min(1)
+        .describe("The question you want to ask the user"),
       potentialAnswers: potencialAnswersSchema.describe(
         "4 potential answers for the user to choose from or a long free text answer",
       ),

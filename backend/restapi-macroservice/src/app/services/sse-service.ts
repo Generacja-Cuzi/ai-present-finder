@@ -15,26 +15,30 @@ export class SseService {
   private readonly allSubscribedUsers = new Map<string, EventObject>();
   private readonly logger = new Logger(SseService.name);
   async sendEvent(notification: { userId: string; message: SseMessageDto }) {
+    // Check if user connection exists first
+    if (!this.allSubscribedUsers.has(notification.userId)) {
+      this.logger.warn(
+        `User ${notification.userId} is not connected, skipping message send`,
+      );
+      return;
+    }
+
     try {
       await pRetry(
         () => {
-          if (this.allSubscribedUsers.has(notification.userId)) {
-            const connection = this.allSubscribedUsers.get(notification.userId);
-            if (connection == null) {
-              throw new Error("this should not happen");
-            }
-            this.logger.log(`Sending message ${JSON.stringify(notification)}`);
-            connection.eventSubject.next(
-              new MessageEvent(uiUpdateEvent, {
-                data: notification.message,
-              }),
-            );
-          } else {
-            throw new Error(`User not found: ${notification.userId}`);
+          const connection = this.allSubscribedUsers.get(notification.userId);
+          if (connection == null) {
+            throw new Error("this should not happen");
           }
+          this.logger.log(`Sending message ${JSON.stringify(notification)}`);
+          connection.eventSubject.next(
+            new MessageEvent(uiUpdateEvent, {
+              data: notification.message,
+            }),
+          );
         },
         {
-          retries: 5,
+          retries: 3,
           minTimeout: 100,
           factor: 2,
           onFailedAttempt: (error) => {
@@ -44,11 +48,14 @@ export class SseService {
           },
         },
       );
+      this.logger.log(
+        `Successfully sent message to user ${notification.userId}`,
+      );
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
       this.logger.error(
-        `Failed to send message to user ${notification.userId} after 5 retries: ${errorMessage}`,
+        `Failed to send message to active connection for user ${notification.userId} after 2 retries: ${errorMessage}`,
       );
     }
   }

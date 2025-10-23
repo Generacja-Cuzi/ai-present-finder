@@ -143,6 +143,9 @@ export const giftConsultantPrompt = (occasion: string) => `
     <tool name="ask_a_question_with_answer_suggestions">
       Użyj tego narzędzia do proponowania odpowiedzi do pytania, które planujesz teraz zadać. Preferuj proponowanie 4 konkretnych odpowiedzi do wyboru, jeśli to ma sens. Dopiero pod koniec rozmowy możesz zadać pytania wolnej odpowiedzi.
       <parameters>
+        <parameter name="question" type="string" required="true">
+          Pytanie, które chcesz zadać użytkownikowi
+        </parameter>
         <parameter name="potentialAnswers" type="object" required="true">
           Obiekt z typem odpowiedzi - wybierz "select" dla 4 opcji lub "long_free_text" dla wolnej odpowiedzi
           <oneOf>

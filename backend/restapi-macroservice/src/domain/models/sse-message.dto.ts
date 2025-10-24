@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-import { ChatMessageDto } from "./chat-message.dto";
+import { ChatMessageWithAnswersDto } from "./chat-message.dto";
 import { ListingWithIdDto } from "./listing.dto";
 
 export const uiUpdateEvent = "ui-update";
@@ -10,15 +10,24 @@ export class SseChatbotMessageDto {
   type!: "chatbot-message";
 
   @ApiProperty({
-    type: ChatMessageDto,
+    type: ChatMessageWithAnswersDto,
     description: "Chat message from the bot",
     example: {
       id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       content: "Hello!",
       sender: "user",
+      potentialAnswers: {
+        type: "select",
+        answers: [
+          {
+            answerFullSentence: "Answer 1",
+            answerShortForm: "Answer 1 short",
+          },
+        ],
+      },
     },
   })
-  message!: ChatMessageDto;
+  message!: ChatMessageWithAnswersDto;
 }
 
 export class SseChatInterviewCompletedDto {

@@ -8,6 +8,7 @@ import { ChatHeader } from "./chat-header";
 import { ChatInput } from "./chat-input";
 import { ChatMessages } from "./chat-messages";
 import { InappropriateRequestMessage } from "./inappropriate-request-message";
+import { PotentialAnswers } from "./potential-answers";
 
 export function ChatUI({ clientId }: { clientId: string }) {
   const { state: chatState } = useSseChat({
@@ -53,28 +54,62 @@ export function ChatUI({ clientId }: { clientId: string }) {
     });
   };
 
+  const handleAnswerSelect = async (answer: string) => {
+    if (isChatbotProcessing) {
+      return;
+    }
+
+    if (chatState.type !== "chatting") {
+      throw new Error("Chat state is not chatting");
+    }
+    await sendMessage.mutateAsync({
+      body: {
+        messages: [
+          ...chatState.data.messages,
+          { id: uuidv4(), content: answer, sender: "user" },
+        ],
+        chatId: clientId,
+      },
+    });
+  };
+
   if (chatState.type === "chat-inappropriate-request") {
     return <InappropriateRequestMessage reason={chatState.data.reason} />;
   }
 
   // At this point, chatState.type must be "chatting" or "chat-interview-completed"
-
   const messages = chatState.type === "chatting" ? chatState.data.messages : [];
-  const currentStep = Math.min(messages.length, 10);
+  const TOTAL_STEPS = 20;
+  const currentStep = Math.min(
+    messages.filter((message) => message.sender === "assistant").length,
+    TOTAL_STEPS,
+  );
+
+  const potentialAnswers =
+    chatState.type === "chatting" && chatState.data.potentialAnswers != null
+      ? chatState.data.potentialAnswers
+      : [];
 
   return (
     <div className="flex h-screen flex-col pb-20">
-      <ChatHeader currentStep={currentStep} />
+      <ChatHeader currentStep={currentStep} totalSteps={TOTAL_STEPS} />
 
       <ChatMessages messages={messages} isProcessing={isChatbotProcessing} />
 
-      <div className="fixed bottom-20 left-0 right-0 bg-transparent">
-        <ChatInput
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-          handleSendMessage={handleSendMessage}
-          isLoading={isChatbotProcessing}
-        />
+      <div className="bg-transparent p-2">
+        {potentialAnswers.length > 0 ? (
+          <PotentialAnswers
+            answers={potentialAnswers}
+            onAnswerSelect={handleAnswerSelect}
+          />
+        ) : (
+          <ChatInput
+            inputValue={inputValue}
+            setInputValue={setInputValue}
+            handleSendMessage={handleSendMessage}
+            isLoading={isChatbotProcessing}
+          />
+        )}
       </div>
     </div>
   );

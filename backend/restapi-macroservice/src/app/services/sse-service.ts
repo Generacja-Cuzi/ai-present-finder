@@ -1,3 +1,4 @@
+import pRetry from "p-retry";
 import { Subject } from "rxjs";
 import { uiUpdateEvent } from "src/domain/models/sse-message.dto";
 import type { SseMessageDto } from "src/domain/models/sse-message.dto";
@@ -13,20 +14,49 @@ interface EventObject {
 export class SseService {
   private readonly allSubscribedUsers = new Map<string, EventObject>();
   private readonly logger = new Logger(SseService.name);
-  sendEvent(notification: { userId: string; message: SseMessageDto }) {
-    if (this.allSubscribedUsers.has(notification.userId)) {
-      const connection = this.allSubscribedUsers.get(notification.userId);
-      if (connection == null) {
-        throw new Error("this should not happen");
-      }
-      this.logger.log(`Sending message ${JSON.stringify(notification)}`);
-      connection.eventSubject.next(
-        new MessageEvent(uiUpdateEvent, {
-          data: notification.message,
-        }),
+  async sendEvent(notification: { userId: string; message: SseMessageDto }) {
+    // Check if user connection exists first
+    if (!this.allSubscribedUsers.has(notification.userId)) {
+      this.logger.warn(
+        `User ${notification.userId} is not connected, skipping message send`,
       );
-    } else {
-      this.logger.warn(`User not found: ${notification.userId}`);
+      return;
+    }
+
+    try {
+      await pRetry(
+        () => {
+          const connection = this.allSubscribedUsers.get(notification.userId);
+          if (connection == null) {
+            throw new Error("this should not happen");
+          }
+          this.logger.log(`Sending message ${JSON.stringify(notification)}`);
+          connection.eventSubject.next(
+            new MessageEvent(uiUpdateEvent, {
+              data: notification.message,
+            }),
+          );
+        },
+        {
+          retries: 3,
+          minTimeout: 100,
+          factor: 2,
+          onFailedAttempt: (error) => {
+            this.logger.warn(
+              `Attempt ${error.attemptNumber.toString()} failed. There are ${error.retriesLeft.toString()} retries left.`,
+            );
+          },
+        },
+      );
+      this.logger.log(
+        `Successfully sent message to user ${notification.userId}`,
+      );
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      this.logger.error(
+        `Failed to send message to active connection for user ${notification.userId} after 2 retries: ${errorMessage}`,
+      );
     }
   }
 

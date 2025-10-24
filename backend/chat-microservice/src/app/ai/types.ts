@@ -41,6 +41,25 @@ export const endConversationOutputSchema = z.object({
   key_themes_and_keywords: z.array(z.string()),
 });
 
+export const potencialAnswersSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("select"),
+    answers: z
+      .array(
+        z.object({
+          answerFullSentence: z.string(),
+          answerShortForm: z.string(),
+        }),
+      )
+      .length(4),
+  }),
+  z.object({
+    type: z.literal("long_free_text"),
+  }),
+]);
+
 export type RecipientProfile = z.infer<typeof recipientProfileSchema>;
 
 export type EndConversationOutput = z.infer<typeof endConversationOutputSchema>;
+
+export type PotencialAnswers = z.infer<typeof potencialAnswersSchema>;

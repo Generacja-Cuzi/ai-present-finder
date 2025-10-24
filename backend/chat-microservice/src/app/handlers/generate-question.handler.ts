@@ -6,11 +6,12 @@ import {
 } from "@core/events";
 import { GenerateQuestionCommand } from "src/domain/commands/generate-question.command";
 
-import { Inject } from "@nestjs/common";
+import { Inject, Logger } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { ClientProxy } from "@nestjs/microservices";
 
 import { giftInterviewFlow } from "../ai/flow";
+import type { EndConversationOutput, PotencialAnswers } from "../ai/types";
 
 @CommandHandler(GenerateQuestionCommand)
 export class GenerateQuestionHandler
@@ -27,42 +28,101 @@ export class GenerateQuestionHandler
     private readonly chatCompletedNotifyUserEventBus: ClientProxy,
   ) {}
 
+  private readonly logger = new Logger(GenerateQuestionHandler.name);
+
+  private getOccasionLabel(occasion: string): string {
+    const occasionMap: Record<string, string> = {
+      birthday: "urodzin",
+      anniversary: "rocznicy",
+      holiday: "święta",
+      "just-because": "bez okazji",
+    };
+
+    return occasionMap[occasion] || occasion;
+  }
+
   async execute(command: GenerateQuestionCommand) {
     const { chatId, occasion, history } = command;
-    let shouldStop = false as boolean;
 
-    const result = await giftInterviewFlow({
-      occasion,
+    // Mock the first question if no history exists
+    if (history.length === 0) {
+      this.logger.log(
+        `Mocking the first question for chat ${chatId} with occasion ${occasion}`,
+      );
+      const occasionLabel = this.getOccasionLabel(occasion);
+      const mockQuestion = `Dla kogo szukasz prezentu z okazji ${occasionLabel}?`;
+      const mockAnswers = {
+        type: "select" as const,
+        answers: [
+          {
+            answerFullSentence: "Dla mojego partnera/partnerki",
+            answerShortForm: "Partner/Partnerka",
+          },
+          {
+            answerFullSentence:
+              "Dla członka rodziny (rodzice, rodzeństwo, dziadkowie)",
+            answerShortForm: "Rodzina",
+          },
+          {
+            answerFullSentence: "Dla przyjaciela/przyjaciółki",
+            answerShortForm: "Przyjaciel/Przyjaciółka",
+          },
+          {
+            answerFullSentence: "Dla kolegi/koleżanki z pracy",
+            answerShortForm: "Kolega/Koleżanka z pracy",
+          },
+        ],
+      };
+
+      const event = new ChatQuestionAskedEvent(
+        chatId,
+        mockQuestion,
+        mockAnswers,
+      );
+      this.eventBus.emit(ChatQuestionAskedEvent.name, event);
+      return;
+    }
+
+    await giftInterviewFlow({
+      logger: this.logger,
+      occasion: this.getOccasionLabel(occasion),
       messages: history.map((message) => ({
         ...message,
         role: message.sender,
       })),
-      closeInterview: (output) => {
-        const event = new ChatInterviewCompletedEvent(chatId, output);
+      onQuestionAsked: (
+        question: string,
+        potentialAnswers: PotencialAnswers,
+      ) => {
+        const event = new ChatQuestionAskedEvent(
+          chatId,
+          question,
+          potentialAnswers,
+        );
+        this.eventBus.emit(ChatQuestionAskedEvent.name, event);
+      },
+      onInterviewCompleted: (output: EndConversationOutput) => {
+        const interviewEvent = new ChatInterviewCompletedEvent(chatId, output);
         this.chatInterviewCompletedEventEventBus.emit(
           ChatInterviewCompletedEvent.name,
-          event,
+          interviewEvent,
         );
         const notifyEvent = new ChatCompletedNotifyUserEvent(chatId);
         this.chatCompletedNotifyUserEventBus.emit(
           ChatCompletedNotifyUserEvent.name,
           notifyEvent,
         );
-        shouldStop = true;
       },
-      flagInappropriateRequest: (reason) => {
+      onInappropriateRequest: (reason: string) => {
+        const inappropriateEvent = new ChatInappropriateRequestEvent(
+          reason,
+          chatId,
+        );
         this.inappropriateRequestEventBus.emit(
           ChatInappropriateRequestEvent.name,
-          new ChatInappropriateRequestEvent(reason, chatId),
+          inappropriateEvent,
         );
-        shouldStop = true;
       },
     });
-    if (shouldStop) {
-      return;
-    }
-    const event = new ChatQuestionAskedEvent(chatId, result.text);
-
-    this.eventBus.emit(ChatQuestionAskedEvent.name, event);
   }
 }

@@ -153,7 +153,7 @@ components:
     ChatQuestionAsked:
       name: ChatQuestionAskedEvent
       title: ChatQuestionAsked
-      summary: Question asked by the AI to the user during chat.
+      summary: Question asked by the AI to the user during chat with proposed answers.
       contentType: application/json
       payload:
         type: object
@@ -167,6 +167,32 @@ components:
           question:
             type: string
             description: The question text to ask the user
+          potentialAnswers:
+            type: object
+            description: Proposed answers for the user to choose from
+            oneOf:
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    enum: ["select"]
+                  answers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        answerFullSentence:
+                          type: string
+                          description: Complete answer text
+                        answerShortForm:
+                          type: string
+                          description: Short form of the answer for display
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    enum: ["long_free_text"]
+            nullable: true
     ChatInterviewCompleted:
       name: ChatInterviewCompletedEvent
       title: ChatInterviewCompleted

@@ -2,11 +2,12 @@ import { ListingPayload } from "@core/types";
 
 import { ApiProperty } from "@nestjs/swagger";
 
-class PriceDto {
+export class PriceDto {
   @ApiProperty({
     type: Number,
     description: "Price value",
     example: 10,
+    nullable: true,
   })
   value: number | null;
 
@@ -14,6 +15,7 @@ class PriceDto {
     type: String,
     description: "Price label",
     example: "10",
+    nullable: true,
   })
   label: string | null;
 
@@ -21,6 +23,7 @@ class PriceDto {
     type: String,
     description: "Currency",
     example: "USD",
+    nullable: true,
   })
   currency: string | null;
 
@@ -28,35 +31,41 @@ class PriceDto {
     type: Boolean,
     description: "Whether price is negotiable",
     example: false,
+    nullable: true,
   })
   negotiable: boolean | null;
 }
 
-export class ListingDto implements ListingPayload {
+export class BaseListingDto implements ListingPayload {
   @ApiProperty({
     type: String,
     description: "Image URL",
     example: "https://example.com/image.jpg",
+    nullable: true,
   })
   image: string | null;
+
   @ApiProperty({
     type: String,
     description: "Title",
     example: "Book",
   })
   title: string;
+
   @ApiProperty({
     type: String,
     description: "Description",
     example: "Great book",
   })
   description: string;
+
   @ApiProperty({
     type: String,
     description: "Link",
     example: "https://example.com/book",
   })
   link: string;
+
   @ApiProperty({
     type: PriceDto,
     isArray: false,
@@ -71,7 +80,7 @@ export class ListingDto implements ListingPayload {
   price: PriceDto;
 }
 
-export class ListingWithIdDto extends ListingDto {
+export class ListingWithIdDto extends BaseListingDto {
   @ApiProperty({
     type: String,
     description: "Listing ID from database",

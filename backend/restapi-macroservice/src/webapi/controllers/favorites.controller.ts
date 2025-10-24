@@ -61,10 +61,12 @@ export class FavoritesController {
       title: listing.title,
       description: listing.description,
       link: listing.link,
-      priceValue: listing.priceValue,
-      priceLabel: listing.priceLabel,
-      priceCurrency: listing.priceCurrency,
-      priceNegotiable: listing.priceNegotiable,
+      price: {
+        value: listing.priceValue,
+        label: listing.priceLabel,
+        currency: listing.priceCurrency,
+        negotiable: listing.priceNegotiable,
+      },
       isFavorited: true,
       createdAt: listing.createdAt,
     }));

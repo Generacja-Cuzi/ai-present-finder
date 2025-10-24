@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { NavButton } from "@/components/ui/nav-button";
 
@@ -22,12 +23,12 @@ export function ChatCard({
 
   return (
     <Card className="relative overflow-hidden bg-white p-4 shadow-sm">
-      <button
+      <Button
         className="absolute right-2 top-2 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
         aria-label="Delete chat"
       >
         <X className="h-5 w-5" />
-      </button>
+      </Button>
 
       <div className="mb-3">
         <h2 className="mb-1 text-lg font-semibold text-gray-900">{chatName}</h2>

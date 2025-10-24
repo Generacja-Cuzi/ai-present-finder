@@ -497,15 +497,37 @@
         },
         "required": ["accessToken", "user"]
       },
+      "ChatDto": {
+        "type": "object",
+        "properties": {
+          "chatId": {
+            "type": "string",
+            "description": "Chat ID",
+            "example": "cm123abc"
+          },
+          "chatName": {
+            "type": "string",
+            "description": "Chat name",
+            "example": "Gift for Mom"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Created at timestamp",
+            "example": "2025-01-15T10:30:00Z"
+          }
+        },
+        "required": ["chatId", "chatName", "createdAt"]
+      },
       "ChatsResponseDto": {
         "type": "object",
         "properties": {
           "chats": {
             "description": "List of user's chats",
+            "type": "array",
             "items": {
-              "type": "array"
-            },
-            "type": "array"
+              "$ref": "#/components/schemas/ChatDto"
+            }
           }
         },
         "required": ["chats"]
@@ -632,7 +654,7 @@
         },
         "required": ["listingId"]
       },
-      "MessageRoleDto": {
+      "MessageRole": {
         "type": "string",
         "enum": ["user", "assistant", "system"],
         "description": "Message role"
@@ -655,7 +677,7 @@
             "example": "user",
             "allOf": [
               {
-                "$ref": "#/components/schemas/MessageRoleDto"
+                "$ref": "#/components/schemas/MessageRole"
               }
             ]
           },

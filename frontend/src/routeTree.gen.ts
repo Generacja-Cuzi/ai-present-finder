@@ -14,9 +14,11 @@ import { Route as SavedRouteImport } from './routes/saved'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as HistoryIndexRouteImport } from './routes/history/index'
 import { Route as RecommendationIdRouteImport } from './routes/recommendation/$id'
 import { Route as GiftSearchingIdRouteImport } from './routes/gift-searching/$id'
 import { Route as ChatIdRouteImport } from './routes/chat/$id'
+import { Route as HistoryChatIdRouteImport } from './routes/history/chat/$id'
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google/callback'
 
 const StalkingRoute = StalkingRouteImport.update({
@@ -44,6 +46,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HistoryIndexRoute = HistoryIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => HistoryRoute,
+} as any)
 const RecommendationIdRoute = RecommendationIdRouteImport.update({
   id: '/recommendation/$id',
   path: '/recommendation/$id',
@@ -59,6 +66,11 @@ const ChatIdRoute = ChatIdRouteImport.update({
   path: '/chat/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HistoryChatIdRoute = HistoryChatIdRouteImport.update({
+  id: '/chat/$id',
+  path: '/chat/$id',
+  getParentRoute: () => HistoryRoute,
+} as any)
 const AuthGoogleCallbackRoute = AuthGoogleCallbackRouteImport.update({
   id: '/auth/google/callback',
   path: '/auth/google/callback',
@@ -67,37 +79,42 @@ const AuthGoogleCallbackRoute = AuthGoogleCallbackRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/history': typeof HistoryRoute
+  '/history': typeof HistoryRouteWithChildren
   '/profile': typeof ProfileRoute
   '/saved': typeof SavedRoute
   '/stalking': typeof StalkingRoute
   '/chat/$id': typeof ChatIdRoute
   '/gift-searching/$id': typeof GiftSearchingIdRoute
   '/recommendation/$id': typeof RecommendationIdRoute
+  '/history/': typeof HistoryIndexRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
+  '/history/chat/$id': typeof HistoryChatIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/history': typeof HistoryRoute
   '/profile': typeof ProfileRoute
   '/saved': typeof SavedRoute
   '/stalking': typeof StalkingRoute
   '/chat/$id': typeof ChatIdRoute
   '/gift-searching/$id': typeof GiftSearchingIdRoute
   '/recommendation/$id': typeof RecommendationIdRoute
+  '/history': typeof HistoryIndexRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
+  '/history/chat/$id': typeof HistoryChatIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/history': typeof HistoryRoute
+  '/history': typeof HistoryRouteWithChildren
   '/profile': typeof ProfileRoute
   '/saved': typeof SavedRoute
   '/stalking': typeof StalkingRoute
   '/chat/$id': typeof ChatIdRoute
   '/gift-searching/$id': typeof GiftSearchingIdRoute
   '/recommendation/$id': typeof RecommendationIdRoute
+  '/history/': typeof HistoryIndexRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
+  '/history/chat/$id': typeof HistoryChatIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -110,18 +127,21 @@ export interface FileRouteTypes {
     | '/chat/$id'
     | '/gift-searching/$id'
     | '/recommendation/$id'
+    | '/history/'
     | '/auth/google/callback'
+    | '/history/chat/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/history'
     | '/profile'
     | '/saved'
     | '/stalking'
     | '/chat/$id'
     | '/gift-searching/$id'
     | '/recommendation/$id'
+    | '/history'
     | '/auth/google/callback'
+    | '/history/chat/$id'
   id:
     | '__root__'
     | '/'
@@ -132,12 +152,14 @@ export interface FileRouteTypes {
     | '/chat/$id'
     | '/gift-searching/$id'
     | '/recommendation/$id'
+    | '/history/'
     | '/auth/google/callback'
+    | '/history/chat/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  HistoryRoute: typeof HistoryRoute
+  HistoryRoute: typeof HistoryRouteWithChildren
   ProfileRoute: typeof ProfileRoute
   SavedRoute: typeof SavedRoute
   StalkingRoute: typeof StalkingRoute
@@ -184,6 +206,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/history/': {
+      id: '/history/'
+      path: '/'
+      fullPath: '/history/'
+      preLoaderRoute: typeof HistoryIndexRouteImport
+      parentRoute: typeof HistoryRoute
+    }
     '/recommendation/$id': {
       id: '/recommendation/$id'
       path: '/recommendation/$id'
@@ -205,6 +234,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/history/chat/$id': {
+      id: '/history/chat/$id'
+      path: '/chat/$id'
+      fullPath: '/history/chat/$id'
+      preLoaderRoute: typeof HistoryChatIdRouteImport
+      parentRoute: typeof HistoryRoute
+    }
     '/auth/google/callback': {
       id: '/auth/google/callback'
       path: '/auth/google/callback'
@@ -215,9 +251,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface HistoryRouteChildren {
+  HistoryIndexRoute: typeof HistoryIndexRoute
+  HistoryChatIdRoute: typeof HistoryChatIdRoute
+}
+
+const HistoryRouteChildren: HistoryRouteChildren = {
+  HistoryIndexRoute: HistoryIndexRoute,
+  HistoryChatIdRoute: HistoryChatIdRoute,
+}
+
+const HistoryRouteWithChildren =
+  HistoryRoute._addFileChildren(HistoryRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  HistoryRoute: HistoryRoute,
+  HistoryRoute: HistoryRouteWithChildren,
   ProfileRoute: ProfileRoute,
   SavedRoute: SavedRoute,
   StalkingRoute: StalkingRoute,

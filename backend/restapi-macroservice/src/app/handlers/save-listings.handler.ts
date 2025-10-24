@@ -21,7 +21,7 @@ export class SaveListingsHandler
     );
 
     const savedListings = await Promise.all(
-      listings.map((listing) =>
+      listings.map(async (listing) =>
         this.listingRepository.create({
           chatId,
           image: listing.image,

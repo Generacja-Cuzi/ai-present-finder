@@ -1,6 +1,37 @@
 import { MessageRole } from "src/domain/entities/message.entity";
 
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+
+export class ProposedAnswerDto {
+  @ApiProperty({
+    description: "Full sentence answer",
+    example: "Yes, I love it!",
+  })
+  answerFullSentence: string;
+
+  @ApiProperty({
+    description: "Short form answer",
+    example: "Yes",
+  })
+  answerShortForm: string;
+}
+
+export class ProposedAnswersDto {
+  @ApiProperty({
+    description: "Type of proposed answers",
+    enum: ["select", "long_free_text"],
+    example: "select",
+  })
+  type: "select" | "long_free_text";
+
+  @ApiPropertyOptional({
+    description: "List of proposed answers",
+    type: ProposedAnswerDto,
+    isArray: true,
+    required: false,
+  })
+  answers?: ProposedAnswerDto[];
+}
 
 export class MessageDto {
   @ApiProperty({
@@ -28,6 +59,13 @@ export class MessageDto {
     example: "I'm looking for a gift for my mom",
   })
   content: string;
+
+  @ApiPropertyOptional({
+    description: "Proposed answers for this message",
+    type: ProposedAnswersDto,
+    required: false,
+  })
+  proposedAnswers?: ProposedAnswersDto | null;
 
   @ApiProperty({
     description: "Created at timestamp",

@@ -64,6 +64,7 @@ export async function giftInterviewFlow({
         logger.warn(
           `No tool calls found after ${maxRetries.toString()} retries, proceeding with empty results`,
         );
+
         break;
       }
     } catch (error) {
@@ -92,7 +93,10 @@ export async function giftInterviewFlow({
   }
 
   if (results === null || results.toolResults.length === 0) {
-    throw new Error("No tool results found");
+    onQuestionAsked(results?.text ?? "No tool results found", {
+      type: "long_free_text",
+    });
+    return;
   }
 
   for (const toolResult of results.toolResults) {

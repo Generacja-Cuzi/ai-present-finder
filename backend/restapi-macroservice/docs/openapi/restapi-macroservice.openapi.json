@@ -735,6 +735,41 @@
         "enum": ["user", "assistant", "system"],
         "description": "Message role"
       },
+      "ProposedAnswerDto": {
+        "type": "object",
+        "properties": {
+          "answerFullSentence": {
+            "type": "string",
+            "description": "Full sentence answer",
+            "example": "Yes, I love it!"
+          },
+          "answerShortForm": {
+            "type": "string",
+            "description": "Short form answer",
+            "example": "Yes"
+          }
+        },
+        "required": ["answerFullSentence", "answerShortForm"]
+      },
+      "ProposedAnswersDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type of proposed answers",
+            "enum": ["select", "long_free_text"],
+            "example": "select"
+          },
+          "answers": {
+            "description": "List of proposed answers",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProposedAnswerDto"
+            }
+          }
+        },
+        "required": ["type"]
+      },
       "MessageDto": {
         "type": "object",
         "properties": {
@@ -761,6 +796,14 @@
             "type": "string",
             "description": "Message content",
             "example": "I'm looking for a gift for my mom"
+          },
+          "proposedAnswers": {
+            "description": "Proposed answers for this message",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProposedAnswersDto"
+              }
+            ]
           },
           "createdAt": {
             "format": "date-time",

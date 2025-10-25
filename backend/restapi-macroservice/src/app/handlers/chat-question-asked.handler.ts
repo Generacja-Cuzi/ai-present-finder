@@ -23,6 +23,7 @@ export class ChatQuestionAskedHandler {
         event.chatId,
         event.question,
         MessageRole.ASSISTANT,
+        event.potentialAnswers,
       ),
     );
 

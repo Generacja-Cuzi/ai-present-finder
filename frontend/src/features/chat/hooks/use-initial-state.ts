@@ -13,6 +13,7 @@ export function useInitialChatState(chatId: string) {
           id: message.id,
           content: message.content,
           sender: message.role === "user" ? "user" : "assistant",
+          proposedAnswers: message.proposedAnswers ?? undefined,
         })) ?? [],
     },
   };

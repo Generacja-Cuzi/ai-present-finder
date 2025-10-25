@@ -26,7 +26,7 @@ export class Message {
   chatId: string;
 
   @ManyToOne(() => Chat, (chat) => chat.messages, { onDelete: "CASCADE" })
-  @JoinColumn({ name: "chat_id" })
+  @JoinColumn({ name: "chat_id", referencedColumnName: "chatId" })
   chat: Chat;
 
   @Column({

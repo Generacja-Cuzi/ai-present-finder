@@ -1,8 +1,11 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { ArrowRight, MessageCircle, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { NavButton } from "@/components/ui/nav-button";
+import { $api } from "@/lib/api/client";
 
 export function ChatCard({
   chatId,
@@ -17,6 +20,8 @@ export function ChatCard({
   giftCount?: number;
   isInterviewCompleted: boolean;
 }) {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const formattedDate = new Date(createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -64,12 +69,24 @@ export function ChatCard({
             icon={<ArrowRight className="h-5 w-5" />}
           />
         ) : (
-          <NavButton
-            to={`/chat/${chatId}`}
+          <Button
+            onClick={async () => {
+              await queryClient.refetchQueries(
+                $api.queryOptions("get", "/messages/chat/{chatId}", {
+                  params: {
+                    path: {
+                      chatId,
+                    },
+                  },
+                }),
+              );
+              void navigate({ to: `/chat/${chatId}` });
+            }}
             className="bg-primary mt-4 w-full text-white hover:bg-amber-600"
-            label="Continue Chat"
-            icon={<MessageCircle className="h-5 w-5" />}
-          />
+          >
+            Continue Chat
+            <MessageCircle className="h-5 w-5" />
+          </Button>
         )}
       </div>
     </Card>

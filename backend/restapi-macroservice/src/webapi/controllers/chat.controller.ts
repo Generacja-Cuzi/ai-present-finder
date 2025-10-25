@@ -39,6 +39,7 @@ export class ChatController {
         chatId: chat.chatId,
         chatName: chat.chatName,
         createdAt: chat.createdAt,
+        isInterviewCompleted: chat.isInterviewCompleted,
       })),
     };
   }

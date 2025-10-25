@@ -18,6 +18,12 @@ export class ChatDto {
     example: "2025-01-15T10:30:00Z",
   })
   createdAt: Date;
+
+  @ApiProperty({
+    description: "Whether the chat interview has been completed",
+    example: false,
+  })
+  isInterviewCompleted: boolean;
 }
 
 export class ChatsResponseDto {

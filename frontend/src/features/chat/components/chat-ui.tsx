@@ -94,8 +94,9 @@ export function ChatUI({
   );
 
   const potentialAnswers =
-    chatState.type === "chatting" && chatState.data.potentialAnswers != null
-      ? chatState.data.potentialAnswers
+    chatState.type === "chatting" &&
+    chatState.data.messages.at(-1)?.proposedAnswers != null
+      ? (chatState.data.messages.at(-1)?.proposedAnswers?.answers ?? [])
       : [];
 
   return (

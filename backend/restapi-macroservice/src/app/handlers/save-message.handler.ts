@@ -16,6 +16,7 @@ export class SaveMessageHandler implements ICommandHandler<SaveMessageCommand> {
       chatId: command.chatId,
       content: command.content,
       role: command.role,
+      proposedAnswers: command.proposedAnswers,
     });
   }
 }

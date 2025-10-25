@@ -2,6 +2,13 @@ export interface ChatMessage {
   id: string;
   content: string;
   sender: "user" | "assistant";
+  proposedAnswers?: {
+    type: "select" | "long_free_text";
+    answers?: {
+      answerFullSentence: string;
+      answerShortForm: string;
+    }[];
+  };
 }
 
 export interface RecipientProfile {

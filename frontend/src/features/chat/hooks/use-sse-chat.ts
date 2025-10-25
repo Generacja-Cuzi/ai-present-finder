@@ -17,12 +17,12 @@ export const useSseChat = ({
         switch (action.data.type) {
           case "chat-interview-completed": {
             return {
-              type: "chat-interview-completed",
+              type: "chat-interview-completed" as const,
             };
           }
           case "chat-inappropriate-request": {
             return {
-              type: "chat-inappropriate-request",
+              type: "chat-inappropriate-request" as const,
               data: { reason: action.data.reason },
             };
           }
@@ -30,15 +30,15 @@ export const useSseChat = ({
             if (previousState.type !== "chatting") {
               throw new Error("Previous state is not chatting");
             }
-            const potentialAnswers =
-              action.data.message.potentialAnswers?.type === "select"
-                ? action.data.message.potentialAnswers.answers
-                : undefined;
+            const { potentialAnswers, ...restOfMessage } = action.data.message;
+
             return {
-              type: "chatting",
+              type: "chatting" as const,
               data: {
-                messages: [...previousState.data.messages, action.data.message],
-                potentialAnswers,
+                messages: [
+                  ...previousState.data.messages,
+                  { ...restOfMessage, proposedAnswers: potentialAnswers },
+                ],
               },
             };
           }

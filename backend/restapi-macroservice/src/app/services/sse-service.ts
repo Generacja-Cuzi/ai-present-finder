@@ -15,14 +15,6 @@ export class SseService {
   private readonly allSubscribedUsers = new Map<string, EventObject>();
   private readonly logger = new Logger(SseService.name);
   async sendEvent(notification: { userId: string; message: SseMessageDto }) {
-    // Check if user connection exists first
-    if (!this.allSubscribedUsers.has(notification.userId)) {
-      this.logger.warn(
-        `User ${notification.userId} is not connected, skipping message send`,
-      );
-      return;
-    }
-
     try {
       await pRetry(
         () => {

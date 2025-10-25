@@ -30,6 +30,14 @@ export const useSseChat = ({
             if (previousState.type !== "chatting") {
               throw new Error("Previous state is not chatting");
             }
+
+            if (
+              action.data.message.sender === "assistant" &&
+              previousState.data.messages.at(-1)?.sender === "assistant"
+            ) {
+              // we already got this via REST and the SSE is duplicating it
+              return previousState;
+            }
             const { potentialAnswers, ...restOfMessage } = action.data.message;
 
             return {

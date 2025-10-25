@@ -17,11 +17,11 @@ export function NavButton({
   return (
     <Button
       asChild
-      className={`bg-background absolute left-4 flex size-10 items-center justify-center rounded-full transition-colors hover:bg-gray-100 ${className}`}
+      className={`bg-background left-4 flex size-10 items-center justify-center rounded-full transition-colors hover:bg-gray-100 ${className}`}
       aria-label={label}
     >
       <Link to={to} href={to}>
-        {icon}
+        {label} {icon}
       </Link>
     </Button>
   );

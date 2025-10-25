@@ -1,20 +1,14 @@
-import { useMemo } from "react";
-
 import { SSE_EVENTS, useSse } from "@/lib/sse";
 
 import type { ChatSseMessage, ChatState } from "../types";
 
-export const useSseChat = ({ clientId }: { clientId: string }) => {
-  const initialState: ChatState = useMemo(
-    () => ({
-      type: "chatting",
-      data: {
-        messages: [],
-      },
-    }),
-    [],
-  );
-
+export const useSseChat = ({
+  clientId,
+  initialState,
+}: {
+  clientId: string;
+  initialState: ChatState;
+}) => {
   const state = useSse<ChatState, ChatSseMessage>(
     SSE_EVENTS.UI_UPDATE,
     initialState,

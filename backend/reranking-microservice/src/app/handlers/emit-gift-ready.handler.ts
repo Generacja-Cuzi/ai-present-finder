@@ -11,7 +11,7 @@ import { EmitGiftReadyCommand } from "../../domain/commands/emit-gift-ready.comm
 import { GiftSessionProduct } from "../../domain/entities/gift-session-product.entity";
 import { GiftSession } from "../../domain/entities/gift-session.entity";
 import { Product } from "../../domain/entities/product.entity";
-import { rankProducts } from "../ai/ranking.service";
+import { rankProductsFlow } from "../ai/rank-products-flow";
 
 @CommandHandler(EmitGiftReadyCommand)
 export class EmitGiftReadyHandler
@@ -85,11 +85,17 @@ export class EmitGiftReadyHandler
         `Ranking ${String(allProducts.length)} products with AI for session ${eventId}`,
       );
 
-      const rankedProductsWithScores = await rankProducts({
+      const startTime = performance.now();
+      const rankedProductsWithScores = await rankProductsFlow({
         products: allProducts,
         recipientProfile,
         keywords,
       });
+      const endTime = performance.now();
+      const duration = endTime - startTime;
+      this.logger.log(
+        `AI ranking took ${duration.toFixed(2)}ms for session ${eventId}. It spit out ${String(rankedProductsWithScores.length)} products.`,
+      );
 
       this.logger.log(
         `AI ranking completed for session ${eventId}. Top score: ${String(rankedProductsWithScores[0]?.score ?? "N/A")}`,

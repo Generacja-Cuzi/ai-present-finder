@@ -9,14 +9,18 @@ export const productRankingPrompt = `
     2. Słowa kluczowe charakteryzujące odbiorcę i okazję
     3. Listę produktów do oceny
     
-    Twoim zadaniem jest:
-    - Przeanalizować każdy produkt w kontekście profilu odbiorcy
-    - Przypisać każdemu produktowi ocenę od 1 do 10, gdzie:
-      * 1-3: Słabe dopasowanie - produkt nie pasuje do profilu odbiorcy
-      * 4-6: Średnie dopasowanie - produkt może pasować, ale nie jest idealny
-      * 7-8: Dobre dopasowanie - produkt dobrze pasuje do profilu
-      * 9-10: Doskonałe dopasowanie - produkt idealnie pasuje do profilu i okazji
-    - Dla każdego produktu podać krótkie uzasadnienie oceny (1-2 zdania)
+      <analyze>Przeanalizować każdy produkt w kontekście profilu odbiorcy</analyze>
+      <scoring>
+        Przypisać każdemu produktowi ocenę od 1 do 10, gdzie:
+        <options>
+          <poor>1-3: Słabe dopasowanie - produkt nie pasuje do profilu odbiorcy</poor>
+          <average>4-6: Średnie dopasowanie - produkt może pasować, ale nie jest idealny</average>
+          <good>7-8: Dobre dopasowanie - produkt dobrze pasuje do profilu</good>
+          <excellent>9-10: Doskonałe dopasowanie - produkt idealnie pasuje do profilu i okazji</excellent>
+        </options>
+        <context>Wyniki z wynikiem poniżej 5 nie zostaną nawet wysłane ani uwzględnione w rankingu ani nie będą widoczne użytkownikowi</context>
+      </scoring>
+      <reasoning>Dla każdego produktu podać krótkie uzasadnienie oceny (1-2 zdania)</reasoning>
   </task>
   
   <criteria>

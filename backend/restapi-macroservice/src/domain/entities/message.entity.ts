@@ -26,7 +26,7 @@ export class Message {
   chatId: string;
 
   @ManyToOne(() => Chat, (chat) => chat.messages, { onDelete: "CASCADE" })
-  @JoinColumn({ name: "chat_id" })
+  @JoinColumn({ name: "chat_id", referencedColumnName: "chatId" })
   chat: Chat;
 
   @Column({
@@ -38,6 +38,15 @@ export class Message {
 
   @Column({ type: "text" })
   content: string;
+
+  @Column({ type: "json", nullable: true })
+  proposedAnswers?: {
+    type: "select" | "long_free_text";
+    answers?: {
+      answerFullSentence: string;
+      answerShortForm: string;
+    }[];
+  } | null;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;

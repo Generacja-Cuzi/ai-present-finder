@@ -1,7 +1,8 @@
 import { Navbar } from "@/components/ui/navbar";
 
 import { useGetChatsQuery } from "../api/chats.api";
-import { ChatCard, HistoryHeader } from "../components";
+import { ChatCard } from "../components/chat-card";
+import { HistoryHeader } from "../components/history-header";
 
 export function HistoryView() {
   const { data, isLoading, isError } = useGetChatsQuery();
@@ -52,13 +53,14 @@ export function HistoryView() {
             </p>
           </div>
         ) : (
-          <div className="space-y-4 p-4">
+          <div className="flex flex-col gap-4 p-4">
             {chats.map((chat) => (
               <ChatCard
                 key={chat.chatId}
                 chatId={chat.chatId}
                 chatName={chat.chatName}
                 createdAt={new Date(chat.createdAt)}
+                isInterviewCompleted={chat.isInterviewCompleted}
               />
             ))}
           </div>

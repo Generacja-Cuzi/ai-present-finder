@@ -1,20 +1,27 @@
-import { X } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { ArrowRight, MessageCircle, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { NavButton } from "@/components/ui/nav-button";
+import { $api } from "@/lib/api/client";
 
 export function ChatCard({
   chatId,
   chatName,
   createdAt,
   giftCount = 0,
+  isInterviewCompleted,
 }: {
   chatId: string;
   chatName: string;
   createdAt: Date;
   giftCount?: number;
+  isInterviewCompleted: boolean;
 }) {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const formattedDate = new Date(createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -22,7 +29,7 @@ export function ChatCard({
   });
 
   return (
-    <Card className="relative overflow-hidden bg-white p-4 shadow-sm">
+    <Card className="max-h-200 min-h-fit bg-white p-4 shadow-sm">
       <Button
         className="absolute right-2 top-2 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
         aria-label="Delete chat"
@@ -35,11 +42,15 @@ export function ChatCard({
         <p className="text-sm text-gray-500">{formattedDate}</p>
       </div>
 
-      {giftCount > 0 && (
-        <p className="mb-3 text-sm text-gray-600">
-          Found {giftCount} gift{giftCount === 1 ? "" : "s"}
-        </p>
-      )}
+      <div>
+        {giftCount > 0 ? (
+          <p className="mb-3 text-sm text-gray-600">
+            Found {giftCount} gift{giftCount === 1 ? "" : "s"}
+          </p>
+        ) : (
+          <p className="mb-3 text-sm text-gray-600">No gifts found</p>
+        )}
+      </div>
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -49,11 +60,35 @@ export function ChatCard({
         </div>
         <span className="text-sm text-gray-600">{giftCount || 0}</span>
       </div>
-      <NavButton
-        to={`/history/chat/${chatId}`}
-        className="bg-primary mt-4 w-full text-white hover:bg-amber-600"
-        label="View Results"
-      />
+      <div>
+        {isInterviewCompleted ? (
+          <NavButton
+            to={`/history/chat/${chatId}`}
+            className="bg-primary mt-4 w-full text-white hover:bg-amber-600"
+            label="View Results"
+            icon={<ArrowRight className="h-5 w-5" />}
+          />
+        ) : (
+          <Button
+            onClick={async () => {
+              await queryClient.refetchQueries(
+                $api.queryOptions("get", "/messages/chat/{chatId}", {
+                  params: {
+                    path: {
+                      chatId,
+                    },
+                  },
+                }),
+              );
+              void navigate({ to: `/chat/${chatId}` });
+            }}
+            className="bg-primary mt-4 w-full text-white hover:bg-amber-600"
+          >
+            Continue Chat
+            <MessageCircle className="h-5 w-5" />
+          </Button>
+        )}
+      </div>
     </Card>
   );
 }

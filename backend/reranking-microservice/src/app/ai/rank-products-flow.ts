@@ -6,7 +6,7 @@ import { productRankingPrompt } from "./prompt";
 import type { ProductWithScore } from "./types";
 import { rankedProductsOutputSchema } from "./types";
 
-export async function rankProducts({
+export async function rankProductsFlow({
   products,
   recipientProfile,
   keywords,
@@ -29,18 +29,20 @@ ${recipientProfile === null ? "Brak szczegółowego profilu odbiorcy." : JSON.st
 ${keywords.length > 0 ? keywords.join(", ") : "Brak słów kluczowych."}
 
 # Produkty do Oceny
-
+<products>
 ${products
   .map(
     (p, index) => `
-## Produkt ${String(index + 1)}
-- Tytuł: ${p.title}
-- Opis: ${p.description}
-- Link: ${p.link}
-- Cena: ${p.price.label ?? `${String(p.price.value ?? "N/A")} ${p.price.currency ?? ""}`}
+<product id="${String(index + 1)}">
+  <title>${p.title}</title>
+  <description>${p.description}</description>
+  <link>${p.link}</link>
+  <price>${p.price.label ?? `${String(p.price.value ?? "N/A")} ${p.price.currency ?? ""}`}</price>
+</product>
 `,
   )
   .join("\n")}
+</products>
 
 Oceń każdy produkt w kontekście profilu odbiorcy i słów kluczowych. Zwróć wszystkie produkty z ich oryginalnymi danymi plus ocenę i uzasadnienie.
 `;

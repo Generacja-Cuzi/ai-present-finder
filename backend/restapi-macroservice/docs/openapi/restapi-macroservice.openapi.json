@@ -562,9 +562,14 @@
             "type": "string",
             "description": "Created at timestamp",
             "example": "2025-01-15T10:30:00Z"
+          },
+          "isInterviewCompleted": {
+            "type": "boolean",
+            "description": "Whether the chat interview has been completed",
+            "example": false
           }
         },
-        "required": ["chatId", "chatName", "createdAt"]
+        "required": ["chatId", "chatName", "createdAt", "isInterviewCompleted"]
       },
       "ChatsResponseDto": {
         "type": "object",

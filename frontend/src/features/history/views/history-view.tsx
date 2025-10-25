@@ -60,6 +60,7 @@ export function HistoryView() {
                 chatId={chat.chatId}
                 chatName={chat.chatName}
                 createdAt={new Date(chat.createdAt)}
+                isInterviewCompleted={chat.isInterviewCompleted}
               />
             ))}
           </div>

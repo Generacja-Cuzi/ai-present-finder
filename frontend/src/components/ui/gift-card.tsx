@@ -106,7 +106,7 @@ export function GiftCard({
           <p className="text-xl font-semibold text-gray-900">
             {gift.price.value === null || typeof gift.price.value !== "number"
               ? "Price not available"
-              : `${gift.price.value.toFixed(2)} ${gift.price.currency ?? "zł"}`}
+              : `${gift.price.value} ${gift.price.currency ?? "zł"}`}
           </p>
           <h3 className="mt-1 line-clamp-2 text-sm font-medium text-gray-700">
             {gift.title}

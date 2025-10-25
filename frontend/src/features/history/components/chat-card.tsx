@@ -1,4 +1,4 @@
-import { ArrowRight, X } from "lucide-react";
+import { ArrowRight, MessageCircle, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,11 +9,13 @@ export function ChatCard({
   chatName,
   createdAt,
   giftCount = 0,
+  isInterviewCompleted,
 }: {
   chatId: string;
   chatName: string;
   createdAt: Date;
   giftCount?: number;
+  isInterviewCompleted: boolean;
 }) {
   const formattedDate = new Date(createdAt).toLocaleDateString("en-US", {
     year: "numeric",
@@ -54,12 +56,21 @@ export function ChatCard({
         <span className="text-sm text-gray-600">{giftCount || 0}</span>
       </div>
       <div>
-        <NavButton
-          to={`/history/chat/${chatId}`}
-          className="bg-primary mt-4 w-full text-white hover:bg-amber-600"
-          label="View Results"
-          icon={<ArrowRight className="h-5 w-5" />}
-        />
+        {isInterviewCompleted ? (
+          <NavButton
+            to={`/history/chat/${chatId}`}
+            className="bg-primary mt-4 w-full text-white hover:bg-amber-600"
+            label="View Results"
+            icon={<ArrowRight className="h-5 w-5" />}
+          />
+        ) : (
+          <NavButton
+            to={`/chat/${chatId}`}
+            className="bg-primary mt-4 w-full text-white hover:bg-amber-600"
+            label="Continue Chat"
+            icon={<MessageCircle className="h-5 w-5" />}
+          />
+        )}
       </div>
     </Card>
   );

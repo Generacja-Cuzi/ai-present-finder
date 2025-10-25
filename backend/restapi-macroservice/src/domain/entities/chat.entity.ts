@@ -44,4 +44,7 @@ export class Chat {
 
   @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
+
+  @Column({ name: "is_interview_completed", default: false })
+  isInterviewCompleted: boolean;
 }

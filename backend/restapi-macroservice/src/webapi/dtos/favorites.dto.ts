@@ -1,5 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 
+import { BaseListingDto } from "../../domain/models/listing.dto";
+
 export class AddToFavoritesDto {
   @ApiProperty({
     description: "Listing ID to add to favorites",
@@ -16,7 +18,7 @@ export class RemoveFromFavoritesDto {
   listingId: string;
 }
 
-export class ListingResponseDto {
+export class ListingResponseDto extends BaseListingDto {
   @ApiProperty({
     description: "Listing ID",
     example: "123e4567-e89b-12d3-a456-426614174000",
@@ -30,62 +32,6 @@ export class ListingResponseDto {
     nullable: true,
   })
   chatId: string | null;
-
-  @ApiProperty({
-    description: "Image URL",
-    example: "https://example.com/image.jpg",
-    type: String,
-    nullable: true,
-  })
-  image: string | null;
-
-  @ApiProperty({
-    description: "Product title",
-    example: "Wireless Headphones",
-  })
-  title: string;
-
-  @ApiProperty({
-    description: "Product description",
-    example: "High-quality wireless headphones with noise cancellation",
-  })
-  description: string;
-
-  @ApiProperty({
-    description: "Product link",
-    example: "https://example.com/product/123",
-  })
-  link: string;
-
-  @ApiProperty({
-    description: "Price value",
-    example: 99.99,
-    type: Number,
-    nullable: true,
-  })
-  priceValue: number | null;
-
-  @ApiProperty({
-    description: "Price label",
-    example: "$99.99",
-    type: String,
-    nullable: true,
-  })
-  priceLabel: string | null;
-
-  @ApiProperty({
-    description: "Price currency",
-    example: "USD",
-    type: String,
-    nullable: true,
-  })
-  priceCurrency: string | null;
-
-  @ApiProperty({
-    description: "Whether price is negotiable",
-    example: false,
-  })
-  priceNegotiable: boolean;
 
   @ApiProperty({
     description: "Whether this listing is favorited by the current user",

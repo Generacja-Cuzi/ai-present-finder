@@ -18,9 +18,7 @@
           }
         },
         "summary": "Returns the welcome message for the Gift microservice",
-        "tags": [
-          "Gift"
-        ]
+        "tags": ["Gift"]
       }
     },
     "/health": {
@@ -40,9 +38,7 @@
           }
         },
         "summary": "Health check endpoint",
-        "tags": [
-          "Gift"
-        ]
+        "tags": ["Gift"]
       }
     },
     "/restapi/stalking-request": {
@@ -65,9 +61,7 @@
           }
         },
         "summary": "Request stalking analysis for provided social profiles",
-        "tags": [
-          "restapi"
-        ]
+        "tags": ["restapi"]
       }
     },
     "/restapi/send-message": {
@@ -90,9 +84,7 @@
           }
         },
         "summary": "Send chat messages to the system",
-        "tags": [
-          "restapi"
-        ]
+        "tags": ["restapi"]
       }
     },
     "/auth/google/url": {
@@ -112,9 +104,7 @@
           }
         },
         "summary": "Get Google OAuth URL",
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/auth/google/callback": {
@@ -144,9 +134,7 @@
           }
         },
         "summary": "Handle Google OAuth callback",
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/auth/logout": {
@@ -159,9 +147,7 @@
           }
         },
         "summary": "Logout user by clearing auth cookie",
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/auth/me": {
@@ -174,9 +160,7 @@
           }
         },
         "summary": "Get current user from cookie",
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/chats": {
@@ -196,9 +180,7 @@
           }
         },
         "summary": "Get user's chat history",
-        "tags": [
-          "chats"
-        ]
+        "tags": ["chats"]
       }
     },
     "/chats/{chatId}/listings": {
@@ -227,9 +209,7 @@
           }
         },
         "summary": "Get listings for a specific chat",
-        "tags": [
-          "chats"
-        ]
+        "tags": ["chats"]
       }
     },
     "/favorites": {
@@ -254,9 +234,7 @@
           }
         ],
         "summary": "Get all favorite listings for the current user",
-        "tags": [
-          "favorites"
-        ]
+        "tags": ["favorites"]
       },
       "post": {
         "operationId": "FavoritesController_addToFavorites",
@@ -282,9 +260,7 @@
           }
         ],
         "summary": "Add a listing to favorites",
-        "tags": [
-          "favorites"
-        ]
+        "tags": ["favorites"]
       }
     },
     "/favorites/{listingId}": {
@@ -311,9 +287,7 @@
           }
         ],
         "summary": "Remove a listing from favorites",
-        "tags": [
-          "favorites"
-        ]
+        "tags": ["favorites"]
       }
     },
     "/messages/chat/{chatId}": {
@@ -347,9 +321,7 @@
           }
         ],
         "summary": "Get all messages for a specific chat",
-        "tags": [
-          "messages"
-        ]
+        "tags": ["messages"]
       }
     },
     "/sse": {
@@ -373,9 +345,7 @@
           }
         },
         "summary": "Subscribe to server-sent events stream",
-        "tags": [
-          "sse"
-        ]
+        "tags": ["sse"]
       }
     }
   },
@@ -407,10 +377,7 @@
             "example": "Short answer"
           }
         },
-        "required": [
-          "answerFullSentence",
-          "answerShortForm"
-        ]
+        "required": ["answerFullSentence", "answerShortForm"]
       },
       "PotencialAnswersSelectDto": {
         "type": "object",
@@ -418,9 +385,7 @@
           "type": {
             "type": "string",
             "description": "Type of potential answers",
-            "enum": [
-              "select"
-            ],
+            "enum": ["select"],
             "example": "select"
           },
           "answers": {
@@ -431,10 +396,7 @@
             }
           }
         },
-        "required": [
-          "type",
-          "answers"
-        ]
+        "required": ["type", "answers"]
       },
       "PotencialAnswersFreeTextDto": {
         "type": "object",
@@ -442,15 +404,11 @@
           "type": {
             "type": "string",
             "description": "Type of potential answers",
-            "enum": [
-              "long_free_text"
-            ],
+            "enum": ["long_free_text"],
             "example": "long_free_text"
           }
         },
-        "required": [
-          "type"
-        ]
+        "required": ["type"]
       },
       "StalkingAnalyzeRequestDto": {
         "type": "object",
@@ -481,10 +439,7 @@
             "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           }
         },
-        "required": [
-          "occasion",
-          "chatId"
-        ]
+        "required": ["occasion", "chatId"]
       },
       "ChatMessageDto": {
         "type": "object",
@@ -502,18 +457,11 @@
           "sender": {
             "type": "string",
             "description": "Message sender",
-            "enum": [
-              "user",
-              "assistant"
-            ],
+            "enum": ["user", "assistant"],
             "example": "user"
           }
         },
-        "required": [
-          "id",
-          "content",
-          "sender"
-        ]
+        "required": ["id", "content", "sender"]
       },
       "SendMessageDto": {
         "type": "object",
@@ -531,10 +479,7 @@
             "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           }
         },
-        "required": [
-          "messages",
-          "chatId"
-        ]
+        "required": ["messages", "chatId"]
       },
       "GoogleAuthUrlDto": {
         "type": "object",
@@ -545,9 +490,7 @@
             "example": "https://accounts.google.com/o/oauth2/v2/auth?..."
           }
         },
-        "required": [
-          "url"
-        ]
+        "required": ["url"]
       },
       "GoogleAuthDto": {
         "type": "object",
@@ -558,9 +501,7 @@
             "example": "4/0AY0e-g7..."
           }
         },
-        "required": [
-          "code"
-        ]
+        "required": ["code"]
       },
       "UserDto": {
         "type": "object",
@@ -582,11 +523,7 @@
             "nullable": true
           }
         },
-        "required": [
-          "id",
-          "email",
-          "name"
-        ]
+        "required": ["id", "email", "name"]
       },
       "AuthResponseDto": {
         "type": "object",
@@ -605,10 +542,7 @@
             ]
           }
         },
-        "required": [
-          "accessToken",
-          "user"
-        ]
+        "required": ["accessToken", "user"]
       },
       "ChatDto": {
         "type": "object",
@@ -643,13 +577,76 @@
             }
           }
         },
-        "required": [
-          "chats"
-        ]
+        "required": ["chats"]
+      },
+      "PriceDto": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number",
+            "description": "Price value",
+            "example": 10,
+            "nullable": true
+          },
+          "label": {
+            "type": "string",
+            "description": "Price label",
+            "example": "10",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency",
+            "example": "USD",
+            "nullable": true
+          },
+          "negotiable": {
+            "type": "boolean",
+            "description": "Whether price is negotiable",
+            "example": false,
+            "nullable": true
+          }
+        },
+        "required": ["value", "label", "currency", "negotiable"]
       },
       "ListingResponseDto": {
         "type": "object",
         "properties": {
+          "image": {
+            "type": "string",
+            "description": "Image URL",
+            "example": "https://example.com/image.jpg",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "description": "Title",
+            "example": "Book"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description",
+            "example": "Great book"
+          },
+          "link": {
+            "type": "string",
+            "description": "Link",
+            "example": "https://example.com/book"
+          },
+          "price": {
+            "description": "Price",
+            "example": {
+              "value": 10,
+              "label": "10",
+              "currency": "USD",
+              "negotiable": false
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PriceDto"
+              }
+            ]
+          },
           "id": {
             "type": "string",
             "description": "Listing ID",
@@ -660,50 +657,6 @@
             "description": "Chat ID this listing belongs to",
             "example": "cm123abc",
             "nullable": true
-          },
-          "image": {
-            "type": "string",
-            "description": "Image URL",
-            "example": "https://example.com/image.jpg",
-            "nullable": true
-          },
-          "title": {
-            "type": "string",
-            "description": "Product title",
-            "example": "Wireless Headphones"
-          },
-          "description": {
-            "type": "string",
-            "description": "Product description",
-            "example": "High-quality wireless headphones with noise cancellation"
-          },
-          "link": {
-            "type": "string",
-            "description": "Product link",
-            "example": "https://example.com/product/123"
-          },
-          "priceValue": {
-            "type": "number",
-            "description": "Price value",
-            "example": 99.99,
-            "nullable": true
-          },
-          "priceLabel": {
-            "type": "string",
-            "description": "Price label",
-            "example": "$99.99",
-            "nullable": true
-          },
-          "priceCurrency": {
-            "type": "string",
-            "description": "Price currency",
-            "example": "USD",
-            "nullable": true
-          },
-          "priceNegotiable": {
-            "type": "boolean",
-            "description": "Whether price is negotiable",
-            "example": false
           },
           "isFavorited": {
             "type": "boolean",
@@ -718,16 +671,13 @@
           }
         },
         "required": [
-          "id",
-          "chatId",
           "image",
           "title",
           "description",
           "link",
-          "priceValue",
-          "priceLabel",
-          "priceCurrency",
-          "priceNegotiable",
+          "price",
+          "id",
+          "chatId",
           "isFavorited",
           "createdAt"
         ]
@@ -743,9 +693,7 @@
             }
           }
         },
-        "required": [
-          "listings"
-        ]
+        "required": ["listings"]
       },
       "FavoritesResponseDto": {
         "type": "object",
@@ -758,9 +706,7 @@
             }
           }
         },
-        "required": [
-          "favorites"
-        ]
+        "required": ["favorites"]
       },
       "AddToFavoritesDto": {
         "type": "object",
@@ -771,17 +717,11 @@
             "example": "123e4567-e89b-12d3-a456-426614174000"
           }
         },
-        "required": [
-          "listingId"
-        ]
+        "required": ["listingId"]
       },
       "MessageRole": {
         "type": "string",
-        "enum": [
-          "user",
-          "assistant",
-          "system"
-        ],
+        "enum": ["user", "assistant", "system"],
         "description": "Message role"
       },
       "MessageDto": {
@@ -818,13 +758,7 @@
             "example": "2025-01-15T10:30:00Z"
           }
         },
-        "required": [
-          "id",
-          "chatId",
-          "role",
-          "content",
-          "createdAt"
-        ]
+        "required": ["id", "chatId", "role", "content", "createdAt"]
       },
       "ChatMessagesResponseDto": {
         "type": "object",
@@ -837,9 +771,7 @@
             }
           }
         },
-        "required": [
-          "messages"
-        ]
+        "required": ["messages"]
       },
       "ChatMessageWithAnswersDto": {
         "type": "object",
@@ -857,10 +789,7 @@
           "sender": {
             "type": "string",
             "description": "Message sender",
-            "enum": [
-              "user",
-              "assistant"
-            ],
+            "enum": ["user", "assistant"],
             "example": "user"
           },
           "potentialAnswers": {
@@ -875,20 +804,14 @@
             ]
           }
         },
-        "required": [
-          "id",
-          "content",
-          "sender"
-        ]
+        "required": ["id", "content", "sender"]
       },
       "SseChatbotMessageDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "chatbot-message"
-            ],
+            "enum": ["chatbot-message"],
             "example": "chatbot-message"
           },
           "message": {
@@ -914,34 +837,25 @@
             ]
           }
         },
-        "required": [
-          "type",
-          "message"
-        ]
+        "required": ["type", "message"]
       },
       "SseChatInterviewCompletedDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "chat-interview-completed"
-            ],
+            "enum": ["chat-interview-completed"],
             "example": "chat-interview-completed"
           }
         },
-        "required": [
-          "type"
-        ]
+        "required": ["type"]
       },
       "SseChatInappropriateRequestDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "chat-inappropriate-request"
-            ],
+            "enum": ["chat-inappropriate-request"],
             "example": "chat-inappropriate-request"
           },
           "reason": {
@@ -950,41 +864,7 @@
             "example": "inappropriate content"
           }
         },
-        "required": [
-          "type",
-          "reason"
-        ]
-      },
-      "PriceDto": {
-        "type": "object",
-        "properties": {
-          "value": {
-            "type": "number",
-            "description": "Price value",
-            "example": 10
-          },
-          "label": {
-            "type": "string",
-            "description": "Price label",
-            "example": "10"
-          },
-          "currency": {
-            "type": "string",
-            "description": "Currency",
-            "example": "USD"
-          },
-          "negotiable": {
-            "type": "boolean",
-            "description": "Whether price is negotiable",
-            "example": false
-          }
-        },
-        "required": [
-          "value",
-          "label",
-          "currency",
-          "negotiable"
-        ]
+        "required": ["type", "reason"]
       },
       "ListingWithIdDto": {
         "type": "object",
@@ -992,7 +872,8 @@
           "image": {
             "type": "string",
             "description": "Image URL",
-            "example": "https://example.com/image.jpg"
+            "example": "https://example.com/image.jpg",
+            "nullable": true
           },
           "title": {
             "type": "string",
@@ -1043,9 +924,7 @@
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "gift-ready"
-            ],
+            "enum": ["gift-ready"],
             "example": "gift-ready"
           },
           "data": {
@@ -1086,10 +965,7 @@
             }
           }
         },
-        "required": [
-          "type",
-          "data"
-        ]
+        "required": ["type", "data"]
       }
     }
   }

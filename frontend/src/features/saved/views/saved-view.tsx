@@ -52,18 +52,7 @@ export function SavedView() {
           {favorites.map((listing) => (
             <GiftCard
               key={listing.id}
-              gift={{
-                image: listing.image,
-                title: listing.title,
-                description: listing.description,
-                link: listing.link,
-                price: {
-                  value: listing.priceValue,
-                  label: listing.priceLabel,
-                  currency: listing.priceCurrency,
-                  negotiable: listing.priceNegotiable,
-                },
-              }}
+              gift={listing}
               provider="Saved"
               listingId={listing.id}
               initialIsFavorited={true}

@@ -843,8 +843,8 @@ importers:
   frontend:
     dependencies:
       "@hookform/resolvers":
-        specifier: ^5.2.2
-        version: 5.2.2(react-hook-form@7.65.0(react@19.1.1))
+        specifier: ^5.1.0
+        version: 5.1.0(react-hook-form@7.65.0(react@19.1.1))
       "@radix-ui/react-label":
         specifier: ^2.1.7
         version: 2.1.7(@types/react-dom@19.1.9(@types/react@19.1.16))(@types/react@19.1.16)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -924,7 +924,7 @@ importers:
         specifier: ^13.0.0
         version: 13.0.0
       zod:
-        specifier: ^4.1.11
+        specifier: ^4.1.12
         version: 4.1.12
     devDependencies:
       "@solvro/config":
@@ -2118,10 +2118,10 @@ packages:
     engines: { node: ">=6" }
     hasBin: true
 
-  "@hookform/resolvers@5.2.2":
+  "@hookform/resolvers@5.1.0":
     resolution:
       {
-        integrity: sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA==,
+        integrity: sha512-A5tY8gxqvvR0lFfropqpy/gUDOxjwT7LZCxJ8lNA9puK7nFNRl/O0egGKxzdF4JSz/pnnT1O8g76P/YMyTBEFw==,
       }
     peerDependencies:
       react-hook-form: ^7.55.0
@@ -12859,7 +12859,7 @@ snapshots:
       "@stylistic/eslint-plugin": 5.4.0(eslint@9.35.0(jiti@2.5.1))
       eslint: 9.35.0(jiti@2.5.1)
       eslint-config-prettier: 10.1.8(eslint@9.35.0(jiti@2.5.1))
-      eslint-plugin-prettier: 5.5.4(@types/eslint@9.6.1)(eslint-config-prettier@10.1.8(eslint@9.36.0(jiti@2.5.1)))(eslint@9.35.0(jiti@2.5.1))(prettier@3.6.2)
+      eslint-plugin-prettier: 5.5.4(@types/eslint@9.6.1)(eslint-config-prettier@10.1.8(eslint@9.35.0(jiti@2.5.1)))(eslint@9.35.0(jiti@2.5.1))(prettier@3.6.2)
       eslint-plugin-unicorn: 60.0.0(eslint@9.35.0(jiti@2.5.1))
       prettier: 3.6.2
       typescript-eslint: 8.45.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2)
@@ -13691,7 +13691,7 @@ snapshots:
       protobufjs: 7.5.4
       yargs: 17.7.2
 
-  "@hookform/resolvers@5.2.2(react-hook-form@7.65.0(react@19.1.1))":
+  "@hookform/resolvers@5.1.0(react-hook-form@7.65.0(react@19.1.1))":
     dependencies:
       "@standard-schema/utils": 0.3.0
       react-hook-form: 7.65.0(react@19.1.1)
@@ -14650,7 +14650,7 @@ snapshots:
       eslint-plugin-react-refresh: 0.4.22(eslint@9.35.0(jiti@2.5.1))
       eslint-plugin-react-you-might-not-need-an-effect: 0.5.4(eslint@9.35.0(jiti@2.5.1))
       eslint-plugin-unicorn: 61.0.2(eslint@9.35.0(jiti@2.5.1))
-      eslint-plugin-unused-imports: 4.2.0(@typescript-eslint/eslint-plugin@8.45.0(@typescript-eslint/parser@8.45.0(eslint@9.36.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.36.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.35.0(jiti@2.5.1))
+      eslint-plugin-unused-imports: 4.2.0(@typescript-eslint/eslint-plugin@8.45.0(@typescript-eslint/parser@8.45.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.35.0(jiti@2.5.1))
       execa: 9.6.0
       find-up-simple: 1.0.1
       globals: 16.4.0
@@ -17251,7 +17251,7 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  eslint-plugin-prettier@5.5.4(@types/eslint@9.6.1)(eslint-config-prettier@10.1.8(eslint@9.36.0(jiti@2.5.1)))(eslint@9.35.0(jiti@2.5.1))(prettier@3.6.2):
+  eslint-plugin-prettier@5.5.4(@types/eslint@9.6.1)(eslint-config-prettier@10.1.8(eslint@9.35.0(jiti@2.5.1)))(eslint@9.35.0(jiti@2.5.1))(prettier@3.6.2):
     dependencies:
       eslint: 9.35.0(jiti@2.5.1)
       prettier: 3.6.2
@@ -17259,7 +17259,7 @@ snapshots:
       synckit: 0.11.11
     optionalDependencies:
       "@types/eslint": 9.6.1
-      eslint-config-prettier: 10.1.8(eslint@9.36.0(jiti@2.5.1))
+      eslint-config-prettier: 10.1.8(eslint@9.35.0(jiti@2.5.1))
 
   eslint-plugin-prettier@5.5.4(@types/eslint@9.6.1)(eslint-config-prettier@10.1.8(eslint@9.36.0(jiti@2.5.1)))(eslint@9.36.0(jiti@2.5.1))(prettier@3.6.2):
     dependencies:
@@ -17431,11 +17431,11 @@ snapshots:
       semver: 7.7.2
       strip-indent: 4.1.0
 
-  eslint-plugin-unused-imports@4.2.0(@typescript-eslint/eslint-plugin@8.45.0(@typescript-eslint/parser@8.45.0(eslint@9.36.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.36.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.35.0(jiti@2.5.1)):
+  eslint-plugin-unused-imports@4.2.0(@typescript-eslint/eslint-plugin@8.45.0(@typescript-eslint/parser@8.45.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.35.0(jiti@2.5.1)):
     dependencies:
       eslint: 9.35.0(jiti@2.5.1)
     optionalDependencies:
-      "@typescript-eslint/eslint-plugin": 8.45.0(@typescript-eslint/parser@8.45.0(eslint@9.36.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.36.0(jiti@2.5.1))(typescript@5.9.2)
+      "@typescript-eslint/eslint-plugin": 8.45.0(@typescript-eslint/parser@8.45.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2)
 
   eslint-plugin-unused-imports@4.2.0(@typescript-eslint/eslint-plugin@8.45.0(@typescript-eslint/parser@8.45.0(eslint@9.36.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.36.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.36.0(jiti@2.5.1)):
     dependencies:

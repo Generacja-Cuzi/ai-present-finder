@@ -10,12 +10,12 @@ import { Navbar } from "@/components/ui/navbar";
 
 import { RecommendationHeader } from "../components";
 
-interface RecommendationViewProps {
+export function RecommendationView({
+  giftIdeas,
+}: {
   clientId: string;
   giftIdeas: ListingWithId[];
-}
-
-export function RecommendationView({ giftIdeas }: RecommendationViewProps) {
+}) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleShopsFilter = () => {

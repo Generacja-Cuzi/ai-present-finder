@@ -71,8 +71,6 @@ export function SavedView() {
           </div>
         )}
       </main>
-
-      <Navbar />
     </div>
   );
 }

@@ -1,8 +1,9 @@
-import { QueryClientProvider } from "@tanstack/react-query";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { createRouter } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
+import { RootApp } from "@/components/root-app";
+import { AuthProvider } from "@/features/auth/auth-provider";
 import { getContext } from "@/lib/tanstack-query/get-context";
 
 // Import the generated route tree
@@ -14,6 +15,8 @@ const router = createRouter({
   routeTree,
   context: {
     ...queryClientContext,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    auth: undefined!,
   },
   defaultPreload: "intent",
   scrollRestoration: true,
@@ -21,6 +24,7 @@ const router = createRouter({
   defaultPreloadStaleTime: 0,
 });
 
+export type Router = typeof router;
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
   interface Register {
@@ -34,9 +38,9 @@ if (rootElement != null && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <QueryClientProvider client={queryClientContext.queryClient}>
-        <RouterProvider router={router} />
-      </QueryClientProvider>
+      <AuthProvider>
+        <RootApp router={router} queryClient={queryClientContext.queryClient} />
+      </AuthProvider>
     </StrictMode>,
   );
 }

@@ -2,7 +2,7 @@ import type { ListingWithId } from "@core/types";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
-import { RecommendationView } from "../../features/recommendation/views/recommendation-view";
+import { RecommendationView } from "../../../features/recommendation/views/recommendation-view";
 
 const priceSchema = z.object({
   value: z.number().nullable(),
@@ -28,7 +28,7 @@ const parametersSchema = z.object({
   id: z.string().min(1, "Client ID is required"),
 });
 
-export const Route = createFileRoute("/recommendation/$id")({
+export const Route = createFileRoute("/_authenticated/recommendation/$id")({
   beforeLoad: ({ params, location }) => {
     const validatedParameters = parametersSchema.parse(params);
     const validatedState = locationStateSchema.parse(location.state);

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { ChatDetailsView } from "@/features/history/views/chat-details-view";
 
-export const Route = createFileRoute("/history/chat/$id")({
+export const Route = createFileRoute("/_authenticated/history/chat/$id")({
   component: ChatDetailsPage,
 });
 

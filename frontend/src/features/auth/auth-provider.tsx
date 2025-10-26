@@ -1,5 +1,5 @@
 import { useAtom, useSetAtom } from "jotai";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { isAuthenticatedAtom, userAtom } from "@/lib/login/auth.store";
 import type { User } from "@/lib/login/auth.store";
@@ -12,6 +12,7 @@ export interface AuthState {
   user: User | null;
   login: () => Promise<void>;
   logout: () => Promise<void>;
+  isLoading: boolean;
 }
 
 async function handleLogin() {
@@ -33,6 +34,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user] = useAtom(userAtom);
   const [isAuthenticated] = useAtom(isAuthenticatedAtom);
   const setUser = useSetAtom(userAtom);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const validateSession = async () => {
+      if (user !== null) {
+        try {
+          const response = await fetchClient.GET("/auth/me");
+          if (response.response.ok) {
+            // Session is valid, keep the user from localStorage
+            // User is already set from localStorage via userAtom
+          } else {
+            console.warn("Session validation failed, clearing user");
+            setUser(null);
+          }
+        } catch (error) {
+          console.error("Failed to validate session:", error);
+          setUser(null);
+        }
+      }
+      setIsLoading(false);
+    };
+
+    void validateSession();
+  }, [user, setUser]);
 
   const logout = async () => {
     try {
@@ -48,6 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     login: handleLogin,
     logout,
+    isLoading,
   };
 
   return (

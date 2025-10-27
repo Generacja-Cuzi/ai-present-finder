@@ -5,7 +5,15 @@ import { z } from "zod";
 import { RecommendationView } from "../../features/recommendation/views/recommendation-view";
 
 const priceSchema = z.object({
-  value: z.number().nullable(),
+  value: z.union([z.number(), z.null()]).transform((value) => {
+    if (value === null) {
+      return null;
+    }
+    if (typeof value === "string") {
+      return Number.parseFloat(value);
+    }
+    return value;
+  }),
   label: z.string().nullable(),
   currency: z.string().nullable(),
   negotiable: z.boolean().nullable(),
@@ -18,6 +26,8 @@ const listingDtoSchema = z.object({
   price: priceSchema,
   image: z.string().nullable(),
   description: z.string(),
+  category: z.string().nullable().optional(),
+  provider: z.string().optional(),
 }) satisfies z.ZodType<ListingWithId>;
 
 const locationStateSchema = z.object({
@@ -31,6 +41,7 @@ const parametersSchema = z.object({
 export const Route = createFileRoute("/recommendation/$id")({
   beforeLoad: ({ params, location }) => {
     const validatedParameters = parametersSchema.parse(params);
+
     const validatedState = locationStateSchema.parse(location.state);
 
     return {

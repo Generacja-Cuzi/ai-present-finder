@@ -66,6 +66,8 @@ export class EmitGiftReadyHandler
           currency: product.priceCurrency,
           negotiable: product.priceNegotiable,
         },
+        category: product.category,
+        provider: product.provider,
       })),
     ) satisfies ListingPayload[];
 
@@ -96,6 +98,7 @@ export class EmitGiftReadyHandler
         if (productEntity !== undefined) {
           productEntity.rating = rankedProduct.score;
           productEntity.reasoning = rankedProduct.reasoning;
+          productEntity.category = rankedProduct.category ?? null;
           productsToUpdate.push(productEntity);
         }
       }

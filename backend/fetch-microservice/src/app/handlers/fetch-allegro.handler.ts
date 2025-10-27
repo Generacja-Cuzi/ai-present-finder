@@ -232,6 +232,8 @@ export class FetchAllegroHandler {
               currency: priceCurrency,
               negotiable: false,
             },
+            category: undefined,
+            provider: "allegro",
           } as ListingPayload;
         });
 

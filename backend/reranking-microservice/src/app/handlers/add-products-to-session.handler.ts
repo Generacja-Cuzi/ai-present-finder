@@ -48,6 +48,8 @@ export class AddProductsToSessionHandler
       product.priceLabel = listing.price.label ?? null;
       product.priceCurrency = listing.price.currency ?? null;
       product.priceNegotiable = listing.price.negotiable ?? null;
+      product.category = listing.category ?? null;
+      product.provider = listing.provider ?? sourceEventProvider;
       return product;
     });
 

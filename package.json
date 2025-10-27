@@ -25,6 +25,9 @@
     "*": "prettier -w --ignore-unknown"
   },
   "prettier": "@solvro/config/prettier",
+  "dependencies": {
+    "zod": "^4.1.12"
+  },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
     "@solvro/config": "^2.0.7",

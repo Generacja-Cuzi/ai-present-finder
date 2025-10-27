@@ -278,11 +278,35 @@ jobs:
           echo "🚀 Testing Docker Compose services startup..."
 
           # Start services with production compose file
-          docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test up -d --wait
+          if docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test up -d --wait; then
+            echo "✅ All services started successfully"
+          else
+            echo "❌ Docker Compose services failed to start"
+            echo "📝 Service logs:"
+            docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test logs
+            echo "📊 Service status:"
+            docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test ps -a
+            
+            # Save logs to file for artifact
+            mkdir -p ../docker-compose-logs
+            docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test logs > ../docker-compose-logs/all-services.log 2>&1
+            docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test ps -a > ../docker-compose-logs/services-status.txt 2>&1
+            
+            docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test down -v
+            exit 1
+          fi
 
           # Clean up
           echo "🧹 Cleaning up..."
           docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test down -v
+
+      - name: Upload Docker Compose logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-compose-logs
+          path: docker-compose-logs/
+          retention-days: 7
 
   docker-lint:
     runs-on: ubuntu-latest

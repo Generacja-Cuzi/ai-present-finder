@@ -65,6 +65,9 @@ export class Listing {
   @Column({ name: "price_negotiable", type: "boolean", default: false })
   priceNegotiable: boolean;
 
+  @Column({ name: "category", type: "varchar", nullable: true })
+  category: string | null;
+
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 

@@ -5,7 +5,11 @@ import { z } from "zod";
 import { RecommendationView } from "../../features/recommendation/views/recommendation-view";
 
 const priceSchema = z.object({
-  value: z.number().nullable(),
+  value: z.union([z.number(), z.null()]).transform((val) => {
+    if (val === null) return null;
+    if (typeof val === "string") return Number.parseFloat(val);
+    return val;
+  }),
   label: z.string().nullable(),
   currency: z.string().nullable(),
   negotiable: z.boolean().nullable(),
@@ -18,6 +22,7 @@ const listingDtoSchema = z.object({
   price: priceSchema,
   image: z.string().nullable(),
   description: z.string(),
+  category: z.string().nullable().optional(),
 }) satisfies z.ZodType<ListingWithId>;
 
 const locationStateSchema = z.object({
@@ -31,7 +36,31 @@ const parametersSchema = z.object({
 export const Route = createFileRoute("/recommendation/$id")({
   beforeLoad: ({ params, location }) => {
     const validatedParameters = parametersSchema.parse(params);
+
+    console.group("🔍 Route - Before Validation");
+    console.log("Raw location.state:", location.state);
+    console.log("Raw giftIdeas:", (location.state as any)?.giftIdeas);
+    if ((location.state as any)?.giftIdeas?.[0]) {
+      console.log(
+        "First gift before validation:",
+        (location.state as any).giftIdeas[0],
+      );
+      console.log(
+        "First gift category:",
+        (location.state as any).giftIdeas[0].category,
+      );
+    }
+    console.groupEnd();
+
     const validatedState = locationStateSchema.parse(location.state);
+
+    console.group("🔍 Route - After Validation");
+    console.log("Validated giftIdeas:", validatedState.giftIdeas);
+    if (validatedState.giftIdeas?.[0]) {
+      console.log("First gift after validation:", validatedState.giftIdeas[0]);
+      console.log("First gift category:", validatedState.giftIdeas[0].category);
+    }
+    console.groupEnd();
 
     return {
       clientId: validatedParameters.id,

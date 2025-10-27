@@ -11,6 +11,7 @@ export class GetChatListingsHandler
   constructor(private readonly listingRepository: IListingRepository) {}
 
   async execute(query: GetChatListingsQuery): Promise<Listing[]> {
+    console.log("Executing GetChatListingsQuery:", query);
     return this.listingRepository.findByChatId(query.chatId);
   }
 }

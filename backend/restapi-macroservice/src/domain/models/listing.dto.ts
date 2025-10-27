@@ -78,6 +78,15 @@ export class BaseListingDto implements ListingPayload {
     },
   })
   price: PriceDto;
+
+  @ApiProperty({
+    type: String,
+    description: "Category",
+    example: "Elektronika",
+    nullable: true,
+    required: false,
+  })
+  category?: string | null;
 }
 
 export class ListingWithIdDto extends BaseListingDto {

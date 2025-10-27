@@ -67,6 +67,7 @@ export class FavoritesController {
         currency: listing.priceCurrency,
         negotiable: listing.priceNegotiable,
       },
+      category: listing.category,
       isFavorited: true,
       createdAt: listing.createdAt,
     }));

@@ -9,6 +9,7 @@ export interface ListingPayload {
     currency: string | null;
     negotiable: boolean | null;
   };
+  category?: string | null;
 }
 
 export interface ListingWithId extends ListingPayload {

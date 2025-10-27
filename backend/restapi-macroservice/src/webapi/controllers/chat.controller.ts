@@ -58,6 +58,8 @@ export class ChatController {
       new GetChatListingsQuery(chatId, request.user.id),
     );
 
+    console.log("Raw listings:", listings);
+
     const user = request.user;
 
     const listingsWithFavoriteStatus = await Promise.all(
@@ -81,6 +83,7 @@ export class ChatController {
             currency: listing.priceCurrency,
             negotiable: listing.priceNegotiable,
           },
+          category: listing.category,
           isFavorited,
           createdAt: listing.createdAt,
         };

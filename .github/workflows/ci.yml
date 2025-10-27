@@ -165,21 +165,9 @@ jobs:
       - name: Test Docker Compose configuration
         run: |
           cd deployment
-          # Create minimal env file for config validation
-          cat > .env.test <<EOF
-          RABBITMQ_USER=test_user
-          RABBITMQ_PASS=test_password
-          POSTGRES_PASSWORD=test_password
-          OPENAI_API_KEY=sk-test-dummy-key
-          BRIGHTDATA_API_KEY=test-brightdata-key
-          GOOGLE_CREDENTIALS_BASE64=eyJ3ZWIiOnsiY2xpZW50X2lkIjoiZHVtbXktY2xpZW50LWlkIiwiY2xpZW50X3NlY3JldCI6ImR1bW15LXNlY3JldCIsInJlZGlyZWN0X3VyaXMiOlsiaHR0cDovL2xvY2FsaG9zdDozMDAwL2NhbGxiYWNrIl0sImF1dGhfdXJpIjoiaHR0cHM6Ly9hY2NvdW50cy5nb29nbGUuY29tL28vb2F1dGgyL2F1dGgiLCJ0b2tlbl91cmkiOiJodHRwczovL29hdXRoMi5nb29nbGVhcGlzLmNvbS90b2tlbiIsImF1dGhfcHJvdmlkZXJfeDUwOV9jZXJ0X3VybCI6Imh0dHBzOi8vd3d3Lmdvb2dsZWFwaXMuY29tL29hdXRoMi92MS9jZXJ0cyJ9fQ==
-          EOF
-
           # Validate configuration can be parsed
-          docker compose -f docker-compose.prod.yml --env-file .env.test config --quiet
+          docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test config --quiet
           echo "✅ Docker Compose configuration is valid"
-
-          rm .env.test
 
       - name: Build backend Docker image
         uses: docker/build-push-action@v5
@@ -290,12 +278,11 @@ jobs:
           echo "🚀 Testing Docker Compose services startup..."
 
           # Start services with production compose file
-          docker compose -f docker-compose.prod.yml --env-file .env.test up -d --wait
+          docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test up -d --wait
 
           # Clean up
           echo "🧹 Cleaning up..."
-          docker compose -f docker-compose.prod.yml --env-file .env.test down -v
-          rm .env.test
+          docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test down -v
 
   docker-lint:
     runs-on: ubuntu-latest

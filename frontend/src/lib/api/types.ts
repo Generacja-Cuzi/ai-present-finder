@@ -247,6 +247,36 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        PotencialAnswerChoiceDto: {
+            /**
+             * @description Answer full sentence
+             * @example Answer 1
+             */
+            answerFullSentence: string;
+            /**
+             * @description Answer short form
+             * @example Short answer
+             */
+            answerShortForm: string;
+        };
+        PotencialAnswersSelectDto: {
+            /**
+             * @description Type of potential answers
+             * @example select
+             * @enum {string}
+             */
+            type: "select";
+            /** @description Array of potential answers */
+            answers: components["schemas"]["PotencialAnswerChoiceDto"][];
+        };
+        PotencialAnswersFreeTextDto: {
+            /**
+             * @description Type of potential answers
+             * @example long_free_text
+             * @enum {string}
+             */
+            type: "long_free_text";
+        };
         StalkingAnalyzeRequestDto: {
             /**
              * @description Instagram profile URL
@@ -341,11 +371,81 @@ export interface components {
             /** @description User information */
             user: components["schemas"]["UserDto"];
         };
+        ChatDto: {
+            /**
+             * @description Chat ID
+             * @example cm123abc
+             */
+            chatId: string;
+            /**
+             * @description Chat name
+             * @example Gift for Mom
+             */
+            chatName: string;
+            /**
+             * Format: date-time
+             * @description Created at timestamp
+             * @example 2025-01-15T10:30:00Z
+             */
+            createdAt: string;
+        };
         ChatsResponseDto: {
             /** @description List of user's chats */
-            chats: unknown[][];
+            chats: components["schemas"]["ChatDto"][];
+        };
+        PriceDto: {
+            /**
+             * @description Price value
+             * @example 10
+             */
+            value: number | null;
+            /**
+             * @description Price label
+             * @example 10
+             */
+            label: string | null;
+            /**
+             * @description Currency
+             * @example USD
+             */
+            currency: string | null;
+            /**
+             * @description Whether price is negotiable
+             * @example false
+             */
+            negotiable: boolean | null;
         };
         ListingResponseDto: {
+            /**
+             * @description Image URL
+             * @example https://example.com/image.jpg
+             */
+            image: string | null;
+            /**
+             * @description Title
+             * @example Book
+             */
+            title: string;
+            /**
+             * @description Description
+             * @example Great book
+             */
+            description: string;
+            /**
+             * @description Link
+             * @example https://example.com/book
+             */
+            link: string;
+            /**
+             * @description Price
+             * @example {
+             *       "value": 10,
+             *       "label": "10",
+             *       "currency": "USD",
+             *       "negotiable": false
+             *     }
+             */
+            price: components["schemas"]["PriceDto"];
             /**
              * @description Listing ID
              * @example 123e4567-e89b-12d3-a456-426614174000
@@ -356,46 +456,6 @@ export interface components {
              * @example cm123abc
              */
             chatId: string | null;
-            /**
-             * @description Image URL
-             * @example https://example.com/image.jpg
-             */
-            image: string | null;
-            /**
-             * @description Product title
-             * @example Wireless Headphones
-             */
-            title: string;
-            /**
-             * @description Product description
-             * @example High-quality wireless headphones with noise cancellation
-             */
-            description: string;
-            /**
-             * @description Product link
-             * @example https://example.com/product/123
-             */
-            link: string;
-            /**
-             * @description Price value
-             * @example 99.99
-             */
-            priceValue: number | null;
-            /**
-             * @description Price label
-             * @example $99.99
-             */
-            priceLabel: string | null;
-            /**
-             * @description Price currency
-             * @example USD
-             */
-            priceCurrency: string | null;
-            /**
-             * @description Whether price is negotiable
-             * @example false
-             */
-            priceNegotiable: boolean;
             /**
              * @description Whether this listing is favorited by the current user
              * @example true
@@ -460,6 +520,26 @@ export interface components {
             /** @description List of chat messages */
             messages: components["schemas"]["MessageDto"][];
         };
+        ChatMessageWithAnswersDto: {
+            /**
+             * @description Unique message identifier
+             * @example 3fa85f64-5717-4562-b3fc-2c963f66afa6
+             */
+            id: string;
+            /**
+             * @description Message content
+             * @example Hello!
+             */
+            content: string;
+            /**
+             * @description Message sender
+             * @example user
+             * @enum {string}
+             */
+            sender: "user" | "assistant";
+            /** @description Potential answers - either select with 4 options or free text */
+            potentialAnswers?: components["schemas"]["PotencialAnswersSelectDto"] | components["schemas"]["PotencialAnswersFreeTextDto"];
+        };
         SseChatbotMessageDto: {
             /**
              * @example chatbot-message
@@ -471,10 +551,19 @@ export interface components {
              * @example {
              *       "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
              *       "content": "Hello!",
-             *       "sender": "user"
+             *       "sender": "user",
+             *       "potentialAnswers": {
+             *         "type": "select",
+             *         "answers": [
+             *           {
+             *             "answerFullSentence": "Answer 1",
+             *             "answerShortForm": "Answer 1 short"
+             *           }
+             *         ]
+             *       }
              *     }
              */
-            message: components["schemas"]["ChatMessageDto"];
+            message: components["schemas"]["ChatMessageWithAnswersDto"];
         };
         SseChatInterviewCompletedDto: {
             /**
@@ -495,34 +584,12 @@ export interface components {
              */
             reason: string;
         };
-        PriceDto: {
-            /**
-             * @description Price value
-             * @example 10
-             */
-            value: number;
-            /**
-             * @description Price label
-             * @example 10
-             */
-            label: string;
-            /**
-             * @description Currency
-             * @example USD
-             */
-            currency: string;
-            /**
-             * @description Whether price is negotiable
-             * @example false
-             */
-            negotiable: boolean;
-        };
         ListingWithIdDto: {
             /**
              * @description Image URL
              * @example https://example.com/image.jpg
              */
-            image: string;
+            image: string | null;
             /**
              * @description Title
              * @example Book

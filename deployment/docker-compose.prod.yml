@@ -28,10 +28,10 @@ services:
       - ./docker-init-db.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
     healthcheck:
       test: ["CMD-SHELL", 'pg_isready -U "$${POSTGRES_USER:-postgres}"']
-      interval: 30s
+      interval: 10s
       timeout: 10s
-      retries: 3
-      start_period: 60s
+      retries: 30
+      start_period: 90s
 
   # Single application container running all microservices
   app:

@@ -289,55 +289,8 @@ jobs:
           cd deployment
           echo "🚀 Testing Docker Compose services startup..."
 
-          # Create test environment file
-          cat > .env.test <<EOF
-          RABBITMQ_USER=test_user
-          RABBITMQ_PASS=test_password
-          POSTGRES_PASSWORD=test_password
-          OPENAI_API_KEY=sk-test-dummy-key
-          BRIGHTDATA_API_KEY=test-brightdata-key
-          SERVICE_URL_APP=http://localhost:3000
-          EOF
-
           # Start services with production compose file
-          docker compose -f docker-compose.prod.yml --env-file .env.test up -d
-
-          # Wait for infrastructure services to be healthy
-          echo "⏳ Waiting for infrastructure services..."
-          timeout=60
-          elapsed=0
-          while [ $elapsed -lt $timeout ]; do
-            if docker compose -f docker-compose.prod.yml --env-file .env.test ps | grep -q "healthy"; then
-              echo "✅ Infrastructure services are healthy"
-              break
-            fi
-            sleep 2
-            elapsed=$((elapsed + 2))
-          done
-
-          # Check overall services status
-          echo "📊 Service status:"
-          docker compose -f docker-compose.prod.yml --env-file .env.test ps
-
-          # Verify critical services are running
-          if docker compose -f docker-compose.prod.yml --env-file .env.test ps | grep -E "(postgres|rabbitmq)" | grep -q "Up"; then
-            echo "✅ Docker Compose infrastructure services started successfully"
-          else
-            echo "❌ Infrastructure services failed to start"
-            docker compose -f docker-compose.prod.yml --env-file .env.test logs
-            docker compose -f docker-compose.prod.yml --env-file .env.test down -v
-            exit 1
-          fi
-
-          # Check if app container is created (may not be fully healthy in CI)
-          if docker compose -f docker-compose.prod.yml --env-file .env.test ps -a | grep -q "app"; then
-            echo "✅ Application container created"
-            # Show app logs for debugging
-            echo "📝 Application logs (last 20 lines):"
-            docker compose -f docker-compose.prod.yml --env-file .env.test logs app --tail=20
-          else
-            echo "⚠️  Application container not found"
-          fi
+          docker compose -f docker-compose.prod.yml --env-file .env.test up -d --wait
 
           # Clean up
           echo "🧹 Cleaning up..."

@@ -11,16 +11,18 @@ export function filterGifts(
       const query = filters.searchQuery.toLowerCase();
       const matchesTitle = gift.title.toLowerCase().includes(query);
       const matchesDescription = gift.description.toLowerCase().includes(query);
-      const matchesCategory = gift.category?.toLowerCase().includes(query);
+      const matchesCategory =
+        gift.category?.toLowerCase().includes(query) ?? false;
 
       if (!matchesTitle && !matchesDescription && !matchesCategory) {
         return false;
       }
     }
-    if (filters.shops.length > 0) {
-      if (!gift.provider || !filters.shops.includes(gift.provider)) {
-        return false;
-      }
+    if (
+      filters.shops.length > 0 &&
+      (gift.provider === undefined || !filters.shops.includes(gift.provider))
+    ) {
+      return false;
     }
 
     if (filters.priceRange.min !== null || filters.priceRange.max !== null) {
@@ -39,14 +41,14 @@ export function filterGifts(
       }
     }
 
-    if (filters.categories.length > 0) {
-      if (
-        !gift.category ||
+    if (
+      filters.categories.length > 0 &&
+      (gift.category === null ||
+        gift.category === undefined ||
         gift.category.trim() === "" ||
-        !filters.categories.includes(gift.category)
-      ) {
-        return false;
-      }
+        !filters.categories.includes(gift.category))
+    ) {
+      return false;
     }
 
     return true;
@@ -65,8 +67,10 @@ export function extractDomain(url: string): string {
 export function getUniqueShops(gifts: ListingWithId[]): string[] {
   const shops = gifts
     .map((gift) => gift.provider)
-    .filter((provider): provider is string => Boolean(provider));
-  return [...new Set(shops)].sort();
+    .filter((provider): provider is string => provider !== undefined);
+  const uniqueShops = [...new Set(shops)];
+  uniqueShops.sort((a, b) => a.localeCompare(b));
+  return uniqueShops;
 }
 
 export function getUniqueCategories(gifts: ListingWithId[]): string[] {
@@ -78,7 +82,9 @@ export function getUniqueCategories(gifts: ListingWithId[]): string[] {
       );
     });
 
-  return [...new Set(categories)].sort();
+  const uniqueCategories = [...new Set(categories)];
+  uniqueCategories.sort((a, b) => a.localeCompare(b));
+  return uniqueCategories;
 }
 
 export function getPriceRange(gifts: ListingWithId[]): {

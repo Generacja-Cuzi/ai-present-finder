@@ -25,29 +25,31 @@ export function CategoryFilterDialog({
   selectedCategories: string[];
   onApply: (categories: string[]) => void;
 }) {
-  const [tempSelection, setTempSelection] =
+  const [temporarySelection, setTemporarySelection] =
     useState<string[]>(selectedCategories);
 
   const handleCheckChange = (category: string, checked: boolean) => {
     if (checked) {
-      setTempSelection((previous) => [...previous, category]);
+      setTemporarySelection((previous) => [...previous, category]);
     } else {
-      setTempSelection((previous) => previous.filter((c) => c !== category));
+      setTemporarySelection((previous) =>
+        previous.filter((c) => c !== category),
+      );
     }
   };
 
   const handleApply = () => {
-    onApply(tempSelection);
+    onApply(temporarySelection);
     onOpenChange(false);
   };
 
   const handleClear = () => {
-    setTempSelection([]);
+    setTemporarySelection([]);
   };
 
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
-      setTempSelection(selectedCategories);
+      setTemporarySelection(selectedCategories);
     }
     onOpenChange(newOpen);
   };
@@ -70,10 +72,10 @@ export function CategoryFilterDialog({
                 <div key={category} className="flex items-center space-x-3">
                   <Checkbox
                     id={`category-${category}`}
-                    checked={tempSelection.includes(category)}
-                    onCheckedChange={(checked) =>
-                      handleCheckChange(category, checked === true)
-                    }
+                    checked={temporarySelection.includes(category)}
+                    onCheckedChange={(checked) => {
+                      handleCheckChange(category, checked === true);
+                    }}
                   />
                   <label
                     htmlFor={`category-${category}`}
@@ -81,7 +83,7 @@ export function CategoryFilterDialog({
                   >
                     {category}
                   </label>
-                  {tempSelection.includes(category) && (
+                  {temporarySelection.includes(category) && (
                     <Check className="h-4 w-4 text-green-600" />
                   )}
                 </div>
@@ -99,7 +101,7 @@ export function CategoryFilterDialog({
             Clear
           </Button>
           <Button onClick={handleApply} className="flex-1 sm:flex-1">
-            Apply ({tempSelection.length})
+            Apply ({temporarySelection.length})
           </Button>
         </DialogFooter>
       </DialogContent>

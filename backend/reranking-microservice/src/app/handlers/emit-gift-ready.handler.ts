@@ -67,7 +67,7 @@ export class EmitGiftReadyHandler
           negotiable: product.priceNegotiable,
         },
         category: product.category,
-        provider: product.provider ?? "unknown",
+        provider: product.provider,
       })),
     ) satisfies ListingPayload[];
 

@@ -27,10 +27,11 @@ export function PriceRangeFilterDialog({
   availableRange: { min: number; max: number };
   onApply: (range: PriceRange) => void;
 }) {
-  const [tempRange, setTempRange] = useState<PriceRange>(currentRange);
+  const [temporaryRange, setTemporaryRange] =
+    useState<PriceRange>(currentRange);
 
   const handleSliderChange = (values: number[]) => {
-    setTempRange({
+    setTemporaryRange({
       min: values[0] ?? availableRange.min,
       max: values[1] ?? availableRange.max,
     });
@@ -38,32 +39,32 @@ export function PriceRangeFilterDialog({
 
   const handleMinChange = (value: string) => {
     const numberValue = value === "" ? null : Number.parseFloat(value);
-    setTempRange((previous) => ({ ...previous, min: numberValue }));
+    setTemporaryRange((previous) => ({ ...previous, min: numberValue }));
   };
 
   const handleMaxChange = (value: string) => {
     const numberValue = value === "" ? null : Number.parseFloat(value);
-    setTempRange((previous) => ({ ...previous, max: numberValue }));
+    setTemporaryRange((previous) => ({ ...previous, max: numberValue }));
   };
 
   const handleApply = () => {
-    onApply(tempRange);
+    onApply(temporaryRange);
     onOpenChange(false);
   };
 
   const handleClear = () => {
-    setTempRange({ min: null, max: null });
+    setTemporaryRange({ min: null, max: null });
   };
 
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
-      setTempRange(currentRange);
+      setTemporaryRange(currentRange);
     }
     onOpenChange(newOpen);
   };
 
-  const sliderMin = tempRange.min ?? availableRange.min;
-  const sliderMax = tempRange.max ?? availableRange.max;
+  const sliderMin = temporaryRange.min ?? availableRange.min;
+  const sliderMax = temporaryRange.max ?? availableRange.max;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -104,8 +105,10 @@ export function PriceRangeFilterDialog({
                   id="min-price"
                   type="number"
                   placeholder="0"
-                  value={tempRange.min ?? ""}
-                  onChange={(event_) => handleMinChange(event_.target.value)}
+                  value={temporaryRange.min ?? ""}
+                  onChange={(event_) => {
+                    handleMinChange(event_.target.value);
+                  }}
                   className="pl-7"
                   min={availableRange.min}
                   max={availableRange.max}
@@ -123,8 +126,10 @@ export function PriceRangeFilterDialog({
                   id="max-price"
                   type="number"
                   placeholder="1000"
-                  value={tempRange.max ?? ""}
-                  onChange={(event_) => handleMaxChange(event_.target.value)}
+                  value={temporaryRange.max ?? ""}
+                  onChange={(event_) => {
+                    handleMaxChange(event_.target.value);
+                  }}
                   className="pl-7"
                   min={availableRange.min}
                   max={availableRange.max}

@@ -1,6 +1,6 @@
 import { ListingPayload } from "@core/types";
 
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class PriceDto {
   @ApiProperty({
@@ -79,20 +79,18 @@ export class BaseListingDto implements ListingPayload {
   })
   price: PriceDto;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     description: "Category",
     example: "Elektronika",
     nullable: true,
-    required: false,
   })
   category?: string | null;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     description: "Provider/shop name",
     example: "amazon",
-    required: false,
   })
   provider?: string;
 }

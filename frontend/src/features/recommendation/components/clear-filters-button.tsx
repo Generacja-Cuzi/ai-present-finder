@@ -9,7 +9,9 @@ export function ClearFiltersButton({
   activeCount: number;
   onClear: () => void;
 }) {
-  if (activeCount === 0) return null;
+  if (activeCount === 0) {
+    return null;
+  }
 
   return (
     <Button

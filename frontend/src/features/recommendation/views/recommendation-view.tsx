@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/consistent-function-scoping */
 import type { ListingWithId } from "@core/types";
 import { useMemo, useState } from "react";
 
@@ -69,13 +68,17 @@ export function RecommendationView({
           <div className="flex items-center gap-2 overflow-x-auto">
             <FilterButton
               label="Shops"
-              onClick={() => setShopsDialogOpen(true)}
+              onClick={() => {
+                setShopsDialogOpen(true);
+              }}
               isActive={filters.shops.length > 0}
               activeCount={filters.shops.length}
             />
             <FilterButton
               label="Price Range"
-              onClick={() => setPriceDialogOpen(true)}
+              onClick={() => {
+                setPriceDialogOpen(true);
+              }}
               isActive={
                 filters.priceRange.min !== null ||
                 filters.priceRange.max !== null
@@ -83,7 +86,9 @@ export function RecommendationView({
             />
             <FilterButton
               label="Category"
-              onClick={() => setCategoryDialogOpen(true)}
+              onClick={() => {
+                setCategoryDialogOpen(true);
+              }}
               isActive={filters.categories.length > 0}
               activeCount={filters.categories.length}
             />

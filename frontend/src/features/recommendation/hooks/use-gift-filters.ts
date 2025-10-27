@@ -28,10 +28,15 @@ export function useGiftFilters() {
 
   const activeFiltersCount = useMemo(() => {
     let count = 0;
-    if (filters.shops.length > 0) count++;
-    if (filters.priceRange.min !== null || filters.priceRange.max !== null)
+    if (filters.shops.length > 0) {
       count++;
-    if (filters.categories.length > 0) count++;
+    }
+    if (filters.priceRange.min !== null || filters.priceRange.max !== null) {
+      count++;
+    }
+    if (filters.categories.length > 0) {
+      count++;
+    }
     return count;
   }, [filters]);
 

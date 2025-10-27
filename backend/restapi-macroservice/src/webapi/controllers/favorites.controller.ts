@@ -68,7 +68,7 @@ export class FavoritesController {
         negotiable: listing.priceNegotiable,
       },
       category: listing.category,
-      provider: listing.provider ?? "unknown",
+      provider: listing.provider,
       isFavorited: true,
       createdAt: listing.createdAt,
     }));

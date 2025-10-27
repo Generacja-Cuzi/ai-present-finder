@@ -25,28 +25,29 @@ export function ShopsFilterDialog({
   selectedShops: string[];
   onApply: (shops: string[]) => void;
 }) {
-  const [tempSelection, setTempSelection] = useState<string[]>(selectedShops);
+  const [temporarySelection, setTemporarySelection] =
+    useState<string[]>(selectedShops);
 
   const handleCheckChange = (shop: string, checked: boolean) => {
     if (checked) {
-      setTempSelection((previous) => [...previous, shop]);
+      setTemporarySelection((previous) => [...previous, shop]);
     } else {
-      setTempSelection((previous) => previous.filter((s) => s !== shop));
+      setTemporarySelection((previous) => previous.filter((s) => s !== shop));
     }
   };
 
   const handleApply = () => {
-    onApply(tempSelection);
+    onApply(temporarySelection);
     onOpenChange(false);
   };
 
   const handleClear = () => {
-    setTempSelection([]);
+    setTemporarySelection([]);
   };
 
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
-      setTempSelection(selectedShops);
+      setTemporarySelection(selectedShops);
     }
     onOpenChange(newOpen);
   };
@@ -69,10 +70,10 @@ export function ShopsFilterDialog({
                 <div key={shop} className="flex items-center space-x-3">
                   <Checkbox
                     id={`shop-${shop}`}
-                    checked={tempSelection.includes(shop)}
-                    onCheckedChange={(checked) =>
-                      handleCheckChange(shop, checked === true)
-                    }
+                    checked={temporarySelection.includes(shop)}
+                    onCheckedChange={(checked) => {
+                      handleCheckChange(shop, checked === true);
+                    }}
                   />
                   <label
                     htmlFor={`shop-${shop}`}
@@ -80,7 +81,7 @@ export function ShopsFilterDialog({
                   >
                     {shop}
                   </label>
-                  {tempSelection.includes(shop) && (
+                  {temporarySelection.includes(shop) && (
                     <Check className="h-4 w-4 text-green-600" />
                   )}
                 </div>
@@ -98,7 +99,7 @@ export function ShopsFilterDialog({
             Clear
           </Button>
           <Button onClick={handleApply} className="flex-1 sm:flex-1">
-            Apply ({tempSelection.length})
+            Apply ({temporarySelection.length})
           </Button>
         </DialogFooter>
       </DialogContent>

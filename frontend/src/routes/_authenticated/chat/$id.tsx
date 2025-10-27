@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { ChatView } from "../../features/chat/views/chat-view";
+import { ChatView } from "../../../features/chat/views/chat-view";
 
-export const Route = createFileRoute("/chat/$id")({
+export const Route = createFileRoute("/_authenticated/chat/$id")({
   component: ChatPage,
 });
 

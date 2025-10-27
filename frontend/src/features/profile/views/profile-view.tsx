@@ -1,30 +1,18 @@
-import { useNavigate } from "@tanstack/react-router";
-import { useAtom } from "jotai";
-import { useState } from "react";
+import { useRouter } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
-
-import { fetchClient } from "../../../lib/api/client";
-import { userAtom } from "../../../lib/login/auth.store";
+import { useAuth } from "@/features/auth/use-auth";
+import { Route } from "@/routes/_authenticated";
 
 export function ProfileView() {
-  const navigate = useNavigate();
-  const [user, setUser] = useAtom(userAtom);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-
+  const { user, logout } = useAuth();
+  const router = useRouter();
+  const navigate = Route.useNavigate();
   const handleLogout = async () => {
-    setIsLoggingOut(true);
-    try {
-      await fetchClient.POST("/auth/logout");
-      setUser(null);
-      void navigate({ to: "/" });
-    } catch (error) {
-      console.error("Failed to logout:", error);
-    } finally {
-      setIsLoggingOut(false);
-    }
+    await logout();
+    await router.invalidate();
+    await navigate({ to: "/" });
   };
-
   return (
     <div className="bg-background flex min-h-screen flex-col">
       <div className="flex flex-1 flex-col items-center justify-center px-6">
@@ -42,11 +30,10 @@ export function ProfileView() {
           <div className="space-y-4">
             <Button
               onClick={handleLogout}
-              disabled={isLoggingOut}
               variant="destructive"
-              className="w-full rounded-full py-6 text-lg font-semibold shadow-lg transition-all active:scale-95"
+              className="w-full rounded-full py-6 text-lg font-semibold text-white shadow-lg transition-all active:scale-95"
             >
-              {isLoggingOut ? "Logging out..." : "Logout"}
+              Logout
             </Button>
           </div>
         </div>

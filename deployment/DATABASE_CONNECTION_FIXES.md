@@ -122,7 +122,7 @@ Local testing:
 
 ```bash
 cd deployment
-docker-compose -f docker-compose.prod.yml --env-file .env.test up --build
+docker-compose -f docker-compose.prod.yml --env-file .unencrypted-env.test up --build
 ```
 
 All services should start successfully with healthy status.

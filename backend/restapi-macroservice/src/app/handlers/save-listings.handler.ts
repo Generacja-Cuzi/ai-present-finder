@@ -32,6 +32,8 @@ export class SaveListingsHandler
           priceLabel: listing.price.label,
           priceCurrency: listing.price.currency,
           priceNegotiable: listing.price.negotiable ?? false,
+          category: listing.category ?? null,
+          provider: listing.provider ?? "unknown",
         }),
       ),
     );

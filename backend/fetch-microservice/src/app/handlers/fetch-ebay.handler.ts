@@ -225,6 +225,8 @@ export class FetchEbayHandler {
             currency: priceInfo.currency ?? null,
             negotiable: false, // eBay prices are typically fixed
           },
+          category: undefined,
+          provider: "ebay",
         } satisfies ListingPayload;
       });
   }

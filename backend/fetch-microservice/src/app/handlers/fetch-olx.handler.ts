@@ -238,6 +238,8 @@ export class FetchOlxHandler {
             currency: validPriceParameter?.currency ?? "PLN",
             negotiable: validPriceParameter?.negotiable ?? false,
           },
+          category: undefined,
+          provider: "olx",
         } satisfies ListingPayload;
       });
   }

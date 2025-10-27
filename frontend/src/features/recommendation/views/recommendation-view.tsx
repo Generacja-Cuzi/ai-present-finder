@@ -1,14 +1,26 @@
-/* eslint-disable unicorn/consistent-function-scoping */
-/* eslint-disable no-console */
 import type { ListingWithId } from "@core/types";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { FilterButton } from "@/components/filter-button";
 import { SearchBar } from "@/components/search-bar";
 import { GiftCard } from "@/components/ui/gift-card";
 import { Navbar } from "@/components/ui/navbar";
 
-import { RecommendationHeader } from "../components";
+import {
+  CategoryFilterDialog,
+  ClearFiltersButton,
+  PriceRangeFilterDialog,
+  RecommendationHeader,
+  ResultsCount,
+  ShopsFilterDialog,
+} from "../components";
+import { useGiftFilters } from "../hooks/use-gift-filters";
+import {
+  filterGifts,
+  getPriceRange,
+  getUniqueCategories,
+  getUniqueShops,
+} from "../utils/filter-gifts";
 
 export function RecommendationView({
   giftIdeas,
@@ -16,25 +28,34 @@ export function RecommendationView({
   clientId: string;
   giftIdeas: ListingWithId[];
 }) {
-  const [searchQuery, setSearchQuery] = useState("");
+  const {
+    filters,
+    updateSearchQuery,
+    updateShops,
+    updatePriceRange,
+    updateCategories,
+    resetFilters,
+    activeFiltersCount,
+  } = useGiftFilters();
 
-  const handleShopsFilter = () => {
-    // TODO: Implement shops filter functionality
-    console.log("Shops filter clicked");
-  };
+  const [shopsDialogOpen, setShopsDialogOpen] = useState(false);
+  const [priceDialogOpen, setPriceDialogOpen] = useState(false);
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
 
-  const handlePriceRangeFilter = () => {
-    // TODO: Implement price range filter functionality
-    console.log("Price range filter clicked");
-  };
+  const availableShops = useMemo(() => getUniqueShops(giftIdeas), [giftIdeas]);
+  const availableCategories = useMemo(
+    () => getUniqueCategories(giftIdeas),
+    [giftIdeas],
+  );
+  const availablePriceRange = useMemo(
+    () => getPriceRange(giftIdeas),
+    [giftIdeas],
+  );
 
-  const handleCategoryFilter = () => {
-    // TODO: Implement category filter functionality
-    console.log("Category filter clicked");
-  };
-
-  // TODO: Implement actual filtering logic
-  const filteredGiftIdeas = giftIdeas;
+  const filteredGiftIdeas = useMemo(
+    () => filterGifts(giftIdeas, filters),
+    [giftIdeas, filters],
+  );
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
@@ -42,24 +63,53 @@ export function RecommendationView({
 
       <main className="flex-1 pb-20">
         <div className="space-y-4 bg-white p-4 pb-6">
-          <SearchBar value={searchQuery} onChange={setSearchQuery} />
+          <SearchBar value={filters.searchQuery} onChange={updateSearchQuery} />
 
-          <div className="flex gap-2 overflow-x-auto">
-            <FilterButton label="Shops" onClick={handleShopsFilter} />
+          <div className="flex items-center gap-2 overflow-x-auto">
+            <FilterButton
+              label="Shops"
+              onClick={() => {
+                setShopsDialogOpen(true);
+              }}
+              isActive={filters.shops.length > 0}
+              activeCount={filters.shops.length}
+            />
             <FilterButton
               label="Price Range"
-              onClick={handlePriceRangeFilter}
+              onClick={() => {
+                setPriceDialogOpen(true);
+              }}
+              isActive={
+                filters.priceRange.min !== null ||
+                filters.priceRange.max !== null
+              }
             />
-            <FilterButton label="Category" onClick={handleCategoryFilter} />
+            <FilterButton
+              label="Category"
+              onClick={() => {
+                setCategoryDialogOpen(true);
+              }}
+              isActive={filters.categories.length > 0}
+              activeCount={filters.categories.length}
+            />
+            <ClearFiltersButton
+              activeCount={activeFiltersCount}
+              onClear={resetFilters}
+            />
           </div>
         </div>
+
+        <ResultsCount
+          total={giftIdeas.length}
+          filtered={filteredGiftIdeas.length}
+        />
 
         <div className="grid grid-cols-2 gap-4 p-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {filteredGiftIdeas.map((gift, index) => (
             <GiftCard
               key={gift.listingId || gift.link || index}
               gift={gift}
-              provider="Unknown" // TODO: Add provider to ListingDto
+              provider={gift.provider ?? "Unknown"}
               listingId={gift.listingId}
             />
           ))}
@@ -76,6 +126,31 @@ export function RecommendationView({
       </main>
 
       <Navbar />
+
+      {/* Filter Dialogs */}
+      <ShopsFilterDialog
+        open={shopsDialogOpen}
+        onOpenChange={setShopsDialogOpen}
+        availableShops={availableShops}
+        selectedShops={filters.shops}
+        onApply={updateShops}
+      />
+
+      <PriceRangeFilterDialog
+        open={priceDialogOpen}
+        onOpenChange={setPriceDialogOpen}
+        currentRange={filters.priceRange}
+        availableRange={availablePriceRange}
+        onApply={updatePriceRange}
+      />
+
+      <CategoryFilterDialog
+        open={categoryDialogOpen}
+        onOpenChange={setCategoryDialogOpen}
+        availableCategories={availableCategories}
+        selectedCategories={filters.categories}
+        onApply={updateCategories}
+      />
     </div>
   );
 }

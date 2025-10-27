@@ -74,6 +74,7 @@ export class SseGiftReadyDto {
             currency: "USD",
             negotiable: false,
           },
+          category: "Muzyka i Edukacja",
         },
         {
           listingId: "4ga85f64-5717-4562-b3fc-2c963f66afa7",
@@ -87,6 +88,7 @@ export class SseGiftReadyDto {
             currency: "USD",
             negotiable: false,
           },
+          category: "Moda",
         },
       ],
     },

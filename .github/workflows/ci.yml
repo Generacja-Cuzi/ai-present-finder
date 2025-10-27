@@ -165,20 +165,9 @@ jobs:
       - name: Test Docker Compose configuration
         run: |
           cd deployment
-          # Create minimal env file for config validation
-          cat > .env.test <<EOF
-          RABBITMQ_USER=test_user
-          RABBITMQ_PASS=test_password
-          POSTGRES_PASSWORD=test_password
-          OPENAI_API_KEY=sk-test-dummy-key
-          BRIGHTDATA_API_KEY=test-brightdata-key
-          EOF
-
           # Validate configuration can be parsed
-          docker compose -f docker-compose.prod.yml --env-file .env.test config --quiet
+          docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test config --quiet
           echo "✅ Docker Compose configuration is valid"
-
-          rm .env.test
 
       - name: Build backend Docker image
         uses: docker/build-push-action@v5
@@ -288,60 +277,36 @@ jobs:
           cd deployment
           echo "🚀 Testing Docker Compose services startup..."
 
-          # Create test environment file
-          cat > .env.test <<EOF
-          RABBITMQ_USER=test_user
-          RABBITMQ_PASS=test_password
-          POSTGRES_PASSWORD=test_password
-          OPENAI_API_KEY=sk-test-dummy-key
-          BRIGHTDATA_API_KEY=test-brightdata-key
-          SERVICE_URL_APP=http://localhost:3000
-          EOF
-
           # Start services with production compose file
-          docker compose -f docker-compose.prod.yml --env-file .env.test up -d
-
-          # Wait for infrastructure services to be healthy
-          echo "⏳ Waiting for infrastructure services..."
-          timeout=60
-          elapsed=0
-          while [ $elapsed -lt $timeout ]; do
-            if docker compose -f docker-compose.prod.yml --env-file .env.test ps | grep -q "healthy"; then
-              echo "✅ Infrastructure services are healthy"
-              break
-            fi
-            sleep 2
-            elapsed=$((elapsed + 2))
-          done
-
-          # Check overall services status
-          echo "📊 Service status:"
-          docker compose -f docker-compose.prod.yml --env-file .env.test ps
-
-          # Verify critical services are running
-          if docker compose -f docker-compose.prod.yml --env-file .env.test ps | grep -E "(postgres|rabbitmq)" | grep -q "Up"; then
-            echo "✅ Docker Compose infrastructure services started successfully"
+          if docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test up -d --wait; then
+            echo "✅ All services started successfully"
           else
-            echo "❌ Infrastructure services failed to start"
-            docker compose -f docker-compose.prod.yml --env-file .env.test logs
-            docker compose -f docker-compose.prod.yml --env-file .env.test down -v
+            echo "❌ Docker Compose services failed to start"
+            echo "📝 Service logs:"
+            docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test logs
+            echo "📊 Service status:"
+            docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test ps -a
+            
+            # Save logs to file for artifact
+            mkdir -p ../docker-compose-logs
+            docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test logs > ../docker-compose-logs/all-services.log 2>&1
+            docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test ps -a > ../docker-compose-logs/services-status.txt 2>&1
+            
+            docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test down -v
             exit 1
-          fi
-
-          # Check if app container is created (may not be fully healthy in CI)
-          if docker compose -f docker-compose.prod.yml --env-file .env.test ps -a | grep -q "app"; then
-            echo "✅ Application container created"
-            # Show app logs for debugging
-            echo "📝 Application logs (last 20 lines):"
-            docker compose -f docker-compose.prod.yml --env-file .env.test logs app --tail=20
-          else
-            echo "⚠️  Application container not found"
           fi
 
           # Clean up
           echo "🧹 Cleaning up..."
-          docker compose -f docker-compose.prod.yml --env-file .env.test down -v
-          rm .env.test
+          docker compose -f docker-compose.prod.yml --env-file .unencrypted-env.test down -v
+
+      - name: Upload Docker Compose logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-compose-logs
+          path: docker-compose-logs/
+          retention-days: 7
 
   docker-lint:
     runs-on: ubuntu-latest

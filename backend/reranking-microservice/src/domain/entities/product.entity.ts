@@ -45,6 +45,12 @@ export class Product {
   @Column({ name: "price_negotiable", type: "boolean", nullable: true })
   priceNegotiable: boolean | null;
 
+  @Column({ name: "category", type: "text", nullable: true })
+  category: string | null;
+
+  @Column({ name: "provider", type: "varchar", length: 50, default: "unknown" })
+  provider: string;
+
   @Column({ name: "rating", type: "integer", nullable: true })
   rating: number | null;
 

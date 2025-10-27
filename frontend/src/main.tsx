@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 
 import { RootApp } from "@/components/root-app";
 import { AuthProvider } from "@/features/auth/auth-provider";
+import type { AuthState } from "@/features/auth/auth-provider";
 import { getContext } from "@/lib/tanstack-query/get-context";
 
 // Import the generated route tree
@@ -11,12 +12,24 @@ import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 
 const queryClientContext = getContext();
+
+const defaultAuthState: AuthState = {
+  isAuthenticated: false,
+  user: null,
+  login: async () => {
+    // Will be replaced by actual auth provider
+  },
+  logout: async () => {
+    // Will be replaced by actual auth provider
+  },
+  isLoading: true,
+};
+
 const router = createRouter({
   routeTree,
   context: {
     ...queryClientContext,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    auth: undefined!,
+    auth: defaultAuthState,
   },
   defaultPreload: "intent",
   scrollRestoration: true,

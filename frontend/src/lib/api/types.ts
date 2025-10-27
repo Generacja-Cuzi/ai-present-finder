@@ -447,6 +447,16 @@ export interface components {
              */
             price: components["schemas"]["PriceDto"];
             /**
+             * @description Category
+             * @example Elektronika
+             */
+            category?: string | null;
+            /**
+             * @description Provider/shop name
+             * @example amazon
+             */
+            provider?: string;
+            /**
              * @description Listing ID
              * @example 123e4567-e89b-12d3-a456-426614174000
              */
@@ -616,6 +626,16 @@ export interface components {
              */
             price: components["schemas"]["PriceDto"];
             /**
+             * @description Category
+             * @example Elektronika
+             */
+            category?: string | null;
+            /**
+             * @description Provider/shop name
+             * @example amazon
+             */
+            provider?: string;
+            /**
              * @description Listing ID from database
              * @example 3fa85f64-5717-4562-b3fc-2c963f66afa6
              */
@@ -642,7 +662,8 @@ export interface components {
              *             "label": "10 USD",
              *             "currency": "USD",
              *             "negotiable": false
-             *           }
+             *           },
+             *           "category": "Muzyka i Edukacja"
              *         },
              *         {
              *           "listingId": "4ga85f64-5717-4562-b3fc-2c963f66afa7",
@@ -655,7 +676,8 @@ export interface components {
              *             "label": "5 USD",
              *             "currency": "USD",
              *             "negotiable": false
-             *           }
+             *           },
+             *           "category": "Moda"
              *         }
              *       ]
              *     }

@@ -1,5 +1,6 @@
 # Build stage
 FROM node:22-alpine AS builder
+ENV CI=true
 
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@10.0.0 --activate
@@ -17,7 +18,7 @@ COPY backend ./backend
 COPY frontend ./frontend
 
 # Install dependencies and build
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockfile
 RUN pnpm --filter frontend build
 
 # Production stage
@@ -32,7 +33,7 @@ RUN chown -R nginx:nginx /usr/share/nginx/html
 # Copy nginx configuration
 COPY deployment/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy custom entrypoint for runtime config injection
+# Copy custom entrypoint script
 COPY deployment/docker-entrypoint-frontend.sh /docker-entrypoint-frontend.sh
 RUN chmod +x /docker-entrypoint-frontend.sh
 
@@ -43,5 +44,4 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://127.0.0.1/health || exit 1
 
-ENTRYPOINT ["/docker-entrypoint-frontend.sh"]
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/docker-entrypoint-frontend.sh"]

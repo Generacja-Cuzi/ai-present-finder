@@ -26,8 +26,16 @@ async function bootstrap() {
   const cloudAmqpUrl =
     process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672";
 
+  // Build CORS allowed origins from environment or defaults
+  const corsOrigins =
+    (process.env.CORS_ORIGINS ?? "")
+      ? (process.env.CORS_ORIGINS ?? "")
+          .split(",")
+          .map((origin) => origin.trim())
+      : ["http://localhost:5713", "http://localhost:5173"];
+
   app.enableCors({
-    origin: ["http://localhost:5713", "http://localhost:5173"],
+    origin: corsOrigins,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Cache-Control"],

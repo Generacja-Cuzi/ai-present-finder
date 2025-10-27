@@ -1,1 +1,2 @@
 *.env* filter=git-crypt diff=git-crypt
+client_secret_1036653645187-s72itv6bf1shscb5tumm8cv2fvnr790b.apps.googleusercontent.com.json filter=git-crypt diff=git-crypt

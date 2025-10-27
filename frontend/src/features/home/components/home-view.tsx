@@ -24,7 +24,7 @@ export function HomeView() {
         <div className="mb-8 w-full max-w-sm">
           <div className="bg-secondary aspect-square w-full overflow-hidden rounded-3xl shadow-lg">
             <img
-              src="/logo192.png"
+              src="/aipf_logo_bgless.png"
               alt="Gift box"
               className="h-full w-full object-cover"
             />

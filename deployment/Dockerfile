@@ -1,6 +1,7 @@
 # Build stage
 FROM node:22-alpine AS builder
 
+ENV CI=true
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@10.0.0 --activate
 
@@ -14,7 +15,7 @@ COPY backend ./backend
 COPY core ./core
 
 # Install dependencies and build all services in one layer to optimize caching
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockfile
 RUN pnpm run build
 
 # Production stage

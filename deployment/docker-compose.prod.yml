@@ -22,16 +22,16 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
       POSTGRES_DB: postgres
-      POSTGRES_MULTIPLE_DATABASES: reranking_service,fetch_service,stalking_service,chat_service,gift_ideas_service
+      POSTGRES_MULTIPLE_DATABASES: restapi_service,reranking_service,fetch_service,stalking_service,chat_service,gift_ideas_service
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker-init-db.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
     healthcheck:
       test: ["CMD-SHELL", 'pg_isready -U "$${POSTGRES_USER:-postgres}"']
-      interval: 30s
+      interval: 10s
       timeout: 10s
-      retries: 3
-      start_period: 60s
+      retries: 30
+      start_period: 90s
 
   # Single application container running all microservices
   app:
@@ -46,12 +46,17 @@ services:
       # API Keys
       OPENAI_API_KEY: ${OPENAI_API_KEY:?}
       BRIGHTDATA_API_KEY: ${BRIGHTDATA_API_KEY:?}
+      # Google OAuth Configuration
+      GOOGLE_CREDENTIALS_BASE64: ${GOOGLE_CREDENTIALS_BASE64:-}
+      GOOGLE_SCOPES_API: ${GOOGLE_SCOPES_API:-https://www.googleapis.com/auth/userinfo.email}
       # Database URLs
+      RESTAPI_DATABASE_URL: postgresql://${RESTAPI_DB_USER:-restapi_user}:${RESTAPI_DB_PASSWORD:-restapi_password}@postgres:5432/restapi_service
       RERANKING_DATABASE_URL: postgresql://${RERANKING_DB_USER:-reranking_user}:${RERANKING_DB_PASSWORD:-reranking_password}@postgres:5432/reranking_service
       FETCH_DATABASE_URL: postgresql://${FETCH_DB_USER:-fetch_user}:${FETCH_DB_PASSWORD:-fetch_password}@postgres:5432/fetch_service
       STALKING_DATABASE_URL: postgresql://${STALKING_DB_USER:-stalking_user}:${STALKING_DB_PASSWORD:-stalking_password}@postgres:5432/stalking_service
       CHAT_DATABASE_URL: postgresql://${CHAT_DB_USER:-chat_user}:${CHAT_DB_PASSWORD:-chat_password}@postgres:5432/chat_service
       GIFT_IDEAS_DATABASE_URL: postgresql://${GIFT_IDEAS_DB_USER:-gift_ideas_user}:${GIFT_IDEAS_DB_PASSWORD:-gift_ideas_password}@postgres:5432/gift_ideas_service
+      TYPEORM_SYNCHRONIZE: true
       # Service ports (internal)
       RESTAPI_PORT: 3000
       STALKING_PORT: 3010
@@ -64,6 +69,9 @@ services:
       FETCH_EBAY_PORT: 8013
       FETCH_AMAZON_PORT: 8014
       USE_MOCK_DATA: false
+      # CORS Configuration - allowed origins for frontend requests
+      # Automatically uses frontend domain via Coolify magic variable
+      CORS_ORIGINS: ${CORS_ORIGINS}
       SERVICE_FQDN_APP_3000: # Coolify FQDN magic variable for routing
     depends_on:
       rabbitmq:
@@ -83,6 +91,7 @@ services:
       NODE_ENV: production
       # Runtime API URL configuration - Coolify will set SERVICE_URL_APP
       VITE_BACKEND_URL: ${VITE_BACKEND_URL:-}
+      SERVICE_URL_APP: ${SERVICE_URL_APP:-}
       SERVICE_FQDN_FRONTEND_80: # Coolify FQDN magic variable
     depends_on:
       - app

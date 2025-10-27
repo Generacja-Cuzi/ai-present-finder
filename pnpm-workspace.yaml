@@ -15,6 +15,7 @@ onlyBuiltDependencies:
   - "@nestjs/core"
   - "@swc/core"
   - "@tailwindcss/oxide"
+  - bcrypt
   - cpu-features
   - esbuild
   - msw

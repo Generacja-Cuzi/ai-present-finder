@@ -67,22 +67,48 @@ import { SseController } from "../controllers/sse.controller";
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
-      useFactory: (configService: ConfigService) => ({
-        type: "postgres" as const,
-        host: configService.get<string>("DATABASE_HOST") ?? "localhost",
-        port: Number.parseInt(
-          configService.get<string>("DATABASE_PORT") ?? "5433",
-          10,
-        ),
-        username:
-          configService.get<string>("DATABASE_USERNAME") ?? "restapi_user",
-        password:
-          configService.get<string>("DATABASE_PASSWORD") ?? "restapi_password",
-        database: configService.get<string>("DATABASE_NAME") ?? "restapi_db",
-        entities: [User, Chat, Listing, Message],
-        synchronize: true, // Only for development
-        logging: false,
-      }),
+      useFactory: (configService: ConfigService) => {
+        // Parse DATABASE_URL if provided, otherwise fall back to individual vars
+        const databaseUrl =
+          configService.get<string>("RESTAPI_DATABASE_URL") ?? "";
+
+        if (databaseUrl.length > 0) {
+          const url = new URL(databaseUrl);
+          return {
+            type: "postgres" as const,
+            host: url.hostname,
+            port: Number.parseInt(url.port, 10) || 5432,
+            username: url.username,
+            password: url.password,
+            database: url.pathname.slice(1), // Remove leading '/'
+            entities: [User, Chat, Listing, Message],
+            // Never enable in production; opt-in via env
+            synchronize:
+              configService.get<string>("TYPEORM_SYNCHRONIZE") === "true",
+            logging: false,
+          };
+        }
+
+        // Fallback to individual environment variables
+        return {
+          type: "postgres" as const,
+          host: configService.get<string>("DATABASE_HOST") ?? "localhost",
+          port: Number.parseInt(
+            configService.get<string>("DATABASE_PORT") ?? "5432",
+            10,
+          ),
+          username:
+            configService.get<string>("DATABASE_USERNAME") ?? "restapi_user",
+          password:
+            configService.get<string>("DATABASE_PASSWORD") ??
+            "restapi_password",
+          database:
+            configService.get<string>("DATABASE_NAME") ?? "restapi_service",
+          entities: [User, Chat, Listing, Message],
+          synchronize: true, // Only for development
+          logging: false,
+        };
+      },
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([User, Chat, Listing, Message]),

@@ -87,6 +87,14 @@ export class BaseListingDto implements ListingPayload {
     required: false,
   })
   category?: string | null;
+
+  @ApiProperty({
+    type: String,
+    description: "Provider/shop name",
+    example: "amazon",
+    required: false,
+  })
+  provider?: string;
 }
 
 export class ListingWithIdDto extends BaseListingDto {

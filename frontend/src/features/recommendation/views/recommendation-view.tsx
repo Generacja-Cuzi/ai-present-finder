@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/consistent-function-scoping */
 import type { ListingWithId } from "@core/types";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { FilterButton } from "@/components/filter-button";
 import { SearchBar } from "@/components/search-bar";
@@ -104,7 +104,7 @@ export function RecommendationView({
             <GiftCard
               key={gift.listingId || gift.link || index}
               gift={gift}
-              provider="Unknown" // TODO: Add provider to ListingDto
+              provider={gift.provider ?? "Unknown"}
               listingId={gift.listingId}
             />
           ))}

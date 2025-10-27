@@ -653,6 +653,11 @@
             "example": "Elektronika",
             "nullable": true
           },
+          "provider": {
+            "type": "string",
+            "description": "Provider/shop name",
+            "example": "amazon"
+          },
           "id": {
             "type": "string",
             "description": "Listing ID",
@@ -915,6 +920,11 @@
             "description": "Category",
             "example": "Elektronika",
             "nullable": true
+          },
+          "provider": {
+            "type": "string",
+            "description": "Provider/shop name",
+            "example": "amazon"
           },
           "listingId": {
             "type": "string",

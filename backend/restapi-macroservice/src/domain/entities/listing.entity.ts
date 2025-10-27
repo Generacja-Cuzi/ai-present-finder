@@ -68,6 +68,9 @@ export class Listing {
   @Column({ name: "category", type: "varchar", nullable: true })
   category: string | null;
 
+  @Column({ name: "provider", type: "varchar", default: "unknown" })
+  provider: string;
+
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 

@@ -19,6 +19,7 @@ const mockGifts: ListingWithId[] = [
     link: "https://www.amazon.com/product1",
     price: { value: 50, label: "$50", currency: "USD", negotiable: false },
     category: "Electronics",
+    provider: "amazon",
   },
   {
     listingId: "2",
@@ -28,6 +29,7 @@ const mockGifts: ListingWithId[] = [
     link: "https://www.ebay.com/product2",
     price: { value: 100, label: "$100", currency: "USD", negotiable: false },
     category: "Home & Kitchen",
+    provider: "ebay",
   },
   {
     listingId: "3",
@@ -37,6 +39,7 @@ const mockGifts: ListingWithId[] = [
     link: "https://www.amazon.com/product3",
     price: { value: 75, label: "$75", currency: "USD", negotiable: false },
     category: "Electronics",
+    provider: "amazon",
   },
   {
     listingId: "4",
@@ -46,6 +49,7 @@ const mockGifts: ListingWithId[] = [
     link: "https://www.bookstore.com/product4",
     price: { value: null, label: null, currency: null, negotiable: null },
     category: "Books",
+    provider: "bookstore",
   },
 ];
 
@@ -91,20 +95,20 @@ describe("filterGifts", () => {
   it("should filter by shop", () => {
     const filters: GiftFilters = {
       searchQuery: "",
-      shops: ["amazon.com"],
+      shops: ["amazon"],
       priceRange: { min: null, max: null },
       categories: [],
     };
 
     const result = filterGifts(mockGifts, filters);
     expect(result).toHaveLength(2);
-    expect(result.every((gift) => gift.link.includes("amazon.com"))).toBe(true);
+    expect(result.every((gift) => gift.provider === "amazon")).toBe(true);
   });
 
   it("should filter by multiple shops", () => {
     const filters: GiftFilters = {
       searchQuery: "",
-      shops: ["amazon.com", "ebay.com"],
+      shops: ["amazon", "ebay"],
       priceRange: { min: null, max: null },
       categories: [],
     };
@@ -179,7 +183,7 @@ describe("filterGifts", () => {
   it("should apply multiple filters together", () => {
     const filters: GiftFilters = {
       searchQuery: "wireless",
-      shops: ["amazon.com"],
+      shops: ["amazon"],
       priceRange: { min: 50, max: 100 },
       categories: ["Electronics"],
     };
@@ -215,9 +219,9 @@ describe("extractDomain", () => {
 });
 
 describe("getUniqueShops", () => {
-  it("should return unique shop domains", () => {
+  it("should return unique shop providers", () => {
     const shops = getUniqueShops(mockGifts);
-    expect(shops).toEqual(["amazon.com", "bookstore.com", "ebay.com"]);
+    expect(shops).toEqual(["amazon", "bookstore", "ebay"]);
   });
 
   it("should return empty array for empty input", () => {
@@ -243,6 +247,7 @@ describe("getUniqueCategories", () => {
         link: "https://example.com",
         price: { value: 10, label: "$10", currency: "USD", negotiable: false },
         category: null,
+        provider: "example",
       },
     ];
 
@@ -282,6 +287,7 @@ describe("getPriceRange", () => {
         link: "https://example.com",
         price: { value: null, label: null, currency: null, negotiable: null },
         category: null,
+        provider: "example",
       },
     ];
 

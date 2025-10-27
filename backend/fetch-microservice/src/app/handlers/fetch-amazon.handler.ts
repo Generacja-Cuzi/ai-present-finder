@@ -147,6 +147,8 @@ export class FetchAmazonHandler {
               currency: item.currency ?? "PLN",
               negotiable: false,
             },
+            category: undefined,
+            provider: "amazon",
           } as ListingPayload;
         });
 

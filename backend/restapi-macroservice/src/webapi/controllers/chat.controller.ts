@@ -84,6 +84,7 @@ export class ChatController {
             negotiable: listing.priceNegotiable,
           },
           category: listing.category,
+          provider: listing.provider ?? "unknown",
           isFavorited,
           createdAt: listing.createdAt,
         };

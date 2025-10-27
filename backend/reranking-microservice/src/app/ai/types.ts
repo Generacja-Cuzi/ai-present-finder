@@ -15,6 +15,7 @@ const listingDtoSchema = z.object({
   link: z.string(),
   price: priceSchema,
   category: z.string().nullable().optional(),
+  provider: z.string().optional(),
 });
 
 export const productRankingSchema = listingDtoSchema.extend({

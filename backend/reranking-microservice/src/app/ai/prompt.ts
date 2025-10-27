@@ -57,6 +57,7 @@ export const productRankingPrompt = `
     - link: string (oryginalny link do produktu)
     - price: object (oryginalny obiekt z ceną: value, label, currency, negotiable)
     - category: string | null (kategoria produktu - wybierz JEDNĄ z: Dom i Ogród, Elektronika, Nieruchomości, Dla Dzieci, Antyki i Kolekcje, Muzyka i Edukacja, Firma i Przemysł, Sport i Hobby, Usługi, Zdrowie i Uroda, Oddam za darmo, Moda, Noclegi, Praca, Motoryzacja, Zwierzęta, Wypożyczalnia, Rolnictwo)
+    - provider: string | undefined (oryginalny provider/źródło produktu, np. "olx", "allegro", "amazon", "ebay")
     - score: number (ocena od 1 do 10)
     - reasoning: string (krótkie uzasadnienie oceny)
     
@@ -75,6 +76,7 @@ export const productRankingPrompt = `
             "negotiable": false
           },
           "category": "Elektronika",
+          "provider": "olx",
           "score": 9,
           "reasoning": "Produkt idealnie pasuje do hobby odbiorcy (fotografia) i pozwoli mu rozwijać swoje umiejętności."
         }
@@ -84,8 +86,8 @@ export const productRankingPrompt = `
   
   <important>
     - Musisz zwrócić WSZYSTKIE produkty z listy wraz z ich oryginalnymi danymi
-    - Każdy produkt musi mieć wszystkie pola: image, title, description, link, price, category
-    - Zachowaj oryginalne wartości wszystkich pól (image, title, description, link, price)
+    - Każdy produkt musi mieć wszystkie pola: image, title, description, link, price, category, provider
+    - Zachowaj oryginalne wartości wszystkich pól (image, title, description, link, price, provider)
     - Przypisz każdemu produktowi odpowiednią kategorię na podstawie jego opisu
     - Dodaj score i reasoning do każdego produktu
     - Oceny powinny być zróżnicowane - wykorzystuj pełną skalę 1-10

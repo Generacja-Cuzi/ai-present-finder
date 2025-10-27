@@ -10,6 +10,7 @@ export interface ListingPayload {
     negotiable: boolean | null;
   };
   category?: string | null;
+  provider?: string;
 }
 
 export interface ListingWithId extends ListingPayload {

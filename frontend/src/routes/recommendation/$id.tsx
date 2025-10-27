@@ -23,6 +23,7 @@ const listingDtoSchema = z.object({
   image: z.string().nullable(),
   description: z.string(),
   category: z.string().nullable().optional(),
+  provider: z.string().optional(),
 }) satisfies z.ZodType<ListingWithId>;
 
 const locationStateSchema = z.object({

@@ -18,8 +18,7 @@ export function filterGifts(
       }
     }
     if (filters.shops.length > 0) {
-      const shopDomain = extractDomain(gift.link);
-      if (!filters.shops.includes(shopDomain)) {
+      if (!gift.provider || !filters.shops.includes(gift.provider)) {
         return false;
       }
     }
@@ -64,7 +63,9 @@ export function extractDomain(url: string): string {
 }
 
 export function getUniqueShops(gifts: ListingWithId[]): string[] {
-  const shops = gifts.map((gift) => extractDomain(gift.link)).filter(Boolean);
+  const shops = gifts
+    .map((gift) => gift.provider)
+    .filter((provider): provider is string => Boolean(provider));
   return [...new Set(shops)].sort();
 }
 

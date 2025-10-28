@@ -40,6 +40,7 @@ export class MessagesController {
       chatId: message.chatId,
       role: message.role,
       content: message.content,
+      proposedAnswers: message.proposedAnswers,
       createdAt: message.createdAt,
     }));
 

@@ -4,15 +4,23 @@ import { v4 as uuidv4 } from "uuid";
 
 import { useSendMessage } from "../api/send-message";
 import { useSseChat } from "../hooks/use-sse-chat";
+import type { ChatState } from "../types";
 import { ChatHeader } from "./chat-header";
 import { ChatInput } from "./chat-input";
 import { ChatMessages } from "./chat-messages";
 import { InappropriateRequestMessage } from "./inappropriate-request-message";
 import { PotentialAnswers } from "./potential-answers";
 
-export function ChatUI({ clientId }: { clientId: string }) {
+export function ChatUI({
+  clientId,
+  initialState,
+}: {
+  clientId: string;
+  initialState: ChatState;
+}) {
   const { state: chatState } = useSseChat({
     clientId,
+    initialState,
   });
   const sendMessage = useSendMessage();
   const navigate = useNavigate();
@@ -86,8 +94,9 @@ export function ChatUI({ clientId }: { clientId: string }) {
   );
 
   const potentialAnswers =
-    chatState.type === "chatting" && chatState.data.potentialAnswers != null
-      ? chatState.data.potentialAnswers
+    chatState.type === "chatting" &&
+    chatState.data.messages.at(-1)?.proposedAnswers != null
+      ? (chatState.data.messages.at(-1)?.proposedAnswers?.answers ?? [])
       : [];
 
   return (

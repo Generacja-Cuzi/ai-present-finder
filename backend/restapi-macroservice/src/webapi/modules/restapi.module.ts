@@ -16,6 +16,7 @@ import { GiftReadyHandler } from "src/app/handlers/gift-ready.handler";
 import { NotifyUserSseHandler } from "src/app/handlers/notify-user-sse.handler";
 import { RemoveFromFavoritesHandler } from "src/app/handlers/remove-from-favorites.handler";
 import { SaveListingsHandler } from "src/app/handlers/save-listings.handler";
+import { SaveMessageHandler } from "src/app/handlers/save-message.handler";
 import { SendUserMessageHandler } from "src/app/handlers/send-user-message.handler";
 import { StartProcessingCommandHandler } from "src/app/handlers/start-processing.handler";
 import { ValidateGoogleTokenHandler } from "src/app/handlers/validate-google-token.command";
@@ -171,6 +172,7 @@ import { SseController } from "../controllers/sse.controller";
     StartProcessingCommandHandler,
     NotifyUserSseHandler,
     SendUserMessageHandler,
+    SaveMessageHandler,
     ValidateGoogleTokenHandler,
     GetUserChatsHandler,
     AddToFavoritesHandler,

@@ -1,5 +1,7 @@
 import { ChatQuestionAskedEvent } from "@core/events";
 import { NotifyUserSseCommand } from "src/domain/commands/notify-user-sse.command";
+import { SaveMessageCommand } from "src/domain/commands/save-message.command";
+import { MessageRole } from "src/domain/entities/message.entity";
 import { ulid } from "ulid";
 
 import { Controller, Logger } from "@nestjs/common";
@@ -14,6 +16,17 @@ export class ChatQuestionAskedHandler {
   @EventPattern(ChatQuestionAskedEvent.name)
   async handle(event: ChatQuestionAskedEvent) {
     this.logger.log(`sending assistant message to user`);
+
+    // Save the assistant message to the database
+    await this.commandBus.execute(
+      new SaveMessageCommand(
+        event.chatId,
+        event.question,
+        MessageRole.ASSISTANT,
+        event.potentialAnswers,
+      ),
+    );
+
     await this.commandBus.execute(
       new NotifyUserSseCommand(event.chatId, {
         type: "chatbot-message",

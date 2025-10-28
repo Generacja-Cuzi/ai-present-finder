@@ -1,6 +1,8 @@
 import { ChatUserAnsweredEvent } from "@core/events";
 import { NotifyUserSseCommand } from "src/domain/commands/notify-user-sse.command";
+import { SaveMessageCommand } from "src/domain/commands/save-message.command";
 import { SendUserMessageCommand } from "src/domain/commands/send-user-message.command";
+import { MessageRole } from "src/domain/entities/message.entity";
 
 import { Inject } from "@nestjs/common";
 import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
@@ -25,6 +27,15 @@ export class SendUserMessageHandler
     if (typedLastMessage == null || typedLastMessage.sender !== "user") {
       throw new Error("Last message is not from user");
     }
+
+    // Save the user message to the database
+    await this.commandBus.execute(
+      new SaveMessageCommand(
+        typedChatId,
+        typedLastMessage.content,
+        MessageRole.USER,
+      ),
+    );
 
     await this.commandBus.execute(
       new NotifyUserSseCommand(typedChatId, {

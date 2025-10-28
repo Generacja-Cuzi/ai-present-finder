@@ -6,8 +6,8 @@ import { EventPattern } from "@nestjs/microservices";
 
 import { AddProductsToSessionCommand } from "../../domain/commands/add-products-to-session.command";
 import { CreateSessionCommand } from "../../domain/commands/create-session.command";
-import { EmitGiftReadyCommand } from "../../domain/commands/emit-gift-ready.command";
 import { IncrementSessionCompletionCommand } from "../../domain/commands/increment-session-completion.command";
+import { RerankAndEmitGiftReadyCommand } from "../../domain/commands/rerank-and-emit-gift-ready.command";
 
 @Controller()
 export class ProductFetchedHandler {
@@ -42,7 +42,7 @@ export class ProductFetchedHandler {
     >(new IncrementSessionCompletionCommand(eventId));
 
     if (completed) {
-      await this.commandBus.execute(new EmitGiftReadyCommand(eventId));
+      await this.commandBus.execute(new RerankAndEmitGiftReadyCommand(eventId));
     }
   }
 }

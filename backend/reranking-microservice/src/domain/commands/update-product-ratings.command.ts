@@ -4,7 +4,7 @@ import { Command } from "@nestjs/cqrs";
 
 import type { Product } from "../entities/product.entity";
 
-export class UpdateProductRatingsCommand extends Command<void> {
+export class UpdateProductRatingsCommand extends Command<Product[]> {
   constructor(
     public readonly products: Product[],
     public readonly scoredProducts: ProductScore[],

@@ -1,5 +1,6 @@
 import { GiftReadyEvent } from "@core/events";
 import type { ListingPayload } from "@core/types";
+import { Product } from "src/domain/entities/product.entity";
 
 import { Inject, Logger } from "@nestjs/common";
 import {
@@ -10,18 +11,18 @@ import {
 } from "@nestjs/cqrs";
 import { ClientProxy } from "@nestjs/microservices";
 
-import { EmitGiftReadyCommand } from "../../domain/commands/emit-gift-ready.command";
+import { RerankAndEmitGiftReadyCommand } from "../../domain/commands/rerank-and-emit-gift-ready.command";
 import { UpdateProductRatingsCommand } from "../../domain/commands/update-product-ratings.command";
 import { GetSessionProductsQuery } from "../../domain/queries/get-session-products.query";
 import type { SessionProductsResult } from "../../domain/queries/get-session-products.query";
 import { ScoreProductsQuery } from "../../domain/queries/score-products.query";
 import { ProductScore } from "../ai/types";
 
-@CommandHandler(EmitGiftReadyCommand)
-export class EmitGiftReadyHandler
-  implements ICommandHandler<EmitGiftReadyCommand, void>
+@CommandHandler(RerankAndEmitGiftReadyCommand)
+export class RerankAndEmitGiftReadyHandler
+  implements ICommandHandler<RerankAndEmitGiftReadyCommand, void>
 {
-  private readonly logger = new Logger(EmitGiftReadyHandler.name);
+  private readonly logger = new Logger(RerankAndEmitGiftReadyHandler.name);
 
   constructor(
     @Inject("GIFT_READY_EVENT") private readonly giftReadyEventBus: ClientProxy,
@@ -29,7 +30,7 @@ export class EmitGiftReadyHandler
     private readonly queryBus: QueryBus,
   ) {}
 
-  async execute(command: EmitGiftReadyCommand): Promise<void> {
+  async execute(command: RerankAndEmitGiftReadyCommand): Promise<void> {
     const { eventId } = command;
 
     const sessionProductsResult =
@@ -57,9 +58,16 @@ export class EmitGiftReadyHandler
         ),
       );
 
-      await this.commandBus.execute(
+      const updatedProducts = await this.commandBus.execute(
         new UpdateProductRatingsCommand(allProducts, scoredProducts, eventId),
       );
+
+      const goodProducts: (Product & { rating: number })[] =
+        updatedProducts.filter(
+          (p): p is Product & { rating: number } =>
+            p.rating !== null && p.rating >= 5,
+        );
+      goodProducts.sort((a, b) => b.rating - a.rating);
 
       // Build profile for GiftReadyEvent if we have all the data
       const profile =
@@ -79,7 +87,8 @@ export class EmitGiftReadyHandler
       );
 
       const giftReadyEvent = new GiftReadyEvent(
-        allProducts.map(
+        // Take only the best 50 products
+        goodProducts.slice(0, 50).map(
           (p) =>
             ({
               image: p.image,
@@ -92,6 +101,8 @@ export class EmitGiftReadyHandler
                 currency: p.priceCurrency,
                 negotiable: p.priceNegotiable,
               },
+              category: p.category,
+              provider: p.provider,
             }) satisfies ListingPayload,
         ),
         chatId,
@@ -102,12 +113,6 @@ export class EmitGiftReadyHandler
       this.logger.log(
         `Emitted GiftReadyEvent with ${String(scoredProducts.length)} ranked products for session ${eventId}`,
       );
-    } else {
-      this.logger.warn(
-        `No products found for session ${eventId}, emitting empty event`,
-      );
-      const giftReadyEvent = new GiftReadyEvent([], chatId);
-      this.giftReadyEventBus.emit(GiftReadyEvent.name, giftReadyEvent);
     }
   }
 }

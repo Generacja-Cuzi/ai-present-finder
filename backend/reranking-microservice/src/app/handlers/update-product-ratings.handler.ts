@@ -9,7 +9,7 @@ import { Product } from "../../domain/entities/product.entity";
 
 @CommandHandler(UpdateProductRatingsCommand)
 export class UpdateProductRatingsHandler
-  implements ICommandHandler<UpdateProductRatingsCommand, void>
+  implements ICommandHandler<UpdateProductRatingsCommand, Product[]>
 {
   private readonly logger = new Logger(UpdateProductRatingsHandler.name);
 
@@ -18,7 +18,7 @@ export class UpdateProductRatingsHandler
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  async execute(command: UpdateProductRatingsCommand): Promise<void> {
+  async execute(command: UpdateProductRatingsCommand): Promise<Product[]> {
     const { products, scoredProducts, eventId } = command;
 
     const productEntityMap = new Map<string, Product>();
@@ -45,5 +45,6 @@ export class UpdateProductRatingsHandler
         `Updated ${String(productsToUpdate.length)} products with ratings and reasoning in session ${eventId}`,
       );
     }
+    return productsToUpdate;
   }
 }

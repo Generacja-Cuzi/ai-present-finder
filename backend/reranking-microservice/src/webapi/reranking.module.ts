@@ -7,13 +7,13 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { AddProductsToSessionHandler } from "../app/handlers/add-products-to-session.handler";
 import { CreateSessionHandler } from "../app/handlers/create-session.handler";
-import { EmitGiftReadyHandler } from "../app/handlers/emit-gift-ready.handler";
 import { GetSessionProductsHandler } from "../app/handlers/get-session-products.handler";
 import { GiftContextInitializedHandler } from "../app/handlers/gift-context-initialized.handler";
 import { IncrementSessionCompletionHandler } from "../app/handlers/increment-session-completion.handler";
 import { InitializeGiftContextHandler } from "../app/handlers/initialize-gift-context.handler";
 import { MarkTimeoutSessionsHandler } from "../app/handlers/mark-timeout-sessions.handler";
 import { ProductFetchedHandler } from "../app/handlers/product-fetched.handler";
+import { RerankAndEmitGiftReadyHandler } from "../app/handlers/rerank-and-emit-gift-ready.handler";
 import { ScoreProductsHandler } from "../app/handlers/score-products.handler";
 import { UpdateProductRatingsHandler } from "../app/handlers/update-product-ratings.handler";
 import { TimeoutSchedulerService } from "../app/services/timeout-scheduler.service";
@@ -26,7 +26,7 @@ const CommandHandlers = [
   InitializeGiftContextHandler,
   AddProductsToSessionHandler,
   IncrementSessionCompletionHandler,
-  EmitGiftReadyHandler,
+  RerankAndEmitGiftReadyHandler,
   MarkTimeoutSessionsHandler,
   UpdateProductRatingsHandler,
 ];

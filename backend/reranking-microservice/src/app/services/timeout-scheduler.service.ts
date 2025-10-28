@@ -1,8 +1,9 @@
+import { RerankAndEmitGiftReadyCommand } from "src/domain/commands/rerank-and-emit-gift-ready.command";
+
 import { Injectable, Logger } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { Cron, CronExpression } from "@nestjs/schedule";
 
-import { EmitGiftReadyCommand } from "../../domain/commands/emit-gift-ready.command";
 import { MarkTimeoutSessionsCommand } from "../../domain/commands/mark-timeout-sessions.command";
 
 @Injectable()
@@ -27,7 +28,9 @@ export class TimeoutSchedulerService {
         );
 
         for (const sessionId of sessionIds) {
-          await this.commandBus.execute(new EmitGiftReadyCommand(sessionId));
+          await this.commandBus.execute(
+            new RerankAndEmitGiftReadyCommand(sessionId),
+          );
         }
       } else {
         this.logger.debug("No timed out events found");

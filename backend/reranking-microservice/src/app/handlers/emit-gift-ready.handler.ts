@@ -1,5 +1,5 @@
 import { GiftReadyEvent } from "@core/events";
-import type { ListingPayload } from "@core/types";
+import type { ListingPayload, ListingWithId } from "@core/types";
 import { Repository } from "typeorm";
 
 import { Inject, Logger } from "@nestjs/common";
@@ -11,7 +11,8 @@ import { EmitGiftReadyCommand } from "../../domain/commands/emit-gift-ready.comm
 import { GiftSessionProduct } from "../../domain/entities/gift-session-product.entity";
 import { GiftSession } from "../../domain/entities/gift-session.entity";
 import { Product } from "../../domain/entities/product.entity";
-import { rankProductsFlow } from "../ai/rank-products-flow";
+import { scoreProductsFlow } from "../ai/score-products-flow";
+import { ProductScore } from "../ai/types";
 
 @CommandHandler(EmitGiftReadyCommand)
 export class EmitGiftReadyHandler
@@ -50,12 +51,13 @@ export class EmitGiftReadyHandler
     const productEntityMap = new Map<string, Product>();
     for (const group of productGroups) {
       for (const product of group.products) {
-        productEntityMap.set(product.link, product);
+        productEntityMap.set(product.id, product);
       }
     }
 
     const allProducts = productGroups.flatMap((group) =>
       group.products.map((product) => ({
+        listingId: product.id,
         image: product.image,
         title: product.title,
         description: product.description,
@@ -69,7 +71,7 @@ export class EmitGiftReadyHandler
         category: product.category,
         provider: product.provider,
       })),
-    ) satisfies ListingPayload[];
+    ) satisfies ListingWithId[];
 
     const chatId = session.chatId;
 
@@ -77,6 +79,7 @@ export class EmitGiftReadyHandler
       const recipientProfile = session.giftContext?.userProfile ?? null;
       const keywords = session.giftContext?.keywords ?? [];
 
+      const BATCH_SIZE = 100;
       this.logger.log(
         `Session ${eventId} gift context: ${JSON.stringify(session.giftContext)}`,
       );
@@ -85,27 +88,34 @@ export class EmitGiftReadyHandler
         `Ranking ${String(allProducts.length)} products with AI for session ${eventId}`,
       );
 
-      const startTime = performance.now();
-      const rankedProductsWithScores = await rankProductsFlow({
-        products: allProducts,
-        recipientProfile,
-        keywords,
-      });
-      const endTime = performance.now();
-      const duration = endTime - startTime;
-      this.logger.log(
-        `AI ranking took ${duration.toFixed(2)}ms for session ${eventId}. It spit out ${String(rankedProductsWithScores.length)} products.`,
-      );
+      const scoredProducts: ProductScore[] = [];
 
-      this.logger.log(
-        `AI ranking completed for session ${eventId}. Top score: ${String(rankedProductsWithScores[0]?.score ?? "N/A")}`,
-      );
+      while (scoredProducts.length < allProducts.length) {
+        const remainingProducts = allProducts.filter(
+          (p) => !scoredProducts.some((r) => r.id === p.listingId),
+        );
+        const batch = remainingProducts.slice(0, BATCH_SIZE);
+        const startTime = performance.now();
+        const batchResults = await scoreProductsFlow({
+          products: batch,
+          recipientProfile,
+          keywords,
+        });
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+        scoredProducts.push(...batchResults);
+        this.logger.log(
+          `Processed ${String(scoredProducts.length)} products out of ${String(allProducts.length)} total in ${duration.toFixed(2)}ms.`,
+        );
+      }
 
       // Update existing products with ratings and reasoning
       const productsToUpdate: Product[] = [];
-      for (const rankedProduct of rankedProductsWithScores) {
-        const productEntity = productEntityMap.get(rankedProduct.link);
-        if (productEntity !== undefined) {
+      for (const rankedProduct of scoredProducts) {
+        const productEntity = productEntityMap.get(rankedProduct.id);
+        if (productEntity === undefined) {
+          this.logger.warn(`Product ${rankedProduct.id} not found in database`);
+        } else {
           productEntity.rating = rankedProduct.score;
           productEntity.reasoning = rankedProduct.reasoning;
           productEntity.category = rankedProduct.category ?? null;
@@ -138,14 +148,28 @@ export class EmitGiftReadyHandler
       );
 
       const giftReadyEvent = new GiftReadyEvent(
-        rankedProductsWithScores,
+        productsToUpdate.map(
+          (p) =>
+            ({
+              image: p.image,
+              title: p.title,
+              description: p.description,
+              link: p.link,
+              price: {
+                value: p.priceValue,
+                label: p.priceLabel,
+                currency: p.priceCurrency,
+                negotiable: p.priceNegotiable,
+              },
+            }) satisfies ListingPayload,
+        ),
         chatId,
         profile,
       );
       this.giftReadyEventBus.emit(GiftReadyEvent.name, giftReadyEvent);
 
       this.logger.log(
-        `Emitted GiftReadyEvent with ${String(rankedProductsWithScores.length)} ranked products for session ${eventId}`,
+        `Emitted GiftReadyEvent with ${String(scoredProducts.length)} ranked products for session ${eventId}`,
       );
     } else {
       this.logger.warn(

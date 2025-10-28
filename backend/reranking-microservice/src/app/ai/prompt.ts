@@ -54,44 +54,31 @@ export const productRankingPrompt = `
   </guidelines>
   
   <output_format>
-    Zwróć strukturę z polem "rankings" zawierającą tablicę obiektów, gdzie każdy obiekt to kompletny produkt z dodatkowymi polami:
-    - image: string | null (oryginalny URL do obrazka produktu)
-    - title: string (oryginalny tytuł produktu)
-    - description: string (oryginalny opis produktu)
-    - link: string (oryginalny link do produktu)
-    - price: object (oryginalny obiekt z ceną: value, label, currency, negotiable)
-    - category: string | null (kategoria produktu - wybierz JEDNĄ z: Dom i Ogród, Elektronika, Nieruchomości, Dla Dzieci, Antyki i Kolekcje, Muzyka i Edukacja, Firma i Przemysł, Sport i Hobby, Usługi, Zdrowie i Uroda, Oddam za darmo, Moda, Noclegi, Praca, Motoryzacja, Zwierzęta, Wypożyczalnia, Rolnictwo)
-    - provider: string | undefined (oryginalny provider/źródło produktu, np. "olx", "allegro", "amazon", "ebay")
+    Zwróć strukturę z polem "scores" zawierającą tablicę obiektów, gdzie każdy obiekt to kompletny produkt z dodatkowymi polami:
+    - id: string (ID produktu z bazy danych)
+    - category: string (kategoria produktu. Wybierz JEDNĄ z: Dom i Ogród, Elektronika, Nieruchomości, Dla Dzieci, Antyki i Kolekcje, Muzyka i Edukacja, Firma i Przemysł, Sport i Hobby, Usługi, Zdrowie i Uroda, Oddam za darmo, Moda, Noclegi, Praca, Motoryzacja, Zwierzęta, Wypożyczalnia, Rolnictwo)
     - score: number (ocena od 1 do 10)
     - reasoning: string (krótkie uzasadnienie oceny)
     
     Przykład:
     {
-      "rankings": [
+      "scores": [
         {
-          "image": "https://example.com/image.jpg",
-          "title": "Aparat fotograficzny Canon",
-          "description": "Profesjonalny aparat...",
-          "link": "https://example.com/product1",
-          "price": {
-            "value": 2999,
-            "label": "2999 PLN",
-            "currency": "PLN",
-            "negotiable": false
-          },
-          "category": "Elektronika",
-          "provider": "olx",
+          "id": "123e4567-e89b-12d3-a456-426614174000",
           "score": 9,
           "reasoning": "Produkt idealnie pasuje do hobby odbiorcy (fotografia) i pozwoli mu rozwijać swoje umiejętności."
+        },
+        {
+          "id": "123e4567-e89b-12d3-a456-426614174001",
+          "score": 7,
+          "reasoning": "Produkt pasuje do stylu życia odbiorcy (aktywny i energiczny) i pozwoli mu rozwijać swoje umiejętności."
         }
       ]
     }
   </output_format>
   
   <important>
-    - Musisz zwrócić WSZYSTKIE produkty z listy wraz z ich oryginalnymi danymi
-    - Każdy produkt musi mieć wszystkie pola: image, title, description, link, price, category, provider
-    - Zachowaj oryginalne wartości wszystkich pól (image, title, description, link, price, provider)
+    - Musisz zwrócić WSZYSTKIE produkty z listy wraz z ich oryginalnymi ID - jest to bardzo ważne dla dalszych operacji w systemie.
     - Przypisz każdemu produktowi odpowiednią kategorię na podstawie jego opisu
     - Dodaj score i reasoning do każdego produktu
     - Oceny powinny być zróżnicowane - wykorzystuj pełną skalę 1-10

@@ -388,6 +388,11 @@ export interface components {
              * @example 2025-01-15T10:30:00Z
              */
             createdAt: string;
+            /**
+             * @description Whether the chat interview has been completed
+             * @example false
+             */
+            isInterviewCompleted: boolean;
         };
         ChatsResponseDto: {
             /** @description List of user's chats */
@@ -498,6 +503,28 @@ export interface components {
          * @enum {string}
          */
         MessageRole: "user" | "assistant" | "system";
+        ProposedAnswerDto: {
+            /**
+             * @description Full sentence answer
+             * @example Yes, I love it!
+             */
+            answerFullSentence: string;
+            /**
+             * @description Short form answer
+             * @example Yes
+             */
+            answerShortForm: string;
+        };
+        ProposedAnswersDto: {
+            /**
+             * @description Type of proposed answers
+             * @example select
+             * @enum {string}
+             */
+            type: "select" | "long_free_text";
+            /** @description List of proposed answers */
+            answers?: components["schemas"]["ProposedAnswerDto"][];
+        };
         MessageDto: {
             /**
              * @description Message ID
@@ -519,6 +546,8 @@ export interface components {
              * @example I'm looking for a gift for my mom
              */
             content: string;
+            /** @description Proposed answers for this message */
+            proposedAnswers?: components["schemas"]["ProposedAnswersDto"];
             /**
              * Format: date-time
              * @description Created at timestamp

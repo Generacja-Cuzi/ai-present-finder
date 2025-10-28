@@ -1,17 +1,20 @@
 import { GiftReadyEvent } from "@core/events";
-import type { ListingPayload, ListingWithId } from "@core/types";
-import { Repository } from "typeorm";
+import type { ListingPayload } from "@core/types";
 
 import { Inject, Logger } from "@nestjs/common";
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import {
+  CommandBus,
+  CommandHandler,
+  ICommandHandler,
+  QueryBus,
+} from "@nestjs/cqrs";
 import { ClientProxy } from "@nestjs/microservices";
-import { InjectRepository } from "@nestjs/typeorm";
 
 import { EmitGiftReadyCommand } from "../../domain/commands/emit-gift-ready.command";
-import { GiftSessionProduct } from "../../domain/entities/gift-session-product.entity";
-import { GiftSession } from "../../domain/entities/gift-session.entity";
-import { Product } from "../../domain/entities/product.entity";
-import { scoreProductsFlow } from "../ai/score-products-flow";
+import { UpdateProductRatingsCommand } from "../../domain/commands/update-product-ratings.command";
+import { GetSessionProductsQuery } from "../../domain/queries/get-session-products.query";
+import type { SessionProductsResult } from "../../domain/queries/get-session-products.query";
+import { ScoreProductsQuery } from "../../domain/queries/score-products.query";
 import { ProductScore } from "../ai/types";
 
 @CommandHandler(EmitGiftReadyCommand)
@@ -22,113 +25,41 @@ export class EmitGiftReadyHandler
 
   constructor(
     @Inject("GIFT_READY_EVENT") private readonly giftReadyEventBus: ClientProxy,
-    @InjectRepository(GiftSession)
-    private readonly giftSessionRepository: Repository<GiftSession>,
-    @InjectRepository(GiftSessionProduct)
-    private readonly giftSessionProductRepository: Repository<GiftSessionProduct>,
-    @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>,
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
   ) {}
 
   async execute(command: EmitGiftReadyCommand): Promise<void> {
     const { eventId } = command;
 
-    const session = await this.giftSessionRepository.findOne({
-      where: { eventId },
-    });
+    const sessionProductsResult =
+      await this.queryBus.execute<SessionProductsResult | null>(
+        new GetSessionProductsQuery(eventId),
+      );
 
-    if (session === null) {
-      this.logger.error(`Session ${eventId} not found in database`);
+    if (sessionProductsResult === null) {
       return;
     }
 
-    const productGroups = await this.giftSessionProductRepository.find({
-      where: { session: { eventId } },
-      relations: ["products"],
-      order: { createdAt: "ASC" },
-    });
-
-    const productEntityMap = new Map<string, Product>();
-    for (const group of productGroups) {
-      for (const product of group.products) {
-        productEntityMap.set(product.id, product);
-      }
-    }
-
-    const allProducts = productGroups.flatMap((group) =>
-      group.products.map((product) => ({
-        listingId: product.id,
-        image: product.image,
-        title: product.title,
-        description: product.description,
-        link: product.link,
-        price: {
-          value: product.priceValue,
-          label: product.priceLabel,
-          currency: product.priceCurrency,
-          negotiable: product.priceNegotiable,
-        },
-        category: product.category,
-        provider: product.provider,
-      })),
-    ) satisfies ListingWithId[];
-
+    const { session, allProducts } = sessionProductsResult;
     const chatId = session.chatId;
 
     if (allProducts.length > 0) {
       const recipientProfile = session.giftContext?.userProfile ?? null;
       const keywords = session.giftContext?.keywords ?? [];
 
-      const BATCH_SIZE = 100;
-      this.logger.log(
-        `Session ${eventId} gift context: ${JSON.stringify(session.giftContext)}`,
-      );
-
-      this.logger.log(
-        `Ranking ${String(allProducts.length)} products with AI for session ${eventId}`,
-      );
-
-      const scoredProducts: ProductScore[] = [];
-
-      while (scoredProducts.length < allProducts.length) {
-        const remainingProducts = allProducts.filter(
-          (p) => !scoredProducts.some((r) => r.id === p.listingId),
-        );
-        const batch = remainingProducts.slice(0, BATCH_SIZE);
-        const startTime = performance.now();
-        const batchResults = await scoreProductsFlow({
-          products: batch,
+      const scoredProducts = await this.queryBus.execute<ProductScore[]>(
+        new ScoreProductsQuery(
+          allProducts,
           recipientProfile,
           keywords,
-        });
-        const endTime = performance.now();
-        const duration = endTime - startTime;
-        scoredProducts.push(...batchResults);
-        this.logger.log(
-          `Processed ${String(scoredProducts.length)} products out of ${String(allProducts.length)} total in ${duration.toFixed(2)}ms.`,
-        );
-      }
+          eventId,
+        ),
+      );
 
-      // Update existing products with ratings and reasoning
-      const productsToUpdate: Product[] = [];
-      for (const rankedProduct of scoredProducts) {
-        const productEntity = productEntityMap.get(rankedProduct.id);
-        if (productEntity === undefined) {
-          this.logger.warn(`Product ${rankedProduct.id} not found in database`);
-        } else {
-          productEntity.rating = rankedProduct.score;
-          productEntity.reasoning = rankedProduct.reasoning;
-          productEntity.category = rankedProduct.category ?? null;
-          productsToUpdate.push(productEntity);
-        }
-      }
-
-      if (productsToUpdate.length > 0) {
-        await this.productRepository.save(productsToUpdate);
-        this.logger.log(
-          `Updated ${String(productsToUpdate.length)} products with ratings and reasoning in session ${eventId}`,
-        );
-      }
+      await this.commandBus.execute(
+        new UpdateProductRatingsCommand(allProducts, scoredProducts, eventId),
+      );
 
       // Build profile for GiftReadyEvent if we have all the data
       const profile =
@@ -148,7 +79,7 @@ export class EmitGiftReadyHandler
       );
 
       const giftReadyEvent = new GiftReadyEvent(
-        productsToUpdate.map(
+        allProducts.map(
           (p) =>
             ({
               image: p.image,

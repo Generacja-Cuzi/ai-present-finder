@@ -31,12 +31,13 @@ export class GenerateGiftIdeasHandler
   ) {}
 
   async execute(command: GenerateGiftIdeasCommand): Promise<void> {
-    const { userProfile, keywords, chatId } = command;
+    const { userProfile, keywords, keyThemes, chatId } = command;
 
     try {
       const giftIdeasOutput = await giftIdeasFlow({
         userProfile,
         keywords,
+        keyThemes,
       });
 
       this.logger.log(

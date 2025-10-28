@@ -7,7 +7,7 @@ export const giftIdeasOutputSchema = z.object({
       z.object({
         query: z
           .string()
-          .refine((q) => q.split(" ").length <= 4, "Query must be max 4 words"),
+          .refine((q) => q.split(" ").length <= 5, "Query must be max 5 words"),
         service: z.enum(["allegro", "olx", "ebay", "amazon"]),
       }),
     )

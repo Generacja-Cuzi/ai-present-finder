@@ -5,7 +5,8 @@ import { Command } from "@nestjs/cqrs";
 export class GenerateGiftIdeasCommand extends Command<void> {
   constructor(
     public readonly userProfile: RecipientProfile | null,
-    public readonly keywords: string[],
+    public readonly keywords: string[], // stalking keywords
+    public readonly keyThemes: string[], // interview key themes (highest priority)
     public readonly chatId: string,
   ) {
     super();

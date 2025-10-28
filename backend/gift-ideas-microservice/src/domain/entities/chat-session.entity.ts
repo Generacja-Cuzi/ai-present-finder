@@ -43,6 +43,13 @@ export class ChatSession {
   interviewProfile?: RecipientProfile | null;
 
   @Column({
+    name: "interview_keywords",
+    type: "jsonb",
+    nullable: true,
+  })
+  interviewKeywords?: string[] | null;
+
+  @Column({
     name: "gift_generation_triggered",
     type: "boolean",
     default: false,

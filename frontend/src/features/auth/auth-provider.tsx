@@ -76,6 +76,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isLoading,
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <AuthContext.Provider value={authState}>{children}</AuthContext.Provider>
   );

@@ -23,7 +23,7 @@ export async function giftIdeasFlow({
     Słowa kluczowe: ${keywordsText}`;
 
   const result = await generateObject({
-    model: openai("gpt-5-nano"),
+    model: openai("gpt-4o"), // Zmieniono z gpt-5-nano na gpt-4o dla lepszej jakości
     schema: giftIdeasOutputSchema,
     prompt,
     system: giftIdeasGeneratorPrompt,

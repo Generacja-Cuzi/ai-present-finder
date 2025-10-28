@@ -40,7 +40,7 @@ export class GenerateGiftIdeasHandler
       });
 
       this.logger.log(
-        `Generated ${giftIdeasOutput.gift_ideas.length.toString()} gift ideas and ${giftIdeasOutput.search_queries.length.toString()} search queries`,
+        `Generated ${giftIdeasOutput.gift_ideas.length.toString()} gift ideas and ${giftIdeasOutput.search_queries.length.toString()} search queries (6 per service: allegro, olx, ebay, amazon)`,
       );
 
       // * Amazon is disabled for now cause Dodi got banned there
@@ -70,7 +70,7 @@ export class GenerateGiftIdeasHandler
           case "olx": {
             const fetchOlxEvent = new FetchOlxEvent(
               query,
-              5,
+              20,
               0,
               chatId,
               eventId,
@@ -82,7 +82,7 @@ export class GenerateGiftIdeasHandler
           case "allegro": {
             const fetchAllegroEvent = new FetchAllegroEvent(
               query,
-              5,
+              20,
               0,
               chatId,
               eventId,
@@ -97,7 +97,7 @@ export class GenerateGiftIdeasHandler
           case "amazon": {
             const fetchAmazonEvent = new FetchAmazonEvent(
               query,
-              5,
+              20,
               0,
               "PL",
               1,
@@ -111,7 +111,7 @@ export class GenerateGiftIdeasHandler
           case "ebay": {
             const fetchEbayEvent = new FetchEbayEvent(
               query,
-              5,
+              20,
               0,
               chatId,
               eventId,

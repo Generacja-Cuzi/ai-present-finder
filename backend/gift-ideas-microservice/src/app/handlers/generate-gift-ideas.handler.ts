@@ -45,7 +45,7 @@ export class GenerateGiftIdeasHandler
       );
 
       // * Amazon is disabled for now cause Dodi got banned there
-      const disabledServices = new Set(["amazon"]);
+      const disabledServices = new Set(["amazonxxx"]);
       const filteredSearchQueries = giftIdeasOutput.search_queries.filter(
         ({ service }) => !disabledServices.has(service),
       );

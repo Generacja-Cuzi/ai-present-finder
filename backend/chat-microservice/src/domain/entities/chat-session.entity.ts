@@ -1,5 +1,11 @@
 import { Column, Entity, PrimaryColumn } from "typeorm";
 
+export type ChatSessionPhase =
+  | "interview"
+  | "ask_save_profile"
+  | "ask_profile_name"
+  | "completed";
+
 @Entity("chat_sessions")
 export class ChatSession {
   @PrimaryColumn({ name: "chat_id", unique: true })
@@ -11,6 +17,27 @@ export class ChatSession {
     nullable: true,
   })
   occasion?: string | null;
+
+  @Column({
+    name: "phase",
+    type: "varchar",
+    default: "interview",
+  })
+  phase: ChatSessionPhase;
+
+  @Column({
+    name: "pending_profile_data",
+    type: "jsonb",
+    nullable: true,
+  })
+  pendingProfileData?: any;
+
+  @Column({
+    name: "save_profile_choice",
+    type: "boolean",
+    nullable: true,
+  })
+  saveProfileChoice?: boolean | null;
 
   @Column({
     name: "created_at",

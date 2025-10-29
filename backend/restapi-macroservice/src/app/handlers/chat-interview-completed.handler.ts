@@ -30,18 +30,31 @@ export class ChatInterviewCompletedHandler {
       return;
     }
 
-    // Extract person name from profile or use default
-    const personName =
+    // Check if user wants to save the profile
+    if (!event.profile.save_profile) {
+      this.logger.log(
+        `User chose not to save profile for chat ${event.chatId}`,
+      );
+      return;
+    }
+
+    // Extract profile name from the user's input or use default
+    const profileName =
+      event.profile.profile_name ??
       event.profile.recipient_profile.personal_info.person_name ??
       event.profile.recipient_profile.personal_info.relationship ??
       "Unknown";
+
+    this.logger.log(
+      `Saving user profile with name: ${profileName} for user ${chat.userId}`,
+    );
 
     // Save the user profile
     await this.commandBus.execute(
       new SaveUserProfileCommand(
         chat.userId,
         event.chatId,
-        personName,
+        profileName,
         event.profile.recipient_profile,
         event.profile.key_themes_and_keywords,
       ),

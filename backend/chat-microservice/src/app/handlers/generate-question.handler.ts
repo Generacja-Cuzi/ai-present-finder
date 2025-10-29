@@ -5,10 +5,13 @@ import {
   ChatQuestionAskedEvent,
 } from "@core/events";
 import { GenerateQuestionCommand } from "src/domain/commands/generate-question.command";
+import { ChatSession } from "src/domain/entities/chat-session.entity";
+import { Repository } from "typeorm";
 
 import { Inject, Logger } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { ClientProxy } from "@nestjs/microservices";
+import { InjectRepository } from "@nestjs/typeorm";
 
 import { giftInterviewFlow } from "../ai/flow";
 import type { EndConversationOutput, PotencialAnswers } from "../ai/types";
@@ -26,6 +29,8 @@ export class GenerateQuestionHandler
     private readonly inappropriateRequestEventBus: ClientProxy,
     @Inject("CHAT_COMPLETED_NOTIFY_USER_EVENT")
     private readonly chatCompletedNotifyUserEventBus: ClientProxy,
+    @InjectRepository(ChatSession)
+    private readonly chatSessionRepository: Repository<ChatSession>,
   ) {}
 
   private readonly logger = new Logger(GenerateQuestionHandler.name);
@@ -138,17 +143,45 @@ export class GenerateQuestionHandler
         );
         this.eventBus.emit(ChatQuestionAskedEvent.name, event);
       },
-      onInterviewCompleted: (output: EndConversationOutput) => {
-        const interviewEvent = new ChatInterviewCompletedEvent(chatId, output);
-        this.chatInterviewCompletedEventEventBus.emit(
-          ChatInterviewCompletedEvent.name,
-          interviewEvent,
+      onInterviewCompleted: async (output: EndConversationOutput) => {
+        // Zamiast od razu wysyłać ChatInterviewCompletedEvent,
+        // zapisz profil tymczasowo i zadaj pytanie o zapisanie
+        this.logger.log(
+          `Interview completed for chat ${chatId}, asking about profile save`,
         );
-        const notifyEvent = new ChatCompletedNotifyUserEvent(chatId);
-        this.chatCompletedNotifyUserEventBus.emit(
-          ChatCompletedNotifyUserEvent.name,
-          notifyEvent,
+
+        // Zapisz dane profilu tymczasowo w sesji
+        await this.chatSessionRepository.update(
+          { chatId },
+          {
+            phase: "ask_save_profile",
+            pendingProfileData: output as any,
+          },
         );
+
+        // Zadaj pytanie o zapisanie profilu
+        const saveProfileQuestion =
+          "Czy chcesz zapisać profil tej osoby, aby w przyszłości szybciej znaleźć prezent?";
+        const saveProfileAnswers = {
+          type: "select" as const,
+          answers: [
+            {
+              answerFullSentence: "Tak, chcę zapisać profil",
+              answerShortForm: "Tak",
+            },
+            {
+              answerFullSentence: "Nie, nie chcę zapisywać profilu",
+              answerShortForm: "Nie",
+            },
+          ],
+        };
+
+        const event = new ChatQuestionAskedEvent(
+          chatId,
+          saveProfileQuestion,
+          saveProfileAnswers,
+        );
+        this.eventBus.emit(ChatQuestionAskedEvent.name, event);
       },
       onInappropriateRequest: (reason: string) => {
         const inappropriateEvent = new ChatInappropriateRequestEvent(

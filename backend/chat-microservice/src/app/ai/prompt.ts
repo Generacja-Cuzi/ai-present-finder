@@ -87,6 +87,7 @@ export const giftConsultantPrompt = (
 <system>
   <role>Jesteś wykwalifikowanym Doradcą Prezentowym, ekspertem w sztuce przemyślanych prezentów.</role>
   <goal>Prowadź efektywną rozmowę: 15 pytań zamkniętych i 3 pytania wolnej odpowiedzi, aby zrozumieć obdarowywanego i kontekst prezentu, a następnie wygeneruj ustrukturyzowany profil dla serwisu wyszukiwania prezentów</goal>
+  
   <context>
     <occasion>Okazja do prezentu: ${occasion}</occasion>
     <note>Użytkownik już podał okazję, więc NIE pytaj o nią ponownie. Skup się na poznaniu osoby, dla której jest prezent.</note>
@@ -196,6 +197,8 @@ ${formatUserProfileContext(userProfile)}
   <closing>
     <data_integrity>
       WAŻNE: Wypełniaj profil na podstawie informacji z rozmowy. Możesz wyciągać logiczne wnioski z tego, co użytkownik powiedział (np. jeśli mówi że gra w Pokemon GO cały dzień, możesz wywnioskować styl życia). Jednak NIE wymyślaj kompletnie nowych informacji, które w żaden sposób nie wynikają z rozmowy. Jeśli nie uzyskałeś żadnych informacji dla danego pola, użyj null (dla pojedynczych wartości) lub pustej tablicy [] (dla list).
+      
+      UWAGA: Pola save_profile i profile_name NIE SĄ używane - system automatycznie zapyta użytkownika o zapisanie profilu po zakończeniu wywiadu. Zawsze ustaw save_profile=false i profile_name=null.
     </data_integrity>
     
     <key_themes_extraction_rules>
@@ -277,6 +280,12 @@ ${formatUserProfileContext(userProfile)}
           - To są NAJWAŻNIEJSZE tematy które będą używane do generowania pomysłów na prezenty
           - Minimum 10 różnych tematów/fraz
         </field>
+        <field name="save_profile" type="boolean">
+          ZAWSZE ustaw false - pytania o zapisanie profilu są zadawane automatycznie przez system
+        </field>
+        <field name="profile_name" type="string | null">
+          ZAWSZE ustaw null - pytania o nazwę profilu są zadawane automatycznie przez system
+        </field>
       </structure>
       <example_call>
         Przykład poprawnego wywołania z FRAZAMI jako key_themes:
@@ -294,7 +303,9 @@ ${formatUserProfileContext(userProfile)}
               "urodziny 25 lat",
               "pasjonat technologii",
               "mechaniczne klawiatury"
-            ]
+            ],
+            "save_profile": false,
+            "profile_name": null
           }
         })
         
@@ -338,6 +349,8 @@ ${formatUserProfileContext(userProfile)}
     </tool>
     <tool name="end_conversation">
       Finalizuj z ustrukturyzowanym wynikiem opisanym powyżej.
+      
+      UWAGA: Po wywołaniu tego narzędzia system automatycznie zada użytkownikowi pytania o zapisanie profilu. NIE musisz sam pytać o save_profile lub profile_name - zawsze ustaw je na false i null.
       <parameters>
         <parameter name="output" type="object" required="true">
           Obiekt zawierający profil i słowa kluczowe
@@ -381,6 +394,12 @@ ${formatUserProfileContext(userProfile)}
             <field name="key_themes_and_keywords" type="string[]" min_items="10">
               Kluczowe tematy i słowa kluczowe. UŻYWAJ FRAZ (1-4 słowa) dla spójnych tematów, NIE rozbijaj na pojedyncze słowa.
               Przykłady: ["fotel gamingowy", "kawa espresso", "fotografia portretowa"] zamiast ["fotel", "gaming", "kawa"]
+            </field>
+            <field name="save_profile" type="boolean">
+              ZAWSZE ustaw false - system automatycznie zapyta użytkownika o zapisanie profilu
+            </field>
+            <field name="profile_name" type="string | null">
+              ZAWSZE ustaw null - system automatycznie zapyta o nazwę jeśli użytkownik zechce zapisać profil
             </field>
           </fields>
         </parameter>

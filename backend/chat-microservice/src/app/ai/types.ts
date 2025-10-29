@@ -39,6 +39,13 @@ export const recipientProfileSchema = z.object({
 export const endConversationOutputSchema = z.object({
   recipient_profile: recipientProfileSchema,
   key_themes_and_keywords: z.array(z.string()),
+  save_profile: z
+    .boolean()
+    .describe("Whether the user wants to save this profile for future use"),
+  profile_name: z
+    .string()
+    .nullish()
+    .describe("The name for this saved profile (only if save_profile is true)"),
 });
 
 export const potencialAnswersSchema = z.discriminatedUnion("type", [

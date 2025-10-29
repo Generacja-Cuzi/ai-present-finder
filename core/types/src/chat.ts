@@ -51,4 +51,6 @@ export interface RecipientProfile {
 export interface EndConversationOutput {
   recipient_profile: RecipientProfile;
   key_themes_and_keywords: string[];
+  save_profile: boolean;
+  profile_name?: string | null;
 }

@@ -11,8 +11,8 @@ import { GenerateGiftIdeasCommand } from "../../domain/commands/generate-gift-id
 interface UpsertResult {
   chat_id: string;
   interview_profile: RecipientProfile | null;
-  interview_keywords: string[];
-  stalking_keywords: string[];
+  interview_keywords: string[] | null;
+  stalking_keywords: string[] | null;
   gift_generation_triggered: boolean;
   both_complete: boolean;
 }
@@ -118,8 +118,8 @@ export class UpdateInterviewStatusHandler
           await this.commandBus.execute(
             new GenerateGiftIdeasCommand(
               row.interview_profile,
-              row.stalking_keywords || [],
-              row.interview_keywords || [],
+              row.stalking_keywords ?? [],
+              row.interview_keywords ?? [],
               chatId,
             ),
           );

@@ -13,12 +13,12 @@ export const giftIdeasOutputSchema = z.object({
     )
     .length(24) // Dokładnie 24 zapytania (6 per service)
     .refine((queries) => {
-      const counts = queries.reduce(
-        (acc, q) => {
-          acc[q.service] = (acc[q.service] || 0) + 1;
-          return acc;
+      const counts = queries.reduce<Record<string, number>>(
+        (accumulator, q) => {
+          accumulator[q.service] = (accumulator[q.service] || 0) + 1;
+          return accumulator;
         },
-        {} as Record<string, number>,
+        {},
       );
       return (
         counts.allegro === 6 &&

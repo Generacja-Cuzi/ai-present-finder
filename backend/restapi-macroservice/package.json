@@ -35,6 +35,11 @@
       "json",
       "ts"
     ],
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1",
+      "^@core/events$": "<rootDir>/../../core/events/src/index",
+      "^@core/types$": "<rootDir>/../../core/types/src/index"
+    },
     "rootDir": "src",
     "testEnvironment": "node",
     "testRegex": ".*\\.spec\\.ts$",

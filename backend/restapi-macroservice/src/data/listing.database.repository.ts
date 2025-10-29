@@ -121,4 +121,17 @@ export class ListingDatabaseRepository implements IListingRepository {
 
     return user.favoriteListings.some((l) => l.id === listingId);
   }
+
+  async isOwnedByUser(listingId: string, userId: string): Promise<boolean> {
+    const listing = await this.listingRepository.findOne({
+      where: { id: listingId },
+      relations: ["chat"],
+    });
+
+    if (listing === null || listing.chat === null) {
+      return false;
+    }
+
+    return listing.chat.userId === userId;
+  }
 }

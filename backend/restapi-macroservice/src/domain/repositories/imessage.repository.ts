@@ -5,4 +5,5 @@ export abstract class IMessageRepository {
   abstract findByChatId(chatId: string): Promise<Message[]>;
   abstract create(messageData: Partial<Message>): Promise<Message>;
   abstract delete(id: string): Promise<void>;
+  abstract isOwnedByUser(messageId: string, userId: string): Promise<boolean>;
 }

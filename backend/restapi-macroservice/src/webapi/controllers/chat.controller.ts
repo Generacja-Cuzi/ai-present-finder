@@ -10,7 +10,10 @@ import { QueryBus } from "@nestjs/cqrs";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { JwtAuthGuard } from "../../app/guards/jwt-auth.guard";
+import { ResourceOwnershipGuard } from "../../app/guards/resource-ownership.guard";
+import { RequireResourceOwnership } from "../../domain/decorators/resource-ownership.decorator";
 import { ChatsResponseDto } from "../../domain/models/chat.dto";
+import { ResourceType } from "../../domain/models/resource-ownership.types";
 
 @ApiTags("chats")
 @Controller("chats")
@@ -47,7 +50,11 @@ export class ChatController {
   }
 
   @Get(":chatId/listings")
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ResourceOwnershipGuard)
+  @RequireResourceOwnership({
+    resourceType: ResourceType.CHAT,
+    paramName: "chatId",
+  })
   @ApiOperation({ summary: "Get listings for a specific chat" })
   @ApiOkResponse({
     description: "Returns list of listings with favorite status",

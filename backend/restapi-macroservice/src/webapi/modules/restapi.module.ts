@@ -4,6 +4,7 @@ import {
   StalkingAnalyzeRequestedEvent,
 } from "@core/events";
 import { JwtAuthGuard } from "src/app/guards/jwt-auth.guard";
+import { ResourceOwnershipGuard } from "src/app/guards/resource-ownership.guard";
 import { AddToFavoritesHandler } from "src/app/handlers/add-to-favorites.handler";
 import { ChatCompletedNotifyUserHandler } from "src/app/handlers/chat-completed-notify-user.handler";
 import { ChatInappropriateRequestHandler } from "src/app/handlers/chat-inappropriate-request.handler";
@@ -189,6 +190,7 @@ import { SseController } from "../controllers/sse.controller";
     // Auth
     JwtStrategy,
     JwtAuthGuard,
+    ResourceOwnershipGuard,
 
     // Repositories
     {

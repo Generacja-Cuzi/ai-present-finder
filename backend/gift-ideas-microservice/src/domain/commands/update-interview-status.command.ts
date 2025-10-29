@@ -5,7 +5,8 @@ import { Command } from "@nestjs/cqrs";
 export class UpdateInterviewStatusCommand extends Command<void> {
   constructor(
     public readonly chatId: string,
-    public readonly profile: RecipientProfile | undefined,
+    public readonly profile: RecipientProfile,
+    public readonly keyThemes: string[],
   ) {
     super();
   }

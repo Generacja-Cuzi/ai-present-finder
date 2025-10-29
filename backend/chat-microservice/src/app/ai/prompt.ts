@@ -88,6 +88,36 @@ export const giftConsultantPrompt = (occasion: string) => `
     <data_integrity>
       WAŻNE: Wypełniaj profil na podstawie informacji z rozmowy. Możesz wyciągać logiczne wnioski z tego, co użytkownik powiedział (np. jeśli mówi że gra w Pokemon GO cały dzień, możesz wywnioskować styl życia). Jednak NIE wymyślaj kompletnie nowych informacji, które w żaden sposób nie wynikają z rozmowy. Jeśli nie uzyskałeś żadnych informacji dla danego pola, użyj null (dla pojedynczych wartości) lub pustej tablicy [] (dla list).
     </data_integrity>
+    
+    <key_themes_extraction_rules>
+      ⚠️ KRYTYCZNE ZASADY dla key_themes_and_keywords:
+      
+      1. UŻYWAJ FRAZ, NIE POJEDYNCZYCH SŁÓW:
+         - Jeśli użytkownik mówi o "fotelu gamingowym" → zapisz "fotel gamingowy" (NIE "fotel" i "gaming" osobno)
+         - Jeśli mówi o "kawie espresso" → zapisz "kawa espresso" (NIE "kawa" i "espresso" osobno)
+         - Jeśli mówi o "fotografii portretowej" → zapisz "fotografia portretowa" (NIE "fotografia" i "portretowa")
+      
+      2. WIELOWYRAZOWE TEMATY to JEDEN element tablicy:
+         ✓ DOBRZE: ["fotel gamingowy", "kawa specialty", "bieganie maratony"]
+         ✗ ŹLE: ["fotel", "gamingowy", "kawa", "specialty", "bieganie", "maratony"]
+      
+      3. PRZYKŁADY POPRAWNEGO WYDOBYWANIA:
+         - Rozmowa: "Lubi długie sesje gamingu, potrzebuje wygodny fotel"
+           → ["fotel gamingowy", "długie sesje", "komfort", "gaming", "ergonomia"]
+         
+         - Rozmowa: "Pasjonuje się fotografią krajobrazową, robi zdjęcia gór"
+           → ["fotografia krajobrazowa", "góry", "aparat fotograficzny", "statywy", "plener"]
+         
+         - Rozmowa: "Pracuje zdalnie jako programista, ma bóle pleców"
+           → ["praca zdalna", "programowanie", "bóle pleców", "ergonomia biuro", "fotel biurowy"]
+      
+      4. KONTEKST PRODUKTOWY:
+         - Myśl o key_themes jako o kategoriach produktów lub tematach prezentów
+         - "fotel gamingowy" = kategoria produktu → będziemy szukać foteli gamingowych
+         - "kawa specialty" = kategoria → akcesoria do kawy specialty
+         - "bieganie maratony" = temat → sprzęt do biegania, maratony
+    </key_themes_extraction_rules>
+    
     <required_final_action>
       Wywołaj tool "end_conversation" z parametrem "output" zawierającym obiekt z polami:
       <structure>
@@ -128,11 +158,41 @@ export const giftConsultantPrompt = (occasion: string) => `
           </gift_context>
         </field>
         <field name="key_themes_and_keywords" type="string[]" min_items="10">
-          Krótkie, opisowe słowa kluczowe lub tematy (najlepiej 1-3 słowa każde) ogólnie o osobie i okazji do prezentu. Mogą się pokrywać z tematami z profilu odbiorcy (ale możesz przekazać tu dodatkowe tematy lub informacje)
+          Kluczowe tematy i słowa kluczowe wyekstrahowane z rozmowy. WAŻNE:
+          - Używaj FRAZ jeśli stanowią one całość semantyczną (np. "fotel gamingowy", "kawa espresso", "fotografia portretowa")
+          - NIE rozbijaj na pojedyncze słowa jeśli razem tworzą konkretny temat (np. ✓ "fotel gamingowy", ✗ "fotel" + "gamingowy")
+          - Każdy element to 1-4 słowa tworzące spójny temat lub kategorię produktu
+          - Przykłady DOBRZE: ["fotel gamingowy", "kawa specialty", "fotografia krajobrazowa", "bieganie maratony", "gotowanie wegańskie"]
+          - Przykłady ŹLE: ["fotel", "gaming", "kawa", "specialty"] (rozbite na pojedyncze słowa)
+          - To są NAJWAŻNIEJSZE tematy które będą używane do generowania pomysłów na prezenty
+          - Minimum 10 różnych tematów/fraz
         </field>
       </structure>
       <example_call>
-        end_conversation({"output": {"recipient_profile": {...}, "key_themes_and_keywords": [...]}})
+        Przykład poprawnego wywołania z FRAZAMI jako key_themes:
+        end_conversation({
+          "output": {
+            "recipient_profile": {...},
+            "key_themes_and_keywords": [
+              "fotel gamingowy",
+              "praca zdalna",
+              "ergonomia biuro",
+              "bóle pleców",
+              "długie sesje",
+              "programowanie",
+              "oświetlenie RGB",
+              "urodziny 25 lat",
+              "pasjonat technologii",
+              "mechaniczne klawiatury"
+            ]
+          }
+        })
+        
+        ✗ BŁĘDNY przykład (rozbite na pojedyncze słowa):
+        key_themes_and_keywords: ["fotel", "gaming", "praca", "zdalna", "ergonomia", ...]
+        
+        ✓ POPRAWNY przykład (frazy):
+        key_themes_and_keywords: ["fotel gamingowy", "praca zdalna", "ergonomia biuro", ...]
       </example_call>
     </required_final_action>
     <avoid>
@@ -209,7 +269,8 @@ export const giftConsultantPrompt = (occasion: string) => `
               </gift_context>
             </field>
             <field name="key_themes_and_keywords" type="string[]" min_items="10">
-              Krótkie, opisowe słowa kluczowe lub tematy (najlepiej 1-3 słowa każde).
+              Kluczowe tematy i słowa kluczowe. UŻYWAJ FRAZ (1-4 słowa) dla spójnych tematów, NIE rozbijaj na pojedyncze słowa.
+              Przykłady: ["fotel gamingowy", "kawa espresso", "fotografia portretowa"] zamiast ["fotel", "gaming", "kawa"]
             </field>
           </fields>
         </parameter>

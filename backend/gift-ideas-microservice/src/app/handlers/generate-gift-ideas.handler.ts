@@ -31,20 +31,21 @@ export class GenerateGiftIdeasHandler
   ) {}
 
   async execute(command: GenerateGiftIdeasCommand): Promise<void> {
-    const { userProfile, keywords, chatId } = command;
+    const { userProfile, keywords, keyThemes, chatId } = command;
 
     try {
       const giftIdeasOutput = await giftIdeasFlow({
         userProfile,
         keywords,
+        keyThemes,
       });
 
       this.logger.log(
-        `Generated ${giftIdeasOutput.gift_ideas.length.toString()} gift ideas and ${giftIdeasOutput.search_queries.length.toString()} search queries`,
+        `Generated ${giftIdeasOutput.gift_ideas.length.toString()} gift ideas and ${giftIdeasOutput.search_queries.length.toString()} search queries (6 per service: allegro, olx, ebay, amazon)`,
       );
 
       // * Amazon is disabled for now cause Dodi got banned there
-      const disabledServices = new Set(["amazon"]);
+      const disabledServices = new Set(["amazonxxx"]);
       const filteredSearchQueries = giftIdeasOutput.search_queries.filter(
         ({ service }) => !disabledServices.has(service),
       );
@@ -70,7 +71,7 @@ export class GenerateGiftIdeasHandler
           case "olx": {
             const fetchOlxEvent = new FetchOlxEvent(
               query,
-              5,
+              20,
               0,
               chatId,
               eventId,
@@ -82,7 +83,7 @@ export class GenerateGiftIdeasHandler
           case "allegro": {
             const fetchAllegroEvent = new FetchAllegroEvent(
               query,
-              5,
+              20,
               0,
               chatId,
               eventId,
@@ -97,7 +98,7 @@ export class GenerateGiftIdeasHandler
           case "amazon": {
             const fetchAmazonEvent = new FetchAmazonEvent(
               query,
-              5,
+              20,
               0,
               "PL",
               1,
@@ -111,7 +112,7 @@ export class GenerateGiftIdeasHandler
           case "ebay": {
             const fetchEbayEvent = new FetchEbayEvent(
               query,
-              5,
+              20,
               0,
               chatId,
               eventId,

@@ -11,7 +11,8 @@ import { GenerateGiftIdeasCommand } from "../../domain/commands/generate-gift-id
 interface UpsertResult {
   chat_id: string;
   interview_profile: RecipientProfile | null;
-  stalking_keywords: string[];
+  interview_keywords: string[] | null;
+  stalking_keywords: string[] | null;
   gift_generation_triggered: boolean;
   both_complete: boolean;
 }
@@ -28,7 +29,7 @@ export class UpdateInterviewStatusHandler
   ) {}
 
   async execute(command: UpdateInterviewStatusCommand): Promise<void> {
-    const { chatId, profile } = command;
+    const { chatId, profile, keyThemes } = command;
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -55,13 +56,15 @@ export class UpdateInterviewStatusHandler
             interview_status, 
             gift_generation_triggered,
             interview_profile,
+            interview_keywords,
             created_at, 
             updated_at
           )
-          VALUES ($1, $2, $3, $4, $5::jsonb, NOW(), NOW())
+          VALUES ($1, $2, $3, $4, $5::jsonb, $6::jsonb, NOW(), NOW())
           ON CONFLICT (chat_id) DO UPDATE SET
             interview_status = $3,
             interview_profile = $5::jsonb,
+            interview_keywords = $6::jsonb,
             gift_generation_triggered = CASE
               WHEN chat_sessions.stalking_status::text = $3::text
                    AND NOT chat_sessions.gift_generation_triggered
@@ -72,6 +75,7 @@ export class UpdateInterviewStatusHandler
           RETURNING 
             chat_id,
             interview_profile,
+            interview_keywords,
             stalking_keywords,
             gift_generation_triggered,
             stalking_status::text = $3::text as both_complete
@@ -84,6 +88,7 @@ export class UpdateInterviewStatusHandler
           SessionStatus.COMPLETED,
           false,
           JSON.stringify(profile),
+          JSON.stringify(keyThemes),
         ],
       )) as UpsertResult[];
 
@@ -113,7 +118,8 @@ export class UpdateInterviewStatusHandler
           await this.commandBus.execute(
             new GenerateGiftIdeasCommand(
               row.interview_profile,
-              row.stalking_keywords,
+              row.stalking_keywords ?? [],
+              row.interview_keywords ?? [],
               chatId,
             ),
           );

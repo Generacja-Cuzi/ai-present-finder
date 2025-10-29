@@ -21,6 +21,7 @@ export class ChatInterviewCompletedHandler {
       new UpdateInterviewStatusCommand(
         event.chatId,
         event.profile.recipient_profile,
+        event.profile.key_themes_and_keywords,
       ),
     );
   }

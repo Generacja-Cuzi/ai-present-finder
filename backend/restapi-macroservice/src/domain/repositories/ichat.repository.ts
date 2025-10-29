@@ -7,4 +7,5 @@ export abstract class IChatRepository {
   abstract create(chatData: Partial<Chat>): Promise<Chat>;
   abstract update(id: string, chatData: Partial<Chat>): Promise<Chat>;
   abstract delete(id: string): Promise<void>;
+  abstract isOwnedByUser(chatId: string, userId: string): Promise<boolean>;
 }

@@ -16,4 +16,5 @@ export abstract class IListingRepository {
     userId: string,
     listingId: string,
   ): Promise<boolean>;
+  abstract isOwnedByUser(listingId: string, userId: string): Promise<boolean>;
 }

@@ -33,4 +33,19 @@ export class MessageDatabaseRepository implements IMessageRepository {
   async delete(id: string): Promise<void> {
     await this.messageRepository.delete(id);
   }
+
+  async isOwnedByUser(messageId: string, userId: string): Promise<boolean> {
+    const message = await this.messageRepository.findOne({
+      where: { id: messageId },
+      relations: ["chat"],
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (message === null || message === undefined) {
+      return false;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    return message.chat?.userId === userId;
+  }
 }

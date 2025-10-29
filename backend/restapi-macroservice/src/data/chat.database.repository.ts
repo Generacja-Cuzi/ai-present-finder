@@ -46,4 +46,11 @@ export class ChatDatabaseRepository implements IChatRepository {
   async delete(id: string): Promise<void> {
     await this.chatRepository.delete(id);
   }
+
+  async isOwnedByUser(chatId: string, userId: string): Promise<boolean> {
+    const chat = await this.chatRepository.findOne({
+      where: { chatId, userId },
+    });
+    return chat !== null;
+  }
 }

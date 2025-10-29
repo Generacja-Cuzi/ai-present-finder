@@ -18,6 +18,12 @@ import {
 } from "@nestjs/swagger";
 
 import { JwtAuthGuard } from "../../app/guards/jwt-auth.guard";
+import { ResourceOwnershipGuard } from "../../app/guards/resource-ownership.guard";
+import { RequireResourceOwnership } from "../../domain/decorators/resource-ownership.decorator";
+import {
+  ResourceIdLocation,
+  ResourceType,
+} from "../../domain/models/resource-ownership.types";
 
 @ApiTags("restapi")
 @ApiExtraModels(PotencialAnswersSelectDto, PotencialAnswersFreeTextDto)
@@ -43,7 +49,12 @@ export class RestApiController {
   }
 
   @Post("send-message")
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ResourceOwnershipGuard)
+  @RequireResourceOwnership({
+    resourceType: ResourceType.CHAT,
+    paramName: "chatId",
+    location: ResourceIdLocation.BODY,
+  })
   @ApiOperation({ summary: "Send chat messages to the system" })
   @ApiOkResponse({ description: "Message accepted" })
   async sendMessage(@Body() sendMessageDto: SendMessageDto): Promise<void> {

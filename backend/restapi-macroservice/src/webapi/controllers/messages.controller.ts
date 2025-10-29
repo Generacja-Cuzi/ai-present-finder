@@ -14,6 +14,9 @@ import {
 } from "@nestjs/swagger";
 
 import { JwtAuthGuard } from "../../app/guards/jwt-auth.guard";
+import { ResourceOwnershipGuard } from "../../app/guards/resource-ownership.guard";
+import { RequireResourceOwnership } from "../../domain/decorators/resource-ownership.decorator";
+import { ResourceType } from "../../domain/models/resource-ownership.types";
 
 @ApiTags("messages")
 @ApiBearerAuth()
@@ -23,6 +26,11 @@ export class MessagesController {
   constructor(private readonly queryBus: QueryBus) {}
 
   @Get("chat/:chatId")
+  @UseGuards(JwtAuthGuard, ResourceOwnershipGuard)
+  @RequireResourceOwnership({
+    resourceType: ResourceType.CHAT,
+    paramName: "chatId",
+  })
   @ApiOperation({ summary: "Get all messages for a specific chat" })
   @ApiOkResponse({
     description: "List of chat messages",

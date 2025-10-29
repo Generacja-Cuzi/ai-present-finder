@@ -152,6 +152,7 @@ describe("ResourceOwnershipGuard", () => {
         const result = await guard.canActivate(context);
 
         expect(result).toBe(true);
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(chatRepository.isOwnedByUser).toHaveBeenCalledWith(
           "chat-123",
           "user-123",
@@ -209,6 +210,7 @@ describe("ResourceOwnershipGuard", () => {
         const result = await guard.canActivate(context);
 
         expect(result).toBe(true);
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(listingRepository.isOwnedByUser).toHaveBeenCalledWith(
           "listing-123",
           "user-123",
@@ -249,6 +251,7 @@ describe("ResourceOwnershipGuard", () => {
         const result = await guard.canActivate(context);
 
         expect(result).toBe(true);
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(messageRepository.isOwnedByUser).toHaveBeenCalledWith(
           "message-123",
           "user-123",
@@ -293,6 +296,7 @@ describe("ResourceOwnershipGuard", () => {
         const result = await guard.canActivate(context);
 
         expect(result).toBe(true);
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(chatRepository.isOwnedByUser).toHaveBeenCalledWith(
           "chat-from-body",
           "user-123",
@@ -329,6 +333,7 @@ describe("ResourceOwnershipGuard", () => {
         const result = await guard.canActivate(context);
 
         expect(result).toBe(true);
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(chatRepository.isOwnedByUser).toHaveBeenCalledWith(
           "chat-from-params",
           "user-123",

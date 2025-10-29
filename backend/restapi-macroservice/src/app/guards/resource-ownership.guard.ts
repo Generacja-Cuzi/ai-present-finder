@@ -20,39 +20,6 @@ import { Reflector } from "@nestjs/core";
 
 import { RESOURCE_OWNERSHIP_KEY } from "../../domain/decorators/resource-ownership.decorator";
 
-/**
- * Guard that verifies user ownership of requested resources.
- * Works in combination with @RequireResourceOwnership decorator and JwtAuthGuard.
- *
- * This guard provides a high-level abstraction for resource authorization,
- * automatically validating that authenticated users can only access their own resources.
- *
- * @example
- * ```typescript
- * @Controller('chats')
- * @UseGuards(JwtAuthGuard, ResourceOwnershipGuard)
- * export class ChatController {
- *   @Get(':chatId/messages')
- *   @RequireResourceOwnership({
- *     resourceType: ResourceType.CHAT,
- *     paramName: 'chatId'
- *   })
- *   async getMessages(@Param('chatId') chatId: string) {
- *     // Automatically verified: user owns this chat
- *   }
- *
- *   @Post('send-message')
- *   @RequireResourceOwnership({
- *     resourceType: ResourceType.CHAT,
- *     paramName: 'chatId',
- *     location: ResourceIdLocation.BODY
- *   })
- *   async sendMessage(@Body() dto: SendMessageDto) {
- *     // Automatically verified: user owns the chat in dto.chatId
- *   }
- * }
- * ```
- */
 @Injectable()
 export class ResourceOwnershipGuard implements CanActivate {
   private readonly logger = new Logger(ResourceOwnershipGuard.name);
@@ -71,7 +38,8 @@ export class ResourceOwnershipGuard implements CanActivate {
     );
 
     // If no resource ownership config, allow access (not a protected resource endpoint)
-    if (config === undefined) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (config === null || config === undefined) {
       return true;
     }
 
@@ -79,14 +47,16 @@ export class ResourceOwnershipGuard implements CanActivate {
     const user = request.user;
 
     // User should be authenticated by JwtAuthGuard
-    if (user === undefined) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (user === null || user === undefined) {
       this.logger.warn("ResourceOwnershipGuard used without authentication");
       throw new ForbiddenException("Authentication required");
     }
 
     const resourceId = this.extractResourceId(request, config);
 
-    if (resourceId === undefined) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (resourceId === null || resourceId === undefined || resourceId === "") {
       this.logger.warn(
         `Parameter '${config.paramName}' not found in ${config.location ?? ResourceIdLocation.PARAMS}`,
       );
@@ -122,14 +92,11 @@ export class ResourceOwnershipGuard implements CanActivate {
 
     switch (location) {
       case ResourceIdLocation.PARAMS: {
-        return request.params[config.paramName];
+        return request.params[config.paramName] as string | undefined;
       }
       case ResourceIdLocation.BODY: {
-        return request.body?.[config.paramName];
-      }
-      default: {
-        this.logger.error(`Unknown resource location: ${location}`);
-        return undefined;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        return request.body?.[config.paramName] as string | undefined;
       }
     }
   }
@@ -150,11 +117,6 @@ export class ResourceOwnershipGuard implements CanActivate {
 
       case ResourceType.MESSAGE: {
         return this.messageRepository.isOwnedByUser(resourceId, userId);
-      }
-
-      default: {
-        this.logger.error(`Unknown resource type: ${resourceType}`);
-        return false;
       }
     }
   }

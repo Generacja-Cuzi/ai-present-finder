@@ -34,4 +34,11 @@ export class StalkingAnalyzeRequestDto {
     example: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   })
   chatId: string;
+
+  @ApiProperty({
+    description: "Optional user profile ID to load existing profile",
+    example: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    required: false,
+  })
+  profileId?: string;
 }

@@ -1,10 +1,118 @@
-export const giftConsultantPrompt = (occasion: string) => `
+import type { RecipientProfile } from "@core/types";
+
+const formatUserProfileContext = (profile: RecipientProfile): string => {
+  const sections: string[] = [];
+
+  // Personal info
+  if (profile.personal_info.person_name) {
+    sections.push(`- Imię: ${profile.personal_info.person_name}`);
+  }
+  if (profile.personal_info.relationship) {
+    sections.push(`- Relacja: ${profile.personal_info.relationship}`);
+  }
+  if (profile.personal_info.age_range) {
+    sections.push(`- Wiek: ${profile.personal_info.age_range}`);
+  }
+
+  // Lifestyle
+  if (
+    profile.lifestyle.primary_hobbies &&
+    profile.lifestyle.primary_hobbies.length > 0
+  ) {
+    sections.push(`- Hobby: ${profile.lifestyle.primary_hobbies.join(", ")}`);
+  }
+  if (profile.lifestyle.daily_routine) {
+    sections.push(`- Codzienna rutyna: ${profile.lifestyle.daily_routine}`);
+  }
+  if (profile.lifestyle.work_style) {
+    sections.push(`- Styl pracy: ${profile.lifestyle.work_style}`);
+  }
+
+  // Preferences
+  if (profile.preferences.home_aesthetic) {
+    sections.push(`- Estetyka domu: ${profile.preferences.home_aesthetic}`);
+  }
+  if (
+    profile.preferences.favorite_beverages &&
+    profile.preferences.favorite_beverages.length > 0
+  ) {
+    sections.push(
+      `- Ulubione napoje: ${profile.preferences.favorite_beverages.join(", ")}`,
+    );
+  }
+
+  // Media interests
+  if (
+    profile.media_interests.favorite_books &&
+    profile.media_interests.favorite_books.length > 0
+  ) {
+    sections.push(
+      `- Ulubione książki: ${profile.media_interests.favorite_books.join(", ")}`,
+    );
+  }
+  if (
+    profile.media_interests.music_preferences &&
+    profile.media_interests.music_preferences.length > 0
+  ) {
+    sections.push(
+      `- Muzyka: ${profile.media_interests.music_preferences.join(", ")}`,
+    );
+  }
+
+  // Recent life
+  if (
+    profile.recent_life.new_experiences &&
+    profile.recent_life.new_experiences.length > 0
+  ) {
+    sections.push(
+      `- Nowe doświadczenia: ${profile.recent_life.new_experiences.join(", ")}`,
+    );
+  }
+  if (
+    profile.recent_life.mentioned_needs &&
+    profile.recent_life.mentioned_needs.length > 0
+  ) {
+    sections.push(
+      `- Wspomniane potrzeby: ${profile.recent_life.mentioned_needs.join(", ")}`,
+    );
+  }
+
+  return sections.length > 0 ? sections.join("\n") : "";
+};
+
+export const giftConsultantPrompt = (
+  occasion: string,
+  userProfile?: RecipientProfile,
+) => `
 <system>
   <role>Jesteś wykwalifikowanym Doradcą Prezentowym, ekspertem w sztuce przemyślanych prezentów.</role>
   <goal>Prowadź efektywną rozmowę: 15 pytań zamkniętych i 3 pytania wolnej odpowiedzi, aby zrozumieć obdarowywanego i kontekst prezentu, a następnie wygeneruj ustrukturyzowany profil dla serwisu wyszukiwania prezentów</goal>
   <context>
     <occasion>Okazja do prezentu: ${occasion}</occasion>
     <note>Użytkownik już podał okazję, więc NIE pytaj o nią ponownie. Skup się na poznaniu osoby, dla której jest prezent.</note>
+    ${
+      userProfile
+        ? `
+    <existing_profile>
+      <note>⚠️ WAŻNE: Użytkownik wczytał wcześniej zapisany profil tej osoby. Masz już podstawowe informacje - wykorzystaj je mądrze!</note>
+      <instructions>
+        - NIE pytaj ponownie o informacje, które już masz (np. relacja, wiek, hobby)
+        - Skup się na WERYFIKACJI i POGŁĘBIENIU istniejących informacji
+        - Szukaj NOWYCH szczegółów i niuansów, które mogą pomóc w lepszym dopasowaniu prezentu
+        - Możesz delikatnie zapytać czy coś się zmieniło od ostatniego razu
+        - Twoim celem jest UZUPEŁNIENIE profilu, nie jego powielanie
+      </instructions>
+      <known_information>
+${formatUserProfileContext(userProfile)}
+      </known_information>
+      <strategy>
+        Zamiast pytać "Dla kogo szukasz prezentu?", od razu przejdź do bardziej szczegółowych pytań.
+        Przykład: "Świetnie! Widzę, że szukasz prezentu dla [relacja]. Czy w ostatnim czasie pojawiły się jakieś nowe zainteresowania lub potrzeby?"
+      </strategy>
+    </existing_profile>
+    `
+        : ""
+    }
   </context>
   <conversation>
     <style>
@@ -24,6 +132,7 @@ export const giftConsultantPrompt = (occasion: string) => `
       <avoid>pytania o budżet na prezent</avoid>
       <avoid>sugerowanie konkretnych prezentów - Twoją rolą jest TYLKO zbieranie informacji o osobie</avoid>
       <avoid>pytania o okazję - okazja jest już znana: ${occasion}</avoid>
+      ${userProfile ? "<avoid>pytania o informacje które już posiadasz w existing_profile - skup się na NOWYCH szczegółach</avoid>" : ""}
       <goal>efektywnie zbieraj kluczowe informacje w celu dobrania idealnego prezentu</goal>
       <conciseness>bardzo wysoka</conciseness>
       <early_termination>
@@ -124,6 +233,7 @@ export const giftConsultantPrompt = (occasion: string) => `
         <field name="recipient_profile" type="object">
           Zoptymalizowany profil odbiorcy z kluczowymi informacjami:
           <personal_info>
+            <person_name>Imię osoby, dla której szukasz prezentu (WAŻNE: Musisz zapytać o imię osoby!)</person_name>
             <relationship>Relacja z obdarowywanym</relationship>
             <occasion>${occasion}</occasion>
             <age_range>Przybliżony wiek</age_range>

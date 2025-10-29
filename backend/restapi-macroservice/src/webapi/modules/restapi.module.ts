@@ -8,16 +8,20 @@ import { ResourceOwnershipGuard } from "src/app/guards/resource-ownership.guard"
 import { AddToFavoritesHandler } from "src/app/handlers/add-to-favorites.handler";
 import { ChatCompletedNotifyUserHandler } from "src/app/handlers/chat-completed-notify-user.handler";
 import { ChatInappropriateRequestHandler } from "src/app/handlers/chat-inappropriate-request.handler";
+import { ChatInterviewCompletedHandler } from "src/app/handlers/chat-interview-completed.handler";
 import { ChatQuestionAskedHandler } from "src/app/handlers/chat-question-asked.handler";
 import { GetChatListingsHandler } from "src/app/handlers/get-chat-listings.handler";
 import { GetChatMessagesHandler } from "src/app/handlers/get-chat-messages.handler";
 import { GetUserChatsHandler } from "src/app/handlers/get-user-chats.handler";
 import { GetUserFavoritesHandler } from "src/app/handlers/get-user-favorites.handler";
+import { GetUserProfileByIdHandler } from "src/app/handlers/get-user-profile-by-id.handler";
+import { GetUserProfilesHandler } from "src/app/handlers/get-user-profiles.handler";
 import { GiftReadyHandler } from "src/app/handlers/gift-ready.handler";
 import { NotifyUserSseHandler } from "src/app/handlers/notify-user-sse.handler";
 import { RemoveFromFavoritesHandler } from "src/app/handlers/remove-from-favorites.handler";
 import { SaveListingsHandler } from "src/app/handlers/save-listings.handler";
 import { SaveMessageHandler } from "src/app/handlers/save-message.handler";
+import { SaveUserProfileHandler } from "src/app/handlers/save-user-profile.handler";
 import { SendUserMessageHandler } from "src/app/handlers/send-user-message.handler";
 import { StartProcessingCommandHandler } from "src/app/handlers/start-processing.handler";
 import { ValidateGoogleTokenHandler } from "src/app/handlers/validate-google-token.command";
@@ -27,14 +31,17 @@ import { JwtStrategy } from "src/app/strategies/jwt.strategy";
 import { ChatDatabaseRepository } from "src/data/chat.database.repository";
 import { ListingDatabaseRepository } from "src/data/listing.database.repository";
 import { MessageDatabaseRepository } from "src/data/message.database.repository";
+import { UserProfileDatabaseRepository } from "src/data/user-profile.database.repository";
 import { UserDatabaseRepository } from "src/data/user.database.repository";
 import { Chat } from "src/domain/entities/chat.entity";
 import { Listing } from "src/domain/entities/listing.entity";
 import { Message } from "src/domain/entities/message.entity";
+import { UserProfile } from "src/domain/entities/user-profile.entity";
 import { User } from "src/domain/entities/user.entity";
 import { IChatRepository } from "src/domain/repositories/ichat.repository";
 import { IListingRepository } from "src/domain/repositories/ilisting.repository";
 import { IMessageRepository } from "src/domain/repositories/imessage.repository";
+import { IUserProfileRepository } from "src/domain/repositories/iuser-profile.repository";
 import { IUserRepository } from "src/domain/repositories/iuser.repository";
 
 import { Module } from "@nestjs/common";
@@ -51,6 +58,7 @@ import { FavoritesController } from "../controllers/favorites.controller";
 import { MessagesController } from "../controllers/messages.controller";
 import { RestApiController } from "../controllers/restapi.controller";
 import { SseController } from "../controllers/sse.controller";
+import { UserProfileController } from "../controllers/user-profile.controller";
 
 @Module({
   imports: [
@@ -106,14 +114,14 @@ import { SseController } from "../controllers/sse.controller";
             "restapi_password",
           database:
             configService.get<string>("DATABASE_NAME") ?? "restapi_service",
-          entities: [User, Chat, Listing, Message],
+          entities: [User, Chat, Listing, Message, UserProfile],
           synchronize: true, // Only for development
           logging: false,
         };
       },
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, Chat, Listing, Message]),
+    TypeOrmModule.forFeature([User, Chat, Listing, Message, UserProfile]),
     ClientsModule.register([
       {
         name: "STALKING_ANALYZE_REQUESTED_EVENT",
@@ -162,9 +170,11 @@ import { SseController } from "../controllers/sse.controller";
     ChatController,
     FavoritesController,
     MessagesController,
+    UserProfileController,
     ChatQuestionAskedHandler,
     ChatInappropriateRequestHandler,
     ChatCompletedNotifyUserHandler,
+    ChatInterviewCompletedHandler,
     GiftReadyHandler,
     SseController,
   ],
@@ -182,6 +192,9 @@ import { SseController } from "../controllers/sse.controller";
     GetChatMessagesHandler,
     GetChatListingsHandler,
     SaveListingsHandler,
+    SaveUserProfileHandler,
+    GetUserProfilesHandler,
+    GetUserProfileByIdHandler,
 
     // Services
     SseService,
@@ -208,6 +221,10 @@ import { SseController } from "../controllers/sse.controller";
     {
       provide: IMessageRepository,
       useClass: MessageDatabaseRepository,
+    },
+    {
+      provide: IUserProfileRepository,
+      useClass: UserProfileDatabaseRepository,
     },
   ],
 })

@@ -17,7 +17,12 @@ export class ChatStartInterviewHandler {
     );
 
     await this.commandBus.execute(
-      new GenerateQuestionCommand(event.chatId, event.occasion, []),
+      new GenerateQuestionCommand(
+        event.chatId,
+        event.occasion,
+        [],
+        event.userProfile,
+      ),
     );
   }
 }

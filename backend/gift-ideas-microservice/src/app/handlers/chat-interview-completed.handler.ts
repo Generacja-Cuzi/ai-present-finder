@@ -22,6 +22,8 @@ export class ChatInterviewCompletedHandler {
         event.chatId,
         event.profile.recipient_profile,
         event.profile.key_themes_and_keywords,
+        event.profile.save_profile,
+        event.profile.profile_name,
       ),
     );
   }

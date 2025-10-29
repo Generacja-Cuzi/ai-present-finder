@@ -106,20 +106,10 @@ async function bootstrap() {
     },
   };
 
-  const chatInterviewCompletedMicroserviceOptions = {
-    transport: Transport.RMQ,
-    options: {
-      urls: [cloudAmqpUrl],
-      queue: ChatInterviewCompletedEvent.name,
-      queueOptions: { durable: false },
-    },
-  };
-
   app.connectMicroservice(chatQuestionAskedMicroserviceOptions);
   app.connectMicroservice(giftReadyMicroserviceOptions);
   app.connectMicroservice(chatInappropriateRequestMicroserviceOptions);
   app.connectMicroservice(chatCompletedNotifyUserMicroserviceOptions);
-  app.connectMicroservice(chatInterviewCompletedMicroserviceOptions);
 
   await app.startAllMicroservices();
   await app.listen(port);

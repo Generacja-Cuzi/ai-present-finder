@@ -31,7 +31,18 @@ export class GenerateGiftIdeasHandler
   ) {}
 
   async execute(command: GenerateGiftIdeasCommand): Promise<void> {
-    const { userProfile, keywords, keyThemes, chatId } = command;
+    const {
+      userProfile,
+      keywords,
+      keyThemes,
+      chatId,
+      saveProfile,
+      profileName,
+    } = command;
+
+    this.logger.log(
+      `GenerateGiftIdeasCommand received: chatId=${chatId}, saveProfile=${String(saveProfile)}, profileName=${String(profileName)}, keywords=${JSON.stringify(keywords)}, keyThemes=${JSON.stringify(keyThemes)}`,
+    );
 
     try {
       const giftIdeasOutput = await giftIdeasFlow({
@@ -54,15 +65,24 @@ export class GenerateGiftIdeasHandler
       const eventId = ulid();
       const totalEvents = filteredSearchQueries.length;
 
+      // Combine stalking keywords and interview key themes for gift context
+      const combinedKeywords = [...keywords, ...keyThemes];
+
+      this.logger.log(
+        `Sending GiftContextInitializedEvent with keywords: ${JSON.stringify(combinedKeywords)}`,
+      );
+
       // Send gift context to reranking service
       this.rerankingEventBus.emit(
         GiftContextInitializedEvent.name,
         new GiftContextInitializedEvent(
           userProfile,
-          keywords,
+          combinedKeywords,
           chatId,
           eventId,
           totalEvents,
+          saveProfile,
+          profileName,
         ),
       );
 

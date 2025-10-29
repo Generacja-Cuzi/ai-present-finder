@@ -55,6 +55,8 @@ export class GiftSession {
   giftContext?: {
     userProfile: RecipientProfile | null;
     keywords: string[];
+    saveProfile?: boolean;
+    profileName?: string | null;
   } | null;
 
   @OneToMany(() => GiftSessionProduct, (product) => product.session)

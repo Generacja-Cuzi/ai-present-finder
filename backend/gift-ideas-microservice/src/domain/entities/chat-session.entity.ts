@@ -57,6 +57,20 @@ export class ChatSession {
   giftGenerationTriggered: boolean;
 
   @Column({
+    name: "save_profile",
+    type: "boolean",
+    nullable: true,
+  })
+  saveProfile?: boolean | null;
+
+  @Column({
+    name: "profile_name",
+    type: "varchar",
+    nullable: true,
+  })
+  profileName?: string | null;
+
+  @Column({
     name: "created_at",
     type: "timestamp",
     default: () => "CURRENT_TIMESTAMP",

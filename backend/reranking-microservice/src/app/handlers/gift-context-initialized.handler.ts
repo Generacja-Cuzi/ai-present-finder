@@ -17,6 +17,9 @@ export class GiftContextInitializedHandler {
     this.logger.log(
       `Handling GiftContextInitializedEvent for chat ${event.chatId}`,
     );
+    this.logger.log(
+      `Event data: saveProfile=${String(event.saveProfile)}, profileName=${String(event.profileName)}, keywords=${JSON.stringify(event.keywords)}`,
+    );
 
     await this.commandBus.execute(
       new InitializeGiftContextCommand(
@@ -25,6 +28,8 @@ export class GiftContextInitializedHandler {
         event.totalEvents,
         event.userProfile,
         event.keywords,
+        event.saveProfile,
+        event.profileName,
       ),
     );
   }

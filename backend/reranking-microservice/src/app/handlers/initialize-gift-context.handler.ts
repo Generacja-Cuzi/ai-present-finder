@@ -22,7 +22,15 @@ export class InitializeGiftContextHandler
   ) {}
 
   async execute(command: InitializeGiftContextCommand): Promise<void> {
-    const { eventId, chatId, totalEvents, userProfile, keywords } = command;
+    const {
+      eventId,
+      chatId,
+      totalEvents,
+      userProfile,
+      keywords,
+      saveProfile,
+      profileName,
+    } = command;
 
     const existingSession = await this.giftSessionRepository.findOne({
       where: { eventId },
@@ -38,6 +46,8 @@ export class InitializeGiftContextHandler
         giftContext: {
           userProfile,
           keywords,
+          saveProfile,
+          profileName,
         },
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -50,6 +60,8 @@ export class InitializeGiftContextHandler
         giftContext: {
           userProfile,
           keywords,
+          saveProfile,
+          profileName,
         },
         updatedAt: new Date(),
       });

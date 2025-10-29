@@ -7,5 +7,7 @@ export class InitializeGiftContextCommand {
     public readonly totalEvents: number,
     public readonly userProfile: RecipientProfile | null,
     public readonly keywords: string[],
+    public readonly saveProfile?: boolean,
+    public readonly profileName?: string | null,
   ) {}
 }

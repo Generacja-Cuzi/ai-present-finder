@@ -8,7 +8,6 @@ import { ResourceOwnershipGuard } from "src/app/guards/resource-ownership.guard"
 import { AddToFavoritesHandler } from "src/app/handlers/add-to-favorites.handler";
 import { ChatCompletedNotifyUserHandler } from "src/app/handlers/chat-completed-notify-user.handler";
 import { ChatInappropriateRequestHandler } from "src/app/handlers/chat-inappropriate-request.handler";
-import { ChatInterviewCompletedHandler } from "src/app/handlers/chat-interview-completed.handler";
 import { ChatQuestionAskedHandler } from "src/app/handlers/chat-question-asked.handler";
 import { GetChatListingsHandler } from "src/app/handlers/get-chat-listings.handler";
 import { GetChatMessagesHandler } from "src/app/handlers/get-chat-messages.handler";
@@ -174,7 +173,6 @@ import { UserProfileController } from "../controllers/user-profile.controller";
     ChatQuestionAskedHandler,
     ChatInappropriateRequestHandler,
     ChatCompletedNotifyUserHandler,
-    ChatInterviewCompletedHandler,
     GiftReadyHandler,
     SseController,
   ],

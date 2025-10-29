@@ -128,10 +128,6 @@ export class ListingDatabaseRepository implements IListingRepository {
       relations: ["chat"],
     });
 
-    if (listing === null || listing.chat === null) {
-      return false;
-    }
-
-    return listing.chat.userId === userId;
+    return listing?.chat?.userId === userId;
   }
 }

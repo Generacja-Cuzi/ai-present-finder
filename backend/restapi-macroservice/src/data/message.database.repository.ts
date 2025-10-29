@@ -40,10 +40,12 @@ export class MessageDatabaseRepository implements IMessageRepository {
       relations: ["chat"],
     });
 
-    if (message === null || message.chat === null) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (message === null || message === undefined) {
       return false;
     }
 
-    return message.chat.userId === userId;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    return message.chat?.userId === userId;
   }
 }

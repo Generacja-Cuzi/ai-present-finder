@@ -1,11 +1,12 @@
 import {
-  ChatCompletedNotifyUserEvent,
   ChatInappropriateRequestEvent,
-  ChatInterviewCompletedEvent,
   ChatQuestionAskedEvent,
 } from "@core/events";
 import { GenerateQuestionCommand } from "src/domain/commands/generate-question.command";
-import { ChatSession } from "src/domain/entities/chat-session.entity";
+import {
+  ChatSession,
+  ChatSessionPhase,
+} from "src/domain/entities/chat-session.entity";
 import { Repository } from "typeorm";
 
 import { Inject, Logger } from "@nestjs/common";
@@ -57,7 +58,7 @@ export class GenerateQuestionHandler
       const occasionLabel = this.getOccasionLabel(occasion);
 
       // If user profile exists, skip the first question about who the gift is for
-      if (userProfile) {
+      if (userProfile !== undefined) {
         const relationship =
           userProfile.personal_info.relationship ?? "tej osoby";
         const mockQuestion = `Świetnie! Mam już podstawowe informacje o ${relationship}. Powiedz mi, jak ${relationship} spędza wolny czas?`;
@@ -151,13 +152,17 @@ export class GenerateQuestionHandler
         );
 
         // Zapisz dane profilu tymczasowo w sesji
-        await this.chatSessionRepository.update(
-          { chatId },
-          {
-            phase: "ask_save_profile",
-            pendingProfileData: output as any,
-          },
-        );
+        const session = await this.chatSessionRepository.findOne({
+          where: { chatId },
+        });
+        if (session !== null) {
+          session.phase = "ask_save_profile" as ChatSessionPhase;
+          session.pendingProfileData = structuredClone(output) as Record<
+            string,
+            unknown
+          >;
+          await this.chatSessionRepository.save(session);
+        }
 
         // Zadaj pytanie o zapisanie profilu
         const saveProfileQuestion =

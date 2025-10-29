@@ -8,7 +8,7 @@ export class ChatInterviewCompletedHandler {
   private readonly logger = new Logger(ChatInterviewCompletedHandler.name);
 
   @EventPattern(ChatInterviewCompletedEvent.name)
-  async handle(event: ChatInterviewCompletedEvent) {
+  handle(event: ChatInterviewCompletedEvent) {
     this.logger.log(
       `ChatInterviewCompleted event received for chatId: ${event.chatId} - ignoring (profile will be saved with GiftReadyEvent)`,
     );

@@ -30,7 +30,7 @@ export class ChatSession {
     type: "jsonb",
     nullable: true,
   })
-  pendingProfileData?: any;
+  pendingProfileData?: Record<string, unknown>;
 
   @Column({
     name: "save_profile_choice",

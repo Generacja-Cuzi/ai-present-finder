@@ -4,36 +4,62 @@ const formatUserProfileContext = (profile: RecipientProfile): string => {
   const sections: string[] = [];
 
   // Personal info
-  if (profile.personal_info.person_name) {
+  if (
+    profile.personal_info.person_name !== null &&
+    profile.personal_info.person_name !== undefined &&
+    profile.personal_info.person_name !== ""
+  ) {
     sections.push(`- Imię: ${profile.personal_info.person_name}`);
   }
-  if (profile.personal_info.relationship) {
+  if (
+    profile.personal_info.relationship !== null &&
+    profile.personal_info.relationship !== undefined &&
+    profile.personal_info.relationship !== ""
+  ) {
     sections.push(`- Relacja: ${profile.personal_info.relationship}`);
   }
-  if (profile.personal_info.age_range) {
+  if (
+    profile.personal_info.age_range !== null &&
+    profile.personal_info.age_range !== undefined &&
+    profile.personal_info.age_range !== ""
+  ) {
     sections.push(`- Wiek: ${profile.personal_info.age_range}`);
   }
 
   // Lifestyle
   if (
-    profile.lifestyle.primary_hobbies &&
+    profile.lifestyle.primary_hobbies !== null &&
+    profile.lifestyle.primary_hobbies !== undefined &&
     profile.lifestyle.primary_hobbies.length > 0
   ) {
     sections.push(`- Hobby: ${profile.lifestyle.primary_hobbies.join(", ")}`);
   }
-  if (profile.lifestyle.daily_routine) {
+  if (
+    profile.lifestyle.daily_routine !== null &&
+    profile.lifestyle.daily_routine !== undefined &&
+    profile.lifestyle.daily_routine !== ""
+  ) {
     sections.push(`- Codzienna rutyna: ${profile.lifestyle.daily_routine}`);
   }
-  if (profile.lifestyle.work_style) {
+  if (
+    profile.lifestyle.work_style !== null &&
+    profile.lifestyle.work_style !== undefined &&
+    profile.lifestyle.work_style !== ""
+  ) {
     sections.push(`- Styl pracy: ${profile.lifestyle.work_style}`);
   }
 
   // Preferences
-  if (profile.preferences.home_aesthetic) {
+  if (
+    profile.preferences.home_aesthetic !== null &&
+    profile.preferences.home_aesthetic !== undefined &&
+    profile.preferences.home_aesthetic !== ""
+  ) {
     sections.push(`- Estetyka domu: ${profile.preferences.home_aesthetic}`);
   }
   if (
-    profile.preferences.favorite_beverages &&
+    profile.preferences.favorite_beverages !== null &&
+    profile.preferences.favorite_beverages !== undefined &&
     profile.preferences.favorite_beverages.length > 0
   ) {
     sections.push(
@@ -43,7 +69,8 @@ const formatUserProfileContext = (profile: RecipientProfile): string => {
 
   // Media interests
   if (
-    profile.media_interests.favorite_books &&
+    profile.media_interests.favorite_books !== null &&
+    profile.media_interests.favorite_books !== undefined &&
     profile.media_interests.favorite_books.length > 0
   ) {
     sections.push(
@@ -51,7 +78,8 @@ const formatUserProfileContext = (profile: RecipientProfile): string => {
     );
   }
   if (
-    profile.media_interests.music_preferences &&
+    profile.media_interests.music_preferences !== null &&
+    profile.media_interests.music_preferences !== undefined &&
     profile.media_interests.music_preferences.length > 0
   ) {
     sections.push(
@@ -61,7 +89,8 @@ const formatUserProfileContext = (profile: RecipientProfile): string => {
 
   // Recent life
   if (
-    profile.recent_life.new_experiences &&
+    profile.recent_life.new_experiences !== null &&
+    profile.recent_life.new_experiences !== undefined &&
     profile.recent_life.new_experiences.length > 0
   ) {
     sections.push(
@@ -69,7 +98,8 @@ const formatUserProfileContext = (profile: RecipientProfile): string => {
     );
   }
   if (
-    profile.recent_life.mentioned_needs &&
+    profile.recent_life.mentioned_needs !== null &&
+    profile.recent_life.mentioned_needs !== undefined &&
     profile.recent_life.mentioned_needs.length > 0
   ) {
     sections.push(
@@ -92,8 +122,9 @@ export const giftConsultantPrompt = (
     <occasion>Okazja do prezentu: ${occasion}</occasion>
     <note>Użytkownik już podał okazję, więc NIE pytaj o nią ponownie. Skup się na poznaniu osoby, dla której jest prezent.</note>
     ${
-      userProfile
-        ? `
+      userProfile === undefined
+        ? ""
+        : `
     <existing_profile>
       <note>⚠️ WAŻNE: Użytkownik wczytał wcześniej zapisany profil tej osoby. Masz już podstawowe informacje - wykorzystaj je mądrze!</note>
       <instructions>
@@ -112,7 +143,6 @@ ${formatUserProfileContext(userProfile)}
       </strategy>
     </existing_profile>
     `
-        : ""
     }
   </context>
   <conversation>
@@ -133,7 +163,7 @@ ${formatUserProfileContext(userProfile)}
       <avoid>pytania o budżet na prezent</avoid>
       <avoid>sugerowanie konkretnych prezentów - Twoją rolą jest TYLKO zbieranie informacji o osobie</avoid>
       <avoid>pytania o okazję - okazja jest już znana: ${occasion}</avoid>
-      ${userProfile ? "<avoid>pytania o informacje które już posiadasz w existing_profile - skup się na NOWYCH szczegółach</avoid>" : ""}
+      ${userProfile === undefined ? "" : "<avoid>pytania o informacje które już posiadasz w existing_profile - skup się na NOWYCH szczegółach</avoid>"}
       <goal>efektywnie zbieraj kluczowe informacje w celu dobrania idealnego prezentu</goal>
       <conciseness>bardzo wysoka</conciseness>
       <early_termination>

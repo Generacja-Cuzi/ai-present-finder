@@ -2,6 +2,7 @@ import {
   ChatStartInterviewEvent,
   StalkingAnalyzeRequestedEvent,
 } from "@core/events";
+import type { RecipientProfile } from "@core/types";
 
 import { Inject, Logger } from "@nestjs/common";
 import { CommandHandler, ICommandHandler, QueryBus } from "@nestjs/cqrs";
@@ -50,19 +51,22 @@ export class StartProcessingCommandHandler
     this.logger.log(`Verified chat exists in DB: ${verifiedChat.id}`);
 
     // Load user profile if profileId is provided
-    let userProfile;
-    if (analyzeRequestedDto.profileId) {
+    let userProfile: RecipientProfile | undefined;
+    if (
+      analyzeRequestedDto.profileId !== undefined &&
+      analyzeRequestedDto.profileId !== ""
+    ) {
       try {
         const profile = await this.queryBus.execute(
           new GetUserProfileByIdQuery(analyzeRequestedDto.profileId, userId),
         );
-        userProfile = profile.profile;
+        userProfile = profile.profile as RecipientProfile;
         this.logger.log(
           `Loaded user profile ${analyzeRequestedDto.profileId} for chat`,
         );
       } catch (error) {
         this.logger.warn(
-          `Failed to load profile ${analyzeRequestedDto.profileId}: ${error}`,
+          `Failed to load profile ${analyzeRequestedDto.profileId}: ${String(error)}`,
         );
       }
     }

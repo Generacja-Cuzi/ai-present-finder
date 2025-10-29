@@ -1,80 +1,80 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 class RecipientPersonalInfo {
-  @ApiProperty({ required: false, nullable: true, type: String })
+  @ApiPropertyOptional({ nullable: true, type: String })
   person_name?: string | null;
 
-  @ApiProperty({ required: false, nullable: true, type: String })
+  @ApiPropertyOptional({ nullable: true, type: String })
   relationship?: string | null;
 
-  @ApiProperty({ required: false, nullable: true, type: String })
+  @ApiPropertyOptional({ nullable: true, type: String })
   occasion?: string | null;
 
-  @ApiProperty({ required: false, nullable: true, type: String })
+  @ApiPropertyOptional({ nullable: true, type: String })
   age_range?: string | null;
 }
 
 class RecipientLifestyle {
-  @ApiProperty({ required: false, nullable: true, type: [String] })
+  @ApiPropertyOptional({ nullable: true, type: [String] })
   primary_hobbies?: string[] | null;
 
-  @ApiProperty({ required: false, nullable: true, type: String })
+  @ApiPropertyOptional({ nullable: true, type: String })
   daily_routine?: string | null;
 
-  @ApiProperty({ required: false, nullable: true, type: [String] })
+  @ApiPropertyOptional({ nullable: true, type: [String] })
   relaxation_methods?: string[] | null;
 
-  @ApiProperty({ required: false, nullable: true, type: String })
+  @ApiPropertyOptional({ nullable: true, type: String })
   work_style?: string | null;
 }
 
 class RecipientPreferences {
-  @ApiProperty({ required: false, nullable: true, type: String })
+  @ApiPropertyOptional({ nullable: true, type: String })
   home_aesthetic?: string | null;
 
-  @ApiProperty({ required: false, nullable: true, type: [String] })
+  @ApiPropertyOptional({ nullable: true, type: [String] })
   valued_items?: string[] | null;
 
-  @ApiProperty({ required: false, nullable: true, type: [String] })
+  @ApiPropertyOptional({ nullable: true, type: [String] })
   favorite_beverages?: string[] | null;
 
-  @ApiProperty({ required: false, nullable: true, type: [String] })
+  @ApiPropertyOptional({ nullable: true, type: [String] })
   comfort_foods?: string[] | null;
 }
 
 class RecipientMediaInterests {
-  @ApiProperty({ required: false, nullable: true, type: [String] })
+  @ApiPropertyOptional({ nullable: true, type: [String] })
   favorite_books?: string[] | null;
 
-  @ApiProperty({ required: false, nullable: true, type: [String] })
+  @ApiPropertyOptional({ nullable: true, type: [String] })
   must_watch_shows?: string[] | null;
 
-  @ApiProperty({ required: false, nullable: true, type: [String] })
+  @ApiPropertyOptional({ nullable: true, type: [String] })
   podcasts?: string[] | null;
 
-  @ApiProperty({ required: false, nullable: true, type: [String] })
+  @ApiPropertyOptional({ nullable: true, type: [String] })
   music_preferences?: string[] | null;
 }
 
 class RecipientRecentLife {
-  @ApiProperty({ required: false, nullable: true, type: [String] })
+  @ApiPropertyOptional({ nullable: true, type: [String] })
   new_experiences?: string[] | null;
 
-  @ApiProperty({ required: false, nullable: true, type: [String] })
+  @ApiPropertyOptional({ nullable: true, type: [String] })
   mentioned_needs?: string[] | null;
 
-  @ApiProperty({ required: false, nullable: true, type: [String] })
+  @ApiPropertyOptional({ nullable: true, type: [String] })
   recent_achievements?: string[] | null;
 }
 
 class RecipientGiftContext {
-  @ApiProperty({ required: false, nullable: true, type: String })
+  @ApiPropertyOptional({ nullable: true, type: String })
   occasion_significance?: string | null;
 
-  @ApiProperty({ required: false, nullable: true, type: String })
+  @ApiPropertyOptional({ nullable: true, type: String })
   gift_message?: string | null;
 
-  @ApiProperty({ required: false, nullable: true, type: [String] })
+  @ApiPropertyOptional({ nullable: true, type: [String] })
   previous_gift_successes?: string[] | null;
 }
 
@@ -133,6 +133,7 @@ export class UserProfileDto {
     description: "Key themes and keywords",
     type: [String],
     example: ["cooking", "gardening", "relaxation"],
+    isArray: true,
   })
   keyThemes: string[];
 
@@ -153,6 +154,7 @@ export class UserProfilesResponseDto {
   @ApiProperty({
     description: "List of user profiles",
     type: [UserProfileDto],
+    isArray: true,
   })
   profiles: UserProfileDto[];
 }

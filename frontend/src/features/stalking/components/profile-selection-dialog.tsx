@@ -48,9 +48,9 @@ export function ProfileSelectionDialog({
     return profiles.filter((profile) => {
       const personName = profile.personName.toLowerCase();
       const relationship =
-        profile.profile.personal_info.relationship?.toLowerCase?.() ?? "";
+        profile.profile.personal_info.relationship?.toLowerCase() ?? "";
       const occasion =
-        profile.profile.personal_info.occasion?.toLowerCase?.() ?? "";
+        profile.profile.personal_info.occasion?.toLowerCase() ?? "";
 
       return (
         personName.includes(query) ||
@@ -81,7 +81,9 @@ export function ProfileSelectionDialog({
             <Input
               placeholder="Szukaj po imieniu, relacji lub okazji..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(event) => {
+                setSearchQuery(event.target.value);
+              }}
               className="pl-9"
             />
           </div>
@@ -93,9 +95,9 @@ export function ProfileSelectionDialog({
           ) : filteredProfiles.length === 0 ? (
             <div className="flex h-[300px] items-center justify-center">
               <div className="text-muted-foreground text-center">
-                {searchQuery
-                  ? "Nie znaleziono profili"
-                  : "Nie masz jeszcze żadnych zapisanych profili"}
+                {searchQuery === ""
+                  ? "Nie masz jeszcze żadnych zapisanych profili"
+                  : "Nie znaleziono profili"}
               </div>
             </div>
           ) : (
@@ -104,7 +106,9 @@ export function ProfileSelectionDialog({
                 {filteredProfiles.map((profile) => (
                   <button
                     key={profile.id}
-                    onClick={() => handleSelectProfile(profile)}
+                    onClick={() => {
+                      handleSelectProfile(profile);
+                    }}
                     className="hover:border-primary focus:border-primary hover:bg-accent/50 focus:ring-primary/20 group w-full rounded-lg border-2 border-transparent bg-white p-4 text-left shadow-sm transition-all focus:outline-none focus:ring-2"
                   >
                     <div className="space-y-3">
@@ -117,21 +121,29 @@ export function ProfileSelectionDialog({
                               {profile.personName}
                             </h3>
                           </div>
-                          {profile.profile.personal_info.relationship && (
-                            <p className="text-muted-foreground mt-1 text-sm">
-                              {profile.profile.personal_info.relationship}
-                            </p>
-                          )}
+                          {profile.profile.personal_info.relationship !==
+                            null &&
+                            profile.profile.personal_info.relationship !==
+                              undefined &&
+                            profile.profile.personal_info.relationship !==
+                              "" && (
+                              <p className="text-muted-foreground mt-1 text-sm">
+                                {profile.profile.personal_info.relationship}
+                              </p>
+                            )}
                         </div>
-                        {profile.profile.personal_info.occasion && (
-                          <Badge
-                            variant="secondary"
-                            className="flex items-center gap-1.5"
-                          >
-                            <Calendar className="h-3 w-3" />
-                            {profile.profile.personal_info.occasion}
-                          </Badge>
-                        )}
+                        {profile.profile.personal_info.occasion !== null &&
+                          profile.profile.personal_info.occasion !==
+                            undefined &&
+                          profile.profile.personal_info.occasion !== "" && (
+                            <Badge
+                              variant="secondary"
+                              className="flex items-center gap-1.5"
+                            >
+                              <Calendar className="h-3 w-3" />
+                              {profile.profile.personal_info.occasion}
+                            </Badge>
+                          )}
                       </div>
 
                       {/* Key Themes */}
@@ -142,15 +154,17 @@ export function ProfileSelectionDialog({
                             <span>Główne zainteresowania</span>
                           </div>
                           <div className="flex flex-wrap gap-1.5">
-                            {profile.keyThemes.slice(0, 6).map((theme, idx) => (
-                              <Badge
-                                key={idx}
-                                variant="outline"
-                                className="bg-primary/5 text-primary border-primary/20 text-xs"
-                              >
-                                {theme}
-                              </Badge>
-                            ))}
+                            {profile.keyThemes
+                              .slice(0, 6)
+                              .map((theme, themeIndex) => (
+                                <Badge
+                                  key={themeIndex}
+                                  variant="outline"
+                                  className="bg-primary/5 text-primary border-primary/20 text-xs"
+                                >
+                                  {theme}
+                                </Badge>
+                              ))}
                             {profile.keyThemes.length > 6 && (
                               <Badge variant="outline" className="text-xs">
                                 +{profile.keyThemes.length - 6} więcej
@@ -173,7 +187,19 @@ export function ProfileSelectionDialog({
                             },
                           )}
                         </p>
-                        <span className="text-primary text-sm transition-transform group-hover:translate-x-1">
+                        <span
+                          className="text-primary text-sm transition-transform group-hover:translate-x-1"
+                          onClick={() => {
+                            handleSelectProfile(profile);
+                          }}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              handleSelectProfile(profile);
+                            }
+                          }}
+                          role="button"
+                          tabIndex={0}
+                        >
                           →
                         </span>
                       </div>
@@ -186,7 +212,12 @@ export function ProfileSelectionDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            variant="outline"
+            onClick={() => {
+              onOpenChange(false);
+            }}
+          >
             Anuluj
           </Button>
         </DialogFooter>

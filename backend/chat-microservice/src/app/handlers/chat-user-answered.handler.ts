@@ -4,6 +4,7 @@ import {
   ChatQuestionAskedEvent,
   ChatUserAnsweredEvent,
 } from "@core/events";
+import type { EndConversationOutput } from "src/app/ai/types";
 import { GenerateQuestionCommand } from "src/domain/commands/generate-question.command";
 import { ChatSession } from "src/domain/entities/chat-session.entity";
 import { GetOccasionQuery } from "src/domain/queries/get-occasion.query";
@@ -44,10 +45,10 @@ export class ChatUserAnsweredHandler {
 
     // Obsługa pytania o zapisanie profilu
     if (session.phase === "ask_save_profile") {
-      const lastMessage = event.messages[event.messages.length - 1];
+      const lastMessage = event.messages.at(-1);
       const wantsToSave =
-        lastMessage.content === "Tak, chcę zapisać profil" ||
-        lastMessage.content === "Tak";
+        lastMessage?.content === "Tak, chcę zapisać profil" ||
+        lastMessage?.content === "Tak";
 
       if (wantsToSave) {
         // Użytkownik chce zapisać - zadaj pytanie o nazwę
@@ -81,13 +82,13 @@ export class ChatUserAnsweredHandler {
           `User chose not to save profile for chat ${event.chatId}`,
         );
 
-        const output = session.pendingProfileData;
+        const output = session.pendingProfileData as EndConversationOutput;
 
         this.logger.log(
           `Pending profile data for chat ${event.chatId}: ${JSON.stringify(output)}`,
         );
 
-        const finalOutput = {
+        const finalOutput: EndConversationOutput = {
           ...output,
           save_profile: false,
           profile_name: null,
@@ -128,23 +129,23 @@ export class ChatUserAnsweredHandler {
 
     // Obsługa pytania o nazwę profilu
     if (session.phase === "ask_profile_name") {
-      const lastMessage = event.messages[event.messages.length - 1];
-      const profileName = lastMessage.content;
+      const lastMessage = event.messages.at(-1);
+      const profileName = lastMessage?.content ?? "";
 
-      const output = session.pendingProfileData;
+      const output = session.pendingProfileData as EndConversationOutput;
 
       this.logger.log(
         `Pending profile data for chat ${event.chatId}: ${JSON.stringify(output)}`,
       );
 
-      const finalOutput = {
+      const finalOutput: EndConversationOutput = {
         ...output,
         save_profile: true,
         profile_name: profileName,
       };
 
       this.logger.log(
-        `Final output for chat ${event.chatId}: save_profile=${finalOutput.save_profile}, profile_name=${finalOutput.profile_name}`,
+        `Final output for chat ${event.chatId}: save_profile=${String(finalOutput.save_profile)}, profile_name=${String(finalOutput.profile_name)}`,
       );
 
       await this.chatSessionRepository.update(

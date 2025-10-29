@@ -2,7 +2,6 @@
 import {
   ChatCompletedNotifyUserEvent,
   ChatInappropriateRequestEvent,
-  ChatInterviewCompletedEvent,
   ChatQuestionAskedEvent,
   GiftReadyEvent,
 } from "@core/events";

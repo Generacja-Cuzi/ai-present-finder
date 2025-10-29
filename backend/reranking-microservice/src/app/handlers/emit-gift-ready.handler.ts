@@ -118,7 +118,7 @@ export class EmitGiftReadyHandler
       const profile =
         recipientProfile !== null &&
         session.giftContext?.saveProfile !== undefined &&
-        session.giftContext?.profileName !== undefined
+        session.giftContext.profileName !== undefined
           ? {
               recipient_profile: recipientProfile,
               key_themes_and_keywords: keywords,

@@ -81,7 +81,7 @@ export function StalkingView() {
     <div className="bg-background flex min-h-screen flex-col pb-20">
       <StalkingHeader />
 
-      {showProfileQuestion && (
+      {showProfileQuestion ? (
         <div className="bg-card mx-6 my-4 rounded-lg border p-6 shadow-sm">
           <h3 className="mb-2 text-lg font-semibold">
             Czy chcesz wczytać profil osoby?
@@ -99,9 +99,9 @@ export function StalkingView() {
             </Button>
           </div>
         </div>
-      )}
+      ) : null}
 
-      {selectedProfile && (
+      {selectedProfile === null ? null : (
         <div className="border-primary/20 bg-primary/5 mx-6 mb-4 rounded-lg border p-4">
           <div className="mb-2 flex items-center justify-between">
             <span className="font-medium">
@@ -110,16 +110,20 @@ export function StalkingView() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setSelectedProfile(null)}
+              onClick={() => {
+                setSelectedProfile(null);
+              }}
             >
               Usuń
             </Button>
           </div>
-          {selectedProfile.profile.personal_info.relationship && (
-            <p className="text-muted-foreground text-sm">
-              Relacja: {selectedProfile.profile.personal_info.relationship}
-            </p>
-          )}
+          {selectedProfile.profile.personal_info.relationship !== null &&
+            selectedProfile.profile.personal_info.relationship !== undefined &&
+            selectedProfile.profile.personal_info.relationship !== "" && (
+              <p className="text-muted-foreground text-sm">
+                Relacja: {selectedProfile.profile.personal_info.relationship}
+              </p>
+            )}
         </div>
       )}
 

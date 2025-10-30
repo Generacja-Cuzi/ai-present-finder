@@ -47,30 +47,77 @@ deactivate REST
 note left: JWT zapisany w httpOnly cookie\nDostęp do chronionych endpointów
 
 == Start sesji (użytkownik zalogowany) ==
-U -> REST: POST /restapi/stalking-request\n{chatId, social URLs, occasion}\n+ JWT cookie
-activate REST
-REST -> REST: **JwtAuthGuard** - weryfikacja tokena
-REST -> REST: **StartProcessingCommand**
-REST -> DB: Create chat session
-activate DB
-DB --> REST: Chat entity
-deactivate DB
+
+alt Użytkownik ma zapisane profile
+  U -> REST: GET /restapi/user-profiles\n+ JWT cookie
+  activate REST
+  REST -> REST: **JwtAuthGuard** - weryfikacja tokena
+  REST -> REST: **GetUserProfilesQuery**\n{userId}
+  REST -> DB: Fetch saved profiles\n(z poprzednich sesji)
+  activate DB
+  DB --> REST: List<SavedProfile>\n[{profileId, recipientName, occasion, createdAt}]
+  deactivate DB
+  REST --> U: 200 OK\n{profiles: [...]}
+  deactivate REST
+  note left: Użytkownik może wybrać\nz listy zapisanych profili\nlub stworzyć nowy
+  
+  alt Użytkownik wybiera zapisany profil
+    U -> REST: POST /restapi/stalking-request\n{chatId, profileId, social URLs, occasion}\n+ JWT cookie
+    activate REST
+    REST -> REST: **JwtAuthGuard** - weryfikacja tokena
+    REST -> REST: **StartProcessingWithProfileCommand**
+    REST -> DB: Load saved profile\nCreate chat session with profileId reference
+    activate DB
+    DB --> REST: Chat entity + RecipientProfile
+    deactivate DB
+    note right: Wywiad zostaje pominięty,\nprofil załadowany z bazy
+  else Użytkownik tworzy nowy profil
+    U -> REST: POST /restapi/stalking-request\n{chatId, social URLs, occasion}\n+ JWT cookie
+    activate REST
+    REST -> REST: **JwtAuthGuard** - weryfikacja tokena
+    REST -> REST: **StartProcessingCommand**
+    REST -> DB: Create chat session
+    activate DB
+    DB --> REST: Chat entity
+    deactivate DB
+  end
+else Użytkownik nie ma zapisanych profili
+  U -> REST: POST /restapi/stalking-request\n{chatId, social URLs, occasion}\n+ JWT cookie
+  activate REST
+  REST -> REST: **JwtAuthGuard** - weryfikacja tokena
+  REST -> REST: **StartProcessingCommand**
+  REST -> DB: Create chat session
+  activate DB
+  DB --> REST: Chat entity
+  deactivate DB
+end
 
 par Przetwarzanie Równoległe
   REST -> STALK: **StalkingAnalyzeRequestedEvent**\n{chatId, URLs}
   activate STALK
   STALK -> STALK: **StalkingAnalyzeCommand**\n(analiza profili social media)
 else
-  REST -> CHAT: **ChatStartInterviewEvent**\n{chatId, occasion}
-  activate CHAT
-  CHAT -> CHAT: **SetOccasionCommand**\n{chatId, occasion}
-  CHAT -> DB: Create chat session record
-  activate DB
-  DB --> CHAT: Chat session
-  deactivate DB
+  alt Profil załadowany z bazy (profileId podany)
+    note over CHAT: Wywiad pominięty,\nprofil już istnieje w bazie
+    REST -> GIFT: **ChatInterviewCompletedEvent**\n{chatId, profile (from DB)}
+    activate GIFT
+    GIFT -> GIFT: **UpdateInterviewStatusCommand**\n(użyj załadowanego profilu)
+    GIFT -> DB: Update chat interview status
+    activate DB
+    DB --> GIFT: Updated chat
+    deactivate DB
+  else Nowa sesja (brak profileId)
+    REST -> CHAT: **ChatStartInterviewEvent**\n{chatId, occasion}
+    activate CHAT
+    CHAT -> CHAT: **SetOccasionCommand**\n{chatId, occasion}
+    CHAT -> DB: Create chat session record
+    activate DB
+    DB --> CHAT: Chat session
+    deactivate DB
+  end
 end
 
-== Interview loop ==
+== Interview loop (tylko gdy profil NIE był załadowany z bazy) ==
 loop Dopóki AI nie zdecyduje zakończyć lub niewłaściwe zachowanie usera
   CHAT -> CHAT: **GenerateQuestionCommand**\n(AI decyduje o następnym pytaniu)
   CHAT --> REST: **ChatQuestionAskedEvent**\n{chatId, question, potentialAnswers}
@@ -106,10 +153,24 @@ alt Wywiad zakończony pomyślnie
   activate DB
   DB --> GIFT: Updated chat
   deactivate DB
-  CHAT -> REST: **ChatCompletedNotifyUserEvent**\n{chatId}
+  CHAT -> REST: **ChatCompletedNotifyUserEvent**\n{chatId, profile}
   REST -> REST: **NotifyUserSseCommand**
-  REST -> U: SSE: chat-interview-completed
-  note left: Wywiad zakończony,\nekran ładowania
+  REST -> U: SSE: chat-interview-completed\n{profile}
+  note left: Wywiad zakończony,\nekran ładowania\n+ opcja zapisu profilu
+  
+  opt Użytkownik chce zapisać profil do późniejszego użycia
+    U -> REST: POST /restapi/save-profile\n{chatId, recipientName}\n+ JWT cookie
+    activate REST
+    REST -> REST: **JwtAuthGuard** - weryfikacja tokena
+    REST -> REST: **SaveUserProfileCommand**\n{userId, chatId, recipientName}
+    REST -> DB: Save RecipientProfile\n(from completed interview)\nas SavedProfile entity
+    activate DB
+    DB --> REST: SavedProfile entity\n{profileId, recipientName, occasion, profile}
+    deactivate DB
+    REST --> U: 201 Created\n{profileId, recipientName}
+    deactivate REST
+    note left: Profil zapisany,\ndostępny przy kolejnych\nsesji wyszukiwania
+  end
 else Wykryto niewłaściwe zachowanie
   CHAT -> CHAT: **flagInappropriateRequest** toolcall
   CHAT -> REST: **ChatInappropriateRequestEvent**\n{chatId, reason}

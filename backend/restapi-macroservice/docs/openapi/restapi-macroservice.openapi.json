@@ -557,6 +557,11 @@
         },
         "required": ["code"]
       },
+      "UserRole": {
+        "type": "string",
+        "enum": ["user", "admin"],
+        "description": "User role"
+      },
       "UserDto": {
         "type": "object",
         "properties": {
@@ -575,9 +580,18 @@
             "description": "User name",
             "example": "John Doe",
             "nullable": true
+          },
+          "role": {
+            "description": "User role",
+            "example": "user",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserRole"
+              }
+            ]
           }
         },
-        "required": ["id", "email", "name"]
+        "required": ["id", "email", "name", "role"]
       },
       "AuthResponseDto": {
         "type": "object",

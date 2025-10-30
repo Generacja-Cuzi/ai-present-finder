@@ -36,7 +36,7 @@ import { UserRole } from "../../domain/entities/user.entity";
 @ApiBearerAuth()
 @Controller("favorites")
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.USER)
+@Roles(UserRole.USER, UserRole.ADMIN)
 export class FavoritesController {
   constructor(
     private readonly commandBus: CommandBus,

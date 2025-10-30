@@ -384,6 +384,11 @@ export interface components {
              */
             code: string;
         };
+        /**
+         * @description User role
+         * @enum {string}
+         */
+        UserRole: "user" | "admin";
         UserDto: {
             /**
              * @description User ID
@@ -400,6 +405,11 @@ export interface components {
              * @example John Doe
              */
             name: string | null;
+            /**
+             * @description User role
+             * @example user
+             */
+            role: components["schemas"]["UserRole"];
         };
         AuthResponseDto: {
             /**

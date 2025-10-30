@@ -25,7 +25,7 @@ export class UserProfileController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.USER)
+  @Roles(UserRole.USER, UserRole.ADMIN)
   @ApiOperation({ summary: "Get all user profiles" })
   @ApiOkResponse({
     description: "Returns list of user profiles",
@@ -54,7 +54,7 @@ export class UserProfileController {
 
   @Get(":profileId")
   @UseGuards(JwtAuthGuard, RolesGuard, ResourceOwnershipGuard)
-  @Roles(UserRole.USER)
+  @Roles(UserRole.USER, UserRole.ADMIN)
   @RequireResourceOwnership({
     resourceType: ResourceType.USER_PROFILE,
     paramName: "profileId",

@@ -25,13 +25,13 @@ import { ResourceType } from "../../domain/models/resource-ownership.types";
 @ApiBearerAuth()
 @Controller("messages")
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.USER)
+@Roles(UserRole.USER, UserRole.ADMIN)
 export class MessagesController {
   constructor(private readonly queryBus: QueryBus) {}
 
   @Get("chat/:chatId")
   @UseGuards(JwtAuthGuard, RolesGuard, ResourceOwnershipGuard)
-  @Roles(UserRole.USER)
+  @Roles(UserRole.USER, UserRole.ADMIN)
   @RequireResourceOwnership({
     resourceType: ResourceType.CHAT,
     paramName: "chatId",

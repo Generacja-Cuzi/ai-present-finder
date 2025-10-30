@@ -28,7 +28,7 @@ export class ChatController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.USER)
+  @Roles(UserRole.USER, UserRole.ADMIN)
   @ApiOperation({ summary: "Get user's chat history" })
   @ApiOkResponse({
     description: "Returns list of user's chats",
@@ -55,7 +55,7 @@ export class ChatController {
 
   @Get(":chatId/listings")
   @UseGuards(JwtAuthGuard, RolesGuard, ResourceOwnershipGuard)
-  @Roles(UserRole.USER)
+  @Roles(UserRole.USER, UserRole.ADMIN)
   @RequireResourceOwnership({
     resourceType: ResourceType.CHAT,
     paramName: "chatId",

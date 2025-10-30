@@ -24,6 +24,7 @@ import { SaveUserProfileHandler } from "src/app/handlers/save-user-profile.handl
 import { SendUserMessageHandler } from "src/app/handlers/send-user-message.handler";
 import { StartProcessingCommandHandler } from "src/app/handlers/start-processing.handler";
 import { ValidateGoogleTokenHandler } from "src/app/handlers/validate-google-token.command";
+import { DatabaseSeederService } from "src/app/services/database-seeder.service";
 import { GoogleService } from "src/app/services/google-service";
 import { SseService } from "src/app/services/sse-service";
 import { JwtStrategy } from "src/app/strategies/jwt.strategy";
@@ -197,6 +198,7 @@ import { UserProfileController } from "../controllers/user-profile.controller";
     // Services
     SseService,
     GoogleService,
+    DatabaseSeederService,
 
     // Auth
     JwtStrategy,

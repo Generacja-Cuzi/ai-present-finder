@@ -38,7 +38,7 @@ export class RestApiController {
 
   @Post("stalking-request")
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.USER)
+  @Roles(UserRole.USER, UserRole.ADMIN)
   @ApiOperation({
     summary: "Request stalking analysis for provided social profiles",
   })
@@ -54,7 +54,7 @@ export class RestApiController {
 
   @Post("send-message")
   @UseGuards(JwtAuthGuard, RolesGuard, ResourceOwnershipGuard)
-  @Roles(UserRole.USER)
+  @Roles(UserRole.USER, UserRole.ADMIN)
   @RequireResourceOwnership({
     resourceType: ResourceType.CHAT,
     paramName: "chatId",

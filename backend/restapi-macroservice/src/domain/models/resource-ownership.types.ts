@@ -5,6 +5,7 @@ export enum ResourceType {
   CHAT = "chat",
   LISTING = "listing",
   MESSAGE = "message",
+  USER_PROFILE = "user_profile",
 }
 
 /**

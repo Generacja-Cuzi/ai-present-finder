@@ -14,6 +14,7 @@ import type { ResourceOwnershipConfig } from "../../../domain/models/resource-ow
 import { IChatRepository } from "../../../domain/repositories/ichat.repository";
 import { IListingRepository } from "../../../domain/repositories/ilisting.repository";
 import { IMessageRepository } from "../../../domain/repositories/imessage.repository";
+import { IUserProfileRepository } from "../../../domain/repositories/iuser-profile.repository";
 import { ResourceOwnershipGuard } from "../resource-ownership.guard";
 
 describe("ResourceOwnershipGuard", () => {
@@ -22,6 +23,7 @@ describe("ResourceOwnershipGuard", () => {
   let chatRepository: jest.Mocked<IChatRepository>;
   let listingRepository: jest.Mocked<IListingRepository>;
   let messageRepository: jest.Mocked<IMessageRepository>;
+  let _userProfileRepository: jest.Mocked<IUserProfileRepository>;
 
   const mockUser: User = {
     id: "user-123",
@@ -49,6 +51,10 @@ describe("ResourceOwnershipGuard", () => {
       isOwnedByUser: jest.fn(),
     };
 
+    const mockUserProfileRepo = {
+      isOwnedByUser: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ResourceOwnershipGuard,
@@ -65,6 +71,10 @@ describe("ResourceOwnershipGuard", () => {
           provide: IMessageRepository,
           useValue: mockMessageRepo,
         },
+        {
+          provide: IUserProfileRepository,
+          useValue: mockUserProfileRepo,
+        },
       ],
     }).compile();
 
@@ -73,6 +83,7 @@ describe("ResourceOwnershipGuard", () => {
     chatRepository = module.get(IChatRepository);
     listingRepository = module.get(IListingRepository);
     messageRepository = module.get(IMessageRepository);
+    _userProfileRepository = module.get(IUserProfileRepository);
   });
 
   const createMockExecutionContext = (

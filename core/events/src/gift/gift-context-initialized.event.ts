@@ -7,5 +7,7 @@ export class GiftContextInitializedEvent {
     public readonly chatId: string,
     public readonly eventId: string,
     public readonly totalEvents: number,
+    public readonly saveProfile?: boolean,
+    public readonly profileName?: string | null,
   ) {}
 }

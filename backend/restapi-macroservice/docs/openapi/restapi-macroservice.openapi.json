@@ -324,6 +324,55 @@
         "tags": ["messages"]
       }
     },
+    "/user-profiles": {
+      "get": {
+        "operationId": "UserProfileController_getUserProfiles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns list of user profiles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfilesResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all user profiles",
+        "tags": ["user-profiles"]
+      }
+    },
+    "/user-profiles/{profileId}": {
+      "get": {
+        "operationId": "UserProfileController_getUserProfile",
+        "parameters": [
+          {
+            "name": "profileId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a user profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get a specific user profile",
+        "tags": ["user-profiles"]
+      }
+    },
     "/sse": {
       "get": {
         "operationId": "SseController_sse",
@@ -436,6 +485,11 @@
           "chatId": {
             "type": "string",
             "description": "Chat identifier",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          },
+          "profileId": {
+            "type": "string",
+            "description": "Optional user profile ID to load existing profile",
             "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
           }
         },
@@ -831,6 +885,270 @@
           }
         },
         "required": ["messages"]
+      },
+      "RecipientPersonalInfo": {
+        "type": "object",
+        "properties": {
+          "person_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "relationship": {
+            "type": "string",
+            "nullable": true
+          },
+          "occasion": {
+            "type": "string",
+            "nullable": true
+          },
+          "age_range": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "RecipientLifestyle": {
+        "type": "object",
+        "properties": {
+          "primary_hobbies": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "daily_routine": {
+            "type": "string",
+            "nullable": true
+          },
+          "relaxation_methods": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "work_style": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "RecipientPreferences": {
+        "type": "object",
+        "properties": {
+          "home_aesthetic": {
+            "type": "string",
+            "nullable": true
+          },
+          "valued_items": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "favorite_beverages": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "comfort_foods": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "RecipientMediaInterests": {
+        "type": "object",
+        "properties": {
+          "favorite_books": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "must_watch_shows": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "podcasts": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "music_preferences": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "RecipientRecentLife": {
+        "type": "object",
+        "properties": {
+          "new_experiences": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "mentioned_needs": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "recent_achievements": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "RecipientGiftContext": {
+        "type": "object",
+        "properties": {
+          "occasion_significance": {
+            "type": "string",
+            "nullable": true
+          },
+          "gift_message": {
+            "type": "string",
+            "nullable": true
+          },
+          "previous_gift_successes": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "RecipientProfileDto": {
+        "type": "object",
+        "properties": {
+          "personal_info": {
+            "$ref": "#/components/schemas/RecipientPersonalInfo"
+          },
+          "lifestyle": {
+            "$ref": "#/components/schemas/RecipientLifestyle"
+          },
+          "preferences": {
+            "$ref": "#/components/schemas/RecipientPreferences"
+          },
+          "media_interests": {
+            "$ref": "#/components/schemas/RecipientMediaInterests"
+          },
+          "recent_life": {
+            "$ref": "#/components/schemas/RecipientRecentLife"
+          },
+          "gift_context": {
+            "$ref": "#/components/schemas/RecipientGiftContext"
+          }
+        },
+        "required": [
+          "personal_info",
+          "lifestyle",
+          "preferences",
+          "media_interests",
+          "recent_life",
+          "gift_context"
+        ]
+      },
+      "UserProfileDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Profile ID",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "userId": {
+            "type": "string",
+            "description": "User ID",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "chatId": {
+            "type": "string",
+            "description": "Chat ID associated with this profile",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "personName": {
+            "type": "string",
+            "description": "Name of the person",
+            "example": "Mother"
+          },
+          "profile": {
+            "description": "Recipient profile data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RecipientProfileDto"
+              }
+            ]
+          },
+          "keyThemes": {
+            "description": "Key themes and keywords",
+            "example": ["cooking", "gardening", "relaxation"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Profile creation date",
+            "example": "2023-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Profile last update date",
+            "example": "2023-01-01T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "chatId",
+          "personName",
+          "profile",
+          "keyThemes",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UserProfilesResponseDto": {
+        "type": "object",
+        "properties": {
+          "profiles": {
+            "description": "List of user profiles",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserProfileDto"
+            }
+          }
+        },
+        "required": ["profiles"]
       },
       "ChatMessageWithAnswersDto": {
         "type": "object",

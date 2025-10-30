@@ -1,4 +1,5 @@
 import { google } from "@ai-sdk/google";
+import type { RecipientProfile } from "@core/types";
 import type { GenerateTextResult, ModelMessage } from "ai";
 import { generateText, stepCountIs } from "ai";
 
@@ -12,6 +13,7 @@ export async function giftInterviewFlow({
   logger,
   occasion,
   messages,
+  userProfile,
   onQuestionAsked,
   onInterviewCompleted,
   onInappropriateRequest,
@@ -19,6 +21,7 @@ export async function giftInterviewFlow({
   logger: Logger;
   occasion: string;
   messages: ModelMessage[];
+  userProfile?: RecipientProfile;
   onQuestionAsked: (
     question: string,
     potentialAnswers: PotencialAnswers,
@@ -35,7 +38,7 @@ export async function giftInterviewFlow({
       results = await generateText({
         model: google("gemini-2.5-flash-lite"),
         messages,
-        system: giftConsultantPrompt(occasion),
+        system: giftConsultantPrompt(occasion, userProfile),
         stopWhen: stepCountIs(1),
         tools,
         toolChoice: "required", // This forces the AI to always call a tool

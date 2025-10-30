@@ -1,14 +1,18 @@
 import {
-  ChatCompletedNotifyUserEvent,
   ChatInappropriateRequestEvent,
-  ChatInterviewCompletedEvent,
   ChatQuestionAskedEvent,
 } from "@core/events";
 import { GenerateQuestionCommand } from "src/domain/commands/generate-question.command";
+import {
+  ChatSession,
+  ChatSessionPhase,
+} from "src/domain/entities/chat-session.entity";
+import { Repository } from "typeorm";
 
 import { Inject, Logger } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { ClientProxy } from "@nestjs/microservices";
+import { InjectRepository } from "@nestjs/typeorm";
 
 import { giftInterviewFlow } from "../ai/flow";
 import type { EndConversationOutput, PotencialAnswers } from "../ai/types";
@@ -26,6 +30,8 @@ export class GenerateQuestionHandler
     private readonly inappropriateRequestEventBus: ClientProxy,
     @Inject("CHAT_COMPLETED_NOTIFY_USER_EVENT")
     private readonly chatCompletedNotifyUserEventBus: ClientProxy,
+    @InjectRepository(ChatSession)
+    private readonly chatSessionRepository: Repository<ChatSession>,
   ) {}
 
   private readonly logger = new Logger(GenerateQuestionHandler.name);
@@ -42,7 +48,7 @@ export class GenerateQuestionHandler
   }
 
   async execute(command: GenerateQuestionCommand) {
-    const { chatId, occasion, history } = command;
+    const { chatId, occasion, history, userProfile } = command;
 
     // Mock the first question if no history exists
     if (history.length === 0) {
@@ -50,6 +56,42 @@ export class GenerateQuestionHandler
         `Mocking the first question for chat ${chatId} with occasion ${occasion}`,
       );
       const occasionLabel = this.getOccasionLabel(occasion);
+
+      // If user profile exists, skip the first question about who the gift is for
+      if (userProfile !== undefined) {
+        const relationship =
+          userProfile.personal_info.relationship ?? "tej osoby";
+        const mockQuestion = `Świetnie! Mam już podstawowe informacje o ${relationship}. Powiedz mi, jak ${relationship} spędza wolny czas?`;
+        const mockAnswers = {
+          type: "select" as const,
+          answers: [
+            {
+              answerFullSentence: "Czyta książki lub ogląda filmy/seriale",
+              answerShortForm: "Czytanie/Oglądanie",
+            },
+            {
+              answerFullSentence: "Uprawia sport lub aktywności fizyczne",
+              answerShortForm: "Sport/Aktywność",
+            },
+            {
+              answerFullSentence: "Spotyka się ze znajomymi lub rodziną",
+              answerShortForm: "Życie towarzyskie",
+            },
+            {
+              answerFullSentence: "Ma różne hobby i zainteresowania",
+              answerShortForm: "Hobby",
+            },
+          ],
+        };
+        const event = new ChatQuestionAskedEvent(
+          chatId,
+          mockQuestion,
+          mockAnswers,
+        );
+        this.eventBus.emit(ChatQuestionAskedEvent.name, event);
+        return;
+      }
+
       const mockQuestion = `Dla kogo szukasz prezentu z okazji ${occasionLabel}?`;
       const mockAnswers = {
         type: "select" as const,
@@ -90,6 +132,7 @@ export class GenerateQuestionHandler
         ...message,
         role: message.sender,
       })),
+      userProfile,
       onQuestionAsked: (
         question: string,
         potentialAnswers: PotencialAnswers,
@@ -101,17 +144,49 @@ export class GenerateQuestionHandler
         );
         this.eventBus.emit(ChatQuestionAskedEvent.name, event);
       },
-      onInterviewCompleted: (output: EndConversationOutput) => {
-        const interviewEvent = new ChatInterviewCompletedEvent(chatId, output);
-        this.chatInterviewCompletedEventEventBus.emit(
-          ChatInterviewCompletedEvent.name,
-          interviewEvent,
+      onInterviewCompleted: async (output: EndConversationOutput) => {
+        // Zamiast od razu wysyłać ChatInterviewCompletedEvent,
+        // zapisz profil tymczasowo i zadaj pytanie o zapisanie
+        this.logger.log(
+          `Interview completed for chat ${chatId}, asking about profile save`,
         );
-        const notifyEvent = new ChatCompletedNotifyUserEvent(chatId);
-        this.chatCompletedNotifyUserEventBus.emit(
-          ChatCompletedNotifyUserEvent.name,
-          notifyEvent,
+
+        // Zapisz dane profilu tymczasowo w sesji
+        const session = await this.chatSessionRepository.findOne({
+          where: { chatId },
+        });
+        if (session !== null) {
+          session.phase = "ask_save_profile" as ChatSessionPhase;
+          session.pendingProfileData = structuredClone(output) as Record<
+            string,
+            unknown
+          >;
+          await this.chatSessionRepository.save(session);
+        }
+
+        // Zadaj pytanie o zapisanie profilu
+        const saveProfileQuestion =
+          "Czy chcesz zapisać profil tej osoby, aby w przyszłości szybciej znaleźć prezent?";
+        const saveProfileAnswers = {
+          type: "select" as const,
+          answers: [
+            {
+              answerFullSentence: "Tak, chcę zapisać profil",
+              answerShortForm: "Tak",
+            },
+            {
+              answerFullSentence: "Nie, nie chcę zapisywać profilu",
+              answerShortForm: "Nie",
+            },
+          ],
+        };
+
+        const event = new ChatQuestionAskedEvent(
+          chatId,
+          saveProfileQuestion,
+          saveProfileAnswers,
         );
+        this.eventBus.emit(ChatQuestionAskedEvent.name, event);
       },
       onInappropriateRequest: (reason: string) => {
         const inappropriateEvent = new ChatInappropriateRequestEvent(

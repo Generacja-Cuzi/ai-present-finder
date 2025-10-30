@@ -78,6 +78,10 @@ export class EmitGiftReadyHandler
       const keywords = session.giftContext?.keywords ?? [];
 
       this.logger.log(
+        `Session ${eventId} gift context: ${JSON.stringify(session.giftContext)}`,
+      );
+
+      this.logger.log(
         `Ranking ${String(allProducts.length)} products with AI for session ${eventId}`,
       );
 
@@ -110,9 +114,27 @@ export class EmitGiftReadyHandler
         );
       }
 
+      // Build profile for GiftReadyEvent if we have all the data
+      const profile =
+        recipientProfile !== null &&
+        session.giftContext?.saveProfile !== undefined &&
+        session.giftContext.profileName !== undefined
+          ? {
+              recipient_profile: recipientProfile,
+              key_themes_and_keywords: keywords,
+              save_profile: session.giftContext.saveProfile,
+              profile_name: session.giftContext.profileName,
+            }
+          : undefined;
+
+      this.logger.log(
+        `Constructed profile for GiftReadyEvent: ${JSON.stringify(profile)}`,
+      );
+
       const giftReadyEvent = new GiftReadyEvent(
         rankedProductsWithScores,
         chatId,
+        profile,
       );
       this.giftReadyEventBus.emit(GiftReadyEvent.name, giftReadyEvent);
 

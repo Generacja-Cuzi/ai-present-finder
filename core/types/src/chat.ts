@@ -13,6 +13,7 @@ export interface ChatMessage {
 
 export interface RecipientProfile {
   personal_info: {
+    person_name?: string | null;
     relationship?: string | null;
     occasion?: string | null;
     age_range?: string | null;
@@ -50,4 +51,6 @@ export interface RecipientProfile {
 export interface EndConversationOutput {
   recipient_profile: RecipientProfile;
   key_themes_and_keywords: string[];
+  save_profile: boolean;
+  profile_name?: string | null;
 }

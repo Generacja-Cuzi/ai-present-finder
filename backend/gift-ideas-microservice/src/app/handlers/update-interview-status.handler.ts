@@ -15,6 +15,8 @@ interface UpsertResult {
   stalking_keywords: string[] | null;
   gift_generation_triggered: boolean;
   both_complete: boolean;
+  save_profile?: boolean | null;
+  profile_name?: string | null;
 }
 
 @CommandHandler(UpdateInterviewStatusCommand)
@@ -29,7 +31,7 @@ export class UpdateInterviewStatusHandler
   ) {}
 
   async execute(command: UpdateInterviewStatusCommand): Promise<void> {
-    const { chatId, profile, keyThemes } = command;
+    const { chatId, profile, keyThemes, saveProfile, profileName } = command;
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -57,14 +59,18 @@ export class UpdateInterviewStatusHandler
             gift_generation_triggered,
             interview_profile,
             interview_keywords,
+            save_profile,
+            profile_name,
             created_at, 
             updated_at
           )
-          VALUES ($1, $2, $3, $4, $5::jsonb, $6::jsonb, NOW(), NOW())
+          VALUES ($1, $2, $3, $4, $5::jsonb, $6::jsonb, $7, $8, NOW(), NOW())
           ON CONFLICT (chat_id) DO UPDATE SET
             interview_status = $3,
             interview_profile = $5::jsonb,
             interview_keywords = $6::jsonb,
+            save_profile = $7,
+            profile_name = $8,
             gift_generation_triggered = CASE
               WHEN chat_sessions.stalking_status::text = $3::text
                    AND NOT chat_sessions.gift_generation_triggered
@@ -77,6 +83,8 @@ export class UpdateInterviewStatusHandler
             interview_profile,
             interview_keywords,
             stalking_keywords,
+            save_profile,
+            profile_name,
             gift_generation_triggered,
             stalking_status::text = $3::text as both_complete
         )
@@ -89,6 +97,8 @@ export class UpdateInterviewStatusHandler
           false,
           JSON.stringify(profile),
           JSON.stringify(keyThemes),
+          saveProfile,
+          profileName,
         ],
       )) as UpsertResult[];
 
@@ -121,6 +131,8 @@ export class UpdateInterviewStatusHandler
               row.stalking_keywords ?? [],
               row.interview_keywords ?? [],
               chatId,
+              row.save_profile ?? undefined,
+              row.profile_name ?? undefined,
             ),
           );
         } catch (error: unknown) {

@@ -8,6 +8,8 @@ export class GenerateGiftIdeasCommand extends Command<void> {
     public readonly keywords: string[], // stalking keywords
     public readonly keyThemes: string[], // interview key themes (highest priority)
     public readonly chatId: string,
+    public readonly saveProfile?: boolean,
+    public readonly profileName?: string | null,
   ) {
     super();
   }

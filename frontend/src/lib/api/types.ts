@@ -226,6 +226,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/user-profiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all user profiles */
+        get: operations["UserProfileController_getUserProfiles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/user-profiles/{profileId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a specific user profile */
+        get: operations["UserProfileController_getUserProfile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sse": {
         parameters: {
             query?: never;
@@ -303,6 +337,11 @@ export interface components {
              * @example 3fa85f64-5717-4562-b3fc-2c963f66afa6
              */
             chatId: string;
+            /**
+             * @description Optional user profile ID to load existing profile
+             * @example 3fa85f64-5717-4562-b3fc-2c963f66afa6
+             */
+            profileId?: string;
         };
         ChatMessageDto: {
             /**
@@ -558,6 +597,97 @@ export interface components {
         ChatMessagesResponseDto: {
             /** @description List of chat messages */
             messages: components["schemas"]["MessageDto"][];
+        };
+        RecipientPersonalInfo: {
+            person_name?: string | null;
+            relationship?: string | null;
+            occasion?: string | null;
+            age_range?: string | null;
+        };
+        RecipientLifestyle: {
+            primary_hobbies?: string[] | null;
+            daily_routine?: string | null;
+            relaxation_methods?: string[] | null;
+            work_style?: string | null;
+        };
+        RecipientPreferences: {
+            home_aesthetic?: string | null;
+            valued_items?: string[] | null;
+            favorite_beverages?: string[] | null;
+            comfort_foods?: string[] | null;
+        };
+        RecipientMediaInterests: {
+            favorite_books?: string[] | null;
+            must_watch_shows?: string[] | null;
+            podcasts?: string[] | null;
+            music_preferences?: string[] | null;
+        };
+        RecipientRecentLife: {
+            new_experiences?: string[] | null;
+            mentioned_needs?: string[] | null;
+            recent_achievements?: string[] | null;
+        };
+        RecipientGiftContext: {
+            occasion_significance?: string | null;
+            gift_message?: string | null;
+            previous_gift_successes?: string[] | null;
+        };
+        RecipientProfileDto: {
+            personal_info: components["schemas"]["RecipientPersonalInfo"];
+            lifestyle: components["schemas"]["RecipientLifestyle"];
+            preferences: components["schemas"]["RecipientPreferences"];
+            media_interests: components["schemas"]["RecipientMediaInterests"];
+            recent_life: components["schemas"]["RecipientRecentLife"];
+            gift_context: components["schemas"]["RecipientGiftContext"];
+        };
+        UserProfileDto: {
+            /**
+             * @description Profile ID
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * @description User ID
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            userId: string;
+            /**
+             * @description Chat ID associated with this profile
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            chatId: string;
+            /**
+             * @description Name of the person
+             * @example Mother
+             */
+            personName: string;
+            /** @description Recipient profile data */
+            profile: components["schemas"]["RecipientProfileDto"];
+            /**
+             * @description Key themes and keywords
+             * @example [
+             *       "cooking",
+             *       "gardening",
+             *       "relaxation"
+             *     ]
+             */
+            keyThemes: string[];
+            /**
+             * Format: date-time
+             * @description Profile creation date
+             * @example 2023-01-01T00:00:00.000Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Profile last update date
+             * @example 2023-01-01T00:00:00.000Z
+             */
+            updatedAt: string;
+        };
+        UserProfilesResponseDto: {
+            /** @description List of user profiles */
+            profiles: components["schemas"]["UserProfileDto"][];
         };
         ChatMessageWithAnswersDto: {
             /**
@@ -1008,6 +1138,48 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChatMessagesResponseDto"];
+                };
+            };
+        };
+    };
+    UserProfileController_getUserProfiles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns list of user profiles */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfilesResponseDto"];
+                };
+            };
+        };
+    };
+    UserProfileController_getUserProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                profileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns a user profile */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfileDto"];
                 };
             };
         };

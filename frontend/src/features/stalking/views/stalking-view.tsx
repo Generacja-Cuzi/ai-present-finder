@@ -14,7 +14,7 @@ import {
   StalkingHeader,
   SubmitBar,
 } from "../components";
-import { ProfileSelectionDialog } from "../components/profile-selection-dialog";
+import { ProfileSelectionDialog } from "../components/profile-selection";
 import { useStalkingForm } from "../hooks/use-stalking-form";
 import type { StalkingFormData } from "../types";
 

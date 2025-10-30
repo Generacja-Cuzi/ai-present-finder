@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/dialog";
 import type { paths } from "@/lib/api/types";
 
-import { useUserProfiles } from "../api/user-profiles";
-import { ProfileList } from "./profile-selection/profile-list";
-import { ProfileSearch } from "./profile-selection/profile-search";
+import { useUserProfiles } from "../../api/user-profiles";
+import { ProfileList } from "./profile-list";
+import { ProfileSearch } from "./profile-search";
 
 type UserProfile =
   paths["/user-profiles"]["get"]["responses"]["200"]["content"]["application/json"]["profiles"][number];

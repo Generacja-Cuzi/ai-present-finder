@@ -60,7 +60,7 @@ export class StartProcessingCommandHandler
         const profile = await this.queryBus.execute(
           new GetUserProfileByIdQuery(analyzeRequestedDto.profileId, userId),
         );
-        userProfile = profile.profile as RecipientProfile;
+        userProfile = profile.profile;
         this.logger.log(
           `Loaded user profile ${analyzeRequestedDto.profileId} for chat`,
         );

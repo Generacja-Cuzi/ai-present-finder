@@ -1,11 +1,15 @@
-import type { RecipientProfile } from "../entities/user-profile.entity";
+import type { RecipientProfile } from "@core/types";
 
-export class SaveUserProfileCommand {
+import { Command } from "@nestjs/cqrs";
+
+export class SaveUserProfileCommand extends Command<void> {
   constructor(
     public readonly userId: string,
     public readonly chatId: string,
     public readonly personName: string,
     public readonly profile: RecipientProfile,
     public readonly keyThemes: string[],
-  ) {}
+  ) {
+    super();
+  }
 }

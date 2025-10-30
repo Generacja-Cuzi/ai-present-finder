@@ -7,6 +7,7 @@ import type { ResourceOwnershipConfig } from "src/domain/models/resource-ownersh
 import { IChatRepository } from "src/domain/repositories/ichat.repository";
 import { IListingRepository } from "src/domain/repositories/ilisting.repository";
 import { IMessageRepository } from "src/domain/repositories/imessage.repository";
+import { IUserProfileRepository } from "src/domain/repositories/iuser-profile.repository";
 
 import {
   CanActivate,
@@ -29,6 +30,7 @@ export class ResourceOwnershipGuard implements CanActivate {
     private readonly chatRepository: IChatRepository,
     private readonly listingRepository: IListingRepository,
     private readonly messageRepository: IMessageRepository,
+    private readonly userProfileRepository: IUserProfileRepository,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -117,6 +119,10 @@ export class ResourceOwnershipGuard implements CanActivate {
 
       case ResourceType.MESSAGE: {
         return this.messageRepository.isOwnedByUser(resourceId, userId);
+      }
+
+      case ResourceType.USER_PROFILE: {
+        return this.userProfileRepository.isOwnedByUser(resourceId, userId);
       }
     }
   }

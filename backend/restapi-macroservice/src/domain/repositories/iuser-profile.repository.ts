@@ -13,4 +13,5 @@ export abstract class IUserProfileRepository {
     profileData: Partial<UserProfile>,
   ): Promise<UserProfile>;
   abstract delete(id: string): Promise<void>;
+  abstract isOwnedByUser(profileId: string, userId: string): Promise<boolean>;
 }

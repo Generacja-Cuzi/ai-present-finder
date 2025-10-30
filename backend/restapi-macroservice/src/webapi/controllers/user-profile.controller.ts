@@ -11,6 +11,9 @@ import { QueryBus } from "@nestjs/cqrs";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { JwtAuthGuard } from "../../app/guards/jwt-auth.guard";
+import { ResourceOwnershipGuard } from "../../app/guards/resource-ownership.guard";
+import { RequireResourceOwnership } from "../../domain/decorators/resource-ownership.decorator";
+import { ResourceType } from "../../domain/models/resource-ownership.types";
 
 @ApiTags("user-profiles")
 @Controller("user-profiles")
@@ -46,7 +49,11 @@ export class UserProfileController {
   }
 
   @Get(":profileId")
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ResourceOwnershipGuard)
+  @RequireResourceOwnership({
+    resourceType: ResourceType.USER_PROFILE,
+    paramName: "profileId",
+  })
   @ApiOperation({ summary: "Get a specific user profile" })
   @ApiOkResponse({
     description: "Returns a user profile",

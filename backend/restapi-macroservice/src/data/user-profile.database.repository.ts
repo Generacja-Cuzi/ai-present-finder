@@ -59,4 +59,13 @@ export class UserProfileDatabaseRepository implements IUserProfileRepository {
       throw new NotFoundException(`UserProfile with id ${id} not found`);
     }
   }
+
+  async isOwnedByUser(profileId: string, userId: string): Promise<boolean> {
+    const profile = await this.userProfileRepository.findOne({
+      where: { id: profileId },
+      select: ["userId"],
+    });
+
+    return profile?.userId === userId;
+  }
 }

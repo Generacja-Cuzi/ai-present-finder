@@ -3,7 +3,7 @@ import { atomWithStorage } from "jotai/utils";
 
 export type UserRole = "user" | "admin";
 
-export const UserRole = {
+export const UserRoleEnum = {
   USER: "user" as const,
   ADMIN: "admin" as const,
 };

@@ -19,24 +19,24 @@ export class DatabaseSeederService implements OnModuleInit {
     try {
       const existingAdmin = await this.userRepository.findByEmail(adminEmail);
 
-      if (existingAdmin !== null) {
-        if (existingAdmin.role !== UserRole.ADMIN) {
-          await this.userRepository.update(existingAdmin.id, {
-            role: UserRole.ADMIN,
-          });
-          this.logger.log(
-            `Updated user ${adminEmail} to ADMIN role during seeding`,
-          );
-        } else {
-          this.logger.log(`Admin user ${adminEmail} already exists`);
-        }
-      } else {
+      if (existingAdmin === null) {
         await this.userRepository.create({
           email: adminEmail,
           name: "Admin User",
           role: UserRole.ADMIN,
         });
         this.logger.log(`Created admin user: ${adminEmail}`);
+      } else {
+        if (existingAdmin.role === UserRole.ADMIN) {
+          this.logger.log(`Admin user ${adminEmail} already exists`);
+        } else {
+          await this.userRepository.update(existingAdmin.id, {
+            role: UserRole.ADMIN,
+          });
+          this.logger.log(
+            `Updated user ${adminEmail} to ADMIN role during seeding`,
+          );
+        }
       }
     } catch (error) {
       this.logger.error(`Failed to seed admin user: ${String(error)}`);

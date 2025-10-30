@@ -19,7 +19,7 @@ export class DatabaseSeederService implements OnModuleInit {
 
   private async seedAdminUser() {
     const adminEmail = this.configService.get<string>("ADMIN_EMAIL");
-    if (!adminEmail) {
+    if (adminEmail === undefined || adminEmail === "") {
       this.logger.warn(
         "ADMIN_EMAIL not configured, skipping admin user seeding",
       );

@@ -31,9 +31,9 @@ export function ProfileSelectionDialog({
 
   const { data, isLoading } = useUserProfiles(open);
 
-  const profiles = data?.profiles ?? [];
-
   const filteredProfiles = useMemo(() => {
+    const profiles = data?.profiles ?? [];
+
     if (!searchQuery.trim()) {
       return profiles;
     }
@@ -52,7 +52,7 @@ export function ProfileSelectionDialog({
         occasion.includes(query)
       );
     });
-  }, [profiles, searchQuery]);
+  }, [data?.profiles, searchQuery]);
 
   const handleSelectProfile = (profile: UserProfile) => {
     onSelectProfile(profile);

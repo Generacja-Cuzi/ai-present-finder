@@ -4,7 +4,8 @@ import { Reflector } from "@nestjs/core";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
-import { type User, UserRole } from "../../../domain/entities/user.entity";
+import { UserRole } from "../../../domain/entities/user.entity";
+import type { User } from "../../../domain/entities/user.entity";
 import type { AuthenticatedRequest } from "../../../domain/models/auth.types";
 import {
   ResourceIdLocation,

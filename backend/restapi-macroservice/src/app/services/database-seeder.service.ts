@@ -1,4 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 import { UserRole } from "../../domain/entities/user.entity";
 import { IUserRepository } from "../../domain/repositories/iuser.repository";
@@ -7,14 +8,23 @@ import { IUserRepository } from "../../domain/repositories/iuser.repository";
 export class DatabaseSeederService implements OnModuleInit {
   private readonly logger = new Logger(DatabaseSeederService.name);
 
-  constructor(private readonly userRepository: IUserRepository) {}
+  constructor(
+    private readonly userRepository: IUserRepository,
+    private readonly configService: ConfigService,
+  ) {}
 
   async onModuleInit() {
     await this.seedAdminUser();
   }
 
   private async seedAdminUser() {
-    const adminEmail = "272715@student.pwr.edu.pl";
+    const adminEmail = this.configService.get<string>("ADMIN_EMAIL");
+    if (!adminEmail) {
+      this.logger.warn(
+        "ADMIN_EMAIL not configured, skipping admin user seeding",
+      );
+      return;
+    }
 
     try {
       const existingAdmin = await this.userRepository.findByEmail(adminEmail);

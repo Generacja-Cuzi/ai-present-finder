@@ -900,6 +900,19 @@
         },
         "required": ["messages"]
       },
+      "UserProfilesResponseDto": {
+        "type": "object",
+        "properties": {
+          "profiles": {
+            "description": "List of user profiles",
+            "items": {
+              "type": "array"
+            },
+            "type": "array"
+          }
+        },
+        "required": ["profiles"]
+      },
       "RecipientPersonalInfo": {
         "type": "object",
         "properties": {
@@ -1122,10 +1135,10 @@
           "keyThemes": {
             "description": "Key themes and keywords",
             "example": ["cooking", "gardening", "relaxation"],
-            "type": "array",
             "items": {
-              "type": "string"
-            }
+              "type": "array"
+            },
+            "type": "array"
           },
           "createdAt": {
             "format": "date-time",
@@ -1150,19 +1163,6 @@
           "createdAt",
           "updatedAt"
         ]
-      },
-      "UserProfilesResponseDto": {
-        "type": "object",
-        "properties": {
-          "profiles": {
-            "description": "List of user profiles",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UserProfileDto"
-            }
-          }
-        },
-        "required": ["profiles"]
       },
       "ChatMessageWithAnswersDto": {
         "type": "object",

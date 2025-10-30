@@ -1,4 +1,6 @@
 CREATE TYPE message_role AS ENUM ('user', 'assistant', 'system');
+CREATE TYPE user_role_enum AS ENUM ('user', 'admin');
+
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -6,6 +8,7 @@ CREATE TABLE users (
     name VARCHAR(255),
     access_token TEXT,
     refresh_token TEXT,
+    role user_role_enum NOT NULL DEFAULT 'user',
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -16,6 +19,7 @@ COMMENT ON COLUMN users.google_id IS 'Google OAuth user ID';
 COMMENT ON COLUMN users.name IS 'User display name from Google';
 COMMENT ON COLUMN users.access_token IS 'Google OAuth access token';
 COMMENT ON COLUMN users.refresh_token IS 'Google OAuth refresh token';
+COMMENT ON COLUMN users.role IS 'User role (user or admin) - controls access permissions';
 CREATE TABLE chats (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     chat_id VARCHAR(255) NOT NULL UNIQUE,

@@ -12,7 +12,10 @@ import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { JwtAuthGuard } from "../../app/guards/jwt-auth.guard";
 import { ResourceOwnershipGuard } from "../../app/guards/resource-ownership.guard";
+import { RolesGuard } from "../../app/guards/roles.guard";
 import { RequireResourceOwnership } from "../../domain/decorators/resource-ownership.decorator";
+import { Roles } from "../../domain/decorators/roles.decorator";
+import { UserRole } from "../../domain/entities/user.entity";
 import { ResourceType } from "../../domain/models/resource-ownership.types";
 
 @ApiTags("user-profiles")
@@ -21,7 +24,8 @@ export class UserProfileController {
   constructor(private readonly queryBus: QueryBus) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.USER)
   @ApiOperation({ summary: "Get all user profiles" })
   @ApiOkResponse({
     description: "Returns list of user profiles",
@@ -49,7 +53,8 @@ export class UserProfileController {
   }
 
   @Get(":profileId")
-  @UseGuards(JwtAuthGuard, ResourceOwnershipGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, ResourceOwnershipGuard)
+  @Roles(UserRole.USER)
   @RequireResourceOwnership({
     resourceType: ResourceType.USER_PROFILE,
     paramName: "profileId",

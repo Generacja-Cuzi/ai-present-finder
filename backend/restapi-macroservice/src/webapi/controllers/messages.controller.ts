@@ -15,18 +15,23 @@ import {
 
 import { JwtAuthGuard } from "../../app/guards/jwt-auth.guard";
 import { ResourceOwnershipGuard } from "../../app/guards/resource-ownership.guard";
+import { RolesGuard } from "../../app/guards/roles.guard";
 import { RequireResourceOwnership } from "../../domain/decorators/resource-ownership.decorator";
+import { Roles } from "../../domain/decorators/roles.decorator";
+import { UserRole } from "../../domain/entities/user.entity";
 import { ResourceType } from "../../domain/models/resource-ownership.types";
 
 @ApiTags("messages")
 @ApiBearerAuth()
 @Controller("messages")
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.USER)
 export class MessagesController {
   constructor(private readonly queryBus: QueryBus) {}
 
   @Get("chat/:chatId")
-  @UseGuards(JwtAuthGuard, ResourceOwnershipGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, ResourceOwnershipGuard)
+  @Roles(UserRole.USER)
   @RequireResourceOwnership({
     resourceType: ResourceType.CHAT,
     paramName: "chatId",

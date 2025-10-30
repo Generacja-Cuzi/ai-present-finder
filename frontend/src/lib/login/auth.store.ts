@@ -1,10 +1,16 @@
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 
+export enum UserRole {
+  USER = "user",
+  ADMIN = "admin",
+}
+
 export interface User {
   id: string;
   email: string;
   name: string | null;
+  role: UserRole;
 }
 
 export const userAtom = atomWithStorage<User | null>("auth:user", null);

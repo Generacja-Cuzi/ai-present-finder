@@ -81,6 +81,7 @@ export class AuthController {
         id: result.user.id,
         email: result.user.email,
         name: result.user.name,
+        role: result.user.role,
       },
     };
   }
@@ -102,9 +103,14 @@ export class AuthController {
   @Get("me")
   @ApiOperation({ summary: "Get current user from cookie" })
   @ApiOkResponse({ description: "Returns current user info" })
-  async getCurrentUser(
-    @Req() request: Request,
-  ): Promise<{ user: { id: string; email: string; name: string | null } }> {
+  async getCurrentUser(@Req() request: Request): Promise<{
+    user: {
+      id: string;
+      email: string;
+      name: string | null;
+      role: string;
+    };
+  }> {
     const token = request.cookies.access_token as string | undefined;
 
     if (token === undefined || token === "") {
@@ -124,6 +130,7 @@ export class AuthController {
           id: user.id,
           email: user.email,
           name: user.name,
+          role: user.role,
         },
       };
     } catch {

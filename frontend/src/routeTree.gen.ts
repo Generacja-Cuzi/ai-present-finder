@@ -20,6 +20,7 @@ import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google/cal
 import { Route as AuthenticatedRecommendationIdRouteImport } from './routes/_authenticated/recommendation/$id'
 import { Route as AuthenticatedGiftSearchingIdRouteImport } from './routes/_authenticated/gift-searching/$id'
 import { Route as AuthenticatedChatIdRouteImport } from './routes/_authenticated/chat/$id'
+import { Route as AuthenticatedAdminFeedbacksRouteImport } from './routes/_authenticated/admin/feedbacks'
 import { Route as AuthenticatedHistoryChatIdRouteImport } from './routes/_authenticated/history/chat/$id'
 
 const LoginRoute = LoginRouteImport.update({
@@ -79,6 +80,12 @@ const AuthenticatedChatIdRoute = AuthenticatedChatIdRouteImport.update({
   path: '/chat/$id',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminFeedbacksRoute =
+  AuthenticatedAdminFeedbacksRouteImport.update({
+    id: '/admin/feedbacks',
+    path: '/admin/feedbacks',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedHistoryChatIdRoute =
   AuthenticatedHistoryChatIdRouteImport.update({
     id: '/history/chat/$id',
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/saved': typeof AuthenticatedSavedRoute
   '/stalking': typeof AuthenticatedStalkingRoute
+  '/admin/feedbacks': typeof AuthenticatedAdminFeedbacksRoute
   '/chat/$id': typeof AuthenticatedChatIdRoute
   '/gift-searching/$id': typeof AuthenticatedGiftSearchingIdRoute
   '/recommendation/$id': typeof AuthenticatedRecommendationIdRoute
@@ -105,6 +113,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/saved': typeof AuthenticatedSavedRoute
   '/stalking': typeof AuthenticatedStalkingRoute
+  '/admin/feedbacks': typeof AuthenticatedAdminFeedbacksRoute
   '/chat/$id': typeof AuthenticatedChatIdRoute
   '/gift-searching/$id': typeof AuthenticatedGiftSearchingIdRoute
   '/recommendation/$id': typeof AuthenticatedRecommendationIdRoute
@@ -120,6 +129,7 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/saved': typeof AuthenticatedSavedRoute
   '/_authenticated/stalking': typeof AuthenticatedStalkingRoute
+  '/_authenticated/admin/feedbacks': typeof AuthenticatedAdminFeedbacksRoute
   '/_authenticated/chat/$id': typeof AuthenticatedChatIdRoute
   '/_authenticated/gift-searching/$id': typeof AuthenticatedGiftSearchingIdRoute
   '/_authenticated/recommendation/$id': typeof AuthenticatedRecommendationIdRoute
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/saved'
     | '/stalking'
+    | '/admin/feedbacks'
     | '/chat/$id'
     | '/gift-searching/$id'
     | '/recommendation/$id'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/saved'
     | '/stalking'
+    | '/admin/feedbacks'
     | '/chat/$id'
     | '/gift-searching/$id'
     | '/recommendation/$id'
@@ -162,6 +174,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/saved'
     | '/_authenticated/stalking'
+    | '/_authenticated/admin/feedbacks'
     | '/_authenticated/chat/$id'
     | '/_authenticated/gift-searching/$id'
     | '/_authenticated/recommendation/$id'
@@ -256,6 +269,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/feedbacks': {
+      id: '/_authenticated/admin/feedbacks'
+      path: '/admin/feedbacks'
+      fullPath: '/admin/feedbacks'
+      preLoaderRoute: typeof AuthenticatedAdminFeedbacksRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/history/chat/$id': {
       id: '/_authenticated/history/chat/$id'
       path: '/history/chat/$id'
@@ -270,6 +290,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSavedRoute: typeof AuthenticatedSavedRoute
   AuthenticatedStalkingRoute: typeof AuthenticatedStalkingRoute
+  AuthenticatedAdminFeedbacksRoute: typeof AuthenticatedAdminFeedbacksRoute
   AuthenticatedChatIdRoute: typeof AuthenticatedChatIdRoute
   AuthenticatedGiftSearchingIdRoute: typeof AuthenticatedGiftSearchingIdRoute
   AuthenticatedRecommendationIdRoute: typeof AuthenticatedRecommendationIdRoute
@@ -281,6 +302,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSavedRoute: AuthenticatedSavedRoute,
   AuthenticatedStalkingRoute: AuthenticatedStalkingRoute,
+  AuthenticatedAdminFeedbacksRoute: AuthenticatedAdminFeedbacksRoute,
   AuthenticatedChatIdRoute: AuthenticatedChatIdRoute,
   AuthenticatedGiftSearchingIdRoute: AuthenticatedGiftSearchingIdRoute,
   AuthenticatedRecommendationIdRoute: AuthenticatedRecommendationIdRoute,

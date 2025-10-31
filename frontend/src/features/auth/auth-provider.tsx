@@ -41,9 +41,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (user !== null) {
         try {
           const response = await fetchClient.GET("/auth/me");
-          if (response.response.ok) {
-            // Session is valid, keep the user from localStorage
-            // User is already set from localStorage via userAtom
+          if (response.response.ok && response.data) {
+            // Update user data from server to ensure role is synced
+            const userData = response.data as {
+              user: {
+                id: string;
+                email: string;
+                name: string | null;
+                role: string;
+              };
+            };
+            setUser({
+              id: userData.user.id,
+              email: userData.user.email,
+              name: userData.user.name,
+              role: userData.user.role as "user" | "admin",
+            });
           } else {
             console.warn("Session validation failed, clearing user");
             setUser(null);
@@ -57,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     void validateSession();
-  }, [user, setUser]);
+  }, [setUser]); // Removed user from dependencies to avoid infinite loop
 
   const logout = async () => {
     try {

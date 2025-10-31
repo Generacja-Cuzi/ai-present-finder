@@ -23,7 +23,7 @@ export class Feedback {
   chatId: string;
 
   @OneToOne(() => Chat, { onDelete: "CASCADE" })
-  @JoinColumn({ name: "chat_id" })
+  @JoinColumn({ name: "chat_id", referencedColumnName: "chatId" })
   chat: Chat;
 
   @Column({ name: "user_id" })

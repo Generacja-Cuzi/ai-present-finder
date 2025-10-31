@@ -11,6 +11,11 @@ import {
 import { Chat } from "./chat.entity";
 import { Listing } from "./listing.entity";
 
+export enum UserRole {
+  USER = "user",
+  ADMIN = "admin",
+}
+
 @Entity("users")
 export class User {
   @PrimaryGeneratedColumn("uuid")
@@ -30,6 +35,13 @@ export class User {
 
   @Column({ name: "refresh_token", type: "text", nullable: true })
   refreshToken: string | null;
+
+  @Column({
+    type: "enum",
+    enum: UserRole,
+    default: UserRole.USER,
+  })
+  role: UserRole;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;

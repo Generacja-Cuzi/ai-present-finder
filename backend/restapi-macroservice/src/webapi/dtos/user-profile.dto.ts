@@ -132,8 +132,8 @@ export class UserProfileDto {
   @ApiProperty({
     description: "Key themes and keywords",
     type: [String],
-    example: ["cooking", "gardening", "relaxation"],
     isArray: true,
+    example: ["cooking", "gardening", "relaxation"],
   })
   keyThemes: string[];
 

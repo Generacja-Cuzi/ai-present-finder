@@ -28,11 +28,15 @@ import {
 } from "@nestjs/swagger";
 
 import { JwtAuthGuard } from "../../app/guards/jwt-auth.guard";
+import { RolesGuard } from "../../app/guards/roles.guard";
+import { Roles } from "../../domain/decorators/roles.decorator";
+import { UserRole } from "../../domain/entities/user.entity";
 
 @ApiTags("favorites")
 @ApiBearerAuth()
 @Controller("favorites")
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.USER, UserRole.ADMIN)
 export class FavoritesController {
   constructor(
     private readonly commandBus: CommandBus,

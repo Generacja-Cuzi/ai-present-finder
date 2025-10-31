@@ -18,9 +18,9 @@ export function ProfileCardThemes({ profile }: { profile: UserProfile }) {
         <span>Główne zainteresowania</span>
       </div>
       <div className="flex flex-wrap gap-1.5">
-        {profile.keyThemes.slice(0, 6).map((theme, themeIndex) => (
+        {profile.keyThemes.slice(0, 6).map((theme) => (
           <Badge
-            key={themeIndex}
+            key={theme}
             variant="outline"
             className="bg-primary/5 text-primary border-primary/20 text-xs"
           >

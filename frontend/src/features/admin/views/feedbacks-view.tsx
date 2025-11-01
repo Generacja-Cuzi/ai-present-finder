@@ -1,13 +1,17 @@
-import { Link } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import type { components } from "@/lib/api/types";
 
 import { useGetAllFeedbacks } from "../api/feedbacks";
 import { FeedbackCard } from "../components/feedback-card";
 
+type Feedback = components["schemas"]["FeedbackResponseDto"];
+
 export function FeedbacksView() {
-  const { data, isLoading, error } = useGetAllFeedbacks();
+  const { data, isLoading } = useGetAllFeedbacks();
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -17,23 +21,14 @@ export function FeedbacksView() {
     );
   }
 
-  if (error) {
-    return (
-      <div className="bg-background flex min-h-screen flex-col items-center justify-center">
-        <div className="text-lg text-red-500">
-          Błąd podczas ładowania feedbacków
-        </div>
-      </div>
-    );
-  }
-
-  const feedbacks = data ?? [];
+  const feedbacks: Feedback[] = data;
 
   const totalFeedbacks = feedbacks.length;
   const averageRating =
     totalFeedbacks > 0
       ? (
-          feedbacks.reduce((sum, f) => sum + f.rating, 0) / totalFeedbacks
+          feedbacks.reduce((sum: number, f: Feedback) => sum + f.rating, 0) /
+          totalFeedbacks
         ).toFixed(1)
       : "0";
 
@@ -41,12 +36,16 @@ export function FeedbacksView() {
     <div className="bg-background min-h-screen">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6">
-          <Link to="/profile">
-            <Button variant="ghost" className="mb-4">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Powrót do profilu
-            </Button>
-          </Link>
+          <Button
+            variant="ghost"
+            className="mb-4"
+            onClick={() => {
+              void navigate({ to: "/profile" });
+            }}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Powrót do profilu
+          </Button>
           <h1 className="text-foreground mb-2 text-3xl font-bold">
             Panel Feedbacków
           </h1>
@@ -63,7 +62,7 @@ export function FeedbacksView() {
 
         <div className="space-y-4">
           {feedbacks.length > 0 ? (
-            feedbacks.map((feedback) => (
+            feedbacks.map((feedback: Feedback) => (
               <FeedbackCard key={feedback.id} feedback={feedback} />
             ))
           ) : (

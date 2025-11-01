@@ -156,7 +156,14 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Returns current user info"
+            "description": "Returns current user info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInfoDto"
+                }
+              }
+            }
           }
         },
         "summary": "Get current user from cookie",
@@ -688,6 +695,34 @@
         },
         "required": ["accessToken", "user"]
       },
+      "UserInfoDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User ID",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email",
+            "example": "user@example.com"
+          },
+          "name": {
+            "type": "string",
+            "description": "User name",
+            "example": "John Doe",
+            "nullable": true
+          },
+          "role": {
+            "type": "string",
+            "description": "User role",
+            "example": "user",
+            "enum": ["user", "admin"]
+          }
+        },
+        "required": ["id", "email", "name", "role"]
+      },
       "ChatDto": {
         "type": "object",
         "properties": {
@@ -895,7 +930,7 @@
             "example": 5
           },
           "comment": {
-            "type": "object",
+            "type": "string",
             "description": "Optional comment about the chat experience",
             "example": "Great recommendations, very helpful!",
             "nullable": true
@@ -927,7 +962,7 @@
             "example": 5
           },
           "comment": {
-            "type": "object",
+            "type": "string",
             "description": "Optional comment about the chat experience",
             "example": "Great recommendations, very helpful!",
             "nullable": true
@@ -1050,19 +1085,6 @@
           }
         },
         "required": ["messages"]
-      },
-      "UserProfilesResponseDto": {
-        "type": "object",
-        "properties": {
-          "profiles": {
-            "description": "List of user profiles",
-            "items": {
-              "type": "array"
-            },
-            "type": "array"
-          }
-        },
-        "required": ["profiles"]
       },
       "RecipientPersonalInfo": {
         "type": "object",
@@ -1286,10 +1308,10 @@
           "keyThemes": {
             "description": "Key themes and keywords",
             "example": ["cooking", "gardening", "relaxation"],
+            "type": "array",
             "items": {
-              "type": "array"
-            },
-            "type": "array"
+              "type": "string"
+            }
           },
           "createdAt": {
             "format": "date-time",
@@ -1314,6 +1336,19 @@
           "createdAt",
           "updatedAt"
         ]
+      },
+      "UserProfilesResponseDto": {
+        "type": "object",
+        "properties": {
+          "profiles": {
+            "description": "List of user profiles",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserProfileDto"
+            }
+          }
+        },
+        "required": ["profiles"]
       },
       "ChatMessageWithAnswersDto": {
         "type": "object",

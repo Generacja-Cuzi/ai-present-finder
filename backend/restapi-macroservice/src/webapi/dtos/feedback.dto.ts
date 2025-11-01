@@ -5,7 +5,7 @@ export class CreateFeedbackDto {
     description: "ID of the chat to provide feedback for",
     example: "550e8400-e29b-41d4-a716-446655440000",
   })
-  chatId: string;
+  chatId!: string;
 
   @ApiProperty({
     description: "Rating from 1 to 5",
@@ -13,12 +13,13 @@ export class CreateFeedbackDto {
     maximum: 5,
     example: 5,
   })
-  rating: number;
+  rating!: number;
 
   @ApiPropertyOptional({
     description: "Optional comment about the chat experience",
     example: "Great recommendations, very helpful!",
     nullable: true,
+    type: String,
   })
   comment?: string | null;
 }
@@ -28,42 +29,44 @@ export class FeedbackResponseDto {
     description: "Unique identifier of the feedback",
     example: "550e8400-e29b-41d4-a716-446655440001",
   })
-  id: string;
+  id!: string;
 
   @ApiProperty({
     description: "ID of the chat this feedback is for",
     example: "550e8400-e29b-41d4-a716-446655440000",
   })
-  chatId: string;
+  chatId!: string;
 
   @ApiProperty({
     description: "ID of the user who provided the feedback",
     example: "550e8400-e29b-41d4-a716-446655440002",
   })
-  userId: string;
+  userId!: string;
 
   @ApiProperty({
     description: "Rating from 1 to 5",
     example: 5,
   })
-  rating: number;
+  rating!: number;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: "Optional comment about the chat experience",
     example: "Great recommendations, very helpful!",
     nullable: true,
+    required: false,
+    type: String,
   })
-  comment: string | null;
+  comment!: string | null;
 
   @ApiProperty({
     description: "When the feedback was created",
     example: "2023-12-01T10:00:00.000Z",
   })
-  createdAt: Date;
+  createdAt!: Date;
 
   @ApiProperty({
     description: "When the feedback was last updated",
     example: "2023-12-01T10:00:00.000Z",
   })
-  updatedAt: Date;
+  updatedAt!: Date;
 }

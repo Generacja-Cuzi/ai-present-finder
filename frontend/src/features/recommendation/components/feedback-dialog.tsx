@@ -39,14 +39,15 @@ export function FeedbackDialog({
     }
 
     try {
+      const trimmedComment = comment.trim();
       const feedbackData = {
         chatId,
         rating,
-        comment: comment.trim() ? comment.trim() : null,
+        comment: trimmedComment === "" ? null : trimmedComment,
       };
 
       await createFeedback.mutateAsync({
-        body: feedbackData as any,
+        body: feedbackData,
       });
 
       toast.success("Thank you for your feedback!", {
@@ -58,7 +59,7 @@ export function FeedbackDialog({
       setComment("");
       onOpenChange(false);
       onSuccess?.();
-    } catch (error) {
+    } catch {
       toast.error("Failed to submit feedback. Please try again.");
     }
   };
@@ -118,8 +119,8 @@ export function FeedbackDialog({
               id="comment"
               placeholder="Tell us more about your experience..."
               value={comment}
-              onChange={(e) => {
-                setComment(e.target.value);
+              onChange={(event) => {
+                setComment(event.target.value);
               }}
               rows={4}
               className="resize-none"

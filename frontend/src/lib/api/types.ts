@@ -455,6 +455,29 @@ export interface components {
             /** @description User information */
             user: components["schemas"]["UserDto"];
         };
+        UserInfoDto: {
+            /**
+             * @description User ID
+             * @example 550e8400-e29b-41d4-a716-446655440000
+             */
+            id: string;
+            /**
+             * @description User email
+             * @example user@example.com
+             */
+            email: string;
+            /**
+             * @description User name
+             * @example John Doe
+             */
+            name: string | null;
+            /**
+             * @description User role
+             * @example user
+             * @enum {string}
+             */
+            role: "user" | "admin";
+        };
         ChatDto: {
             /**
              * @description Chat ID
@@ -597,7 +620,7 @@ export interface components {
              * @description Optional comment about the chat experience
              * @example Great recommendations, very helpful!
              */
-            comment?: Record<string, never> | null;
+            comment?: string | null;
         };
         FeedbackResponseDto: {
             /**
@@ -624,7 +647,7 @@ export interface components {
              * @description Optional comment about the chat experience
              * @example Great recommendations, very helpful!
              */
-            comment?: Record<string, never> | null;
+            comment?: string | null;
             /**
              * Format: date-time
              * @description When the feedback was created
@@ -699,10 +722,6 @@ export interface components {
             /** @description List of chat messages */
             messages: components["schemas"]["MessageDto"][];
         };
-        UserProfilesResponseDto: {
-            /** @description List of user profiles */
-            profiles: unknown[][];
-        };
         RecipientPersonalInfo: {
             person_name?: string | null;
             relationship?: string | null;
@@ -776,7 +795,7 @@ export interface components {
              *       "relaxation"
              *     ]
              */
-            keyThemes: unknown[][];
+            keyThemes: string[];
             /**
              * Format: date-time
              * @description Profile creation date
@@ -789,6 +808,10 @@ export interface components {
              * @example 2023-01-01T00:00:00.000Z
              */
             updatedAt: string;
+        };
+        UserProfilesResponseDto: {
+            /** @description List of user profiles */
+            profiles: components["schemas"]["UserProfileDto"][];
         };
         ChatMessageWithAnswersDto: {
             /**
@@ -1113,7 +1136,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["UserInfoDto"];
+                };
             };
         };
     };

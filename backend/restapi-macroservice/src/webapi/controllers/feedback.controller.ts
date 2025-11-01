@@ -110,7 +110,7 @@ export class FeedbackController {
       Feedback | null
     >(new GetFeedbackByChatIdQuery(chatId));
 
-    if (!feedback) {
+    if (feedback === null) {
       throw new NotFoundException(`Feedback not found for chat ${chatId}`);
     }
 

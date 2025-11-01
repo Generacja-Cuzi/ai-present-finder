@@ -41,21 +41,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (user !== null) {
         try {
           const response = await fetchClient.GET("/auth/me");
-          if (response.response.ok && response.data) {
+          if (response.response.ok && response.data !== undefined) {
             // Update user data from server to ensure role is synced
-            const userData = response.data as {
-              user: {
-                id: string;
-                email: string;
-                name: string | null;
-                role: string;
-              };
-            };
+            const userData = response.data;
             setUser({
-              id: userData.user.id,
-              email: userData.user.email,
-              name: userData.user.name,
-              role: userData.user.role as "user" | "admin",
+              id: userData.id,
+              email: userData.email,
+              name: userData.name,
+              role: userData.role,
             });
           } else {
             console.warn("Session validation failed, clearing user");
@@ -70,7 +63,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     void validateSession();
-  }, [setUser]); // Removed user from dependencies to avoid infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- user is intentionally excluded to avoid infinite validation loop
+  }, [setUser]);
 
   const logout = async () => {
     try {

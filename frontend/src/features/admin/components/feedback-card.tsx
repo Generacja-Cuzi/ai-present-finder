@@ -11,17 +11,17 @@ import type { components } from "@/lib/api/types";
 
 type Feedback = components["schemas"]["FeedbackResponseDto"];
 
-export function FeedbackCard({ feedback }: { feedback: Feedback }) {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("pl-PL", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString("pl-PL", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 
+export function FeedbackCard({ feedback }: { feedback: Feedback }) {
   return (
     <Card>
       <CardHeader>
@@ -30,11 +30,11 @@ export function FeedbackCard({ feedback }: { feedback: Feedback }) {
             Feedback od użytkownika {feedback.userId.slice(0, 8)}...
           </CardTitle>
           <div className="flex items-center gap-1">
-            {Array.from({ length: 5 }).map((_, i) => (
+            {Array.from({ length: 5 }).map((_, index) => (
               <Star
-                key={i}
+                key={`star-${String(index)}`}
                 className={`h-5 w-5 ${
-                  i < feedback.rating
+                  index < feedback.rating
                     ? "fill-yellow-400 text-yellow-400"
                     : "text-gray-300"
                 }`}
@@ -46,10 +46,10 @@ export function FeedbackCard({ feedback }: { feedback: Feedback }) {
           Chat ID: {feedback.chatId} • {formatDate(feedback.createdAt)}
         </CardDescription>
       </CardHeader>
-      {feedback.comment && (
+      {feedback.comment !== null && feedback.comment !== undefined && (
         <CardContent>
           <p className="text-muted-foreground text-sm italic">
-            "{feedback.comment as any}"
+            &ldquo;{feedback.comment ?? ""}&rdquo;
           </p>
         </CardContent>
       )}

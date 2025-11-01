@@ -10,7 +10,7 @@ export class GetAllFeedbacksHandler
 {
   constructor(private readonly feedbackRepository: IFeedbackRepository) {}
 
-  async execute(query: GetAllFeedbacksQuery): Promise<Feedback[]> {
+  async execute(_query: GetAllFeedbacksQuery): Promise<Feedback[]> {
     return this.feedbackRepository.findAll();
   }
 }

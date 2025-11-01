@@ -26,7 +26,7 @@ export class CreateFeedbackHandler
 
     // Check if chat exists
     const chat = await this.chatRepository.findByChatId(command.chatId);
-    if (!chat) {
+    if (chat === null) {
       throw new NotFoundException(`Chat with id ${command.chatId} not found`);
     }
 

@@ -1,0 +1,76 @@
+@startuml Admin Get All Feedbacks Flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam handwritten false
+skinparam shadowing false
+skinparam defaultFontName Arial
+
+title Admin Retrieves All Feedbacks - Sequence Diagram
+
+actor Admin
+participant "Frontend\n(React)" as Frontend
+participant "REST API\nController" as RestAPI
+participant "Roles Guard" as RolesGuard
+participant "Get All Feedbacks\nQuery Handler" as Handler
+participant "Feedback\nRepository" as FeedbackRepo
+database "PostgreSQL\nDatabase" as DB
+
+Admin -> Frontend: Navigates to\n/admin/feedbacks
+activate Frontend
+
+Frontend -> Frontend: Check user role\n(AuthContext)
+
+alt User is not admin
+    Frontend --> Admin: Redirect to /profile
+else User is admin
+    Frontend -> RestAPI: GET /feedback
+    activate RestAPI
+    
+    RestAPI -> RolesGuard: Check user role
+    activate RolesGuard
+    
+    RolesGuard -> RolesGuard: Extract JWT from cookie
+    RolesGuard -> RolesGuard: Verify token & decode
+    
+    alt Invalid token
+        RolesGuard --> RestAPI: UnauthorizedException
+        RestAPI --> Frontend: 401 Unauthorized
+        Frontend --> Admin: Error: Not authenticated
+    else Token valid but not admin role
+        RolesGuard --> RestAPI: ForbiddenException\n"Admin access required"
+        RestAPI --> Frontend: 403 Forbidden
+        Frontend --> Admin: Error: Access denied
+    else User has admin role
+        RolesGuard --> RestAPI: Access granted
+        deactivate RolesGuard
+        
+        RestAPI -> Handler: GetAllFeedbacksQuery()
+        activate Handler
+        
+        Handler -> FeedbackRepo: findAll()
+        activate FeedbackRepo
+        
+        FeedbackRepo -> DB: SELECT f.*, u.email, u.name\nFROM feedbacks f\nLEFT JOIN users u ON f.user_id = u.id\nORDER BY f.created_at DESC
+        activate DB
+        DB --> FeedbackRepo: List of feedbacks with user info
+        deactivate DB
+        
+        FeedbackRepo --> Handler: Feedback entities
+        deactivate FeedbackRepo
+        
+        Handler -> Handler: Map to DTOs\n(FeedbackResponseDto[])
+        
+        Handler --> RestAPI: FeedbackResponseDto[]
+        deactivate Handler
+        
+        RestAPI --> Frontend: 200 OK\n[{id, rating, comment, user, createdAt}, ...]
+        deactivate RestAPI
+        
+        Frontend -> Frontend: Calculate statistics\n(avg rating, total count)
+        
+        Frontend --> Admin: Display feedbacks list\nwith statistics
+        deactivate Frontend
+    end
+end
+
+@enduml

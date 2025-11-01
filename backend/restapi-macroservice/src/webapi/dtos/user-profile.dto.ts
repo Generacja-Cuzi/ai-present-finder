@@ -131,7 +131,7 @@ export class UserProfileDto {
 
   @ApiProperty({
     description: "Key themes and keywords",
-    type: [String],
+    type: String,
     isArray: true,
     example: ["cooking", "gardening", "relaxation"],
   })
@@ -153,7 +153,7 @@ export class UserProfileDto {
 export class UserProfilesResponseDto {
   @ApiProperty({
     description: "List of user profiles",
-    type: [UserProfileDto],
+    type: UserProfileDto,
     isArray: true,
   })
   profiles: UserProfileDto[];

@@ -1,0 +1,69 @@
+@startuml User Create Feedback Flow
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam handwritten false
+skinparam shadowing false
+skinparam defaultFontName Arial
+
+title User Creates Feedback - Sequence Diagram
+
+actor User
+participant "Frontend\n(React)" as Frontend
+participant "REST API\nController" as RestAPI
+participant "Create Feedback\nCommand Handler" as Handler
+participant "Feedback\nRepository" as FeedbackRepo
+participant "Chat Session\nRepository" as ChatRepo
+database "PostgreSQL\nDatabase" as DB
+
+User -> Frontend: Submits feedback form\n(rating, comment, chatId)
+activate Frontend
+
+Frontend -> Frontend: Validate input\n(rating 1-5, chatId exists)
+
+Frontend -> RestAPI: POST /feedback\n{rating, comment, chatId}
+activate RestAPI
+
+RestAPI -> RestAPI: Validate DTO\n(CreateFeedbackDto)
+
+RestAPI -> Handler: CreateFeedbackCommand\n(userId, rating, comment, chatId)
+activate Handler
+
+Handler -> ChatRepo: findById(chatId)
+activate ChatRepo
+ChatRepo -> DB: SELECT * FROM chat_sessions\nWHERE id = ?
+activate DB
+DB --> ChatRepo: Chat session data
+deactivate DB
+ChatRepo --> Handler: ChatSession
+deactivate ChatRepo
+
+alt Chat session not found
+    Handler --> RestAPI: NotFoundException\n"Chat session not found"
+    RestAPI --> Frontend: 404 Not Found
+    Frontend --> User: Error: Chat not found
+else Chat session belongs to different user
+    Handler -> Handler: Verify chat.userId === userId
+    Handler --> RestAPI: ForbiddenException\n"Not your chat session"
+    RestAPI --> Frontend: 403 Forbidden
+    Frontend --> User: Error: Access denied
+else Valid chat session
+    Handler -> FeedbackRepo: create(feedback)
+    activate FeedbackRepo
+    FeedbackRepo -> DB: INSERT INTO feedbacks\n(rating, comment, chatId, userId)
+    activate DB
+    DB --> FeedbackRepo: Feedback created
+    deactivate DB
+    FeedbackRepo --> Handler: Feedback entity
+    deactivate FeedbackRepo
+    
+    Handler --> RestAPI: FeedbackResponseDto
+    deactivate Handler
+    
+    RestAPI --> Frontend: 201 Created\n{id, rating, comment, createdAt}
+    deactivate RestAPI
+    
+    Frontend --> User: Success message\n"Thank you for your feedback!"
+    deactivate Frontend
+end
+
+@enduml

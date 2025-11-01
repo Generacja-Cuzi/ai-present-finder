@@ -11,8 +11,10 @@ Container_Boundary(restapi, "REST API Macroservice (NestJS)") {
   Component(chat_controller, "ChatController", "NestJS Controller", "Chat endpoints: GET /chats, GET /chats/:chatId/listings (protected by JWT & ResourceOwnershipGuard)")
   Component(messages_controller, "MessagesController", "NestJS Controller", "Messages endpoints: GET /messages/chat/:chatId (protected by JWT & ResourceOwnershipGuard)")
   Component(user_profile_controller, "UserProfileController", "NestJS Controller", "User Profile endpoints: GET /user-profiles, GET /user-profiles/:profileId (protected by JWT & ResourceOwnershipGuard)")
+  Component(feedback_controller, "FeedbackController", "NestJS Controller", "Feedback endpoints: POST /feedback (protected by JWT), GET /feedback (protected by JWT & RolesGuard[admin])")
   Component(sse_controller, "SSEController", "NestJS Controller", "SSE endpoint: GET /sse?clientId=...")
   Component(jwt_auth_guard, "JwtAuthGuard", "NestJS Guard", "Validates JWT tokens from httpOnly cookies")
+  Component(roles_guard, "RolesGuard", "NestJS Guard", "Validates user has required role (admin)")
   Component(resource_ownership_guard, "ResourceOwnershipGuard", "NestJS Guard", "Validates user owns requested resource (CHAT, LISTING, MESSAGE, USER_PROFILE)")
   Component(validate_google_token_handler, "ValidateGoogleTokenHandler", "CQRS Command Handler", "Validates Google OAuth code and creates/updates user")
   Component(google_service, "GoogleService", "NestJS Service", "Handles Google OAuth flow and token exchange")
@@ -30,6 +32,8 @@ Container_Boundary(restapi, "REST API Macroservice (NestJS)") {
   Component(save_user_profile_handler, "SaveUserProfileHandler", "CQRS Command Handler", "Persists user profile from chat analysis")
   Component(get_user_profiles_handler, "GetUserProfilesHandler", "CQRS Query Handler", "Retrieves all user profiles for a user")
   Component(get_user_profile_by_id_handler, "GetUserProfileByIdHandler", "CQRS Query Handler", "Retrieves specific user profile by ID")
+  Component(create_feedback_handler, "CreateFeedbackHandler", "CQRS Command Handler", "Creates new feedback for a chat session")
+  Component(get_all_feedbacks_handler, "GetAllFeedbacksHandler", "CQRS Query Handler", "Retrieves all feedbacks (admin only)")
   Component(chat_interview_completed_handler, "ChatInterviewCompletedHandler", "Event Handler", "Handles ChatInterviewCompletedEvent from RabbitMQ")
   Component(chat_question_handler, "ChatQuestionAskedHandler", "Event Handler", "Handles ChatQuestionAskedEvent from RabbitMQ")
   Component(chat_completed_handler, "ChatCompletedNotifyUserHandler", "Event Handler", "Handles ChatCompletedNotifyUserEvent from RabbitMQ")
@@ -41,9 +45,11 @@ Container_Boundary(restapi, "REST API Macroservice (NestJS)") {
   Component(chat_repository, "ChatRepository", "TypeORM Repository", "Persists and retrieves chat sessions and messages")
   Component(message_repository, "MessageRepository", "TypeORM Repository", "Persists and retrieves chat messages")
   Component(user_profile_repository, "UserProfileRepository", "TypeORM Repository", "Persists and retrieves user profiles (stalking analysis results)")
+  Component(feedback_repository, "FeedbackRepository", "TypeORM Repository", "Persists and retrieves user feedbacks")
 }
 
-Component_Ext(user, "User", "Browser/Client", "Authenticates, provides social links, chat messages, and manages favorites")
+Component_Ext(user, "User", "Browser/Client", "Authenticates, provides social links, chat messages, manages favorites, and submits feedback")
+Component_Ext(admin, "Admin", "Browser/Client", "Views all user feedbacks and statistics")
 Component_Ext(google_oauth, "Google OAuth", "OAuth Provider", "Validates OAuth codes and returns user info")
 Component_Ext(postgres, "PostgreSQL", "Database", "Stores user accounts, chats, messages, listings, and favorites")
 Component_Ext(rabbitmq_out_stalking, "RabbitMQ", "Message Broker", "StalkingAnalyzeRequestedEvent queue")
@@ -145,6 +151,19 @@ Rel(user_profile_controller, get_user_profiles_handler, "Dispatches GetUserProfi
 Rel(user_profile_controller, get_user_profile_by_id_handler, "Dispatches GetUserProfileByIdQuery", "CQRS QueryBus")
 Rel(get_user_profiles_handler, user_profile_repository, "Retrieves user profiles")
 Rel(get_user_profile_by_id_handler, user_profile_repository, "Retrieves user profile by ID")
+
+Rel(user, feedback_controller, "POST /feedback {rating, comment, chatId} (with JWT cookie)", "HTTPS/JSON")
+Rel(feedback_controller, jwt_auth_guard, "Validates JWT")
+Rel(feedback_controller, create_feedback_handler, "Dispatches CreateFeedbackCommand", "CQRS CommandBus")
+Rel(create_feedback_handler, chat_repository, "Verifies chat ownership")
+Rel(create_feedback_handler, feedback_repository, "Persists feedback")
+Rel(feedback_repository, postgres, "SQL queries", "TypeORM")
+
+Rel(admin, feedback_controller, "GET /feedback (with JWT cookie)", "HTTPS/JSON")
+Rel(feedback_controller, roles_guard, "Validates admin role")
+Rel(roles_guard, user_repository, "Verifies user role")
+Rel(feedback_controller, get_all_feedbacks_handler, "Dispatches GetAllFeedbacksQuery", "CQRS QueryBus")
+Rel(get_all_feedbacks_handler, feedback_repository, "Retrieves all feedbacks")
 
 SHOW_LEGEND()
 @enduml

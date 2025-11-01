@@ -13,7 +13,7 @@ export function FeedbacksView() {
   const { data, isLoading } = useGetAllFeedbacks();
   const navigate = useNavigate();
 
-  if (isLoading) {
+  if (isLoading || !data) {
     return (
       <div className="bg-background flex min-h-screen flex-col items-center justify-center">
         <div className="text-lg">Ładowanie feedbacków...</div>

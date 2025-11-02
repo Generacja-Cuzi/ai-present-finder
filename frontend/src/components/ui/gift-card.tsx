@@ -104,7 +104,7 @@ export function GiftCard({
       <div className="flex flex-1 flex-col">
         <div className="flex-1 px-4 pt-4">
           <p className="text-xl font-semibold text-gray-900">
-            {gift.price.value === null || typeof gift.price.value !== "number"
+            {gift.price.value === null
               ? "Price not available"
               : `${gift.price.value} ${gift.price.currency ?? "zł"}`}
           </p>

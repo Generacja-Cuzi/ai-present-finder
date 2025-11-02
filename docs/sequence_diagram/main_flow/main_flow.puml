@@ -141,8 +141,9 @@ alt Zarówno stalking jak i wywiad zakończone
   GIFT -> RERANK: **GiftContextInitializedEvent**\n{userProfile, keywords, chatId, eventId, totalEvents}
   activate RERANK
   RERANK -> RERANK: **InitializeGiftContextCommand**\n(create/update session with context)
+  note right: Session created with totalEvents count\nfor completion tracking
  
-  par Równoległe Żądania FETCH
+  par Równoległe Żądania FETCH (sent AFTER GiftContextInitializedEvent)
   else OLX
     activate FETCH_OLX
     GIFT -> FETCH_OLX: **FetchOlxEvent**\n{query, chatId, eventId, totalEvents}
@@ -202,20 +203,85 @@ alt Wszystkie produkty zebrane (completedEvents >= totalEvents)
   activate RERANK
   RERANK -> RERANK: **RerankAndEmitGiftReadyCommand**\n{eventId}
   RERANK -> RERANK: **GetSessionProductsQuery**\n{eventId}
-  RERANK -> RERANK: **ScoreProductsQuery**\n{products, userProfile, keywords}
-  RERANK -> RERANK: **scoreProductsFlow** (AI via Google Gemini)\n(score and reason for each product in batches)
-  note right: AI-SDK generateObject z Google Gemini\n(gemini-2.5-flash-lite)\nokreśla score (1-10) i reasoning dla każdego produktu
+  note right: Pobiera wszystkie produkty (włącznie z już ocenionymi)
+  RERANK -> RERANK: **ScoreProductsQuery**\n{unscoredProducts, userProfile, keywords}
+  note right: Tylko nieocenione produkty są przesyłane do AI
   RERANK -> RERANK: **UpdateProductRatingsCommand**\n(update products with scores)
-  note right: Filtruje produkty z score < 5\nsortuje po score (desc)\nbierze top 50
-  RERANK -> REST: **GiftReadyEvent**\n{chatId, rankedProducts[]}
-  note right: RERANK emituje event\nz już zrankowanymi produktami\n(score >= 5, sorted desc)
-  deactivate RERANK
-  activate REST
-  REST -> REST: **SaveListingsCommand**\n{chatId, listings[]}
-  REST -> REST: **NotifyUserSseCommand**
-  REST -> U: SSE: gift-ready\n{listings with IDs}
-  deactivate REST
-  note left: Produkty gotowe do wyświetlenia\nużytkownik może dodać do ulubionych
+  note right: Filtruje produkty z score < MINIMAL_SCORE\nsortuje po score (desc)
+  RERANK -> RERANK: **CheckAndPrepareRegenerateIdeasLoopCommand**
+  note right: Sprawdza:\n- goodProducts.length < TOP_BEST_COUNT?\n- loopCount < MAX_IDEAS_LOOP?
+  
+  alt Insufficient products AND loopCount < MAX_IDEAS_LOOP
+    RERANK -> GIFT: **RegenerateIdeasLoopEvent**\n{chatId, eventId, badProducts[], providerCounts[], userProfile, keywords}
+    note right: Regeneracja z feedbackiem:\n- Lista złych produktów + scores + reasoning\n- Statystyki per provider
+    deactivate RERANK
+    activate GIFT
+    GIFT -> GIFT: **giftIdeasFlow** (z feedbackiem)\n{userProfile, keywords, badProducts, providerCounts}
+    note right: AI dostaje feedback o złych produktach\naby generować lepsze zapytania
+    GIFT -> RERANK: **GiftContextInitializedEvent**\n{eventId (ten sam!), totalEvents (nowe)}
+    activate RERANK
+    RERANK -> RERANK: **InitializeGiftContextHandler**\nUPDATE: totalEvents += new totalEvents\nstatus = ACTIVE
+    note right: Dla regeneracji: dodaje nowe totalEvents\ndo istniejących (kumulatywnie)\nResetuje status na ACTIVE
+    deactivate RERANK
+    
+    par Druga Fala FETCH (nowe zapytania z feedbackiem)
+    else OLX
+      activate FETCH_OLX
+      GIFT -> FETCH_OLX: **FetchOlxEvent**\n(nowe zapytania)
+    else Allegro
+      GIFT -> FETCH_ALLEGRO: **FetchAllegroEvent**\n(nowe zapytania)
+      activate FETCH_ALLEGRO
+    else eBay
+      GIFT -> FETCH_EBAY: **FetchEbayEvent**\n(nowe zapytania)
+      activate FETCH_EBAY
+    else Amazon
+      GIFT -> FETCH_AMAZON: **FetchAmazonEvent**\n(nowe zapytania)
+      activate FETCH_AMAZON
+    end
+    deactivate GIFT
+    
+    note over RERANK: Nowe produkty przychodzą...\nIncrementSessionCompletionHandler\nczeka aż completedEvents >= totalEvents (zaktualizowane)
+    
+    par Nowe Produkty
+    else OLX
+      FETCH_OLX -> RERANK: **ProductFetchedEvent**
+      activate RERANK
+      RERANK -> RERANK: CreateSession → AddProducts → IncrementCompletion
+      deactivate RERANK
+    else Allegro
+      FETCH_ALLEGRO -> RERANK: **ProductFetchedEvent**
+      activate RERANK
+      RERANK -> RERANK: CreateSession → AddProducts → IncrementCompletion
+      deactivate RERANK
+    else eBay
+      FETCH_EBAY -> RERANK: **ProductFetchedEvent**
+      activate RERANK
+      RERANK -> RERANK: CreateSession → AddProducts → IncrementCompletion
+      deactivate RERANK
+    else Amazon
+      FETCH_AMAZON -> RERANK: **ProductFetchedEvent**
+      activate RERANK
+      RERANK -> RERANK: CreateSession → AddProducts → IncrementCompletion
+      deactivate RERANK
+    end
+    deactivate FETCH_OLX
+    deactivate FETCH_ALLEGRO
+    deactivate FETCH_EBAY
+    deactivate FETCH_AMAZON
+    
+    note over RERANK: Gdy completedEvents >= totalEvents (po drugiej fali)\nRerankAndEmitGiftReadyCommand uruchamia się ponownie\nZ WSZYSTKIMI produktami (pierwsza + druga fala)\nAle ocenia TYLKO nowe (stare mają już rating)
+    
+  else Enough products OR loopCount >= MAX_IDEAS_LOOP
+    RERANK -> REST: **GiftReadyEvent**\n{chatId, rankedProducts[]}
+    note right: RERANK emituje event\nz WSZYSTKIMI produktami score >= MINIMAL_SCORE\n(sorted desc by score)
+    deactivate RERANK
+    activate REST
+    REST -> REST: **SaveListingsCommand**\n{chatId, listings[]}
+    REST -> REST: **NotifyUserSseCommand**
+    REST -> U: SSE: gift-ready\n{listings with IDs}
+    deactivate REST
+    note left: Produkty gotowe do wyświetlenia\nużytkownik może dodać do ulubionych
+  end
 end
 
 @enduml

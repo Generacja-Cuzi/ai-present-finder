@@ -15,7 +15,8 @@ System_Ext(amazon, "Amazon", "Global e-commerce platform")
 System_Ext(ebay, "eBay", "Online marketplace")
 System_Ext(olx, "OLX", "Classified advertisements platform")
 
-System_Ext(openai_llm, "OpenAI", "LLM for chat, analysis, and gift idea generation")
+System_Ext(openai_llm, "OpenAI", "LLM for analysis and gift idea generation")
+System_Ext(google_gemini_llm, "Google Gemini", "LLM for chat interviews and product scoring")
 System_Ext(brightdata, "BrightData", "Web scraping proxy service for social media data collection")
 System_Ext(google_oauth, "Google OAuth", "Authentication provider for user login")
 System_Ext(instagram_ext, "Instagram", "Social media platform")
@@ -36,7 +37,7 @@ Rel(brightdata, x_ext, "Scrapes", "HTTPS")
 Rel(system_stalking_microservice, openai_llm, "Analyzes content for keywords", "HTTPS")
 Rel(system_stalking_microservice, system_gift_microservice, "Sends keywords", "RabbitMQ")
 
-Rel(system_chat_microservice, openai_llm, "Generates interview questions", "HTTPS")
+Rel(system_chat_microservice, google_gemini_llm, "Generates interview questions", "HTTPS")
 Rel(system_chat_microservice, system_rest_api, "Sends questions to user", "RabbitMQ")
 Rel(system_chat_microservice, system_gift_microservice, "Sends interview results", "RabbitMQ")
 
@@ -48,6 +49,7 @@ Rel(system_fetch_microservice, amazon, "Fetches products", "HTTPS/API")
 Rel(system_fetch_microservice, ebay, "Fetches products", "HTTPS/API")
 Rel(system_fetch_microservice, olx, "Fetches products", "HTTPS/API")
 Rel(system_fetch_microservice, system_reranking_microservice, "Sends fetched products", "RabbitMQ")
+Rel(system_reranking_microservice, google_gemini_llm, "Scores products for relevance", "HTTPS")
 
 Rel(system_reranking_microservice, system_rest_api, "Sends final gift recommendations", "RabbitMQ")
 

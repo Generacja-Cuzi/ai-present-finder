@@ -7,8 +7,10 @@ Container_Boundary(chat, "Chat Microservice (NestJS)") {
   Component(question_handler, "GenerateQuestionHandler", "CQRS Command Handler", "Generates interview questions")
   Component(set_occasion_handler, "SetOccasionHandler", "CQRS Command Handler", "Stores occasion for chat session")
   Component(get_occasion_handler, "GetOccasionHandler", "CQRS Query Handler", "Retrieves occasion for chat session")
-  Component(ai_flow, "AI Flow Service", "ai-sdk + OpenAI", "Uses OpenAI to generate contextual interview questions")
-  Component(chat_session_db, "ChatSession", "TypeORM Entity", "Stores chat session data including occasion")
+  Component(ai_flow, "AI Flow Service", "ai-sdk + Google Gemini", "Uses Google Gemini (gemini-2.5-flash-lite) to generate contextual interview questions")
+  
+  ComponentDb(chat_session_repo, "ChatSessionRepository", "TypeORM Repository", "Repository for ChatSession entity")
+  ComponentDb(database, "PostgreSQL", "Database", "TypeORM persistence layer")
 }
 
 Component_Ext(rabbitmq_in_start, "RabbitMQ", "Message Broker", "ChatStartInterviewEvent queue")
@@ -16,22 +18,24 @@ Component_Ext(rabbitmq_in_answer, "RabbitMQ", "Message Broker", "ChatUserAnswere
 Component_Ext(rabbitmq_out_question, "RabbitMQ", "Message Broker", "ChatQuestionAskedEvent queue")
 Component_Ext(rabbitmq_out_completed, "RabbitMQ", "Message Broker", "ChatInterviewCompletedEvent queue")
 Component_Ext(rabbitmq_out_inappropriate, "RabbitMQ", "Message Broker", "ChatInappropriateRequestEvent queue")
-Component_Ext(openai, "OpenAI", "LLM", "Interview question generation and context analysis")
+Component_Ext(google_gemini, "Google Gemini", "LLM", "Interview question generation and context analysis")
 
 Rel(rabbitmq_in_start, start_handler, "Consumes event", "AMQP @EventPattern")
 Rel(start_handler, set_occasion_handler, "Dispatches SetOccasionCommand", "CQRS CommandBus")
-Rel(set_occasion_handler, chat_session_db, "Stores occasion", "TypeORM")
+Rel(set_occasion_handler, chat_session_repo, "Uses", "Repository")
 Rel(start_handler, question_handler, "Dispatches GenerateQuestionCommand", "CQRS CommandBus")
 Rel(question_handler, ai_flow, "Generates questions")
-Rel(ai_flow, openai, "LLM call", "HTTPS")
+Rel(ai_flow, google_gemini, "LLM call", "HTTPS")
 Rel(question_handler, rabbitmq_out_question, "Publishes ChatQuestionAskedEvent", "AMQP ClientProxy.emit")
 
 Rel(rabbitmq_in_answer, answer_handler, "Consumes event", "AMQP @EventPattern")
 Rel(answer_handler, get_occasion_handler, "Executes GetOccasionQuery", "CQRS QueryBus")
-Rel(get_occasion_handler, chat_session_db, "Retrieves occasion", "TypeORM")
+Rel(get_occasion_handler, chat_session_repo, "Uses", "Repository")
 Rel(answer_handler, question_handler, "Dispatches GenerateQuestionCommand", "CQRS CommandBus")
 Rel(answer_handler, rabbitmq_out_completed, "Publishes ChatInterviewCompletedEvent", "AMQP ClientProxy.emit")
 Rel(answer_handler, rabbitmq_out_inappropriate, "Publishes ChatInappropriateRequestEvent", "AMQP ClientProxy.emit")
+
+Rel(chat_session_repo, database, "Persists", "TypeORM")
 
 SHOW_LEGEND()
 @enduml

@@ -1,9 +1,6 @@
 @startuml C4_Component_RestAPI
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
-skinparam linetype ortho
-skinparam ranksep 200
-skinparam nodesep 200
-top to bottom direction
+
 Container_Boundary(restapi, "REST API Macroservice (NestJS)") {
   Component(auth_controller, "AuthController", "NestJS Controller", "Auth endpoints: GET /auth/google/url, POST /auth/google/callback, GET /auth/me, POST /auth/logout")
   Component(restapi_controller, "RestApiController", "NestJS Controller", "REST endpoints: POST /restapi/stalking-request, POST /restapi/send-message (protected by JWT)")

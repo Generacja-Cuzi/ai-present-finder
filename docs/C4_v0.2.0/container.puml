@@ -15,7 +15,8 @@ System_Boundary(sys, "AI Present Finder System") {
 }
 
 System_Ext(google_oauth, "Google OAuth", "Authentication provider")
-System_Ext(openai, "OpenAI", "LLM for chat, analysis, and gift ideas")
+System_Ext(openai, "OpenAI", "LLM for analysis and gift ideas")
+System_Ext(google_gemini, "Google Gemini", "LLM for chat interviews and product scoring")
 System_Ext(brightdata, "BrightData", "Web scraping proxy")
 System_Ext(instagram, "Instagram", "Social media")
 System_Ext(tiktok, "TikTok", "Social media")
@@ -48,7 +49,7 @@ Rel(stalking_svc, rabbitmq, "StalkingCompletedEvent", "AMQP")
 
 ' Chat flow
 Rel(rabbitmq, chat_svc, "ChatStartInterviewEvent", "AMQP")
-Rel(chat_svc, openai, "Generates questions", "HTTPS")
+Rel(chat_svc, google_gemini, "Generates questions", "HTTPS")
 Rel(chat_svc, rabbitmq, "ChatQuestionAskedEvent", "AMQP")
 Rel(rabbitmq, chat_svc, "ChatUserAnsweredEvent", "AMQP")
 Rel(chat_svc, rabbitmq, "ChatInterviewCompletedEvent", "AMQP")
@@ -71,6 +72,7 @@ Rel(fetch_svc, rabbitmq, "ProductFetchedEvent", "AMQP")
 ' Reranking flow
 Rel(rabbitmq, reranking_svc, "GiftContextInitializedEvent", "AMQP")
 Rel(rabbitmq, reranking_svc, "ProductFetchedEvent", "AMQP")
+Rel(reranking_svc, google_gemini, "Scores products", "HTTPS")
 Rel(reranking_svc, rabbitmq, "GiftReadyEvent", "AMQP")
 
 SHOW_LEGEND()

@@ -24,6 +24,11 @@ export class ChatDto {
     example: false,
   })
   isInterviewCompleted: boolean;
+  @ApiProperty({
+    description: "Number of gifts in the chat",
+    example: 3,
+  })
+  giftCount: number;
 }
 
 export class ChatsResponseDto {

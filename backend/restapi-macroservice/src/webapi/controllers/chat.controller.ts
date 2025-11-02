@@ -43,6 +43,7 @@ export class ChatController {
 
     return {
       chats: chatsResult.map((chat) => ({
+        giftCount: chat.listings.length,
         chatId: chat.chatId,
         chatName: chat.chatName,
         createdAt: chat.createdAt,

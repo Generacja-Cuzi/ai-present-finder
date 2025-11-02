@@ -1,14 +1,18 @@
 import type { ListingWithId } from "@core/types";
+import { MessageSquare } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { FilterButton } from "@/components/filter-button";
 import { SearchBar } from "@/components/search-bar";
+import { Button } from "@/components/ui/button";
 import { GiftCard } from "@/components/ui/gift-card";
 import { Navbar } from "@/components/ui/navbar";
 
+import { useGetFeedbackByChatId } from "../api/feedback";
 import {
   CategoryFilterDialog,
   ClearFiltersButton,
+  FeedbackDialog,
   PriceRangeFilterDialog,
   RecommendationHeader,
   ResultsCount,
@@ -23,6 +27,7 @@ import {
 } from "../utils/filter-gifts";
 
 export function RecommendationView({
+  clientId,
   giftIdeas,
 }: {
   clientId: string;
@@ -41,6 +46,16 @@ export function RecommendationView({
   const [shopsDialogOpen, setShopsDialogOpen] = useState(false);
   const [priceDialogOpen, setPriceDialogOpen] = useState(false);
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
+  const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
+
+  // Check if feedback already exists for this chat
+  const {
+    data: existingFeedback,
+    isLoading: isFeedbackLoading,
+    refetch: refetchFeedback,
+  } = useGetFeedbackByChatId(clientId);
+
+  const hasFeedback = !isFeedbackLoading && existingFeedback !== undefined;
 
   const availableShops = useMemo(() => getUniqueShops(giftIdeas), [giftIdeas]);
   const availableCategories = useMemo(
@@ -63,6 +78,24 @@ export function RecommendationView({
 
       <main className="flex-1 pb-20">
         <div className="space-y-4 bg-white p-4 pb-6">
+          {/* Feedback Button */}
+          {!hasFeedback && (
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setFeedbackDialogOpen(true);
+                }}
+                className="gap-2"
+                disabled={isFeedbackLoading}
+              >
+                <MessageSquare className="h-4 w-4" />
+                Leave Feedback
+              </Button>
+            </div>
+          )}
+
           <SearchBar value={filters.searchQuery} onChange={updateSearchQuery} />
 
           <div className="flex items-center gap-2 overflow-x-auto">
@@ -150,6 +183,16 @@ export function RecommendationView({
         availableCategories={availableCategories}
         selectedCategories={filters.categories}
         onApply={updateCategories}
+      />
+
+      {/* Feedback Dialog */}
+      <FeedbackDialog
+        open={feedbackDialogOpen}
+        onOpenChange={setFeedbackDialogOpen}
+        chatId={clientId}
+        onSuccess={() => {
+          void refetchFeedback();
+        }}
       />
     </div>
   );

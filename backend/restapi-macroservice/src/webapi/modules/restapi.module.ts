@@ -9,8 +9,11 @@ import { AddToFavoritesHandler } from "src/app/handlers/add-to-favorites.handler
 import { ChatCompletedNotifyUserHandler } from "src/app/handlers/chat-completed-notify-user.handler";
 import { ChatInappropriateRequestHandler } from "src/app/handlers/chat-inappropriate-request.handler";
 import { ChatQuestionAskedHandler } from "src/app/handlers/chat-question-asked.handler";
+import { CreateFeedbackHandler } from "src/app/handlers/create-feedback.handler";
+import { GetAllFeedbacksHandler } from "src/app/handlers/get-all-feedbacks.handler";
 import { GetChatListingsHandler } from "src/app/handlers/get-chat-listings.handler";
 import { GetChatMessagesHandler } from "src/app/handlers/get-chat-messages.handler";
+import { GetFeedbackByChatIdHandler } from "src/app/handlers/get-feedback-by-chat-id.handler";
 import { GetUserChatsHandler } from "src/app/handlers/get-user-chats.handler";
 import { GetUserFavoritesHandler } from "src/app/handlers/get-user-favorites.handler";
 import { GetUserProfileByIdHandler } from "src/app/handlers/get-user-profile-by-id.handler";
@@ -29,16 +32,19 @@ import { GoogleService } from "src/app/services/google-service";
 import { SseService } from "src/app/services/sse-service";
 import { JwtStrategy } from "src/app/strategies/jwt.strategy";
 import { ChatDatabaseRepository } from "src/data/chat.database.repository";
+import { FeedbackDatabaseRepository } from "src/data/feedback.database.repository";
 import { ListingDatabaseRepository } from "src/data/listing.database.repository";
 import { MessageDatabaseRepository } from "src/data/message.database.repository";
 import { UserProfileDatabaseRepository } from "src/data/user-profile.database.repository";
 import { UserDatabaseRepository } from "src/data/user.database.repository";
 import { Chat } from "src/domain/entities/chat.entity";
+import { Feedback } from "src/domain/entities/feedback.entity";
 import { Listing } from "src/domain/entities/listing.entity";
 import { Message } from "src/domain/entities/message.entity";
 import { UserProfile } from "src/domain/entities/user-profile.entity";
 import { User } from "src/domain/entities/user.entity";
 import { IChatRepository } from "src/domain/repositories/ichat.repository";
+import { IFeedbackRepository } from "src/domain/repositories/ifeedback.repository";
 import { IListingRepository } from "src/domain/repositories/ilisting.repository";
 import { IMessageRepository } from "src/domain/repositories/imessage.repository";
 import { IUserProfileRepository } from "src/domain/repositories/iuser-profile.repository";
@@ -55,6 +61,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthController } from "../controllers/auth.controller";
 import { ChatController } from "../controllers/chat.controller";
 import { FavoritesController } from "../controllers/favorites.controller";
+import { FeedbackController } from "../controllers/feedback.controller";
 import { MessagesController } from "../controllers/messages.controller";
 import { RestApiController } from "../controllers/restapi.controller";
 import { SseController } from "../controllers/sse.controller";
@@ -91,7 +98,7 @@ import { UserProfileController } from "../controllers/user-profile.controller";
             username: url.username,
             password: url.password,
             database: url.pathname.slice(1), // Remove leading '/'
-            entities: [User, Chat, Listing, Message],
+            entities: [User, Chat, Listing, Message, Feedback],
             // Never enable in production; opt-in via env
             synchronize:
               configService.get<string>("TYPEORM_SYNCHRONIZE") === "true",
@@ -114,14 +121,21 @@ import { UserProfileController } from "../controllers/user-profile.controller";
             "restapi_password",
           database:
             configService.get<string>("DATABASE_NAME") ?? "restapi_service",
-          entities: [User, Chat, Listing, Message, UserProfile],
+          entities: [User, Chat, Listing, Message, UserProfile, Feedback],
           synchronize: true, // Only for development
           logging: false,
         };
       },
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, Chat, Listing, Message, UserProfile]),
+    TypeOrmModule.forFeature([
+      User,
+      Chat,
+      Listing,
+      Message,
+      UserProfile,
+      Feedback,
+    ]),
     ClientsModule.register([
       {
         name: "STALKING_ANALYZE_REQUESTED_EVENT",
@@ -169,6 +183,7 @@ import { UserProfileController } from "../controllers/user-profile.controller";
     AuthController,
     ChatController,
     FavoritesController,
+    FeedbackController,
     MessagesController,
     UserProfileController,
     ChatQuestionAskedHandler,
@@ -194,6 +209,9 @@ import { UserProfileController } from "../controllers/user-profile.controller";
     SaveUserProfileHandler,
     GetUserProfilesHandler,
     GetUserProfileByIdHandler,
+    CreateFeedbackHandler,
+    GetFeedbackByChatIdHandler,
+    GetAllFeedbacksHandler,
 
     // Services
     SseService,
@@ -225,6 +243,10 @@ import { UserProfileController } from "../controllers/user-profile.controller";
     {
       provide: IUserProfileRepository,
       useClass: UserProfileDatabaseRepository,
+    },
+    {
+      provide: IFeedbackRepository,
+      useClass: FeedbackDatabaseRepository,
     },
   ],
 })

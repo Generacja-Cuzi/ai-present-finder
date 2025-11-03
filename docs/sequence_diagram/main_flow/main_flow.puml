@@ -98,13 +98,14 @@ par Przetwarzanie Równoległe
   STALK -> STALK: **StalkingAnalyzeCommand**\n(analiza profili social media)
 else
   alt Profil załadowany z bazy (profileId podany)
-    note over CHAT: Wywiad pominięty,\nprofil już istnieje w bazie
-    REST -> GIFT: **ChatInterviewCompletedEvent**\n{chatId, profile (from DB)}
-    activate GIFT
-    GIFT -> GIFT: **UpdateInterviewStatusCommand**\n(użyj załadowanego profilu)
-    GIFT -> DB: Update chat interview status
+    REST -> CHAT: **ChatStartInterviewEvent**\n{chatId, occasion, profile (from DB)}
+    activate CHAT
+    note over CHAT: Wywiad rozpoczęty\nz załadowanym profilem z bazy.\nPierwsze pytanie zostanie pominięte.
+    CHAT -> CHAT: **SetOccasionCommand**\n{chatId, occasion}
+    CHAT -> CHAT: **LoadProfileCommand**\n{chatId, profile}
+    CHAT -> DB: Create chat session record with loaded profile
     activate DB
-    DB --> GIFT: Updated chat
+    DB --> CHAT: Chat session
     deactivate DB
   else Nowa sesja (brak profileId)
     REST -> CHAT: **ChatStartInterviewEvent**\n{chatId, occasion}
@@ -117,7 +118,8 @@ else
   end
 end
 
-== Interview loop (tylko gdy profil NIE był załadowany z bazy) ==
+== Interview loop ==
+note over CHAT: Wywiad zawsze się odbywa.\nJeśli profil był załadowany,\npierwsze pytanie jest pomijane.
 loop Dopóki AI nie zdecyduje zakończyć lub niewłaściwe zachowanie usera
   CHAT -> CHAT: **GenerateQuestionCommand**\n(AI decyduje o następnym pytaniu)
   CHAT --> REST: **ChatQuestionAskedEvent**\n{chatId, question, potentialAnswers}

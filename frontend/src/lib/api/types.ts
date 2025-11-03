@@ -500,6 +500,11 @@ export interface components {
              * @example false
              */
             isInterviewCompleted: boolean;
+            /**
+             * @description Number of gifts in the chat
+             * @example 3
+             */
+            giftCount: number;
         };
         ChatsResponseDto: {
             /** @description List of user's chats */

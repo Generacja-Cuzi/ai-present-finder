@@ -746,9 +746,20 @@
             "type": "boolean",
             "description": "Whether the chat interview has been completed",
             "example": false
+          },
+          "giftCount": {
+            "type": "number",
+            "description": "Number of gifts in the chat",
+            "example": 3
           }
         },
-        "required": ["chatId", "chatName", "createdAt", "isInterviewCompleted"]
+        "required": [
+          "chatId",
+          "chatName",
+          "createdAt",
+          "isInterviewCompleted",
+          "giftCount"
+        ]
       },
       "ChatsResponseDto": {
         "type": "object",

@@ -11,13 +11,13 @@ export function ChatCard({
   chatId,
   chatName,
   createdAt,
-  giftCount = 0,
+  giftCount,
   isInterviewCompleted,
 }: {
   chatId: string;
   chatName: string;
   createdAt: Date;
-  giftCount?: number;
+  giftCount: number;
   isInterviewCompleted: boolean;
 }) {
   const queryClient = useQueryClient();
@@ -44,11 +44,11 @@ export function ChatCard({
 
       <div>
         {giftCount > 0 ? (
-          <p className="mb-3 text-sm text-gray-600">
+          <p className="text-sm text-gray-600">
             Found {giftCount} gift{giftCount === 1 ? "" : "s"}
           </p>
         ) : (
-          <p className="mb-3 text-sm text-gray-600">No gifts found</p>
+          <p className="text-sm text-gray-600">No gifts found</p>
         )}
       </div>
 

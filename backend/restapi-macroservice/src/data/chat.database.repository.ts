@@ -26,6 +26,7 @@ export class ChatDatabaseRepository implements IChatRepository {
     return this.chatRepository.find({
       where: { userId },
       order: { createdAt: "DESC" },
+      relations: ["listings"],
     });
   }
 

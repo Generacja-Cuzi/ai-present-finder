@@ -209,6 +209,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all feedbacks (Admin only) */
+        get: operations["FeedbackController_getAllFeedbacks"];
+        put?: never;
+        /** Create feedback for a chat */
+        post: operations["FeedbackController_createFeedback"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/feedback/chat/{chatId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get feedback for a specific chat */
+        get: operations["FeedbackController_getFeedbackByChatId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/messages/chat/{chatId}": {
         parameters: {
             query?: never;
@@ -384,6 +419,11 @@ export interface components {
              */
             code: string;
         };
+        /**
+         * @description User role
+         * @enum {string}
+         */
+        UserRole: "user" | "admin";
         UserDto: {
             /**
              * @description User ID
@@ -400,6 +440,11 @@ export interface components {
              * @example John Doe
              */
             name: string | null;
+            /**
+             * @description User role
+             * @example user
+             */
+            role: components["schemas"]["UserRole"];
         };
         AuthResponseDto: {
             /**
@@ -409,6 +454,29 @@ export interface components {
             accessToken: string;
             /** @description User information */
             user: components["schemas"]["UserDto"];
+        };
+        UserInfoDto: {
+            /**
+             * @description User ID
+             * @example 550e8400-e29b-41d4-a716-446655440000
+             */
+            id: string;
+            /**
+             * @description User email
+             * @example user@example.com
+             */
+            email: string;
+            /**
+             * @description User name
+             * @example John Doe
+             */
+            name: string | null;
+            /**
+             * @description User role
+             * @example user
+             * @enum {string}
+             */
+            role: "user" | "admin";
         };
         ChatDto: {
             /**
@@ -536,6 +604,62 @@ export interface components {
              * @example 123e4567-e89b-12d3-a456-426614174000
              */
             listingId: string;
+        };
+        CreateFeedbackDto: {
+            /**
+             * @description ID of the chat to provide feedback for
+             * @example 550e8400-e29b-41d4-a716-446655440000
+             */
+            chatId: string;
+            /**
+             * @description Rating from 1 to 5
+             * @example 5
+             */
+            rating: number;
+            /**
+             * @description Optional comment about the chat experience
+             * @example Great recommendations, very helpful!
+             */
+            comment?: string | null;
+        };
+        FeedbackResponseDto: {
+            /**
+             * @description Unique identifier of the feedback
+             * @example 550e8400-e29b-41d4-a716-446655440001
+             */
+            id: string;
+            /**
+             * @description ID of the chat this feedback is for
+             * @example 550e8400-e29b-41d4-a716-446655440000
+             */
+            chatId: string;
+            /**
+             * @description ID of the user who provided the feedback
+             * @example 550e8400-e29b-41d4-a716-446655440002
+             */
+            userId: string;
+            /**
+             * @description Rating from 1 to 5
+             * @example 5
+             */
+            rating: number;
+            /**
+             * @description Optional comment about the chat experience
+             * @example Great recommendations, very helpful!
+             */
+            comment?: string | null;
+            /**
+             * Format: date-time
+             * @description When the feedback was created
+             * @example 2023-12-01T10:00:00.000Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description When the feedback was last updated
+             * @example 2023-12-01T10:00:00.000Z
+             */
+            updatedAt: string;
         };
         /**
          * @description Message role
@@ -1012,7 +1136,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["UserInfoDto"];
+                };
             };
         };
     };
@@ -1113,6 +1239,77 @@ export interface operations {
         responses: {
             /** @description Listing removed from favorites */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FeedbackController_getAllFeedbacks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns all feedbacks */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedbackResponseDto"][];
+                };
+            };
+        };
+    };
+    FeedbackController_createFeedback: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFeedbackDto"];
+            };
+        };
+        responses: {
+            /** @description Feedback successfully created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FeedbackController_getFeedbackByChatId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                chatId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns feedback for the chat */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedbackResponseDto"];
+                };
+            };
+            /** @description Feedback not found for this chat */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

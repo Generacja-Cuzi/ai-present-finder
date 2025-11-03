@@ -1,6 +1,7 @@
 import { GoogleService } from "src/app/services/google-service";
 import { ValidateGoogleTokenCommand } from "src/domain/commands/validate-google-token.command";
 import type { User } from "src/domain/entities/user.entity";
+import { UserRole } from "src/domain/entities/user.entity";
 import type { JwtPayload } from "src/domain/models/auth.types";
 import { IUserRepository } from "src/domain/repositories/iuser.repository";
 
@@ -47,6 +48,7 @@ export class ValidateGoogleTokenHandler
         googleId: email,
         accessToken,
         refreshToken,
+        role: UserRole.USER,
       });
       this.logger.log(`User created with id: ${user.id}`);
     } else {

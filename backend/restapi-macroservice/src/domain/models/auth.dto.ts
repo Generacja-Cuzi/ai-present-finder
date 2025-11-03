@@ -1,5 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 
+import { UserRole } from "../entities/user.entity";
+
 export class GoogleAuthDto {
   @ApiProperty({
     description: "Google OAuth authorization code",
@@ -28,6 +30,14 @@ export class UserDto {
     type: String,
   })
   name: string | null;
+
+  @ApiProperty({
+    description: "User role",
+    enum: UserRole,
+    enumName: "UserRole",
+    example: UserRole.USER,
+  })
+  role: UserRole;
 }
 
 export class AuthResponseDto {

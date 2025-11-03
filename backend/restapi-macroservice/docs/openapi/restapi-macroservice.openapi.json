@@ -156,7 +156,14 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Returns current user info"
+            "description": "Returns current user info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInfoDto"
+                }
+              }
+            }
           }
         },
         "summary": "Get current user from cookie",
@@ -288,6 +295,82 @@
         ],
         "summary": "Remove a listing from favorites",
         "tags": ["favorites"]
+      }
+    },
+    "/feedback": {
+      "post": {
+        "operationId": "FeedbackController_createFeedback",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFeedbackDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Feedback successfully created"
+          }
+        },
+        "summary": "Create feedback for a chat",
+        "tags": ["feedback"]
+      },
+      "get": {
+        "operationId": "FeedbackController_getAllFeedbacks",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns all feedbacks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FeedbackResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all feedbacks (Admin only)",
+        "tags": ["feedback"]
+      }
+    },
+    "/feedback/chat/{chatId}": {
+      "get": {
+        "operationId": "FeedbackController_getFeedbackByChatId",
+        "parameters": [
+          {
+            "name": "chatId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns feedback for the chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Feedback not found for this chat"
+          }
+        },
+        "summary": "Get feedback for a specific chat",
+        "tags": ["feedback"]
       }
     },
     "/messages/chat/{chatId}": {
@@ -557,6 +640,11 @@
         },
         "required": ["code"]
       },
+      "UserRole": {
+        "type": "string",
+        "enum": ["user", "admin"],
+        "description": "User role"
+      },
       "UserDto": {
         "type": "object",
         "properties": {
@@ -575,9 +663,18 @@
             "description": "User name",
             "example": "John Doe",
             "nullable": true
+          },
+          "role": {
+            "description": "User role",
+            "example": "user",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserRole"
+              }
+            ]
           }
         },
-        "required": ["id", "email", "name"]
+        "required": ["id", "email", "name", "role"]
       },
       "AuthResponseDto": {
         "type": "object",
@@ -597,6 +694,34 @@
           }
         },
         "required": ["accessToken", "user"]
+      },
+      "UserInfoDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User ID",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email",
+            "example": "user@example.com"
+          },
+          "name": {
+            "type": "string",
+            "description": "User name",
+            "example": "John Doe",
+            "nullable": true
+          },
+          "role": {
+            "type": "string",
+            "description": "User role",
+            "example": "user",
+            "enum": ["user", "admin"]
+          }
+        },
+        "required": ["id", "email", "name", "role"]
       },
       "ChatDto": {
         "type": "object",
@@ -789,6 +914,81 @@
         },
         "required": ["listingId"]
       },
+      "CreateFeedbackDto": {
+        "type": "object",
+        "properties": {
+          "chatId": {
+            "type": "string",
+            "description": "ID of the chat to provide feedback for",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "rating": {
+            "type": "number",
+            "description": "Rating from 1 to 5",
+            "minimum": 1,
+            "maximum": 5,
+            "example": 5
+          },
+          "comment": {
+            "type": "string",
+            "description": "Optional comment about the chat experience",
+            "example": "Great recommendations, very helpful!",
+            "nullable": true
+          }
+        },
+        "required": ["chatId", "rating"]
+      },
+      "FeedbackResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier of the feedback",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "chatId": {
+            "type": "string",
+            "description": "ID of the chat this feedback is for",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "userId": {
+            "type": "string",
+            "description": "ID of the user who provided the feedback",
+            "example": "550e8400-e29b-41d4-a716-446655440002"
+          },
+          "rating": {
+            "type": "number",
+            "description": "Rating from 1 to 5",
+            "example": 5
+          },
+          "comment": {
+            "type": "string",
+            "description": "Optional comment about the chat experience",
+            "example": "Great recommendations, very helpful!",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "When the feedback was created",
+            "example": "2023-12-01T10:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "When the feedback was last updated",
+            "example": "2023-12-01T10:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "chatId",
+          "userId",
+          "rating",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
       "MessageRole": {
         "type": "string",
         "enum": ["user", "assistant", "system"],
@@ -885,6 +1085,19 @@
           }
         },
         "required": ["messages"]
+      },
+      "UserProfilesResponseDto": {
+        "type": "object",
+        "properties": {
+          "profiles": {
+            "description": "List of user profiles",
+            "items": {
+              "type": "array"
+            },
+            "type": "array"
+          }
+        },
+        "required": ["profiles"]
       },
       "RecipientPersonalInfo": {
         "type": "object",
@@ -1108,10 +1321,10 @@
           "keyThemes": {
             "description": "Key themes and keywords",
             "example": ["cooking", "gardening", "relaxation"],
-            "type": "array",
             "items": {
-              "type": "string"
-            }
+              "type": "array"
+            },
+            "type": "array"
           },
           "createdAt": {
             "format": "date-time",
@@ -1136,19 +1349,6 @@
           "createdAt",
           "updatedAt"
         ]
-      },
-      "UserProfilesResponseDto": {
-        "type": "object",
-        "properties": {
-          "profiles": {
-            "description": "List of user profiles",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UserProfileDto"
-            }
-          }
-        },
-        "required": ["profiles"]
       },
       "ChatMessageWithAnswersDto": {
         "type": "object",

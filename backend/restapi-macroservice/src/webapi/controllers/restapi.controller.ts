@@ -19,7 +19,10 @@ import {
 
 import { JwtAuthGuard } from "../../app/guards/jwt-auth.guard";
 import { ResourceOwnershipGuard } from "../../app/guards/resource-ownership.guard";
+import { RolesGuard } from "../../app/guards/roles.guard";
 import { RequireResourceOwnership } from "../../domain/decorators/resource-ownership.decorator";
+import { Roles } from "../../domain/decorators/roles.decorator";
+import { UserRole } from "../../domain/entities/user.entity";
 import {
   ResourceIdLocation,
   ResourceType,
@@ -34,7 +37,8 @@ export class RestApiController {
   constructor(private readonly commandBus: CommandBus) {}
 
   @Post("stalking-request")
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.USER, UserRole.ADMIN)
   @ApiOperation({
     summary: "Request stalking analysis for provided social profiles",
   })
@@ -49,7 +53,8 @@ export class RestApiController {
   }
 
   @Post("send-message")
-  @UseGuards(JwtAuthGuard, ResourceOwnershipGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, ResourceOwnershipGuard)
+  @Roles(UserRole.USER, UserRole.ADMIN)
   @RequireResourceOwnership({
     resourceType: ResourceType.CHAT,
     paramName: "chatId",

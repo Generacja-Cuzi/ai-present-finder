@@ -4,6 +4,7 @@ import { Reflector } from "@nestjs/core";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
+import { UserRole } from "../../../domain/entities/user.entity";
 import type { User } from "../../../domain/entities/user.entity";
 import type { AuthenticatedRequest } from "../../../domain/models/auth.types";
 import {
@@ -32,6 +33,7 @@ describe("ResourceOwnershipGuard", () => {
     googleId: "google-123",
     accessToken: "access-token",
     refreshToken: "refresh-token",
+    role: UserRole.USER,
     chats: [],
     favoriteListings: [],
     createdAt: new Date(),

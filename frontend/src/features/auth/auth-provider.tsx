@@ -41,9 +41,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (user !== null) {
         try {
           const response = await fetchClient.GET("/auth/me");
-          if (response.response.ok) {
-            // Session is valid, keep the user from localStorage
-            // User is already set from localStorage via userAtom
+          if (response.response.ok && response.data !== undefined) {
+            // Update user data from server to ensure role is synced
+            const userData = response.data;
+            setUser({
+              id: userData.id,
+              email: userData.email,
+              name: userData.name,
+              role: userData.role,
+            });
           } else {
             console.warn("Session validation failed, clearing user");
             setUser(null);
@@ -57,7 +63,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     void validateSession();
-  }, [user, setUser]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- user is intentionally excluded to avoid infinite validation loop
+  }, [setUser]);
 
   const logout = async () => {
     try {

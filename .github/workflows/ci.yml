@@ -76,6 +76,20 @@ jobs:
 
   migrations:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     strategy:
       matrix:
         service:
@@ -91,10 +105,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup PostgreSQL
-        uses: ./.github/actions/setup-postgres
-        with:
-          container-name: "postgres-ci-migrations-${{ matrix.service.name }}"
+      - name: Create database
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE ${{ matrix.service.db }};"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -114,25 +127,25 @@ jobs:
         working-directory: backend/${{ matrix.service.name }}
         run: pnpm migration:run
         env:
-          DATABASE_URL: postgresql://postgres:test_password@localhost:5432/${{ matrix.service.db }}
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/${{ matrix.service.db }}
 
       - name: Test ${{ matrix.service.name }} migrations - Show status
         working-directory: backend/${{ matrix.service.name }}
         run: pnpm migration:show
         env:
-          DATABASE_URL: postgresql://postgres:test_password@localhost:5432/${{ matrix.service.db }}
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/${{ matrix.service.db }}
 
       - name: Test ${{ matrix.service.name }} migrations - Run down
         working-directory: backend/${{ matrix.service.name }}
         run: pnpm migration:revert
         env:
-          DATABASE_URL: postgresql://postgres:test_password@localhost:5432/${{ matrix.service.db }}
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/${{ matrix.service.db }}
 
       - name: Test ${{ matrix.service.name }} migrations - Run up again
         working-directory: backend/${{ matrix.service.name }}
         run: pnpm migration:run
         env:
-          DATABASE_URL: postgresql://postgres:test_password@localhost:5432/${{ matrix.service.db }}
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/${{ matrix.service.db }}
 
       - name: Verify schema is up to date
         working-directory: backend/${{ matrix.service.name }}
@@ -150,7 +163,7 @@ jobs:
             exit 1
           fi
         env:
-          DATABASE_URL: postgresql://postgres:test_password@localhost:5432/${{ matrix.service.db }}
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/${{ matrix.service.db }}
 
   build:
     runs-on: ubuntu-latest

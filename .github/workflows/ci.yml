@@ -95,23 +95,52 @@ jobs:
           node-version: 22
           cache: "pnpm"
 
-      - name: Write Google credentials file
-        shell: bash
-        env:
-          GCP_SA_JSON: ${{ secrets.GCP_SA_JSON }}
-        run: |
-          set -euo pipefail
-          printf '%s' "$GCP_SA_JSON" > "$RUNNER_TEMP/gcp-sa.json"
-          chmod 600 "$RUNNER_TEMP/gcp-sa.json"
-
       - name: Install dependencies
-        run: |
-          export GOOGLE_CREDENTIALS_PATH="${{ runner.temp }}/gcp-sa.json"
-          export GOOGLE_SCOPES_API="https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/userinfo.profile"
-          pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Run tests
         run: pnpm -r --filter '!fetch-microservice' test
+
+  migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PostgreSQL
+        uses: ./.github/actions/setup-postgres
+        with:
+          container-name: "postgres-ci-migrations"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test restapi migrations - Run up
+        working-directory: backend/restapi-macroservice
+        run: pnpm migration:run
+
+      - name: Test restapi migrations - Show status
+        working-directory: backend/restapi-macroservice
+        run: pnpm migration:show
+
+      - name: Test restapi migrations - Run down
+        working-directory: backend/restapi-macroservice
+        run: pnpm migration:revert
+
+      - name: Test restapi migrations - Run up again
+        working-directory: backend/restapi-macroservice
+        run: pnpm migration:run
 
   build:
     runs-on: ubuntu-latest

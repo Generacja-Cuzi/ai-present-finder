@@ -7,7 +7,7 @@ const navItems = [
   {
     icon: Search,
     label: "Search",
-    path: "/stalking",
+    path: "/start-search",
   },
   {
     icon: Bookmark,

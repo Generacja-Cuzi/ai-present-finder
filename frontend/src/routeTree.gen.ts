@@ -12,7 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedStalkingRouteImport } from './routes/_authenticated/stalking'
+import { Route as AuthenticatedStartSearchRouteImport } from './routes/_authenticated/start-search'
 import { Route as AuthenticatedSavedRouteImport } from './routes/_authenticated/saved'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedHistoryIndexRouteImport } from './routes/_authenticated/history/index'
@@ -37,11 +37,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedStalkingRoute = AuthenticatedStalkingRouteImport.update({
-  id: '/stalking',
-  path: '/stalking',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
+const AuthenticatedStartSearchRoute =
+  AuthenticatedStartSearchRouteImport.update({
+    id: '/start-search',
+    path: '/start-search',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedSavedRoute = AuthenticatedSavedRouteImport.update({
   id: '/saved',
   path: '/saved',
@@ -98,7 +99,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/saved': typeof AuthenticatedSavedRoute
-  '/stalking': typeof AuthenticatedStalkingRoute
+  '/start-search': typeof AuthenticatedStartSearchRoute
   '/admin/feedbacks': typeof AuthenticatedAdminFeedbacksRoute
   '/chat/$id': typeof AuthenticatedChatIdRoute
   '/gift-searching/$id': typeof AuthenticatedGiftSearchingIdRoute
@@ -112,7 +113,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/saved': typeof AuthenticatedSavedRoute
-  '/stalking': typeof AuthenticatedStalkingRoute
+  '/start-search': typeof AuthenticatedStartSearchRoute
   '/admin/feedbacks': typeof AuthenticatedAdminFeedbacksRoute
   '/chat/$id': typeof AuthenticatedChatIdRoute
   '/gift-searching/$id': typeof AuthenticatedGiftSearchingIdRoute
@@ -128,7 +129,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/saved': typeof AuthenticatedSavedRoute
-  '/_authenticated/stalking': typeof AuthenticatedStalkingRoute
+  '/_authenticated/start-search': typeof AuthenticatedStartSearchRoute
   '/_authenticated/admin/feedbacks': typeof AuthenticatedAdminFeedbacksRoute
   '/_authenticated/chat/$id': typeof AuthenticatedChatIdRoute
   '/_authenticated/gift-searching/$id': typeof AuthenticatedGiftSearchingIdRoute
@@ -144,7 +145,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/profile'
     | '/saved'
-    | '/stalking'
+    | '/start-search'
     | '/admin/feedbacks'
     | '/chat/$id'
     | '/gift-searching/$id'
@@ -158,7 +159,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/profile'
     | '/saved'
-    | '/stalking'
+    | '/start-search'
     | '/admin/feedbacks'
     | '/chat/$id'
     | '/gift-searching/$id'
@@ -173,7 +174,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/_authenticated/profile'
     | '/_authenticated/saved'
-    | '/_authenticated/stalking'
+    | '/_authenticated/start-search'
     | '/_authenticated/admin/feedbacks'
     | '/_authenticated/chat/$id'
     | '/_authenticated/gift-searching/$id'
@@ -213,11 +214,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/stalking': {
-      id: '/_authenticated/stalking'
-      path: '/stalking'
-      fullPath: '/stalking'
-      preLoaderRoute: typeof AuthenticatedStalkingRouteImport
+    '/_authenticated/start-search': {
+      id: '/_authenticated/start-search'
+      path: '/start-search'
+      fullPath: '/start-search'
+      preLoaderRoute: typeof AuthenticatedStartSearchRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/saved': {
@@ -289,7 +290,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteChildren {
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSavedRoute: typeof AuthenticatedSavedRoute
-  AuthenticatedStalkingRoute: typeof AuthenticatedStalkingRoute
+  AuthenticatedStartSearchRoute: typeof AuthenticatedStartSearchRoute
   AuthenticatedAdminFeedbacksRoute: typeof AuthenticatedAdminFeedbacksRoute
   AuthenticatedChatIdRoute: typeof AuthenticatedChatIdRoute
   AuthenticatedGiftSearchingIdRoute: typeof AuthenticatedGiftSearchingIdRoute
@@ -301,7 +302,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSavedRoute: AuthenticatedSavedRoute,
-  AuthenticatedStalkingRoute: AuthenticatedStalkingRoute,
+  AuthenticatedStartSearchRoute: AuthenticatedStartSearchRoute,
   AuthenticatedAdminFeedbacksRoute: AuthenticatedAdminFeedbacksRoute,
   AuthenticatedChatIdRoute: AuthenticatedChatIdRoute,
   AuthenticatedGiftSearchingIdRoute: AuthenticatedGiftSearchingIdRoute,

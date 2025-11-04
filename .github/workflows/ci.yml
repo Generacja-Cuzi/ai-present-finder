@@ -91,6 +91,7 @@ jobs:
         ports:
           - 5432:5432
     strategy:
+      fail-fast: false
       matrix:
         service:
           - name: restapi-macroservice

@@ -190,6 +190,35 @@
         "tags": ["chats"]
       }
     },
+    "/chats/{chatId}": {
+      "get": {
+        "operationId": "ChatController_getChatById",
+        "parameters": [
+          {
+            "name": "chatId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the chat details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get a specific chat by ID",
+        "tags": ["chats"]
+      }
+    },
     "/chats/{chatId}/listings": {
       "get": {
         "operationId": "ChatController_getChatListings",

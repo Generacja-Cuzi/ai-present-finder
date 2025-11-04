@@ -157,6 +157,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/chats/{chatId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a specific chat by ID */
+        get: operations["ChatController_getChatById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/chats/{chatId}/listings": {
         parameters: {
             query?: never;
@@ -1163,6 +1180,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChatsResponseDto"];
+                };
+            };
+        };
+    };
+    ChatController_getChatById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                chatId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns the chat details */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatDto"];
                 };
             };
         };

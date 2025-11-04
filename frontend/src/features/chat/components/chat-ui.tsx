@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -24,6 +25,7 @@ export function ChatUI({
   });
   const sendMessage = useSendMessage();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [inputValue, setInputValue] = useState("");
 
@@ -33,14 +35,26 @@ export function ChatUI({
       (chatState.data.messages.at(-1)?.sender === "user" ||
         chatState.data.messages.length === 0));
 
+  // When interview is completed, invalidate the chat query to refetch updated state
   useEffect(() => {
     if (chatState.type === "chat-interview-completed") {
+      // Invalidate the chat query to refetch with updated isInterviewCompleted status
+      void queryClient.invalidateQueries({
+        queryKey: [
+          "get",
+          "/chats/{chatId}",
+          { params: { path: { chatId: clientId } } },
+        ],
+      });
+
+      // Navigate to trigger re-render with updated data
       void navigate({
-        to: "/gift-searching/$id",
+        to: "/chat/$id",
         params: { id: clientId },
+        replace: true,
       });
     }
-  }, [chatState.type, clientId, navigate]);
+  }, [chatState.type, clientId, navigate, queryClient]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isChatbotProcessing) {

@@ -2,7 +2,6 @@ import { useGetChatMessagesQuery } from "../api/get-chat-messages";
 import type { ChatState } from "../types";
 
 export function useInitialChatState(chatId: string) {
-  // Fetch chat messages history
   const { data: messagesData, isLoading } = useGetChatMessagesQuery(chatId);
 
   const initialState: ChatState = {

@@ -11,6 +11,7 @@ import { ChatInappropriateRequestHandler } from "src/app/handlers/chat-inappropr
 import { ChatQuestionAskedHandler } from "src/app/handlers/chat-question-asked.handler";
 import { CreateFeedbackHandler } from "src/app/handlers/create-feedback.handler";
 import { GetAllFeedbacksHandler } from "src/app/handlers/get-all-feedbacks.handler";
+import { GetChatByIdHandler } from "src/app/handlers/get-chat-by-id.handler";
 import { GetChatListingsHandler } from "src/app/handlers/get-chat-listings.handler";
 import { GetChatMessagesHandler } from "src/app/handlers/get-chat-messages.handler";
 import { GetFeedbackByChatIdHandler } from "src/app/handlers/get-feedback-by-chat-id.handler";
@@ -151,6 +152,7 @@ import { UserProfileController } from "../controllers/user-profile.controller";
     SaveMessageHandler,
     ValidateGoogleTokenHandler,
     GetUserChatsHandler,
+    GetChatByIdHandler,
     AddToFavoritesHandler,
     RemoveFromFavoritesHandler,
     GetUserFavoritesHandler,

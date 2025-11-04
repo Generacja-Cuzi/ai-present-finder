@@ -1,5 +1,6 @@
 import type { Chat } from "src/domain/entities/chat.entity";
 import type { AuthenticatedRequest } from "src/domain/models/auth.types";
+import { GetChatByIdQuery } from "src/domain/queries/get-chat-by-id.query";
 import { GetChatListingsQuery } from "src/domain/queries/get-chat-listings.query";
 import { GetUserChatsQuery } from "src/domain/queries/get-user-chats.query";
 import { IListingRepository } from "src/domain/repositories/ilisting.repository";
@@ -15,7 +16,7 @@ import { RolesGuard } from "../../app/guards/roles.guard";
 import { RequireResourceOwnership } from "../../domain/decorators/resource-ownership.decorator";
 import { Roles } from "../../domain/decorators/roles.decorator";
 import { UserRole } from "../../domain/entities/user.entity";
-import { ChatsResponseDto } from "../../domain/models/chat.dto";
+import { ChatDto, ChatsResponseDto } from "../../domain/models/chat.dto";
 import { ResourceType } from "../../domain/models/resource-ownership.types";
 
 @ApiTags("chats")
@@ -51,6 +52,38 @@ export class ChatController {
           chat.isInterviewCompleted ||
           (Boolean(chat.listings) && chat.listings.length > 0),
       })),
+    };
+  }
+
+  @Get(":chatId")
+  @UseGuards(JwtAuthGuard, RolesGuard, ResourceOwnershipGuard)
+  @Roles(UserRole.USER, UserRole.ADMIN)
+  @RequireResourceOwnership({
+    resourceType: ResourceType.CHAT,
+    paramName: "chatId",
+  })
+  @ApiOperation({ summary: "Get a specific chat by ID" })
+  @ApiOkResponse({
+    description: "Returns the chat details",
+    type: ChatDto,
+  })
+  async getChatById(
+    @Param("chatId") chatId: string,
+    @Req() request: AuthenticatedRequest,
+  ): Promise<ChatDto> {
+    const chat = await this.queryBus.execute<GetChatByIdQuery, Chat>(
+      new GetChatByIdQuery(chatId, request.user.id),
+    );
+
+    return {
+      chatId: chat.chatId,
+      chatName: chat.chatName,
+      createdAt: chat.createdAt,
+      isInterviewCompleted:
+        chat.isInterviewCompleted ||
+        (Boolean(chat.listings) && chat.listings.length > 0),
+      // eslint-disable-next-line no-extra-boolean-cast
+      giftCount: Boolean(chat.listings) ? chat.listings.length : 0,
     };
   }
 

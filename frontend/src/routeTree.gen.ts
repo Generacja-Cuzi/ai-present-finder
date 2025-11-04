@@ -17,11 +17,8 @@ import { Route as AuthenticatedSavedRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedHistoryIndexRouteImport } from './routes/_authenticated/history/index'
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google/callback'
-import { Route as AuthenticatedRecommendationIdRouteImport } from './routes/_authenticated/recommendation/$id'
-import { Route as AuthenticatedGiftSearchingIdRouteImport } from './routes/_authenticated/gift-searching/$id'
 import { Route as AuthenticatedChatIdRouteImport } from './routes/_authenticated/chat/$id'
 import { Route as AuthenticatedAdminFeedbacksRouteImport } from './routes/_authenticated/admin/feedbacks'
-import { Route as AuthenticatedHistoryChatIdRouteImport } from './routes/_authenticated/history/chat/$id'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -64,18 +61,6 @@ const AuthGoogleCallbackRoute = AuthGoogleCallbackRouteImport.update({
   path: '/auth/google/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRecommendationIdRoute =
-  AuthenticatedRecommendationIdRouteImport.update({
-    id: '/recommendation/$id',
-    path: '/recommendation/$id',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedGiftSearchingIdRoute =
-  AuthenticatedGiftSearchingIdRouteImport.update({
-    id: '/gift-searching/$id',
-    path: '/gift-searching/$id',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
 const AuthenticatedChatIdRoute = AuthenticatedChatIdRouteImport.update({
   id: '/chat/$id',
   path: '/chat/$id',
@@ -87,12 +72,6 @@ const AuthenticatedAdminFeedbacksRoute =
     path: '/admin/feedbacks',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedHistoryChatIdRoute =
-  AuthenticatedHistoryChatIdRouteImport.update({
-    id: '/history/chat/$id',
-    path: '/history/chat/$id',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -102,11 +81,8 @@ export interface FileRoutesByFullPath {
   '/start-search': typeof AuthenticatedStartSearchRoute
   '/admin/feedbacks': typeof AuthenticatedAdminFeedbacksRoute
   '/chat/$id': typeof AuthenticatedChatIdRoute
-  '/gift-searching/$id': typeof AuthenticatedGiftSearchingIdRoute
-  '/recommendation/$id': typeof AuthenticatedRecommendationIdRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/history': typeof AuthenticatedHistoryIndexRoute
-  '/history/chat/$id': typeof AuthenticatedHistoryChatIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -116,11 +92,8 @@ export interface FileRoutesByTo {
   '/start-search': typeof AuthenticatedStartSearchRoute
   '/admin/feedbacks': typeof AuthenticatedAdminFeedbacksRoute
   '/chat/$id': typeof AuthenticatedChatIdRoute
-  '/gift-searching/$id': typeof AuthenticatedGiftSearchingIdRoute
-  '/recommendation/$id': typeof AuthenticatedRecommendationIdRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/history': typeof AuthenticatedHistoryIndexRoute
-  '/history/chat/$id': typeof AuthenticatedHistoryChatIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -132,11 +105,8 @@ export interface FileRoutesById {
   '/_authenticated/start-search': typeof AuthenticatedStartSearchRoute
   '/_authenticated/admin/feedbacks': typeof AuthenticatedAdminFeedbacksRoute
   '/_authenticated/chat/$id': typeof AuthenticatedChatIdRoute
-  '/_authenticated/gift-searching/$id': typeof AuthenticatedGiftSearchingIdRoute
-  '/_authenticated/recommendation/$id': typeof AuthenticatedRecommendationIdRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/_authenticated/history/': typeof AuthenticatedHistoryIndexRoute
-  '/_authenticated/history/chat/$id': typeof AuthenticatedHistoryChatIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -148,11 +118,8 @@ export interface FileRouteTypes {
     | '/start-search'
     | '/admin/feedbacks'
     | '/chat/$id'
-    | '/gift-searching/$id'
-    | '/recommendation/$id'
     | '/auth/google/callback'
     | '/history'
-    | '/history/chat/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -162,11 +129,8 @@ export interface FileRouteTypes {
     | '/start-search'
     | '/admin/feedbacks'
     | '/chat/$id'
-    | '/gift-searching/$id'
-    | '/recommendation/$id'
     | '/auth/google/callback'
     | '/history'
-    | '/history/chat/$id'
   id:
     | '__root__'
     | '/'
@@ -177,11 +141,8 @@ export interface FileRouteTypes {
     | '/_authenticated/start-search'
     | '/_authenticated/admin/feedbacks'
     | '/_authenticated/chat/$id'
-    | '/_authenticated/gift-searching/$id'
-    | '/_authenticated/recommendation/$id'
     | '/auth/google/callback'
     | '/_authenticated/history/'
-    | '/_authenticated/history/chat/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -249,20 +210,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthGoogleCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/recommendation/$id': {
-      id: '/_authenticated/recommendation/$id'
-      path: '/recommendation/$id'
-      fullPath: '/recommendation/$id'
-      preLoaderRoute: typeof AuthenticatedRecommendationIdRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/gift-searching/$id': {
-      id: '/_authenticated/gift-searching/$id'
-      path: '/gift-searching/$id'
-      fullPath: '/gift-searching/$id'
-      preLoaderRoute: typeof AuthenticatedGiftSearchingIdRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/chat/$id': {
       id: '/_authenticated/chat/$id'
       path: '/chat/$id'
@@ -277,13 +224,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminFeedbacksRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/history/chat/$id': {
-      id: '/_authenticated/history/chat/$id'
-      path: '/history/chat/$id'
-      fullPath: '/history/chat/$id'
-      preLoaderRoute: typeof AuthenticatedHistoryChatIdRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
   }
 }
 
@@ -293,10 +233,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedStartSearchRoute: typeof AuthenticatedStartSearchRoute
   AuthenticatedAdminFeedbacksRoute: typeof AuthenticatedAdminFeedbacksRoute
   AuthenticatedChatIdRoute: typeof AuthenticatedChatIdRoute
-  AuthenticatedGiftSearchingIdRoute: typeof AuthenticatedGiftSearchingIdRoute
-  AuthenticatedRecommendationIdRoute: typeof AuthenticatedRecommendationIdRoute
   AuthenticatedHistoryIndexRoute: typeof AuthenticatedHistoryIndexRoute
-  AuthenticatedHistoryChatIdRoute: typeof AuthenticatedHistoryChatIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -305,10 +242,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedStartSearchRoute: AuthenticatedStartSearchRoute,
   AuthenticatedAdminFeedbacksRoute: AuthenticatedAdminFeedbacksRoute,
   AuthenticatedChatIdRoute: AuthenticatedChatIdRoute,
-  AuthenticatedGiftSearchingIdRoute: AuthenticatedGiftSearchingIdRoute,
-  AuthenticatedRecommendationIdRoute: AuthenticatedRecommendationIdRoute,
   AuthenticatedHistoryIndexRoute: AuthenticatedHistoryIndexRoute,
-  AuthenticatedHistoryChatIdRoute: AuthenticatedHistoryChatIdRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

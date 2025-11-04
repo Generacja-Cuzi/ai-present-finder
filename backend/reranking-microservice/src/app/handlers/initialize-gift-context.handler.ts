@@ -56,7 +56,11 @@ export class InitializeGiftContextHandler
         `Created session ${eventId} with gift context for chat ${chatId}`,
       );
     } else {
+      // For regeneration: add new totalEvents to existing totalEvents to account for second wave
+      const newTotalEvents = existingSession.totalEvents + totalEvents;
       await this.giftSessionRepository.update(eventId, {
+        totalEvents: newTotalEvents,
+        status: SessionStatus.ACTIVE, // Reset status in case it was completed
         giftContext: {
           userProfile,
           keywords,
@@ -65,7 +69,9 @@ export class InitializeGiftContextHandler
         },
         updatedAt: new Date(),
       });
-      this.logger.log(`Updated gift context for existing session ${eventId}`);
+      this.logger.log(
+        `Updated gift context for existing session ${eventId} (regeneration): totalEvents updated from ${String(existingSession.totalEvents)} to ${String(newTotalEvents)}`,
+      );
     }
   }
 }

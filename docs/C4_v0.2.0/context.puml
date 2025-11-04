@@ -51,6 +51,7 @@ Rel(system_fetch_microservice, olx, "Fetches products", "HTTPS/API")
 Rel(system_fetch_microservice, system_reranking_microservice, "Sends fetched products", "RabbitMQ")
 Rel(system_reranking_microservice, google_gemini_llm, "Scores products for relevance", "HTTPS")
 
+Rel(system_reranking_microservice, system_gift_microservice, "Requests regeneration with feedback (if insufficient good products)", "RabbitMQ")
 Rel(system_reranking_microservice, system_rest_api, "Sends final gift recommendations", "RabbitMQ")
 
 SHOW_LEGEND()

@@ -1,6 +1,7 @@
 // src/main.ts
 import {
   ChatInterviewCompletedEvent,
+  RegenerateIdeasLoopEvent,
   StalkingCompletedEvent,
 } from "@core/events";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
@@ -39,8 +40,18 @@ async function bootstrap() {
     },
   };
 
+  const regenerateIdeasLoopMicroserviceOptions = {
+    transport: Transport.RMQ,
+    options: {
+      urls: [cloudAmqpUrl],
+      queue: RegenerateIdeasLoopEvent.name,
+      queueOptions: { durable: false },
+    },
+  };
+
   app.connectMicroservice(stalkingCompletedMicroserviceOptions);
   app.connectMicroservice(chatInterviewCompletedMicroserviceOptions);
+  app.connectMicroservice(regenerateIdeasLoopMicroserviceOptions);
 
   const swaggerServer =
     process.env.SWAGGER_SERVER ?? `http://localhost:${portString}`;

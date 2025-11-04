@@ -55,6 +55,7 @@ ${products
     schema: productScoresOutputSchema,
     system: productRankingPrompt,
     prompt: userMessage,
+    temperature: 0.7,
   });
 
   return result.object.scores;

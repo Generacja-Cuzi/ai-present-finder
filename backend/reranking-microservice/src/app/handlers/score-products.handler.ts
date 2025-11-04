@@ -21,7 +21,7 @@ export class ScoreProductsHandler
       return [];
     }
 
-    const BATCH_SIZE = 100;
+    const BATCH_SIZE = 50;
     this.logger.log(
       `Starting batched AI ranking of ${String(products.length)} products for session ${eventId} (processing in batches of ${BATCH_SIZE.toString()})`,
     );

@@ -9,6 +9,7 @@ export * from "./chat/chat-completed-notify-user.event";
 // Gift events
 export * from "./gift/gift-context-initialized.event";
 export * from "./gift/gift-ready.event";
+export * from "./gift/regenerate-ideas-loop.event";
 
 // Stalking events
 export * from "./stalking/stalking-analyze-requested.event";

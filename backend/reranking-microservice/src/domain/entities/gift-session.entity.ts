@@ -31,6 +31,9 @@ export class GiftSession {
   @Column({ name: "total_events" })
   totalEvents: number;
 
+  @Column({ name: "loop_count", default: 0 })
+  loopCount: number;
+
   @Column({
     name: "created_at",
     type: "timestamp",

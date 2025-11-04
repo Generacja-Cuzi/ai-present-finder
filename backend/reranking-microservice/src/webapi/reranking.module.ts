@@ -6,6 +6,7 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { AddProductsToSessionHandler } from "../app/handlers/add-products-to-session.handler";
+import { CheckAndPrepareRegenerateIdeasLoopHandler } from "../app/handlers/check-and-prepare-regenerate-ideas-loop.handler";
 import { CreateSessionHandler } from "../app/handlers/create-session.handler";
 import { GetSessionProductsHandler } from "../app/handlers/get-session-products.handler";
 import { GiftContextInitializedHandler } from "../app/handlers/gift-context-initialized.handler";
@@ -29,6 +30,7 @@ const CommandHandlers = [
   RerankAndEmitGiftReadyHandler,
   MarkTimeoutSessionsHandler,
   UpdateProductRatingsHandler,
+  CheckAndPrepareRegenerateIdeasLoopHandler,
 ];
 
 const QueryHandlers = [GetSessionProductsHandler, ScoreProductsHandler];
@@ -94,6 +96,17 @@ const QueryHandlers = [GetSessionProductsHandler, ScoreProductsHandler];
             process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
           ],
           queue: "GiftReadyEvent",
+          queueOptions: { durable: false },
+        },
+      },
+      {
+        name: "REGENERATE_IDEAS_LOOP_EVENT",
+        transport: Transport.RMQ,
+        options: {
+          urls: [
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
+          ],
+          queue: "RegenerateIdeasLoopEvent",
           queueOptions: { durable: false },
         },
       },

@@ -1,18 +1,14 @@
-import {
-  FetchAllegroEvent,
-  FetchAmazonEvent,
-  FetchEbayEvent,
-  FetchOlxEvent,
-  GiftContextInitializedEvent,
-} from "@core/events";
+import { GiftContextInitializedEvent } from "@core/events";
 import { ulid } from "ulid";
 
 import { Inject, Logger } from "@nestjs/common";
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { ClientProxy } from "@nestjs/microservices";
 
+import { EmitFetchEventsCommand } from "../../domain/commands/emit-fetch-events.command";
 import { GenerateGiftIdeasCommand } from "../../domain/commands/generate-gift-ideas.command";
 import { giftIdeasFlow } from "../ai/flow";
+import { filterDisabledServices } from "../utils/search-query.utils";
 
 @CommandHandler(GenerateGiftIdeasCommand)
 export class GenerateGiftIdeasHandler
@@ -21,13 +17,9 @@ export class GenerateGiftIdeasHandler
   private readonly logger = new Logger(GenerateGiftIdeasHandler.name);
 
   constructor(
-    @Inject("FETCH_OLX_EVENT") private readonly olxEventBus: ClientProxy,
-    @Inject("FETCH_ALLEGRO_EVENT")
-    private readonly allegroEventBus: ClientProxy,
-    @Inject("FETCH_AMAZON_EVENT") private readonly amazonEventBus: ClientProxy,
-    @Inject("FETCH_EBAY_EVENT") private readonly ebayEventBus: ClientProxy,
     @Inject("GIFT_CONTEXT_INITIALIZED_EVENT")
     private readonly rerankingEventBus: ClientProxy,
+    private readonly commandBus: CommandBus,
   ) {}
 
   async execute(command: GenerateGiftIdeasCommand): Promise<void> {
@@ -61,24 +53,22 @@ export class GenerateGiftIdeasHandler
         `Generated ${giftIdeasOutput.gift_ideas.length.toString()} gift ideas and ${giftIdeasOutput.search_queries.length.toString()} search queries (6 per service: allegro, olx, ebay, amazon)`,
       );
 
-      // * Amazon is disabled for now cause Dodi got banned there
-      const disabledServices = new Set(["amazonxxx"]);
-      const filteredSearchQueries = giftIdeasOutput.search_queries.filter(
-        ({ service }) => !disabledServices.has(service),
-      );
-
       // Send fetch events to specific shops based on AI decision
       const eventId = ulid();
-      const totalEvents = filteredSearchQueries.length;
 
       // Combine stalking keywords and interview key themes for gift context
       const combinedKeywords = [...keywords, ...keyThemes];
+
+      // Calculate totalEvents after filtering disabled services
+      const filteredSearchQueries = filterDisabledServices(
+        giftIdeasOutput.search_queries,
+      );
+      const totalEvents = filteredSearchQueries.length;
 
       this.logger.log(
         `Sending GiftContextInitializedEvent with keywords: ${JSON.stringify(combinedKeywords)}`,
       );
 
-      // Send gift context to reranking service
       this.rerankingEventBus.emit(
         GiftContextInitializedEvent.name,
         new GiftContextInitializedEvent(
@@ -92,70 +82,14 @@ export class GenerateGiftIdeasHandler
         ),
       );
 
-      for (const { query, service } of filteredSearchQueries) {
-        switch (service) {
-          case "olx": {
-            const fetchOlxEvent = new FetchOlxEvent(
-              query,
-              20,
-              0,
-              chatId,
-              eventId,
-              totalEvents,
-            );
-            this.olxEventBus.emit(FetchOlxEvent.name, fetchOlxEvent);
-            break;
-          }
-          case "allegro": {
-            const fetchAllegroEvent = new FetchAllegroEvent(
-              query,
-              20,
-              0,
-              chatId,
-              eventId,
-              totalEvents,
-            );
-            this.allegroEventBus.emit(
-              FetchAllegroEvent.name,
-              fetchAllegroEvent,
-            );
-            break;
-          }
-          case "amazon": {
-            const fetchAmazonEvent = new FetchAmazonEvent(
-              query,
-              20,
-              0,
-              "PL",
-              1,
-              chatId,
-              eventId,
-              totalEvents,
-            );
-            this.amazonEventBus.emit(FetchAmazonEvent.name, fetchAmazonEvent);
-            break;
-          }
-          case "ebay": {
-            const fetchEbayEvent = new FetchEbayEvent(
-              query,
-              20,
-              0,
-              chatId,
-              eventId,
-              totalEvents,
-            );
-            this.ebayEventBus.emit(FetchEbayEvent.name, fetchEbayEvent);
-            break;
-          }
-          default: {
-            const _exhaustiveCheck: never = service;
-            break;
-          }
-        }
-      }
-
-      this.logger.log(
-        `Sent ${totalEvents.toString()} fetch events to targeted services`,
+      // Emit fetch events using the command
+      await this.commandBus.execute(
+        new EmitFetchEventsCommand(
+          giftIdeasOutput.search_queries,
+          chatId,
+          eventId,
+          giftIdeasOutput.search_queries.length,
+        ),
       );
     } catch (error) {
       this.logger.error("Error generating gift ideas:", error);

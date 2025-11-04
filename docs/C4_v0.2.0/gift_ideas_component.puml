@@ -4,17 +4,20 @@
 Container_Boundary(gift, "Gift Ideas Microservice (NestJS)") {
   Component(stalking_completed_handler, "StalkingCompletedHandler", "NestJS Handler", "Handles StalkingCompletedEvent, updates gift context state")
   Component(chat_completed_handler, "ChatInterviewCompletedHandler", "NestJS Handler", "Handles ChatInterviewCompletedEvent, updates gift context state")
+  Component(regenerate_handler, "RegenerateIdeasLoopHandler", "NestJS Handler", "Handles RegenerateIdeasLoopEvent, regenerates queries with feedback")
   Component(generate_handler, "GenerateGiftIdeasHandler", "CQRS Command Handler", "Orchestrates gift idea generation flow")
-  Component(ai_flow, "AI Flow Service", "ai-sdk + OpenAI", "Generates gift ideas based on keywords and preferences")
+  Component(emit_fetch_handler, "EmitFetchEventsHandler", "CQRS Command Handler", "Emits fetch events to all providers (filters disabled services)")
+  Component(ai_flow, "giftIdeasFlow", "ai-sdk + OpenAI", "Generates gift ideas. Optional: accepts badProducts and providerCounts for regeneration")
   Component(update_stalking_handler, "UpdateStalkingStatusHandler", "CQRS Command Handler", "Updates stalking completion status")
   Component(update_interview_handler, "UpdateInterviewStatusHandler", "CQRS Command Handler", "Updates interview completion status")
 }
 
 Component_Ext(rabbitmq_in_stalking, "RabbitMQ", "Message Broker", "StalkingCompletedEvent queue")
 Component_Ext(rabbitmq_in_interview, "RabbitMQ", "Message Broker", "ChatInterviewCompletedEvent queue")
+Component_Ext(rabbitmq_in_regenerate, "RabbitMQ", "Message Broker", "RegenerateIdeasLoopEvent queue")
 Component_Ext(rabbitmq_out_context, "RabbitMQ", "Message Broker", "GiftContextInitializedEvent queue")
 Component_Ext(rabbitmq_out_fetch, "RabbitMQ", "Message Broker", "FetchAllegroEvent, FetchAmazonEvent, FetchEbayEvent, FetchOlxEvent queues")
-Component_Ext(openai, "OpenAI", "LLM", "Gift idea generation")
+Component_Ext(openai, "OpenAI", "LLM", "Gift idea generation (gpt-4o)")
 
 Rel(rabbitmq_in_stalking, stalking_completed_handler, "Consumes event", "AMQP @EventPattern")
 Rel(stalking_completed_handler, update_stalking_handler, "Dispatches command", "CQRS CommandBus")
@@ -24,10 +27,16 @@ Rel(rabbitmq_in_interview, chat_completed_handler, "Consumes event", "AMQP @Even
 Rel(chat_completed_handler, update_interview_handler, "Dispatches command", "CQRS CommandBus")
 Rel(update_interview_handler, generate_handler, "Triggers when both complete")
 
+Rel(rabbitmq_in_regenerate, regenerate_handler, "Consumes event", "AMQP @EventPattern")
+Rel(regenerate_handler, ai_flow, "Regenerates with feedback", "badProducts, providerCounts")
+
 Rel(generate_handler, ai_flow, "Generates gift ideas")
 Rel(ai_flow, openai, "LLM call", "HTTPS")
-Rel(generate_handler, rabbitmq_out_context, "Publishes GiftContextInitializedEvent", "AMQP ClientProxy.emit")
-Rel(generate_handler, rabbitmq_out_fetch, "Publishes Fetch*Event for each provider", "AMQP ClientProxy.emit")
+Rel(generate_handler, rabbitmq_out_context, "1. Publishes GiftContextInitializedEvent FIRST", "AMQP ClientProxy.emit")
+Rel(generate_handler, emit_fetch_handler, "2. Emits fetch events", "CommandBus")
+Rel(regenerate_handler, rabbitmq_out_context, "1. Publishes GiftContextInitializedEvent FIRST", "AMQP ClientProxy.emit")
+Rel(regenerate_handler, emit_fetch_handler, "2. Emits fetch events", "CommandBus")
+Rel(emit_fetch_handler, rabbitmq_out_fetch, "Publishes Fetch*Event for each provider", "AMQP ClientProxy.emit")
 
 SHOW_LEGEND()
 @enduml

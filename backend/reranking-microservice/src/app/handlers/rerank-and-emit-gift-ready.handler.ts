@@ -1,8 +1,9 @@
-import { GiftReadyEvent } from "@core/events";
+import { GiftReadyEvent, RegenerateIdeasLoopEvent } from "@core/events";
 import type { ListingPayload } from "@core/types";
 import { Product } from "src/domain/entities/product.entity";
 
 import { Inject, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import {
   CommandBus,
   CommandHandler,
@@ -11,6 +12,7 @@ import {
 } from "@nestjs/cqrs";
 import { ClientProxy } from "@nestjs/microservices";
 
+import { CheckAndPrepareRegenerateIdeasLoopCommand } from "../../domain/commands/check-and-prepare-regenerate-ideas-loop.command";
 import { RerankAndEmitGiftReadyCommand } from "../../domain/commands/rerank-and-emit-gift-ready.command";
 import { UpdateProductRatingsCommand } from "../../domain/commands/update-product-ratings.command";
 import { GetSessionProductsQuery } from "../../domain/queries/get-session-products.query";
@@ -26,12 +28,26 @@ export class RerankAndEmitGiftReadyHandler
 
   constructor(
     @Inject("GIFT_READY_EVENT") private readonly giftReadyEventBus: ClientProxy,
+    @Inject("REGENERATE_IDEAS_LOOP_EVENT")
+    private readonly regenerateIdeasLoopEventBus: ClientProxy,
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
+    private readonly configService: ConfigService,
   ) {}
 
   async execute(command: RerankAndEmitGiftReadyCommand): Promise<void> {
     const { eventId } = command;
+
+    // Get environment variables with defaults
+    const topBestCount = Number.parseInt(
+      this.configService.get<string>("TOP_BEST_COUNT") ?? "50",
+    );
+    const minimalScore = Number.parseInt(
+      this.configService.get<string>("MINIMAL_SCORE") ?? "7",
+    );
+    const maxIdeasLoop = Number.parseInt(
+      this.configService.get<string>("MAX_IDEAS_LOOP") ?? "1",
+    );
 
     const sessionProductsResult =
       await this.queryBus.execute<SessionProductsResult | null>(
@@ -49,25 +65,92 @@ export class RerankAndEmitGiftReadyHandler
       const recipientProfile = session.giftContext?.userProfile ?? null;
       const keywords = session.giftContext?.keywords ?? [];
 
-      const scoredProducts = await this.queryBus.execute<ProductScore[]>(
-        new ScoreProductsQuery(
-          allProducts,
-          recipientProfile,
-          keywords,
-          eventId,
-        ),
+      // Separate products that are already scored from those that need scoring
+      const alreadyScoredProducts = allProducts.filter(
+        (p) => p.rating !== null,
+      );
+      const unscoredProducts = allProducts.filter((p) => p.rating === null);
+
+      this.logger.log(
+        `Found ${String(alreadyScoredProducts.length)} already scored products and ${String(unscoredProducts.length)} products to score for session ${eventId}`,
       );
 
+      // Only score products that haven't been scored yet
+      let newlyScoredProducts: ProductScore[] = [];
+      if (unscoredProducts.length > 0) {
+        newlyScoredProducts = await this.queryBus.execute<ProductScore[]>(
+          new ScoreProductsQuery(
+            unscoredProducts,
+            recipientProfile,
+            keywords,
+            eventId,
+          ),
+        );
+      }
+
+      // Merge already scored products with newly scored ones
+      const allScoredProducts = [
+        ...alreadyScoredProducts.map((p): ProductScore => {
+          if (p.rating === null) {
+            throw new Error(
+              `Product ${p.id} has null rating but was in alreadyScoredProducts`,
+            );
+          }
+          return {
+            id: p.id,
+            score: p.rating,
+            reasoning: p.reasoning ?? "",
+            category: p.category ?? null,
+          };
+        }),
+        ...newlyScoredProducts,
+      ];
+
       const updatedProducts = await this.commandBus.execute(
-        new UpdateProductRatingsCommand(allProducts, scoredProducts, eventId),
+        new UpdateProductRatingsCommand(
+          allProducts,
+          allScoredProducts,
+          eventId,
+        ),
       );
 
       const goodProducts: (Product & { rating: number })[] =
         updatedProducts.filter(
           (p): p is Product & { rating: number } =>
-            p.rating !== null && p.rating >= 5,
+            p.rating !== null && p.rating >= minimalScore,
         );
       goodProducts.sort((a, b) => b.rating - a.rating);
+
+      // Check if we need to regenerate and prepare the event
+      const regenerateResult = await this.commandBus.execute(
+        new CheckAndPrepareRegenerateIdeasLoopCommand(
+          eventId,
+          session,
+          updatedProducts,
+          goodProducts.length,
+          topBestCount,
+          minimalScore,
+          maxIdeasLoop,
+          chatId,
+          recipientProfile,
+          keywords,
+        ),
+      );
+
+      if (
+        regenerateResult.shouldRegenerate &&
+        regenerateResult.event !== null
+      ) {
+        this.regenerateIdeasLoopEventBus.emit(
+          RegenerateIdeasLoopEvent.name,
+          regenerateResult.event,
+        );
+
+        this.logger.log(
+          `Emitted RegenerateIdeasLoopEvent for session ${eventId}`,
+        );
+        return;
+      }
 
       // Build profile for GiftReadyEvent if we have all the data
       const profile =
@@ -86,9 +169,10 @@ export class RerankAndEmitGiftReadyHandler
         `Constructed profile for GiftReadyEvent: ${JSON.stringify(profile)}`,
       );
 
+      const productsToSend = goodProducts; // send all products with score >= minimalScore, not just top X
+
       const giftReadyEvent = new GiftReadyEvent(
-        // Take only the best 50 products
-        goodProducts.slice(0, 50).map(
+        productsToSend.map(
           (p) =>
             ({
               image: p.image,
@@ -111,7 +195,7 @@ export class RerankAndEmitGiftReadyHandler
       this.giftReadyEventBus.emit(GiftReadyEvent.name, giftReadyEvent);
 
       this.logger.log(
-        `Emitted GiftReadyEvent with ${String(scoredProducts.length)} ranked products for session ${eventId}`,
+        `Emitted GiftReadyEvent with ${String(productsToSend.length)} ranked products (score >= ${String(minimalScore)}) for session ${eventId}`,
       );
     }
   }

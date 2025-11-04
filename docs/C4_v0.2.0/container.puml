@@ -57,7 +57,8 @@ Rel(chat_svc, rabbitmq, "ChatInterviewCompletedEvent", "AMQP")
 ' Gift ideas flow
 Rel(rabbitmq, gift_svc, "StalkingCompletedEvent", "AMQP")
 Rel(rabbitmq, gift_svc, "ChatInterviewCompletedEvent", "AMQP")
-Rel(gift_svc, openai, "Generates gift ideas", "HTTPS")
+Rel(rabbitmq, gift_svc, "RegenerateIdeasLoopEvent", "AMQP")
+Rel(gift_svc, openai, "Generates gift ideas (with optional feedback)", "HTTPS")
 Rel(gift_svc, rabbitmq, "GiftContextInitializedEvent", "AMQP")
 Rel(gift_svc, rabbitmq, "Fetch*Event (Allegro/Amazon/eBay/OLX)", "AMQP")
 
@@ -73,7 +74,7 @@ Rel(fetch_svc, rabbitmq, "ProductFetchedEvent", "AMQP")
 Rel(rabbitmq, reranking_svc, "GiftContextInitializedEvent", "AMQP")
 Rel(rabbitmq, reranking_svc, "ProductFetchedEvent", "AMQP")
 Rel(reranking_svc, google_gemini, "Scores products", "HTTPS")
-Rel(reranking_svc, rabbitmq, "GiftReadyEvent", "AMQP")
+Rel(reranking_svc, rabbitmq, "GiftReadyEvent or RegenerateIdeasLoopEvent", "AMQP")
 
 SHOW_LEGEND()
 @enduml

@@ -1,6 +1,8 @@
 import { GiftContextInitializedEvent } from "@core/events";
 import { ChatInterviewCompletedHandler } from "src/app/handlers/chat-interview-completed.handler";
+import { EmitFetchEventsHandler } from "src/app/handlers/emit-fetch-events.handler";
 import { GenerateGiftIdeasHandler } from "src/app/handlers/generate-gift-ideas.handler";
+import { RegenerateIdeasLoopHandler } from "src/app/handlers/regenerate-ideas-loop.handler";
 import { StalkingCompletedHandler } from "src/app/handlers/stalking-completed.handler";
 import { UpdateInterviewStatusHandler } from "src/app/handlers/update-interview-status.handler";
 import { UpdateStalkingStatusHandler } from "src/app/handlers/update-stalking-status.handler";
@@ -131,11 +133,16 @@ import { TypeOrmModule } from "@nestjs/typeorm";
       },
     ]),
   ],
-  controllers: [StalkingCompletedHandler, ChatInterviewCompletedHandler],
+  controllers: [
+    StalkingCompletedHandler,
+    ChatInterviewCompletedHandler,
+    RegenerateIdeasLoopHandler,
+  ],
   providers: [
     GenerateGiftIdeasHandler,
     UpdateStalkingStatusHandler,
     UpdateInterviewStatusHandler,
+    EmitFetchEventsHandler,
   ],
 })
 export class GiftModule {}

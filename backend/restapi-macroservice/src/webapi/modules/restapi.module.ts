@@ -98,7 +98,7 @@ import { UserProfileController } from "../controllers/user-profile.controller";
             username: url.username,
             password: url.password,
             database: url.pathname.slice(1), // Remove leading '/'
-            entities: [User, Chat, Listing, Message, Feedback],
+            entities: [User, Chat, Listing, Message, UserProfile, Feedback],
             // Never enable in production; opt-in via env
             synchronize:
               configService.get<string>("TYPEORM_SYNCHRONIZE") === "true",

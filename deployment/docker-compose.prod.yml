@@ -41,6 +41,7 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-272695@student.pwr.edu.pl}
       # RabbitMQ - Construct URL from required credentials or use provided URL
       CLOUDAMQP_URL: ${CLOUDAMQP_URL:-amqp://${RABBITMQ_USER:?}:${RABBITMQ_PASS:?}@rabbitmq:5672}
       # API Keys

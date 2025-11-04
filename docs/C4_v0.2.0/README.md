@@ -26,6 +26,6 @@ java -jar plantuml.jar *.puml
 
 ## Architecture
 
-- **Stack**: NestJS 11, RabbitMQ (AMQP), OpenAI, BrightData, React + Vite
+- **Stack**: NestJS 11, RabbitMQ (AMQP), OpenAI (analysis, gift ideas), Google Gemini (chat interviews, product scoring), BrightData, React + Vite
 - **Pattern**: Event-driven CQRS with `@EventPattern` decorators
 - **Ports**: REST API (3000), Stalking (3010), Chat (3020), Gift Ideas (3030), Reranking (3091)

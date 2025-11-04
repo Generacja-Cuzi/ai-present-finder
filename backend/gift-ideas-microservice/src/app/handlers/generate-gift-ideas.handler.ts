@@ -45,11 +45,17 @@ export class GenerateGiftIdeasHandler
     );
 
     try {
+      const performanceStartTime = performance.now();
       const giftIdeasOutput = await giftIdeasFlow({
         userProfile,
         keywords,
         keyThemes,
       });
+      const performanceEndTime = performance.now();
+      const performanceDuration = performanceEndTime - performanceStartTime;
+      this.logger.log(
+        `AI flow took ${performanceDuration.toFixed(2)}ms for session ${chatId}`,
+      );
 
       this.logger.log(
         `Generated ${giftIdeasOutput.gift_ideas.length.toString()} gift ideas and ${giftIdeasOutput.search_queries.length.toString()} search queries (6 per service: allegro, olx, ebay, amazon)`,

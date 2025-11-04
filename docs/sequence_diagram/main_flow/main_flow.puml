@@ -4,7 +4,6 @@ title AI Present Finder - Main Flow (Complete with Commands & Events)
 actor User as U
 participant "REST API" as REST
 participant "Google OAuth" as GOOGLE
-database "PostgreSQL" as DB
 participant "Chat Service" as CHAT
 participant "Stalking Service" as STALK
 participant "Gift Ideas Service" as GIFT
@@ -37,10 +36,6 @@ REST -> GOOGLE: Wymiana kodu na token
 activate GOOGLE
 GOOGLE --> REST: {accessToken, refreshToken, email, name}
 deactivate GOOGLE
-REST -> DB: Upsert user (email, name, googleTokens)
-activate DB
-DB --> REST: User entity
-deactivate DB
 REST -> REST: Generate JWT token
 REST --> U: Set-Cookie: access_token (httpOnly)\n{user: {id, email, name}}
 deactivate REST
@@ -53,43 +48,27 @@ alt Użytkownik ma zapisane profile
   activate REST
   REST -> REST: **JwtAuthGuard** - weryfikacja tokena
   REST -> REST: **GetUserProfilesQuery**\n{userId}
-  REST -> DB: Fetch saved profiles\n(z poprzednich sesji)
-  activate DB
-  DB --> REST: List<SavedProfile>\n[{profileId, recipientName, occasion, createdAt}]
-  deactivate DB
   REST --> U: 200 OK\n{profiles: [...]}
   deactivate REST
-  note left: Użytkownik może wybrać\nz listy zapisanych profili\nlub stworzyć nowy
+  note left: Użytkownik może wybrać\nz listy zapisanych profili\nlub nie wybierać żadnego
   
   alt Użytkownik wybiera zapisany profil
     U -> REST: POST /restapi/stalking-request\n{chatId, profileId, social URLs, occasion}\n+ JWT cookie
     activate REST
     REST -> REST: **JwtAuthGuard** - weryfikacja tokena
     REST -> REST: **StartProcessingWithProfileCommand**
-    REST -> DB: Load saved profile\nCreate chat session with profileId reference
-    activate DB
-    DB --> REST: Chat entity + RecipientProfile
-    deactivate DB
-    note right: Wywiad zostaje pominięty,\nprofil załadowany z bazy
-  else Użytkownik tworzy nowy profil
-    U -> REST: POST /restapi/stalking-request\n{chatId, social URLs, occasion}\n+ JWT cookie
-    activate REST
-    REST -> REST: **JwtAuthGuard** - weryfikacja tokena
-    REST -> REST: **StartProcessingCommand**
-    REST -> DB: Create chat session
-    activate DB
-    DB --> REST: Chat entity
-    deactivate DB
+    note right: Profil załadowany z bazy i uwzględniony w wywiadzie
+  else Użytkownik nie wybiera żadnego profilu
+  U -> REST: POST /restapi/stalking-request\n{chatId, social URLs, occasion}\n+ JWT cookie
+  activate REST
+  REST -> REST: **JwtAuthGuard** - weryfikacja tokena
+  REST -> REST: **StartProcessingCommand**
   end
 else Użytkownik nie ma zapisanych profili
   U -> REST: POST /restapi/stalking-request\n{chatId, social URLs, occasion}\n+ JWT cookie
   activate REST
   REST -> REST: **JwtAuthGuard** - weryfikacja tokena
   REST -> REST: **StartProcessingCommand**
-  REST -> DB: Create chat session
-  activate DB
-  DB --> REST: Chat entity
-  deactivate DB
 end
 
 par Przetwarzanie Równoległe
@@ -97,25 +76,9 @@ par Przetwarzanie Równoległe
   activate STALK
   STALK -> STALK: **StalkingAnalyzeCommand**\n(analiza profili social media)
 else
-  alt Profil załadowany z bazy (profileId podany)
-    REST -> CHAT: **ChatStartInterviewEvent**\n{chatId, occasion, profile (from DB)}
-    activate CHAT
-    note over CHAT: Wywiad rozpoczęty\nz załadowanym profilem z bazy.\nPierwsze pytanie zostanie pominięte.
-    CHAT -> CHAT: **SetOccasionCommand**\n{chatId, occasion}
-    CHAT -> CHAT: **LoadProfileCommand**\n{chatId, profile}
-    CHAT -> DB: Create chat session record with loaded profile
-    activate DB
-    DB --> CHAT: Chat session
-    deactivate DB
-  else Nowa sesja (brak profileId)
     REST -> CHAT: **ChatStartInterviewEvent**\n{chatId, occasion}
     activate CHAT
     CHAT -> CHAT: **SetOccasionCommand**\n{chatId, occasion}
-    CHAT -> DB: Create chat session record
-    activate DB
-    DB --> CHAT: Chat session
-    deactivate DB
-  end
 end
 
 == Interview loop ==
@@ -124,26 +87,14 @@ loop Dopóki AI nie zdecyduje zakończyć lub niewłaściwe zachowanie usera
   CHAT -> CHAT: **GenerateQuestionCommand**\n(AI decyduje o następnym pytaniu)
   CHAT --> REST: **ChatQuestionAskedEvent**\n{chatId, question, potentialAnswers}
   REST -> REST: **NotifyUserSseCommand**
-  REST -> DB: Save message to database
-  activate DB
-  DB --> REST: Message entity
-  deactivate DB
   REST -> U: SSE: chatbot-message
   U -> REST: POST /restapi/send-message\n{chatId, messages}
   REST -> REST: **JwtAuthGuard** - weryfikacja tokena
   REST -> REST: **SendUserMessageCommand**
-  REST -> DB: Save user message to database
-  activate DB
-  DB --> REST: Message entity
-  deactivate DB
   REST -> REST: **NotifyUserSseCommand**
   REST -> U: SSE: chatbot-message\n(echo wiadomości użytkownika)
   REST -> CHAT: **ChatUserAnsweredEvent**\n{chatId, messages}
   CHAT -> CHAT: **GetOccasionQuery**\n{chatId}
-  CHAT -> DB: Fetch occasion from session
-  activate DB
-  DB --> CHAT: Occasion data
-  deactivate DB
 end
 
 alt Wywiad zakończony pomyślnie
@@ -151,10 +102,6 @@ alt Wywiad zakończony pomyślnie
   CHAT -> GIFT: **ChatInterviewCompletedEvent**\n{chatId, profile}
   activate GIFT
   GIFT -> GIFT: **UpdateInterviewStatusCommand**\n(zapisz profil usera, sprawdź czy stalking gotowy)
-  GIFT -> DB: Update chat interview status
-  activate DB
-  DB --> GIFT: Updated chat
-  deactivate DB
   CHAT -> REST: **ChatCompletedNotifyUserEvent**\n{chatId, profile}
   REST -> REST: **NotifyUserSseCommand**
   REST -> U: SSE: chat-interview-completed\n{profile}
@@ -165,10 +112,6 @@ alt Wywiad zakończony pomyślnie
     activate REST
     REST -> REST: **JwtAuthGuard** - weryfikacja tokena
     REST -> REST: **SaveUserProfileCommand**\n{userId, chatId, recipientName}
-    REST -> DB: Save RecipientProfile\n(from completed interview)\nas SavedProfile entity
-    activate DB
-    DB --> REST: SavedProfile entity\n{profileId, recipientName, occasion, profile}
-    deactivate DB
     REST --> U: 201 Created\n{profileId, recipientName}
     deactivate REST
     note left: Profil zapisany,\ndostępny przy kolejnych\nsesji wyszukiwania
@@ -187,26 +130,17 @@ deactivate CHAT
 STALK -> GIFT: **StalkingCompletedEvent**\n{keywords, chatId, completedAt}
 deactivate STALK
 GIFT -> GIFT: **UpdateStalkingStatusCommand**\n(zapisz keywords, sprawdź czy wywiad gotowy)
-GIFT -> DB: Update chat stalking status
-activate DB
-DB --> GIFT: Updated chat
-deactivate DB
 
 == Koordynacja Generowania Prezentów ==
 note over GIFT: Gdy oba eventy otrzymane
 
 alt Zarówno stalking jak i wywiad zakończone
   GIFT -> GIFT: **GenerateGiftIdeasCommand**\n{userProfile, keywords, chatId}
-  note right: AI generuje zapytania wyszukiwania\ndla wielu serwisów (z filtrowaniem disabled services)
+  note right: AI generuje zapytania wyszukiwania\ndla wielu serwisów
   
-  GIFT -> GIFT: Generate eventId (ULID)\nand calculate totalEvents
   GIFT -> RERANK: **GiftContextInitializedEvent**\n{userProfile, keywords, chatId, eventId, totalEvents}
   activate RERANK
   RERANK -> RERANK: **InitializeGiftContextCommand**\n(create/update session with context)
-  RERANK -> DB: Create GiftSession with context
-  activate DB
-  DB --> RERANK: Session created
-  deactivate DB
  
   par Równoległe Żądania FETCH
   else OLX
@@ -232,47 +166,23 @@ else OLX
   FETCH_OLX -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "olx", success, eventId, totalEvents}
   activate RERANK
   RERANK -> RERANK: **CreateSessionCommand**\n(ensure session exists)
-  RERANK -> DB: Upsert GiftSession
-  activate DB
-  DB --> RERANK: Session
-  deactivate DB
   RERANK -> RERANK: **AddProductsToSessionCommand**\n(store products with metadata)
-  RERANK -> DB: Save Products & GiftSessionProduct
-  activate DB
-  DB --> RERANK: Products saved
-  deactivate DB
   RERANK -> RERANK: **IncrementSessionCompletionCommand**\n(increment completedEvents)
-  RERANK -> DB: Update completedEvents counter
-  activate DB
-  DB --> RERANK: {completed: boolean}
-  deactivate DB
   deactivate RERANK
 else Allegro
   FETCH_ALLEGRO -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "allegro", success, eventId, totalEvents}
   activate RERANK
   RERANK -> RERANK: CreateSession → AddProducts → IncrementCompletion
-  RERANK -> DB: DB operations
-  activate DB
-  DB --> RERANK: {completed: boolean}
-  deactivate DB
   deactivate RERANK
 else eBay
   FETCH_EBAY -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "ebay", success, eventId, totalEvents}
   activate RERANK
   RERANK -> RERANK: CreateSession → AddProducts → IncrementCompletion
-  RERANK -> DB: DB operations
-  activate DB
-  DB --> RERANK: {completed: boolean}
-  deactivate DB
   deactivate RERANK
 else Amazon
   FETCH_AMAZON -> RERANK: **ProductFetchedEvent**\n{products[], chatId, provider: "amazon", success, eventId, totalEvents}
   activate RERANK
   RERANK -> RERANK: CreateSession → AddProducts → IncrementCompletion
-  RERANK -> DB: DB operations
-  activate DB
-  DB --> RERANK: {completed: boolean}
-  deactivate DB
   deactivate RERANK
 end
 deactivate FETCH_OLX
@@ -282,7 +192,7 @@ deactivate FETCH_AMAZON
 
 note over RERANK
   Reranking Service śledzi completedEvents dla każdego eventId.
-  Gdy completedEvents >= totalEvents, automatycznie wywołuje EmitGiftReadyCommand.
+  Gdy completedEvents >= totalEvents, automatycznie wywołuje RerankAndEmitGiftReadyCommand.
   Dodatkowy scheduler (@Cron EVERY_30_SECONDS) oznacza sesje jako TIMED_OUT
   jeśli nie otrzymały wszystkich eventów w EVENT_TIMEOUT_MS (default 120s).
 end note
@@ -290,28 +200,20 @@ end note
 alt Wszystkie produkty zebrane (completedEvents >= totalEvents)
   note over RERANK: ProductFetchedHandler wykrywa completed=true
   activate RERANK
-  RERANK -> RERANK: **EmitGiftReadyCommand**\n{eventId}
-  RERANK -> DB: Query GiftSession, GiftSessionProduct, Product
-  activate DB
-  DB --> RERANK: Session with all products
-  deactivate DB
-  RERANK -> RERANK: **rankProducts** (AI via OpenAI)\n(score and reason for each product)
-  note right: AI-SDK generateObject z OpenAI\nokreśla rating i reasoning dla każdego produktu
-  RERANK -> DB: Update Products with rating & reasoning
-  activate DB
-  DB --> RERANK: Products updated
-  deactivate DB
+  RERANK -> RERANK: **RerankAndEmitGiftReadyCommand**\n{eventId}
+  RERANK -> RERANK: **GetSessionProductsQuery**\n{eventId}
+  RERANK -> RERANK: **ScoreProductsQuery**\n{products, userProfile, keywords}
+  RERANK -> RERANK: **scoreProductsFlow** (AI via Google Gemini)\n(score and reason for each product in batches)
+  note right: AI-SDK generateObject z Google Gemini\n(gemini-2.5-flash-lite)\nokreśla score (1-10) i reasoning dla każdego produktu
+  RERANK -> RERANK: **UpdateProductRatingsCommand**\n(update products with scores)
+  note right: Filtruje produkty z score < 5\nsortuje po score (desc)\nbierze top 50
   RERANK -> REST: **GiftReadyEvent**\n{chatId, rankedProducts[]}
-  note right: RERANK emituje event\nz już zrankowanymi produktami
+  note right: RERANK emituje event\nz już zrankowanymi produktami\n(score >= 5, sorted desc)
   deactivate RERANK
   activate REST
   REST -> REST: **SaveListingsCommand**\n{chatId, listings[]}
-  REST -> DB: Save listings to REST API database
-  activate DB
-  DB --> REST: Saved listings with IDs
-  deactivate DB
   REST -> REST: **NotifyUserSseCommand**
-  REST -> U: SSE: gift-ready\n{listings with database IDs}
+  REST -> U: SSE: gift-ready\n{listings with IDs}
   deactivate REST
   note left: Produkty gotowe do wyświetlenia\nużytkownik może dodać do ulubionych
 end

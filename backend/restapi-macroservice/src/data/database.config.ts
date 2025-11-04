@@ -105,6 +105,7 @@ function getConnectionDetails(): ConnectionDetails {
 export function getDatabaseConfig(options?: {
   migrations?: string[];
   migrationsRun?: boolean;
+  logging?: boolean;
 }): PostgresConnectionOptions {
   const connection = getConnectionDetails();
 
@@ -115,6 +116,6 @@ export function getDatabaseConfig(options?: {
     migrations: options?.migrations ?? [],
     migrationsRun: options?.migrationsRun ?? false,
     synchronize: false,
-    logging: true,
+    logging: options?.logging ?? false,
   };
 }

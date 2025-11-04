@@ -142,6 +142,22 @@ jobs:
         working-directory: backend/restapi-macroservice
         run: pnpm migration:run
 
+      - name: Verify schema is up to date
+        working-directory: backend/restapi-macroservice
+        run: |
+          output=$(pnpm migration:check 2>&1)
+          echo "$output"
+
+          if echo "$output" | grep -q "Your schema is up to date - there are no queries to be executed by schema synchronization"; then
+            echo "✅ Schema is up to date - no pending migrations"
+          else
+            echo "⚠️  Schema drift detected or queries need to be executed:"
+            echo "$output"
+            echo ""
+            echo "❌ Schema is not synchronized with migrations. Please generate a new migration."
+            exit 1
+          fi
+
   build:
     runs-on: ubuntu-latest
     steps:

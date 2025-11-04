@@ -444,6 +444,9 @@ importers:
       dotenv:
         specifier: ^16.5.0
         version: 16.6.1
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       pg:
         specifier: ^8.14.1
         version: 8.16.3
@@ -487,6 +490,9 @@ importers:
       "@types/jest":
         specifier: ^29.5.14
         version: 29.5.14
+      "@types/lodash":
+        specifier: ^4.17.20
+        version: 4.17.20
       "@types/node":
         specifier: ^22.10.7
         version: 22.18.1
@@ -4559,6 +4565,12 @@ packages:
     resolution:
       {
         integrity: sha512-asx5hIG9Qmf/1oStypjanR7iKTv0gXQ1Ov/jfrX6kS/EO0OFni8orbmGCn0672NHR3kXHwpAwR+B368ZGN/2rA==,
+      }
+
+  "@types/lodash@4.17.20":
+    resolution:
+      {
+        integrity: sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA==,
       }
 
   "@types/luxon@3.7.1":
@@ -15806,6 +15818,8 @@ snapshots:
     dependencies:
       "@types/ms": 2.1.0
       "@types/node": 22.18.1
+
+  "@types/lodash@4.17.20": {}
 
   "@types/luxon@3.7.1": {}
 

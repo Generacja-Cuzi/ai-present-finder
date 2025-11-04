@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ConfigModule } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
 import { ClientsModule, Transport } from "@nestjs/microservices";
 import { ScheduleModule } from "@nestjs/schedule";
@@ -18,6 +18,7 @@ import { RerankAndEmitGiftReadyHandler } from "../app/handlers/rerank-and-emit-g
 import { ScoreProductsHandler } from "../app/handlers/score-products.handler";
 import { UpdateProductRatingsHandler } from "../app/handlers/update-product-ratings.handler";
 import { TimeoutSchedulerService } from "../app/services/timeout-scheduler.service";
+import { getDatabaseConfig } from "../config/database.config";
 import { GiftSessionProduct } from "../domain/entities/gift-session-product.entity";
 import { GiftSession } from "../domain/entities/gift-session.entity";
 import { Product } from "../domain/entities/product.entity";
@@ -42,50 +43,12 @@ const QueryHandlers = [GetSessionProductsHandler, ScoreProductsHandler];
     }),
     CqrsModule,
     ScheduleModule.forRoot(),
-    TypeOrmModule.forRootAsync({
-      useFactory: (configService: ConfigService) => {
-        // Parse DATABASE_URL if provided, otherwise fall back to individual vars
-        const databaseUrl = configService.get<string>("DATABASE_URL") ?? "";
-
-        if (databaseUrl.length > 0) {
-          const url = new URL(databaseUrl);
-          return {
-            type: "postgres" as const,
-            host: url.hostname,
-            port: Number.parseInt(url.port, 10) || 5432,
-            username: url.username,
-            password: url.password,
-            database: url.pathname.slice(1), // Remove leading '/'
-            entities: [GiftSession, GiftSessionProduct, Product],
-            // Never enable in production; opt-in via env
-            synchronize:
-              configService.get<string>("TYPEORM_SYNCHRONIZE") === "true",
-            logging: false,
-          };
-        }
-
-        // Fallback to individual environment variables
-        return {
-          type: "postgres" as const,
-          host: configService.get<string>("DATABASE_HOST") ?? "localhost",
-          port: Number.parseInt(
-            configService.get<string>("DATABASE_PORT") ?? "6097",
-            10,
-          ),
-          username:
-            configService.get<string>("DATABASE_USERNAME") ?? "reranking_user",
-          password:
-            configService.get<string>("DATABASE_PASSWORD") ??
-            "reranking_password",
-          database:
-            configService.get<string>("DATABASE_NAME") ?? "reranking_service",
-          entities: [GiftSession, GiftSessionProduct, Product],
-          synchronize: true, // Only for development
-          logging: false,
-        };
-      },
-      inject: [ConfigService],
-    }),
+    TypeOrmModule.forRoot(
+      getDatabaseConfig({
+        migrations: ["dist/data/migrations/*.js"],
+        migrationsRun: true,
+      }),
+    ),
     TypeOrmModule.forFeature([GiftSession, GiftSessionProduct, Product]),
     ClientsModule.register([
       {

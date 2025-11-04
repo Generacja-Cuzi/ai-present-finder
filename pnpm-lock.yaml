@@ -81,6 +81,12 @@ importers:
       amqplib:
         specifier: ^0.10.7
         version: 0.10.9
+      class-transformer:
+        specifier: ^0.5.1
+        version: 0.5.1
+      class-validator:
+        specifier: ^0.14.2
+        version: 0.14.2
       dotenv:
         specifier: ^16.5.0
         version: 16.6.1
@@ -305,6 +311,12 @@ importers:
       amqplib:
         specifier: ^0.10.7
         version: 0.10.9
+      class-transformer:
+        specifier: ^0.5.1
+        version: 0.5.1
+      class-validator:
+        specifier: ^0.14.2
+        version: 0.14.2
       dotenv:
         specifier: ^16.5.0
         version: 16.6.1
@@ -441,6 +453,12 @@ importers:
       amqplib:
         specifier: ^0.10.7
         version: 0.10.9
+      class-transformer:
+        specifier: ^0.5.1
+        version: 0.5.1
+      class-validator:
+        specifier: ^0.14.2
+        version: 0.14.2
       dotenv:
         specifier: ^16.5.0
         version: 16.6.1

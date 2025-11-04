@@ -76,6 +76,21 @@ jobs:
 
   migrations:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - name: restapi-macroservice
+            db: restapi_db
+            user: postgres
+          - name: chat-microservice
+            db: chat_service
+            user: chat_user
+          - name: gift-ideas-microservice
+            db: gift_ideas_service
+            user: gift_ideas_user
+          - name: reranking-microservice
+            db: reranking_service
+            user: reranking_user
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -83,7 +98,7 @@ jobs:
       - name: Setup PostgreSQL
         uses: ./.github/actions/setup-postgres
         with:
-          container-name: "postgres-ci-migrations"
+          container-name: "postgres-ci-migrations-${{ matrix.service.name }}"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -99,24 +114,32 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Test restapi migrations - Run up
-        working-directory: backend/restapi-macroservice
+      - name: Test ${{ matrix.service.name }} migrations - Run up
+        working-directory: backend/${{ matrix.service.name }}
         run: pnpm migration:run
+        env:
+          DATABASE_URL: postgresql://${{ matrix.service.user }}:password@localhost:5432/${{ matrix.service.db }}
 
-      - name: Test restapi migrations - Show status
-        working-directory: backend/restapi-macroservice
+      - name: Test ${{ matrix.service.name }} migrations - Show status
+        working-directory: backend/${{ matrix.service.name }}
         run: pnpm migration:show
+        env:
+          DATABASE_URL: postgresql://${{ matrix.service.user }}:password@localhost:5432/${{ matrix.service.db }}
 
-      - name: Test restapi migrations - Run down
-        working-directory: backend/restapi-macroservice
+      - name: Test ${{ matrix.service.name }} migrations - Run down
+        working-directory: backend/${{ matrix.service.name }}
         run: pnpm migration:revert
+        env:
+          DATABASE_URL: postgresql://${{ matrix.service.user }}:password@localhost:5432/${{ matrix.service.db }}
 
-      - name: Test restapi migrations - Run up again
-        working-directory: backend/restapi-macroservice
+      - name: Test ${{ matrix.service.name }} migrations - Run up again
+        working-directory: backend/${{ matrix.service.name }}
         run: pnpm migration:run
+        env:
+          DATABASE_URL: postgresql://${{ matrix.service.user }}:password@localhost:5432/${{ matrix.service.db }}
 
       - name: Verify schema is up to date
-        working-directory: backend/restapi-macroservice
+        working-directory: backend/${{ matrix.service.name }}
         run: |
           output=$(pnpm migration:check 2>&1)
           echo "$output"
@@ -130,6 +153,8 @@ jobs:
             echo "❌ Schema is not synchronized with migrations. Please generate a new migration."
             exit 1
           fi
+        env:
+          DATABASE_URL: postgresql://${{ matrix.service.user }}:password@localhost:5432/${{ matrix.service.db }}
 
   build:
     runs-on: ubuntu-latest

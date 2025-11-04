@@ -25,26 +25,8 @@ jobs:
           node-version: 22
           cache: "pnpm"
 
-      - name: Setup PostgreSQL
-        uses: ./.github/actions/setup-postgres
-        with:
-          container-name: "postgres-ci-lint"
-
-      - name: Write Google credentials file
-        shell: bash
-        env:
-          GCP_SA_JSON: ${{ secrets.GCP_SA_JSON }}
-        run: |
-          set -euo pipefail
-          # bezpieczne zapisanie wielolinijkowego JSON
-          printf '%s' "$GCP_SA_JSON" > "$RUNNER_TEMP/gcp-sa.json"
-          chmod 600 "$RUNNER_TEMP/gcp-sa.json"
-
       - name: Install dependencies
-        run: |
-          export GOOGLE_CREDENTIALS_PATH="${{ runner.temp }}/gcp-sa.json"
-          export GOOGLE_SCOPES_API="https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/userinfo.profile"
-          pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Run prettier
         run: pnpm run format:check
@@ -56,10 +38,6 @@ jobs:
 
       - name: Run typecheck
         run: pnpm run typecheck
-        if: always()
-
-      - name: Run tests
-        run: pnpm -r --filter '!fetch-microservice' test
         if: always()
 
       - name: Build
@@ -79,10 +57,58 @@ jobs:
       - name: Pull rabbitmq alpine image
         run: docker pull rabbitmq:3.12.11-alpine
 
-      - name: Setup PostgreSQL
-        uses: ./.github/actions/setup-postgres
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          container-name: "postgres-ci-test"
+          version: 10
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests
+        run: pnpm -r --filter '!fetch-microservice' test
+
+  migrations:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - name: restapi-macroservice
+            db: restapi_db
+          - name: chat-microservice
+            db: chat_service
+          - name: gift-ideas-microservice
+            db: gift_ideas_service
+          - name: reranking-microservice
+            db: reranking_service
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create database
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE ${{ matrix.service.db }};"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -95,23 +121,56 @@ jobs:
           node-version: 22
           cache: "pnpm"
 
-      - name: Write Google credentials file
-        shell: bash
-        env:
-          GCP_SA_JSON: ${{ secrets.GCP_SA_JSON }}
-        run: |
-          set -euo pipefail
-          printf '%s' "$GCP_SA_JSON" > "$RUNNER_TEMP/gcp-sa.json"
-          chmod 600 "$RUNNER_TEMP/gcp-sa.json"
-
       - name: Install dependencies
-        run: |
-          export GOOGLE_CREDENTIALS_PATH="${{ runner.temp }}/gcp-sa.json"
-          export GOOGLE_SCOPES_API="https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/userinfo.profile"
-          pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
-      - name: Run tests
-        run: pnpm -r --filter '!fetch-microservice' test
+      - name: Test ${{ matrix.service.name }} migrations - Run up
+        working-directory: backend/${{ matrix.service.name }}
+        run: pnpm migration:run
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/${{ matrix.service.db }}
+
+      - name: Test ${{ matrix.service.name }} migrations - Show status
+        working-directory: backend/${{ matrix.service.name }}
+        run: pnpm migration:show
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/${{ matrix.service.db }}
+
+      - name: Test ${{ matrix.service.name }} migrations - Run down (revert all)
+        working-directory: backend/${{ matrix.service.name }}
+        run: |
+          # Revert all migrations (keep reverting until no more migrations to revert)
+          while pnpm migration:show 2>&1 | grep -q '\[X\]'; do
+            echo "Reverting migration..."
+            pnpm migration:revert
+          done
+          echo "✅ All migrations reverted"
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/${{ matrix.service.db }}
+
+      - name: Test ${{ matrix.service.name }} migrations - Run up again
+        working-directory: backend/${{ matrix.service.name }}
+        run: pnpm migration:run
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/${{ matrix.service.db }}
+
+      - name: Verify schema is up to date
+        working-directory: backend/${{ matrix.service.name }}
+        run: |
+          output=$(pnpm migration:check 2>&1)
+          echo "$output"
+
+          if echo "$output" | grep -q "Your schema is up to date - there are no queries to be executed by schema synchronization"; then
+            echo "✅ Schema is up to date - no pending migrations"
+          else
+            echo "⚠️  Schema drift detected or queries need to be executed:"
+            echo "$output"
+            echo ""
+            echo "❌ Schema is not synchronized with migrations. Please generate a new migration."
+            exit 1
+          fi
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/${{ matrix.service.db }}
 
   build:
     runs-on: ubuntu-latest
@@ -119,11 +178,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup PostgreSQL
-        uses: ./.github/actions/setup-postgres
-        with:
-          container-name: "postgres-ci-build"
-
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -135,20 +189,8 @@ jobs:
           node-version: 22
           cache: "pnpm"
 
-      - name: Write Google credentials file
-        shell: bash
-        env:
-          GCP_SA_JSON: ${{ secrets.GCP_SA_JSON }}
-        run: |
-          set -euo pipefail
-          printf '%s' "$GCP_SA_JSON" > "$RUNNER_TEMP/gcp-sa.json"
-          chmod 600 "$RUNNER_TEMP/gcp-sa.json"
-
       - name: Install dependencies
-        run: |
-          export GOOGLE_CREDENTIALS_PATH="${{ runner.temp }}/gcp-sa.json"
-          export GOOGLE_SCOPES_API="https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/userinfo.profile"
-          pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm run build

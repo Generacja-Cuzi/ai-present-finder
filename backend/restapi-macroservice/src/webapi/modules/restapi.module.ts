@@ -37,12 +37,6 @@ import { ListingDatabaseRepository } from "src/data/listing.database.repository"
 import { MessageDatabaseRepository } from "src/data/message.database.repository";
 import { UserProfileDatabaseRepository } from "src/data/user-profile.database.repository";
 import { UserDatabaseRepository } from "src/data/user.database.repository";
-import { Chat } from "src/domain/entities/chat.entity";
-import { Feedback } from "src/domain/entities/feedback.entity";
-import { Listing } from "src/domain/entities/listing.entity";
-import { Message } from "src/domain/entities/message.entity";
-import { UserProfile } from "src/domain/entities/user-profile.entity";
-import { User } from "src/domain/entities/user.entity";
 import { IChatRepository } from "src/domain/repositories/ichat.repository";
 import { IFeedbackRepository } from "src/domain/repositories/ifeedback.repository";
 import { IListingRepository } from "src/domain/repositories/ilisting.repository";
@@ -58,6 +52,7 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
 import { PassportModule } from "@nestjs/passport";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
+import { entities, getDatabaseConfig } from "../../data/database.config";
 import { AuthController } from "../controllers/auth.controller";
 import { ChatController } from "../controllers/chat.controller";
 import { FavoritesController } from "../controllers/favorites.controller";
@@ -84,58 +79,14 @@ import { UserProfileController } from "../controllers/user-profile.controller";
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
-      useFactory: (configService: ConfigService) => {
-        // Parse DATABASE_URL if provided, otherwise fall back to individual vars
-        const databaseUrl =
-          configService.get<string>("RESTAPI_DATABASE_URL") ?? "";
-
-        if (databaseUrl.length > 0) {
-          const url = new URL(databaseUrl);
-          return {
-            type: "postgres" as const,
-            host: url.hostname,
-            port: Number.parseInt(url.port, 10) || 5432,
-            username: url.username,
-            password: url.password,
-            database: url.pathname.slice(1), // Remove leading '/'
-            entities: [User, Chat, Listing, Message, UserProfile, Feedback],
-            // Never enable in production; opt-in via env
-            synchronize:
-              configService.get<string>("TYPEORM_SYNCHRONIZE") === "true",
-            logging: false,
-          };
-        }
-
-        // Fallback to individual environment variables
-        return {
-          type: "postgres" as const,
-          host: configService.get<string>("DATABASE_HOST") ?? "localhost",
-          port: Number.parseInt(
-            configService.get<string>("DATABASE_PORT") ?? "5432",
-            10,
-          ),
-          username:
-            configService.get<string>("DATABASE_USERNAME") ?? "restapi_user",
-          password:
-            configService.get<string>("DATABASE_PASSWORD") ??
-            "restapi_password",
-          database:
-            configService.get<string>("DATABASE_NAME") ?? "restapi_service",
-          entities: [User, Chat, Listing, Message, UserProfile, Feedback],
-          synchronize: true, // Only for development
-          logging: false,
-        };
+      useFactory: () => {
+        return getDatabaseConfig({
+          migrations: ["dist/data/migrations/*.js"],
+          migrationsRun: true,
+        });
       },
-      inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([
-      User,
-      Chat,
-      Listing,
-      Message,
-      UserProfile,
-      Feedback,
-    ]),
+    TypeOrmModule.forFeature(entities),
     ClientsModule.register([
       {
         name: "STALKING_ANALYZE_REQUESTED_EVENT",

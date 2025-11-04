@@ -1,6 +1,8 @@
-import { useSseGiftSearching } from "@/features/gift-searching/hooks/use-sse-gift-searching";
 import { useGetChatListingsQuery } from "@/features/history/api/chats.api";
 import { RecommendationView } from "@/features/recommendation/views/recommendation-view";
+
+import { GiftSearching } from "../components/gift-search/gift-searching";
+import { useSseGiftSearching } from "../hooks/use-sse-gift-searching";
 
 export function SearchRecommendationView({
   chatId,
@@ -32,7 +34,7 @@ export function SearchRecommendationView({
 
   // If no gifts yet, show searching state or wait for SSE event
   if (state.type === "searching") {
-    return <div>Searching for the perfect gifts...</div>;
+    return <GiftSearching />;
   }
 
   return (

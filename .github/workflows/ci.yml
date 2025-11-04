@@ -135,9 +135,15 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/${{ matrix.service.db }}
 
-      - name: Test ${{ matrix.service.name }} migrations - Run down
+      - name: Test ${{ matrix.service.name }} migrations - Run down (revert all)
         working-directory: backend/${{ matrix.service.name }}
-        run: pnpm migration:revert
+        run: |
+          # Revert all migrations (keep reverting until no more migrations to revert)
+          while pnpm migration:show 2>&1 | grep -q '\[X\]'; do
+            echo "Reverting migration..."
+            pnpm migration:revert
+          done
+          echo "✅ All migrations reverted"
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/${{ matrix.service.db }}
 

@@ -51,10 +51,10 @@ export function ProfileView() {
             ) : null}
             <Button
               onClick={handleLogout}
-              variant="destructive"
-              className="w-full rounded-full py-6 text-lg font-semibold text-white shadow-lg transition-all active:scale-95"
+              variant="ghost"
+              className="text-red-600 hover:text-red-700"
             >
-              Logout
+              Log Out
             </Button>
           </div>
         </div>

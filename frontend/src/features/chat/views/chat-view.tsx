@@ -15,7 +15,6 @@ export function ChatView({ clientId }: { clientId: string }) {
     return <ChatShimmer />;
   }
 
-  // Show search/recommendation view if interview is completed
   if (chatInfo?.isInterviewCompleted === true) {
     return (
       <CustomSseProvider clientId={clientId}>
@@ -27,7 +26,6 @@ export function ChatView({ clientId }: { clientId: string }) {
     );
   }
 
-  // Show chat interface if interview is still in progress
   return (
     <CustomSseProvider clientId={clientId}>
       <ChatUI clientId={clientId} initialState={initialState} />

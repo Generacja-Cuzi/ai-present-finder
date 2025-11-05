@@ -48,7 +48,6 @@ export function RecommendationView({
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
 
-  // Check if feedback already exists for this chat
   const {
     data: existingFeedback,
     isLoading: isFeedbackLoading,
@@ -78,7 +77,6 @@ export function RecommendationView({
 
       <main className="flex-1 pb-20">
         <div className="space-y-4 bg-white p-4 pb-6">
-          {/* Feedback Button */}
           {!hasFeedback && (
             <div className="flex justify-end">
               <Button
@@ -160,7 +158,6 @@ export function RecommendationView({
 
       <Navbar />
 
-      {/* Filter Dialogs */}
       <ShopsFilterDialog
         open={shopsDialogOpen}
         onOpenChange={setShopsDialogOpen}
@@ -185,7 +182,6 @@ export function RecommendationView({
         onApply={updateCategories}
       />
 
-      {/* Feedback Dialog */}
       <FeedbackDialog
         open={feedbackDialogOpen}
         onOpenChange={setFeedbackDialogOpen}

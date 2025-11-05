@@ -13,7 +13,7 @@ export function SearchRecommendationView({
 }) {
   const { state } = useSseGiftSearching({ clientId: chatId });
   const { data, isLoading, isError } = useGetChatListingsQuery(chatId);
-  // If we already know there are gifts from the parent, fetch them
+
   if (hasGifts) {
     if (isLoading) {
       return <div>Loading listings...</div>;
@@ -32,7 +32,6 @@ export function SearchRecommendationView({
     }
   }
 
-  // If no gifts yet, show searching state or wait for SSE event
   if (state.type === "searching") {
     return <GiftSearching />;
   }

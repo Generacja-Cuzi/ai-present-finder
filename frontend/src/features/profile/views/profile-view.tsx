@@ -18,46 +18,63 @@ export function ProfileView() {
   const isAdmin = user?.role === "admin";
 
   return (
-    <div className="bg-background flex min-h-screen flex-col">
-      <div className="flex flex-1 flex-col items-center justify-center px-6">
-        <div className="w-full max-w-md space-y-8">
-          <div className="text-center">
-            <h1 className="text-foreground mb-2 text-3xl font-bold">Profile</h1>
-            {user === null ? null : (
-              <div className="text-muted-foreground space-y-1">
-                <p className="text-lg">{user.name ?? "User"}</p>
-                <p className="text-sm">{user.email}</p>
-                {isAdmin ? (
-                  <p className="mt-2 text-xs font-semibold text-purple-600">
-                    Administrator
-                  </p>
-                ) : null}
-              </div>
-            )}
-          </div>
+    <div className="">
+      <div className="mb-8 text-center">
+        <h1 className="text-foreground mb-6 text-3xl font-bold">Profile</h1>
+        {user === null ? null : (
+          <div className="flex flex-col items-center space-y-4">
+            <div className="relative">
+              <img
+                src={user.picture ?? "https://via.placeholder.com/150"}
+                alt={`${user.givenName ?? "User"}'s profile`}
+                className="h-32 w-32 rounded-full object-cover ring-4 ring-gray-200"
+              />
+            </div>
 
-          <div className="space-y-4">
+            <div className="text-foreground">
+              <p className="text-2xl font-semibold">
+                {user.givenName !== null && user.familyName !== null
+                  ? `${user.givenName} ${user.familyName}`
+                  : "User"}
+              </p>
+            </div>
+
+            <div className="text-muted-foreground">
+              <p className="text-sm">{user.email}</p>
+            </div>
+
             {isAdmin ? (
-              <Button
-                onClick={() => {
-                  void navigate({ to: "/admin/feedbacks" });
-                }}
-                variant="outline"
-                className="w-full rounded-full py-6 text-lg font-semibold shadow-lg transition-all active:scale-95"
-              >
-                <BarChart3 className="mr-2 h-5 w-5" />
-                View Feedbacks
-              </Button>
+              <p className="text-xs font-semibold text-purple-600">
+                Administrator
+              </p>
             ) : null}
-            <Button
-              onClick={handleLogout}
-              variant="ghost"
-              className="text-red-600 hover:text-red-700"
-            >
-              Log Out
-            </Button>
           </div>
+        )}
+      </div>
+
+      {isAdmin ? (
+        <div className="mb-8">
+          <Button
+            onClick={() => {
+              void navigate({ to: "/admin/feedbacks" });
+            }}
+            variant="outline"
+            className="w-full rounded-full py-6 text-lg font-semibold shadow-lg transition-all active:scale-95"
+          >
+            <BarChart3 className="mr-2 h-5 w-5" />
+            View Feedbacks
+          </Button>
         </div>
+      ) : null}
+
+      <div className="mt-auto flex justify-center align-bottom">
+        <Button
+          onClick={handleLogout}
+          variant="ghost"
+          className="text-lg text-red-600 hover:text-red-700"
+        >
+          Log Out
+        </Button>
       </div>
     </div>
   );

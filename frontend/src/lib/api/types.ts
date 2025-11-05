@@ -458,6 +458,21 @@ export interface components {
              */
             name: string | null;
             /**
+             * @description User given name
+             * @example John
+             */
+            givenName: string | null;
+            /**
+             * @description User family name
+             * @example Doe
+             */
+            familyName: string | null;
+            /**
+             * @description User profile picture URL
+             * @example https://lh3.googleusercontent.com/a/example
+             */
+            picture: string | null;
+            /**
              * @description User role
              * @example user
              */
@@ -488,6 +503,21 @@ export interface components {
              * @example John Doe
              */
             name: string | null;
+            /**
+             * @description User given name
+             * @example John
+             */
+            givenName: string | null;
+            /**
+             * @description User family name
+             * @example Doe
+             */
+            familyName: string | null;
+            /**
+             * @description User profile picture URL
+             * @example https://lh3.googleusercontent.com/a/example
+             */
+            picture: string | null;
             /**
              * @description User role
              * @example user

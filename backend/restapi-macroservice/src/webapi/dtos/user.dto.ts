@@ -34,6 +34,30 @@ export class UserInfoDto {
   name!: string | null;
 
   @ApiProperty({
+    description: "User given name",
+    example: "John",
+    nullable: true,
+    type: String,
+  })
+  givenName!: string | null;
+
+  @ApiProperty({
+    description: "User family name",
+    example: "Doe",
+    nullable: true,
+    type: String,
+  })
+  familyName!: string | null;
+
+  @ApiProperty({
+    description: "User profile picture URL",
+    example: "https://lh3.googleusercontent.com/a/example",
+    nullable: true,
+    type: String,
+  })
+  picture!: string | null;
+
+  @ApiProperty({
     description: "User role",
     example: "user",
     enum: ["user", "admin"],

@@ -693,6 +693,24 @@
             "example": "John Doe",
             "nullable": true
           },
+          "givenName": {
+            "type": "string",
+            "description": "User given name",
+            "example": "John",
+            "nullable": true
+          },
+          "familyName": {
+            "type": "string",
+            "description": "User family name",
+            "example": "Doe",
+            "nullable": true
+          },
+          "picture": {
+            "type": "string",
+            "description": "User profile picture URL",
+            "example": "https://lh3.googleusercontent.com/a/example",
+            "nullable": true
+          },
           "role": {
             "description": "User role",
             "example": "user",
@@ -703,7 +721,15 @@
             ]
           }
         },
-        "required": ["id", "email", "name", "role"]
+        "required": [
+          "id",
+          "email",
+          "name",
+          "givenName",
+          "familyName",
+          "picture",
+          "role"
+        ]
       },
       "AuthResponseDto": {
         "type": "object",
@@ -743,6 +769,24 @@
             "example": "John Doe",
             "nullable": true
           },
+          "givenName": {
+            "type": "string",
+            "description": "User given name",
+            "example": "John",
+            "nullable": true
+          },
+          "familyName": {
+            "type": "string",
+            "description": "User family name",
+            "example": "Doe",
+            "nullable": true
+          },
+          "picture": {
+            "type": "string",
+            "description": "User profile picture URL",
+            "example": "https://lh3.googleusercontent.com/a/example",
+            "nullable": true
+          },
           "role": {
             "type": "string",
             "description": "User role",
@@ -750,7 +794,15 @@
             "enum": ["user", "admin"]
           }
         },
-        "required": ["id", "email", "name", "role"]
+        "required": [
+          "id",
+          "email",
+          "name",
+          "givenName",
+          "familyName",
+          "picture",
+          "role"
+        ]
       },
       "ChatDto": {
         "type": "object",

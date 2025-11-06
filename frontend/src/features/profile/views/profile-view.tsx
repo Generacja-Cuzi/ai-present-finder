@@ -1,5 +1,5 @@
-import { useRouter } from "@tanstack/react-router";
-import { BarChart3 } from "lucide-react";
+import { useCanGoBack, useRouter } from "@tanstack/react-router";
+import { ArrowLeft, BarChart3 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/use-auth";
@@ -9,6 +9,7 @@ export function ProfileView() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const navigate = Route.useNavigate();
+  const canGoBack = useCanGoBack();
   const handleLogout = async (): Promise<void> => {
     await logout();
     await router.invalidate();
@@ -20,10 +21,26 @@ export function ProfileView() {
   return (
     <div className="">
       <div className="mb-8 text-center">
-        <h1 className="text-foreground mb-6 text-3xl font-bold">Profile</h1>
+        <div className="border-b-1 relative p-4">
+          {canGoBack ? (
+            <Button
+              variant="ghost"
+              onClick={() => {
+                router.history.back();
+              }}
+              asChild
+              className="absolute left-2 top-[50%] -translate-y-1/2 transform p-2"
+            >
+              <ArrowLeft className="h-10 w-10" />
+            </Button>
+          ) : null}
+          <h1 className="text-foreground text-center text-xl font-semibold">
+            Profile
+          </h1>
+        </div>
         {user === null ? null : (
-          <div className="flex flex-col items-center space-y-4">
-            <div className="relative">
+          <div className="mt-6 flex flex-col items-center">
+            <div className="relative mb-4">
               <img
                 src={user.picture ?? "https://via.placeholder.com/150"}
                 alt={`${user.givenName ?? "User"}'s profile`}
@@ -40,11 +57,11 @@ export function ProfileView() {
             </div>
 
             <div className="text-muted-foreground">
-              <p className="text-sm">{user.email}</p>
+              <p className="text-primary text-sm">{user.email}</p>
             </div>
 
             {isAdmin ? (
-              <p className="text-xs font-semibold text-purple-600">
+              <p className="mt-2 font-semibold text-purple-600">
                 Administrator
               </p>
             ) : null}
@@ -53,7 +70,7 @@ export function ProfileView() {
       </div>
 
       {isAdmin ? (
-        <div className="mb-8">
+        <div className="mx-auto mb-8 w-[50%]">
           <Button
             onClick={() => {
               void navigate({ to: "/admin/feedbacks" });

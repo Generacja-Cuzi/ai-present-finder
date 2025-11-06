@@ -2,7 +2,7 @@ import type { Chat } from "src/domain/entities/chat.entity";
 import { GetChatByIdQuery } from "src/domain/queries/get-chat-by-id.query";
 import { IChatRepository } from "src/domain/repositories/ichat.repository";
 
-import { NotFoundException } from "@nestjs/common";
+import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 
 @QueryHandler(GetChatByIdQuery)
@@ -18,10 +18,10 @@ export class GetChatByIdHandler implements IQueryHandler<GetChatByIdQuery> {
       throw new NotFoundException(`Chat with ID ${query.chatId} not found`);
     }
 
-    // Note: ResourceOwnershipGuard already verified ownership before this handler runs
-    // This is just a safety check in case the handler is called from elsewhere
     if (chat.userId !== query.userId) {
-      throw new NotFoundException(`Chat with ID ${query.chatId} not found`);
+      throw new ForbiddenException(
+        `You do not have access to chat ${query.chatId}`,
+      );
     }
 
     return chat;

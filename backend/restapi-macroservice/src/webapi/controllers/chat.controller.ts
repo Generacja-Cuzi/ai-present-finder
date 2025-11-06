@@ -27,6 +27,19 @@ export class ChatController {
     private readonly listingRepository: IListingRepository,
   ) {}
 
+  private mapChatToDto(chat: Chat): ChatDto {
+    return {
+      chatId: chat.chatId,
+      chatName: chat.chatName,
+      createdAt: chat.createdAt,
+      isInterviewCompleted:
+        chat.isInterviewCompleted ||
+        (Boolean(chat.listings) && chat.listings.length > 0),
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      giftCount: chat.listings?.length ?? 0,
+    };
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.USER, UserRole.ADMIN)
@@ -42,17 +55,7 @@ export class ChatController {
       new GetUserChatsQuery(request.user.id),
     );
 
-    return {
-      chats: chatsResult.map((chat) => ({
-        giftCount: chat.listings.length,
-        chatId: chat.chatId,
-        chatName: chat.chatName,
-        createdAt: chat.createdAt,
-        isInterviewCompleted:
-          chat.isInterviewCompleted ||
-          (Boolean(chat.listings) && chat.listings.length > 0),
-      })),
-    };
+    return { chats: chatsResult.map((chat) => this.mapChatToDto(chat)) };
   }
 
   @Get(":chatId")
@@ -75,16 +78,7 @@ export class ChatController {
       new GetChatByIdQuery(chatId, request.user.id),
     );
 
-    return {
-      chatId: chat.chatId,
-      chatName: chat.chatName,
-      createdAt: chat.createdAt,
-      isInterviewCompleted:
-        chat.isInterviewCompleted ||
-        (Boolean(chat.listings) && chat.listings.length > 0),
-      // eslint-disable-next-line no-extra-boolean-cast
-      giftCount: Boolean(chat.listings) ? chat.listings.length : 0,
-    };
+    return this.mapChatToDto(chat);
   }
 
   @Get(":chatId/listings")

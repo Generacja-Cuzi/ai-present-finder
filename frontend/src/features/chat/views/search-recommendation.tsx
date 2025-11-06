@@ -22,9 +22,9 @@ export function SearchRecommendationView({
       return <div>Error loading listings.</div>;
     }
     if (data !== undefined) {
-      const listingsWithId = data.listings.map((listing, index) => ({
+      const listingsWithId = data.listings.map((listing) => ({
         ...listing,
-        listingId: listing.id || `listing-${String(index)}`,
+        listingId: listing.id,
       }));
       return (
         <RecommendationView clientId={chatId} giftIdeas={listingsWithId} />

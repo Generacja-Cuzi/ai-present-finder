@@ -22,20 +22,16 @@ export function ChatView({ clientId }: { clientId: string }) {
     return <div>Error loading chat information. Please try again.</div>;
   }
 
-  if (chatInfo?.isInterviewCompleted === true) {
-    return (
-      <CustomSseProvider clientId={clientId}>
+  return (
+    <CustomSseProvider clientId={clientId}>
+      {chatInfo?.isInterviewCompleted === true ? (
         <SearchRecommendationView
           chatId={clientId}
           hasGifts={chatInfo.giftCount > 0}
         />
-      </CustomSseProvider>
-    );
-  }
-
-  return (
-    <CustomSseProvider clientId={clientId}>
-      <ChatUI clientId={clientId} initialState={initialState} />
+      ) : (
+        <ChatUI clientId={clientId} initialState={initialState} />
+      )}
     </CustomSseProvider>
   );
 }

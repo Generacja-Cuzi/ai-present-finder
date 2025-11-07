@@ -1,15 +1,17 @@
 import type { Chat } from "src/domain/entities/chat.entity";
-import { GetChatByIdQuery } from "src/domain/queries/get-chat-by-id.query";
+import { GetChatWithListingsByIdQuery } from "src/domain/queries/get-chat-with-listings-by-id.query";
 import { IChatRepository } from "src/domain/repositories/ichat.repository";
 
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 
-@QueryHandler(GetChatByIdQuery)
-export class GetChatByIdHandler implements IQueryHandler<GetChatByIdQuery> {
+@QueryHandler(GetChatWithListingsByIdQuery)
+export class GetChatWithListingsByIdHandler
+  implements IQueryHandler<GetChatWithListingsByIdQuery>
+{
   constructor(private readonly chatRepository: IChatRepository) {}
 
-  async execute(query: GetChatByIdQuery): Promise<Chat> {
+  async execute(query: GetChatWithListingsByIdQuery): Promise<Chat> {
     const chat = await this.chatRepository.findByChatIdWithListings(
       query.chatId,
     );

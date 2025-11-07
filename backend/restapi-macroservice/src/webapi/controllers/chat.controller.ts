@@ -1,7 +1,7 @@
 import type { Chat } from "src/domain/entities/chat.entity";
 import type { AuthenticatedRequest } from "src/domain/models/auth.types";
-import { GetChatByIdQuery } from "src/domain/queries/get-chat-by-id.query";
 import { GetChatListingsQuery } from "src/domain/queries/get-chat-listings.query";
+import { GetChatWithListingsByIdQuery } from "src/domain/queries/get-chat-with-listings-by-id.query";
 import { GetUserChatsQuery } from "src/domain/queries/get-user-chats.query";
 import { IListingRepository } from "src/domain/repositories/ilisting.repository";
 import { ChatListingsResponseDto } from "src/webapi/dtos/chat-listings.dto";
@@ -74,9 +74,10 @@ export class ChatController {
     @Param("chatId") chatId: string,
     @Req() request: AuthenticatedRequest,
   ): Promise<ChatDto> {
-    const chat = await this.queryBus.execute<GetChatByIdQuery, Chat>(
-      new GetChatByIdQuery(chatId, request.user.id),
-    );
+    const chat = await this.queryBus.execute<
+      GetChatWithListingsByIdQuery,
+      Chat
+    >(new GetChatWithListingsByIdQuery(chatId, request.user.id));
 
     return this.mapChatToDto(chat);
   }

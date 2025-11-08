@@ -1,3 +1,4 @@
+import type { RecipientProfile } from "@core/types";
 import {
   Column,
   CreateDateColumn,
@@ -47,4 +48,10 @@ export class Chat {
 
   @Column({ name: "is_interview_completed", default: false })
   isInterviewCompleted: boolean;
+
+  @Column({ name: "reasoning_summary", type: "jsonb", nullable: true })
+  reasoningSummary: {
+    recipientProfile?: RecipientProfile;
+    keyThemesAndKeywords?: string[];
+  } | null;
 }

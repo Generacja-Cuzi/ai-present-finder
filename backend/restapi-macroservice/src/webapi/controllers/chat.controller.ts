@@ -50,6 +50,7 @@ export class ChatController {
         isInterviewCompleted:
           chat.isInterviewCompleted ||
           (Boolean(chat.listings) && chat.listings.length > 0),
+        reasoningSummary: chat.reasoningSummary,
       })),
     };
   }

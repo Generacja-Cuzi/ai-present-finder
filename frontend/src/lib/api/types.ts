@@ -478,6 +478,27 @@ export interface components {
              */
             role: "user" | "admin";
         };
+        RecipientProfileDto: {
+            personal_info?: Record<string, never>;
+            lifestyle?: Record<string, never>;
+            preferences?: Record<string, never>;
+            media_interests?: Record<string, never>;
+            recent_life?: Record<string, never>;
+            gift_context?: Record<string, never>;
+        };
+        ReasoningSummaryDto: {
+            /** @description Recipient profile with detailed information */
+            recipientProfile?: components["schemas"]["RecipientProfileDto"];
+            /**
+             * @description Key themes and keywords from the interview
+             * @example [
+             *       "tech",
+             *       "outdoor activities",
+             *       "coffee lover"
+             *     ]
+             */
+            keyThemesAndKeywords?: string[];
+        };
         ChatDto: {
             /**
              * @description Chat ID
@@ -505,6 +526,8 @@ export interface components {
              * @example 3
              */
             giftCount: number;
+            /** @description Summary of the reasoning behind gift suggestions */
+            reasoningSummary?: components["schemas"]["ReasoningSummaryDto"];
         };
         ChatsResponseDto: {
             /** @description List of user's chats */
@@ -726,48 +749,6 @@ export interface components {
         ChatMessagesResponseDto: {
             /** @description List of chat messages */
             messages: components["schemas"]["MessageDto"][];
-        };
-        RecipientPersonalInfo: {
-            person_name?: string | null;
-            relationship?: string | null;
-            occasion?: string | null;
-            age_range?: string | null;
-        };
-        RecipientLifestyle: {
-            primary_hobbies?: string[] | null;
-            daily_routine?: string | null;
-            relaxation_methods?: string[] | null;
-            work_style?: string | null;
-        };
-        RecipientPreferences: {
-            home_aesthetic?: string | null;
-            valued_items?: string[] | null;
-            favorite_beverages?: string[] | null;
-            comfort_foods?: string[] | null;
-        };
-        RecipientMediaInterests: {
-            favorite_books?: string[] | null;
-            must_watch_shows?: string[] | null;
-            podcasts?: string[] | null;
-            music_preferences?: string[] | null;
-        };
-        RecipientRecentLife: {
-            new_experiences?: string[] | null;
-            mentioned_needs?: string[] | null;
-            recent_achievements?: string[] | null;
-        };
-        RecipientGiftContext: {
-            occasion_significance?: string | null;
-            gift_message?: string | null;
-            previous_gift_successes?: string[] | null;
-        };
-        RecipientProfileDto: {
-            personal_info: components["schemas"]["RecipientPersonalInfo"];
-            lifestyle: components["schemas"]["RecipientLifestyle"];
-            preferences: components["schemas"]["RecipientPreferences"];
-            media_interests: components["schemas"]["RecipientMediaInterests"];
-            recent_life: components["schemas"]["RecipientRecentLife"];
-            gift_context: components["schemas"]["RecipientGiftContext"];
         };
         UserProfileDto: {
             /**

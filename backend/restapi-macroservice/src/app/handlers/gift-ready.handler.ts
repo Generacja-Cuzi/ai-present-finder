@@ -44,23 +44,35 @@ export class GiftReadyHandler {
       `Saved listings with IDs: ${listingsWithIds.map((l) => l.listingId).join(", ")}`,
     );
 
-    // Save user profile if requested
-    if (
-      event.profile?.save_profile === true &&
-      event.profile.profile_name !== null &&
-      event.profile.profile_name !== undefined
-    ) {
-      this.logger.log(
-        `Saving user profile "${event.profile.profile_name}" for chat ${event.chatId}`,
-      );
+    // Get chat to update reasoning summary and optionally save profile
+    const chat = await this.chatRepository.findByChatId(event.chatId);
+    if (chat === null) {
+      this.logger.error(`Chat ${event.chatId} not found`);
+    } else {
+      // Save reasoning summary to chat
+      if (
+        event.profile?.recipient_profile ||
+        event.profile?.key_themes_and_keywords
+      ) {
+        await this.chatRepository.update(chat.id, {
+          reasoningSummary: {
+            recipientProfile: event.profile.recipient_profile,
+            keyThemesAndKeywords: event.profile.key_themes_and_keywords,
+          },
+        });
+        this.logger.log(`Reasoning summary saved for chat ${event.chatId}`);
+      }
 
-      // Get userId from chat
-      const chat = await this.chatRepository.findByChatId(event.chatId);
-      if (chat === null) {
-        this.logger.error(
-          `Cannot save profile: chat ${event.chatId} not found`,
+      // Save user profile if requested
+      if (
+        event.profile?.save_profile === true &&
+        event.profile.profile_name !== null &&
+        event.profile.profile_name !== undefined
+      ) {
+        this.logger.log(
+          `Saving user profile "${event.profile.profile_name}" for chat ${event.chatId}`,
         );
-      } else {
+
         await this.commandBus.execute(
           new SaveUserProfileCommand(
             chat.userId,
@@ -73,11 +85,11 @@ export class GiftReadyHandler {
 
         this.logger.log(`User profile saved successfully`);
         this.logger.log(`Profile details: ${JSON.stringify(event.profile)}`);
+      } else {
+        this.logger.log(
+          `Skipping profile save (save_profile=${String(event.profile?.save_profile)}, profile_name=${String(event.profile?.profile_name)})`,
+        );
       }
-    } else {
-      this.logger.log(
-        `Skipping profile save (save_profile=${String(event.profile?.save_profile)}, profile_name=${String(event.profile?.profile_name)})`,
-      );
     }
 
     await this.commandBus.execute(

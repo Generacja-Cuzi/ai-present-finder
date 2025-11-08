@@ -723,6 +723,50 @@
         },
         "required": ["id", "email", "name", "role"]
       },
+      "RecipientProfileDto": {
+        "type": "object",
+        "properties": {
+          "personal_info": {
+            "type": "object"
+          },
+          "lifestyle": {
+            "type": "object"
+          },
+          "preferences": {
+            "type": "object"
+          },
+          "media_interests": {
+            "type": "object"
+          },
+          "recent_life": {
+            "type": "object"
+          },
+          "gift_context": {
+            "type": "object"
+          }
+        }
+      },
+      "ReasoningSummaryDto": {
+        "type": "object",
+        "properties": {
+          "recipientProfile": {
+            "description": "Recipient profile with detailed information",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RecipientProfileDto"
+              }
+            ]
+          },
+          "keyThemesAndKeywords": {
+            "description": "Key themes and keywords from the interview",
+            "example": ["tech", "outdoor activities", "coffee lover"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "ChatDto": {
         "type": "object",
         "properties": {
@@ -751,6 +795,14 @@
             "type": "number",
             "description": "Number of gifts in the chat",
             "example": 3
+          },
+          "reasoningSummary": {
+            "description": "Summary of the reasoning behind gift suggestions",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReasoningSummaryDto"
+              }
+            ]
           }
         },
         "required": [
@@ -1096,194 +1148,6 @@
           }
         },
         "required": ["messages"]
-      },
-      "RecipientPersonalInfo": {
-        "type": "object",
-        "properties": {
-          "person_name": {
-            "type": "string",
-            "nullable": true
-          },
-          "relationship": {
-            "type": "string",
-            "nullable": true
-          },
-          "occasion": {
-            "type": "string",
-            "nullable": true
-          },
-          "age_range": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "RecipientLifestyle": {
-        "type": "object",
-        "properties": {
-          "primary_hobbies": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "daily_routine": {
-            "type": "string",
-            "nullable": true
-          },
-          "relaxation_methods": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "work_style": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "RecipientPreferences": {
-        "type": "object",
-        "properties": {
-          "home_aesthetic": {
-            "type": "string",
-            "nullable": true
-          },
-          "valued_items": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "favorite_beverages": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "comfort_foods": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "RecipientMediaInterests": {
-        "type": "object",
-        "properties": {
-          "favorite_books": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "must_watch_shows": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "podcasts": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "music_preferences": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "RecipientRecentLife": {
-        "type": "object",
-        "properties": {
-          "new_experiences": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "mentioned_needs": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "recent_achievements": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "RecipientGiftContext": {
-        "type": "object",
-        "properties": {
-          "occasion_significance": {
-            "type": "string",
-            "nullable": true
-          },
-          "gift_message": {
-            "type": "string",
-            "nullable": true
-          },
-          "previous_gift_successes": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "RecipientProfileDto": {
-        "type": "object",
-        "properties": {
-          "personal_info": {
-            "$ref": "#/components/schemas/RecipientPersonalInfo"
-          },
-          "lifestyle": {
-            "$ref": "#/components/schemas/RecipientLifestyle"
-          },
-          "preferences": {
-            "$ref": "#/components/schemas/RecipientPreferences"
-          },
-          "media_interests": {
-            "$ref": "#/components/schemas/RecipientMediaInterests"
-          },
-          "recent_life": {
-            "$ref": "#/components/schemas/RecipientRecentLife"
-          },
-          "gift_context": {
-            "$ref": "#/components/schemas/RecipientGiftContext"
-          }
-        },
-        "required": [
-          "personal_info",
-          "lifestyle",
-          "preferences",
-          "media_interests",
-          "recent_life",
-          "gift_context"
-        ]
       },
       "UserProfileDto": {
         "type": "object",

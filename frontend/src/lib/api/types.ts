@@ -533,6 +533,37 @@ export interface components {
             /** @description List of user's chats */
             chats: components["schemas"]["ChatDto"][];
         };
+        ChatInfoDto: {
+            /**
+             * @description Chat ID
+             * @example cm123abc
+             */
+            chatId: string;
+            /**
+             * @description Chat name
+             * @example Gift for Mom's Birthday
+             */
+            chatName: string;
+            /**
+             * @description Reasoning summary with recipient profile and key themes
+             * @example {
+             *       "recipientProfile": {
+             *         "name": "Mom",
+             *         "age": 55,
+             *         "interests": [
+             *           "gardening",
+             *           "cooking"
+             *         ]
+             *       },
+             *       "keyThemesAndKeywords": [
+             *         "gardening tools",
+             *         "cookbook",
+             *         "kitchen gadgets"
+             *       ]
+             *     }
+             */
+            reasoningSummary?: Record<string, never>;
+        };
         PriceDto: {
             /**
              * @description Price value
@@ -619,6 +650,8 @@ export interface components {
             createdAt: string;
         };
         ChatListingsResponseDto: {
+            /** @description Chat information including reasoning summary */
+            chat: components["schemas"]["ChatInfoDto"];
             /** @description List of listings for the chat */
             listings: components["schemas"]["ListingResponseDto"][];
         };

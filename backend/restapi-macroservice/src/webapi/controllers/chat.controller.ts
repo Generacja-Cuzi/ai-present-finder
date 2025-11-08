@@ -71,14 +71,14 @@ export class ChatController {
     @Param("chatId") chatId: string,
     @Req() request: AuthenticatedRequest,
   ): Promise<ChatListingsResponseDto> {
-    const listings = await this.queryBus.execute(
+    const result = await this.queryBus.execute(
       new GetChatListingsQuery(chatId, request.user.id),
     );
 
     const user = request.user;
 
     const listingsWithFavoriteStatus = await Promise.all(
-      listings.map(async (listing) => {
+      result.listings.map(async (listing) => {
         const isFavorited =
           await this.listingRepository.isListingFavoritedByUser(
             user.id,
@@ -107,6 +107,11 @@ export class ChatController {
     );
 
     return {
+      chat: {
+        chatId: result.chat.chatId,
+        chatName: result.chat.chatName,
+        reasoningSummary: result.chat.reasoningSummary,
+      },
       listings: listingsWithFavoriteStatus,
     };
   }

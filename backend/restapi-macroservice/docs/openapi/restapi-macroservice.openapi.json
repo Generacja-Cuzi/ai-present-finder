@@ -826,6 +826,38 @@
         },
         "required": ["chats"]
       },
+      "ChatInfoDto": {
+        "type": "object",
+        "properties": {
+          "chatId": {
+            "type": "string",
+            "description": "Chat ID",
+            "example": "cm123abc"
+          },
+          "chatName": {
+            "type": "string",
+            "description": "Chat name",
+            "example": "Gift for Mom's Birthday"
+          },
+          "reasoningSummary": {
+            "type": "object",
+            "description": "Reasoning summary with recipient profile and key themes",
+            "example": {
+              "recipientProfile": {
+                "name": "Mom",
+                "age": 55,
+                "interests": ["gardening", "cooking"]
+              },
+              "keyThemesAndKeywords": [
+                "gardening tools",
+                "cookbook",
+                "kitchen gadgets"
+              ]
+            }
+          }
+        },
+        "required": ["chatId", "chatName"]
+      },
       "PriceDto": {
         "type": "object",
         "properties": {
@@ -943,6 +975,14 @@
       "ChatListingsResponseDto": {
         "type": "object",
         "properties": {
+          "chat": {
+            "description": "Chat information including reasoning summary",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ChatInfoDto"
+              }
+            ]
+          },
           "listings": {
             "description": "List of listings for the chat",
             "type": "array",
@@ -951,7 +991,7 @@
             }
           }
         },
-        "required": ["listings"]
+        "required": ["chat", "listings"]
       },
       "FavoritesResponseDto": {
         "type": "object",

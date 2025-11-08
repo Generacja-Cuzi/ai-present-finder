@@ -56,7 +56,7 @@ export class GiftReadyHandler {
       ) {
         await this.chatRepository.update(chat.id, {
           reasoningSummary: {
-            recipientProfile: event.profile.recipient_profile,
+            recipientProfile: event.profile.recipient_profile ?? undefined,
             keyThemesAndKeywords: event.profile.key_themes_and_keywords,
           },
         });
@@ -67,7 +67,8 @@ export class GiftReadyHandler {
       if (
         event.profile?.save_profile === true &&
         event.profile.profile_name !== null &&
-        event.profile.profile_name !== undefined
+        event.profile.profile_name !== undefined &&
+        event.profile.recipient_profile !== null
       ) {
         this.logger.log(
           `Saving user profile "${event.profile.profile_name}" for chat ${event.chatId}`,

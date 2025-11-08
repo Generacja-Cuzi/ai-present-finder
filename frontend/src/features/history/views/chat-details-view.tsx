@@ -35,7 +35,12 @@ export function ChatDetailsView({ chatId }: { chatId: string }) {
   if (isLoading) {
     return (
       <div className="flex min-h-screen flex-col bg-gray-50">
-        <ChatDetailsHeader hasReasoning={false} onShowReasoning={() => {}} />
+        <ChatDetailsHeader
+          hasReasoning={false}
+          onShowReasoning={() => {
+            // Empty handler for loading state
+          }}
+        />
         <div className="flex flex-1 items-center justify-center">
           <p className="text-gray-500">Loading gift recommendations...</p>
         </div>
@@ -46,7 +51,12 @@ export function ChatDetailsView({ chatId }: { chatId: string }) {
   if (isError) {
     return (
       <div className="flex min-h-screen flex-col bg-gray-50">
-        <ChatDetailsHeader hasReasoning={false} onShowReasoning={() => {}} />
+        <ChatDetailsHeader
+          hasReasoning={false}
+          onShowReasoning={() => {
+            // Empty handler for error state
+          }}
+        />
         <div className="flex flex-1 items-center justify-center">
           <div className="text-center">
             <p className="text-lg font-medium text-gray-900">
@@ -62,27 +72,28 @@ export function ChatDetailsView({ chatId }: { chatId: string }) {
   const listings = data?.listings ?? [];
   const chat = data?.chat;
 
-  // Type assertion for reasoningSummary
-  const reasoningSummary = chat?.reasoningSummary as
-    | {
-        recipientProfile?: unknown;
-        keyThemesAndKeywords?: string[];
-      }
-    | null
-    | undefined;
+  const reasoningSummary = chat?.reasoningSummary ?? null;
 
-  const hasReasoning =
-    reasoningSummary &&
-    (reasoningSummary.recipientProfile ||
-      (reasoningSummary.keyThemesAndKeywords &&
-        reasoningSummary.keyThemesAndKeywords.length > 0));
+  const hasRecipientProfile =
+    reasoningSummary?.recipientProfile !== null &&
+    reasoningSummary?.recipientProfile !== undefined;
+
+  const hasKeywords =
+    reasoningSummary?.keyThemesAndKeywords !== null &&
+    reasoningSummary?.keyThemesAndKeywords !== undefined &&
+    Array.isArray(reasoningSummary.keyThemesAndKeywords) &&
+    reasoningSummary.keyThemesAndKeywords.length > 0;
+
+  const hasReasoning = hasRecipientProfile || hasKeywords;
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
       <ChatDetailsHeader
         chatName={chat?.chatName}
-        hasReasoning={!!hasReasoning}
-        onShowReasoning={() => setShowReasoningModal(true)}
+        hasReasoning={hasReasoning}
+        onShowReasoning={() => {
+          setShowReasoningModal(true);
+        }}
       />
 
       <main className="flex-1">
@@ -125,7 +136,7 @@ export function ChatDetailsView({ chatId }: { chatId: string }) {
         open={showReasoningModal}
         onOpenChange={setShowReasoningModal}
         chatName={chat?.chatName}
-        reasoningSummary={reasoningSummary as any}
+        reasoningSummary={reasoningSummary}
       />
     </div>
   );
@@ -146,10 +157,10 @@ function ChatDetailsHeader({
         <div className="flex items-center gap-3">
           <NavButton to="/history" />
           <h1 className="text-lg font-semibold">
-            {chatName || "Gift Recommendations"}
+            {chatName ?? "Gift Recommendations"}
           </h1>
         </div>
-        {hasReasoning && (
+        {hasReasoning ? (
           <Button
             variant="outline"
             size="sm"
@@ -159,7 +170,7 @@ function ChatDetailsHeader({
             <InfoIcon className="h-4 w-4" />
             <span className="hidden sm:inline">Zobacz tok myślowy</span>
           </Button>
-        )}
+        ) : null}
       </div>
     </header>
   );

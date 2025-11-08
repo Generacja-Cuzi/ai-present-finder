@@ -63,11 +63,13 @@ export function ReasoningDialog({
       <DialogContent className="max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            Tok myślowy{chatName ? ` - ${chatName}` : ""}
+            Tok myślowy
+            {chatName !== undefined && chatName !== "" ? ` - ${chatName}` : ""}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          {reasoningSummary?.keyThemesAndKeywords &&
+          {reasoningSummary?.keyThemesAndKeywords !== null &&
+            reasoningSummary?.keyThemesAndKeywords !== undefined &&
             reasoningSummary.keyThemesAndKeywords.length > 0 && (
               <div>
                 <h3 className="mb-2 font-semibold text-gray-900">
@@ -86,59 +88,71 @@ export function ReasoningDialog({
               </div>
             )}
 
-          {reasoningSummary?.recipientProfile && (
-            <div className="space-y-3">
-              <h3 className="font-semibold text-gray-900">Profil odbiorcy</h3>
+          {reasoningSummary?.recipientProfile !== null &&
+            reasoningSummary?.recipientProfile !== undefined && (
+              <div className="space-y-3">
+                <h3 className="font-semibold text-gray-900">Profil odbiorcy</h3>
 
-              {reasoningSummary.recipientProfile.personal_info && (
-                <InfoSection
-                  title="Informacje osobiste"
-                  data={reasoningSummary.recipientProfile.personal_info}
-                />
-              )}
+                {reasoningSummary.recipientProfile.personal_info !== null &&
+                  reasoningSummary.recipientProfile.personal_info !==
+                    undefined && (
+                    <InfoSection
+                      title="Informacje osobiste"
+                      data={reasoningSummary.recipientProfile.personal_info}
+                    />
+                  )}
 
-              {reasoningSummary.recipientProfile.lifestyle && (
-                <InfoSection
-                  title="Styl życia"
-                  data={reasoningSummary.recipientProfile.lifestyle}
-                />
-              )}
+                {reasoningSummary.recipientProfile.lifestyle !== null &&
+                  reasoningSummary.recipientProfile.lifestyle !== undefined && (
+                    <InfoSection
+                      title="Styl życia"
+                      data={reasoningSummary.recipientProfile.lifestyle}
+                    />
+                  )}
 
-              {reasoningSummary.recipientProfile.preferences && (
-                <InfoSection
-                  title="Preferencje"
-                  data={reasoningSummary.recipientProfile.preferences}
-                />
-              )}
+                {reasoningSummary.recipientProfile.preferences !== null &&
+                  reasoningSummary.recipientProfile.preferences !==
+                    undefined && (
+                    <InfoSection
+                      title="Preferencje"
+                      data={reasoningSummary.recipientProfile.preferences}
+                    />
+                  )}
 
-              {reasoningSummary.recipientProfile.media_interests && (
-                <InfoSection
-                  title="Zainteresowania medialne"
-                  data={reasoningSummary.recipientProfile.media_interests}
-                />
-              )}
+                {reasoningSummary.recipientProfile.media_interests !== null &&
+                  reasoningSummary.recipientProfile.media_interests !==
+                    undefined && (
+                    <InfoSection
+                      title="Zainteresowania medialne"
+                      data={reasoningSummary.recipientProfile.media_interests}
+                    />
+                  )}
 
-              {reasoningSummary.recipientProfile.recent_life && (
-                <InfoSection
-                  title="Ostatnie wydarzenia"
-                  data={reasoningSummary.recipientProfile.recent_life}
-                />
-              )}
+                {reasoningSummary.recipientProfile.recent_life !== null &&
+                  reasoningSummary.recipientProfile.recent_life !==
+                    undefined && (
+                    <InfoSection
+                      title="Ostatnie wydarzenia"
+                      data={reasoningSummary.recipientProfile.recent_life}
+                    />
+                  )}
 
-              {reasoningSummary.recipientProfile.gift_context && (
-                <InfoSection
-                  title="Kontekst prezentu"
-                  data={reasoningSummary.recipientProfile.gift_context}
-                />
-              )}
-            </div>
-          )}
+                {reasoningSummary.recipientProfile.gift_context !== null &&
+                  reasoningSummary.recipientProfile.gift_context !==
+                    undefined && (
+                    <InfoSection
+                      title="Kontekst prezentu"
+                      data={reasoningSummary.recipientProfile.gift_context}
+                    />
+                  )}
+              </div>
+            )}
 
-          {!reasoningSummary && (
+          {reasoningSummary === null || reasoningSummary === undefined ? (
             <p className="text-center text-gray-500">
               Brak dostępnych informacji o toku myślowym.
             </p>
-          )}
+          ) : null}
         </div>
       </DialogContent>
     </Dialog>
@@ -160,7 +174,9 @@ function InfoSection({
       (Array.isArray(value) ? value.length > 0 : true),
   );
 
-  if (entries.length === 0) return null;
+  if (entries.length === 0) {
+    return null;
+  }
 
   return (
     <div className="rounded-lg bg-gray-50 p-3">
@@ -180,7 +196,9 @@ function InfoSection({
 }
 
 function formatLabel(key: string): string {
-  return key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+  return key
+    .replaceAll("_", " ")
+    .replaceAll(/\b\w/g, (char) => char.toUpperCase());
 }
 
 function formatValue(value: unknown): string {

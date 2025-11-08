@@ -68,7 +68,7 @@ export function StalkingView() {
         },
       );
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : String(error);
+      const message = error instanceof Error ? error.message : "Unknown error";
       console.error("Failed to start:", error);
       toast.error(`Failed to start gift search. ${message}`, {
         id: "stalking-request",
@@ -117,13 +117,12 @@ export function StalkingView() {
               Usuń
             </Button>
           </div>
-          {selectedProfile.profile.personal_info.relationship !== null &&
-            selectedProfile.profile.personal_info.relationship !== undefined &&
-            selectedProfile.profile.personal_info.relationship !== "" && (
-              <p className="text-muted-foreground text-sm">
-                Relacja: {selectedProfile.profile.personal_info.relationship}
-              </p>
-            )}
+          {selectedProfile.profile.personal_info?.relationship !==
+            undefined && (
+            <p className="text-muted-foreground text-sm">
+              Relacja: {selectedProfile.profile.personal_info.relationship}
+            </p>
+          )}
         </div>
       )}
 

@@ -104,12 +104,14 @@ export function ChatCard({
           <span className="text-gray-400">🛍️</span>
           <span className="text-gray-400">💬</span>
         </div>
-        <span className="text-sm text-gray-600">{giftCount || 0}</span>
+        <span className="text-sm text-gray-600">{giftCount}</span>
       </div>
 
-      {reasoningSummary && (
+      {reasoningSummary !== null && reasoningSummary !== undefined && (
         <Button
-          onClick={() => setShowSummary(true)}
+          onClick={() => {
+            setShowSummary(true);
+          }}
           variant="outline"
           className="mt-3 w-full text-sm"
         >

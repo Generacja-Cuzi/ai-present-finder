@@ -7,6 +7,9 @@ type UserProfile =
   paths["/user-profiles"]["get"]["responses"]["200"]["content"]["application/json"]["profiles"][number];
 
 export function ProfileCardHeader({ profile }: { profile: UserProfile }) {
+  const relationship = profile.profile.personal_info?.relationship;
+  const occasion = profile.profile.personal_info?.occasion;
+
   return (
     <div className="flex items-start justify-between">
       <div className="flex-1">
@@ -16,22 +19,16 @@ export function ProfileCardHeader({ profile }: { profile: UserProfile }) {
             {profile.personName}
           </h3>
         </div>
-        {profile.profile.personal_info.relationship !== null &&
-          profile.profile.personal_info.relationship !== undefined &&
-          profile.profile.personal_info.relationship !== "" && (
-            <p className="text-muted-foreground mt-1 text-sm">
-              {profile.profile.personal_info.relationship}
-            </p>
-          )}
-      </div>
-      {profile.profile.personal_info.occasion !== null &&
-        profile.profile.personal_info.occasion !== undefined &&
-        profile.profile.personal_info.occasion !== "" && (
-          <Badge variant="secondary" className="flex items-center gap-1.5">
-            <Calendar className="h-3 w-3" />
-            {profile.profile.personal_info.occasion}
-          </Badge>
+        {relationship !== undefined && (
+          <p className="text-muted-foreground mt-1 text-sm">{relationship}</p>
         )}
+      </div>
+      {occasion !== undefined && (
+        <Badge variant="secondary" className="flex items-center gap-1.5">
+          <Calendar className="h-3 w-3" />
+          {occasion}
+        </Badge>
+      )}
     </div>
   );
 }

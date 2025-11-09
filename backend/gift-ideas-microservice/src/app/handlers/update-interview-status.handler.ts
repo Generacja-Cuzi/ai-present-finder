@@ -95,7 +95,7 @@ export class UpdateInterviewStatusHandler
           SessionStatus.IN_PROGRESS,
           SessionStatus.COMPLETED,
           false,
-          JSON.stringify(profile),
+          profile === null ? null : JSON.stringify(profile),
           JSON.stringify(keyThemes),
           saveProfile,
           profileName,

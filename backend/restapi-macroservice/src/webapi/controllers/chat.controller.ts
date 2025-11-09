@@ -55,6 +55,18 @@ export class ChatController {
       new GetUserChatsQuery(request.user.id),
     );
 
+    return {
+      chats: chatsResult.map((chat) => ({
+        giftCount: chat.listings.length,
+        chatId: chat.chatId,
+        chatName: chat.chatName,
+        createdAt: chat.createdAt,
+        isInterviewCompleted:
+          chat.isInterviewCompleted ||
+          (Boolean(chat.listings) && chat.listings.length > 0),
+        reasoningSummary: chat.reasoningSummary,
+      })),
+    };
     return { chats: chatsResult.map((chat) => this.mapChatToDto(chat)) };
   }
 
@@ -98,14 +110,14 @@ export class ChatController {
     @Param("chatId") chatId: string,
     @Req() request: AuthenticatedRequest,
   ): Promise<ChatListingsResponseDto> {
-    const listings = await this.queryBus.execute(
+    const result = await this.queryBus.execute(
       new GetChatListingsQuery(chatId, request.user.id),
     );
 
     const user = request.user;
 
     const listingsWithFavoriteStatus = await Promise.all(
-      listings.map(async (listing) => {
+      result.listings.map(async (listing) => {
         const isFavorited =
           await this.listingRepository.isListingFavoritedByUser(
             user.id,
@@ -134,6 +146,11 @@ export class ChatController {
     );
 
     return {
+      chat: {
+        chatId: result.chat.chatId,
+        chatName: result.chat.chatName,
+        reasoningSummary: result.chat.reasoningSummary,
+      },
       listings: listingsWithFavoriteStatus,
     };
   }

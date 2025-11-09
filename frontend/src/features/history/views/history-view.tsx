@@ -62,6 +62,7 @@ export function HistoryView() {
                 createdAt={new Date(chat.createdAt)}
                 giftCount={chat.giftCount}
                 isInterviewCompleted={chat.isInterviewCompleted}
+                reasoningSummary={chat.reasoningSummary}
               />
             ))}
           </div>

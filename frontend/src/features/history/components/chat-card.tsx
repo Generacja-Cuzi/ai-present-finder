@@ -1,11 +1,15 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { ArrowRight, MessageCircle, X } from "lucide-react";
+import { ArrowRight, Eye, MessageCircle, X } from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { NavButton } from "@/components/ui/nav-button";
 import { $api } from "@/lib/api/client";
+import type { components } from "@/lib/api/types";
+
+import { ReasoningDialog } from "./reasoning-dialog";
 
 export function ChatCard({
   chatId,
@@ -13,15 +17,24 @@ export function ChatCard({
   createdAt,
   giftCount,
   isInterviewCompleted,
+  reasoningSummary,
 }: {
   chatId: string;
   chatName: string;
   createdAt: Date;
   giftCount: number;
   isInterviewCompleted: boolean;
+  reasoningSummary?:
+    | {
+        recipientProfile?: components["schemas"]["RecipientProfileDto"];
+        keyThemesAndKeywords?: string[];
+      }
+    | undefined
+    | null;
 }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [showSummary, setShowSummary] = useState(false);
   const formattedDate = new Date(createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -58,8 +71,22 @@ export function ChatCard({
           <span className="text-gray-400">🛍️</span>
           <span className="text-gray-400">💬</span>
         </div>
-        <span className="text-sm text-gray-600">{giftCount || 0}</span>
+        <span className="text-sm text-gray-600">{giftCount}</span>
       </div>
+
+      {reasoningSummary !== null && reasoningSummary !== undefined && (
+        <Button
+          onClick={() => {
+            setShowSummary(true);
+          }}
+          variant="outline"
+          className="mt-3 w-full text-sm"
+        >
+          <Eye className="mr-2 h-4 w-4" />
+          Zobacz tok myślowy
+        </Button>
+      )}
+
       <div>
         {isInterviewCompleted ? (
           <NavButton
@@ -89,6 +116,13 @@ export function ChatCard({
           </Button>
         )}
       </div>
+
+      <ReasoningDialog
+        open={showSummary}
+        onOpenChange={setShowSummary}
+        chatName={chatName}
+        reasoningSummary={reasoningSummary}
+      />
     </Card>
   );
 }

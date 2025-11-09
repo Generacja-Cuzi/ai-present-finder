@@ -5,6 +5,7 @@ import {
   IsString,
   validateSync,
 } from "class-validator";
+import "dotenv/config";
 import type { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 
 import { GiftSessionProduct } from "../domain/entities/gift-session-product.entity";

@@ -152,16 +152,16 @@ export class RerankAndEmitGiftReadyHandler
         return;
       }
 
-      // Build profile for GiftReadyEvent if we have all the data
+      // Build profile for GiftReadyEvent
+      // Always include reasoning data (recipient_profile and keywords)
+      // Only include save_profile and profile_name if user chose to save
       const profile =
-        recipientProfile !== null &&
-        session.giftContext?.saveProfile !== undefined &&
-        session.giftContext.profileName !== undefined
+        recipientProfile !== null || keywords.length > 0
           ? {
               recipient_profile: recipientProfile,
               key_themes_and_keywords: keywords,
-              save_profile: session.giftContext.saveProfile,
-              profile_name: session.giftContext.profileName,
+              save_profile: session.giftContext?.saveProfile ?? false,
+              profile_name: session.giftContext?.profileName ?? null,
             }
           : undefined;
 

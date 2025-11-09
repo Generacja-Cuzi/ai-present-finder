@@ -20,6 +20,33 @@ import type { SessionProductsResult } from "../../domain/queries/get-session-pro
 import { ScoreProductsQuery } from "../../domain/queries/score-products.query";
 import { ProductScore } from "../ai/types";
 
+/**
+ * Generates a unique key for product deduplication based on title, description, and price components
+ */
+function generateProductKey(product: Product): string {
+  const priceKey = `${product.priceValue?.toString() ?? ""}|${product.priceLabel ?? ""}|${product.priceCurrency ?? ""}|${product.priceNegotiable?.toString() ?? ""}`;
+  return `${product.title.trim().toLowerCase()}|${product.description.trim().toLowerCase()}|${priceKey}`;
+}
+
+/**
+ * Eliminates duplicate products based on title, price, and description.
+ * Keeps the first occurrence of each unique product.
+ */
+function eliminateDuplicates(products: Product[]): Product[] {
+  const seen = new Set<string>();
+  const uniqueProducts: Product[] = [];
+
+  for (const product of products) {
+    const key = generateProductKey(product);
+    if (!seen.has(key)) {
+      seen.add(key);
+      uniqueProducts.push(product);
+    }
+  }
+
+  return uniqueProducts;
+}
+
 @CommandHandler(RerankAndEmitGiftReadyCommand)
 export class RerankAndEmitGiftReadyHandler
   implements ICommandHandler<RerankAndEmitGiftReadyCommand, void>
@@ -169,7 +196,18 @@ export class RerankAndEmitGiftReadyHandler
         `Constructed profile for GiftReadyEvent: ${JSON.stringify(profile)}`,
       );
 
-      const productsToSend = goodProducts; // send all products with score >= minimalScore, not just top X
+      // Eliminate any remaining duplicates from good products before sending event
+      const uniqueGoodProducts = eliminateDuplicates(goodProducts);
+      const finalDuplicatesEliminated =
+        goodProducts.length - uniqueGoodProducts.length;
+
+      if (finalDuplicatesEliminated > 0) {
+        this.logger.log(
+          `Eliminated ${String(finalDuplicatesEliminated)} additional duplicates from good products before sending event for session ${eventId}`,
+        );
+      }
+
+      const productsToSend = uniqueGoodProducts; // send all unique products with score >= minimalScore, not just top X
 
       const giftReadyEvent = new GiftReadyEvent(
         productsToSend.map(

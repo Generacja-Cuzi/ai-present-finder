@@ -51,8 +51,8 @@ export class GiftReadyHandler {
     } else {
       // Save reasoning summary to chat
       if (
-        event.profile?.recipient_profile ||
-        event.profile?.key_themes_and_keywords
+        event.profile?.recipient_profile != null ||
+        event.profile?.key_themes_and_keywords != null
       ) {
         await this.chatRepository.update(chat.id, {
           reasoningSummary: {

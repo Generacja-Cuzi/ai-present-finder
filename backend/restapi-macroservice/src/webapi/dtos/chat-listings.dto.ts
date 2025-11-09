@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
+import { ReasoningSummaryDto } from "../../domain/models/chat.dto";
 import { ListingResponseDto } from "./favorites.dto";
 
 export class GetChatListingsDto {
@@ -25,19 +26,9 @@ export class ChatInfoDto {
 
   @ApiPropertyOptional({
     description: "Reasoning summary with recipient profile and key themes",
-    example: {
-      recipientProfile: {
-        name: "Mom",
-        age: 55,
-        interests: ["gardening", "cooking"],
-      },
-      keyThemesAndKeywords: ["gardening tools", "cookbook", "kitchen gadgets"],
-    },
+    type: ReasoningSummaryDto,
   })
-  reasoningSummary?: {
-    recipientProfile?: unknown;
-    keyThemesAndKeywords?: string[];
-  } | null;
+  reasoningSummary?: ReasoningSummaryDto | null;
 }
 
 export class ChatListingsResponseDto {

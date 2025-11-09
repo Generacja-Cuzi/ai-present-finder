@@ -1,9 +1,5 @@
-import type { Chat } from "src/domain/entities/chat.entity";
-import type { Listing } from "src/domain/entities/listing.entity";
-import {
-  type ChatListingsResult,
-  GetChatListingsQuery,
-} from "src/domain/queries/get-chat-listings.query";
+import { GetChatListingsQuery } from "src/domain/queries/get-chat-listings.query";
+import type { ChatListingsResult } from "src/domain/queries/get-chat-listings.query";
 import { IChatRepository } from "src/domain/repositories/ichat.repository";
 import { IListingRepository } from "src/domain/repositories/ilisting.repository";
 
@@ -24,7 +20,7 @@ export class GetChatListingsHandler
       this.chatRepository.findByChatId(query.chatId),
     ]);
 
-    if (!chat) {
+    if (chat == null) {
       throw new Error(`Chat with id ${query.chatId} not found`);
     }
 

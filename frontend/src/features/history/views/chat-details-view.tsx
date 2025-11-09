@@ -74,13 +74,11 @@ export function ChatDetailsView({ chatId }: { chatId: string }) {
 
   const reasoningSummary = chat?.reasoningSummary ?? null;
 
-  const hasRecipientProfile =
-    reasoningSummary?.recipientProfile !== null &&
-    reasoningSummary?.recipientProfile !== undefined;
+  const hasRecipientProfile = Boolean(reasoningSummary?.recipientProfile);
 
   const hasKeywords =
-    reasoningSummary?.keyThemesAndKeywords !== null &&
-    reasoningSummary?.keyThemesAndKeywords !== undefined &&
+    reasoningSummary !== null &&
+    Boolean(reasoningSummary.keyThemesAndKeywords) &&
     Array.isArray(reasoningSummary.keyThemesAndKeywords) &&
     reasoningSummary.keyThemesAndKeywords.length > 0;
 

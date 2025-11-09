@@ -4,52 +4,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-interface ReasoningSummary {
-  recipientProfile?: {
-    personal_info?: {
-      person_name?: string | null;
-      relationship?: string | null;
-      occasion?: string | null;
-      age_range?: string | null;
-    };
-    lifestyle?: {
-      primary_hobbies?: string[] | null;
-      daily_routine?: string | null;
-      relaxation_methods?: string[] | null;
-      work_style?: string | null;
-    };
-    preferences?: {
-      home_aesthetic?: string | null;
-      valued_items?: string[] | null;
-      favorite_beverages?: string[] | null;
-      comfort_foods?: string[] | null;
-    };
-    media_interests?: {
-      favorite_books?: string[] | null;
-      must_watch_shows?: string[] | null;
-      podcasts?: string[] | null;
-      music_preferences?: string[] | null;
-    };
-    recent_life?: {
-      new_experiences?: string[] | null;
-      mentioned_needs?: string[] | null;
-      recent_achievements?: string[] | null;
-    };
-    gift_context?: {
-      occasion_significance?: string | null;
-      gift_message?: string | null;
-      previous_gift_successes?: string[] | null;
-    };
-  };
-  keyThemesAndKeywords?: string[];
-}
+import type { components } from "@/lib/api/types";
 
 interface ReasoningDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   chatName?: string;
-  reasoningSummary?: ReasoningSummary | null;
+  reasoningSummary: {
+    recipientProfile?: components["schemas"]["RecipientProfileDto"];
+    keyThemesAndKeywords?: string[];
+  } | null;
 }
 
 export function ReasoningDialog({
@@ -68,8 +32,7 @@ export function ReasoningDialog({
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          {reasoningSummary?.keyThemesAndKeywords !== null &&
-            reasoningSummary?.keyThemesAndKeywords !== undefined &&
+          {reasoningSummary?.keyThemesAndKeywords !== undefined &&
             reasoningSummary.keyThemesAndKeywords.length > 0 && (
               <div>
                 <h3 className="mb-2 font-semibold text-gray-900">
@@ -88,67 +51,57 @@ export function ReasoningDialog({
               </div>
             )}
 
-          {reasoningSummary?.recipientProfile !== null &&
-            reasoningSummary?.recipientProfile !== undefined && (
-              <div className="space-y-3">
-                <h3 className="font-semibold text-gray-900">Profil odbiorcy</h3>
+          {reasoningSummary?.recipientProfile !== undefined && (
+            <div className="space-y-3">
+              <h3 className="font-semibold text-gray-900">Profil odbiorcy</h3>
 
-                {reasoningSummary.recipientProfile.personal_info !== null &&
-                  reasoningSummary.recipientProfile.personal_info !==
-                    undefined && (
-                    <InfoSection
-                      title="Informacje osobiste"
-                      data={reasoningSummary.recipientProfile.personal_info}
-                    />
-                  )}
+              {reasoningSummary.recipientProfile.personal_info !==
+                undefined && (
+                <InfoSection
+                  title="Informacje osobiste"
+                  data={reasoningSummary.recipientProfile.personal_info}
+                />
+              )}
 
-                {reasoningSummary.recipientProfile.lifestyle !== null &&
-                  reasoningSummary.recipientProfile.lifestyle !== undefined && (
-                    <InfoSection
-                      title="Styl życia"
-                      data={reasoningSummary.recipientProfile.lifestyle}
-                    />
-                  )}
+              {reasoningSummary.recipientProfile.lifestyle !== undefined && (
+                <InfoSection
+                  title="Styl życia"
+                  data={reasoningSummary.recipientProfile.lifestyle}
+                />
+              )}
 
-                {reasoningSummary.recipientProfile.preferences !== null &&
-                  reasoningSummary.recipientProfile.preferences !==
-                    undefined && (
-                    <InfoSection
-                      title="Preferencje"
-                      data={reasoningSummary.recipientProfile.preferences}
-                    />
-                  )}
+              {reasoningSummary.recipientProfile.preferences !== undefined && (
+                <InfoSection
+                  title="Preferencje"
+                  data={reasoningSummary.recipientProfile.preferences}
+                />
+              )}
 
-                {reasoningSummary.recipientProfile.media_interests !== null &&
-                  reasoningSummary.recipientProfile.media_interests !==
-                    undefined && (
-                    <InfoSection
-                      title="Zainteresowania medialne"
-                      data={reasoningSummary.recipientProfile.media_interests}
-                    />
-                  )}
+              {reasoningSummary.recipientProfile.media_interests !==
+                undefined && (
+                <InfoSection
+                  title="Zainteresowania medialne"
+                  data={reasoningSummary.recipientProfile.media_interests}
+                />
+              )}
 
-                {reasoningSummary.recipientProfile.recent_life !== null &&
-                  reasoningSummary.recipientProfile.recent_life !==
-                    undefined && (
-                    <InfoSection
-                      title="Ostatnie wydarzenia"
-                      data={reasoningSummary.recipientProfile.recent_life}
-                    />
-                  )}
+              {reasoningSummary.recipientProfile.recent_life !== undefined && (
+                <InfoSection
+                  title="Ostatnie wydarzenia"
+                  data={reasoningSummary.recipientProfile.recent_life}
+                />
+              )}
 
-                {reasoningSummary.recipientProfile.gift_context !== null &&
-                  reasoningSummary.recipientProfile.gift_context !==
-                    undefined && (
-                    <InfoSection
-                      title="Kontekst prezentu"
-                      data={reasoningSummary.recipientProfile.gift_context}
-                    />
-                  )}
-              </div>
-            )}
+              {reasoningSummary.recipientProfile.gift_context !== undefined && (
+                <InfoSection
+                  title="Kontekst prezentu"
+                  data={reasoningSummary.recipientProfile.gift_context}
+                />
+              )}
+            </div>
+          )}
 
-          {reasoningSummary === null || reasoningSummary === undefined ? (
+          {reasoningSummary == null ? (
             <p className="text-center text-gray-500">
               Brak dostępnych informacji o toku myślowym.
             </p>

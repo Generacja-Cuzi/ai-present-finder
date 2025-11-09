@@ -723,26 +723,212 @@
         },
         "required": ["id", "email", "name", "role"]
       },
+      "PersonalInfoDto": {
+        "type": "object",
+        "properties": {
+          "person_name": {
+            "type": "string",
+            "description": "Name of the person receiving the gift",
+            "example": "John Doe"
+          },
+          "relationship": {
+            "type": "string",
+            "description": "Relationship to the gift recipient",
+            "example": "brother"
+          },
+          "occasion": {
+            "type": "string",
+            "description": "Occasion for the gift",
+            "example": "birthday"
+          },
+          "age_range": {
+            "type": "string",
+            "description": "Age range of the gift recipient",
+            "example": "25-35"
+          }
+        }
+      },
+      "LifestyleDto": {
+        "type": "object",
+        "properties": {
+          "primary_hobbies": {
+            "type": "string",
+            "description": "Primary hobbies and interests",
+            "example": ["reading", "hiking", "cooking"]
+          },
+          "daily_routine": {
+            "type": "string",
+            "description": "Daily routine description",
+            "example": "Early riser, works from home, enjoys evening walks"
+          },
+          "relaxation_methods": {
+            "type": "string",
+            "description": "Methods used for relaxation",
+            "example": ["meditation", "listening to music", "gardening"]
+          },
+          "work_style": {
+            "type": "string",
+            "description": "Work style and environment preferences",
+            "example": "Creative, prefers flexible hours, enjoys collaborative work"
+          }
+        }
+      },
+      "PreferencesDto": {
+        "type": "object",
+        "properties": {
+          "home_aesthetic": {
+            "type": "string",
+            "description": "Home aesthetic and decor preferences",
+            "example": "Minimalist, warm colors, natural materials"
+          },
+          "valued_items": {
+            "type": "string",
+            "description": "Items that hold sentimental or practical value",
+            "example": ["family photos", "coffee maker", "books"]
+          },
+          "favorite_beverages": {
+            "type": "string",
+            "description": "Favorite beverages",
+            "example": ["coffee", "green tea", "craft beer"]
+          },
+          "comfort_foods": {
+            "type": "string",
+            "description": "Comfort foods and favorite dishes",
+            "example": ["pasta", "chocolate", "homemade soup"]
+          }
+        }
+      },
+      "MediaInterestsDto": {
+        "type": "object",
+        "properties": {
+          "favorite_books": {
+            "type": "string",
+            "description": "Favorite books or authors",
+            "example": ["fiction novels", "biographies", "science fiction"]
+          },
+          "must_watch_shows": {
+            "type": "string",
+            "description": "TV shows or movies that must be watched",
+            "example": ["Breaking Bad", "The Office", "Star Wars series"]
+          },
+          "podcasts": {
+            "type": "string",
+            "description": "Favorite podcasts",
+            "example": ["Tech podcasts", "true crime", "science discussions"]
+          },
+          "music_preferences": {
+            "type": "string",
+            "description": "Music genres and preferences",
+            "example": ["indie rock", "jazz", "electronic music"]
+          }
+        }
+      },
+      "RecentLifeDto": {
+        "type": "object",
+        "properties": {
+          "new_experiences": {
+            "type": "string",
+            "description": "Recent new experiences or life changes",
+            "example": [
+              "started a new job",
+              "moved to a new city",
+              "learned a new skill"
+            ]
+          },
+          "mentioned_needs": {
+            "type": "string",
+            "description": "Needs or challenges mentioned during conversation",
+            "example": [
+              "needs better organization tools",
+              "wants to improve fitness",
+              "looking for cooking inspiration"
+            ]
+          },
+          "recent_achievements": {
+            "type": "string",
+            "description": "Recent achievements or accomplishments",
+            "example": [
+              "completed a marathon",
+              "got promoted",
+              "published an article"
+            ]
+          }
+        }
+      },
+      "GiftContextDto": {
+        "type": "object",
+        "properties": {
+          "occasion_significance": {
+            "type": "string",
+            "description": "Significance or importance of the occasion",
+            "example": "First birthday after graduation, very important milestone"
+          },
+          "gift_message": {
+            "type": "string",
+            "description": "Personal message to include with the gift",
+            "example": "Happy Birthday! Can't wait to celebrate with you."
+          },
+          "previous_gift_successes": {
+            "type": "string",
+            "description": "Previous gifts that were successful or well-received",
+            "example": [
+              "coffee subscription",
+              "wireless headphones",
+              "cooking class voucher"
+            ]
+          }
+        }
+      },
       "RecipientProfileDto": {
         "type": "object",
         "properties": {
           "personal_info": {
-            "type": "object"
+            "description": "Basic personal information about the gift recipient",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PersonalInfoDto"
+              }
+            ]
           },
           "lifestyle": {
-            "type": "object"
+            "description": "Lifestyle preferences and daily habits",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LifestyleDto"
+              }
+            ]
           },
           "preferences": {
-            "type": "object"
+            "description": "Personal preferences and tastes",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PreferencesDto"
+              }
+            ]
           },
           "media_interests": {
-            "type": "object"
+            "description": "Media and entertainment interests",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MediaInterestsDto"
+              }
+            ]
           },
           "recent_life": {
-            "type": "object"
+            "description": "Recent life events and experiences",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RecentLifeDto"
+              }
+            ]
           },
           "gift_context": {
-            "type": "object"
+            "description": "Context and details about the gift occasion",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GiftContextDto"
+              }
+            ]
           }
         }
       },
@@ -772,28 +958,28 @@
         "properties": {
           "chatId": {
             "type": "string",
-            "description": "Chat ID",
+            "description": "Unique identifier for the chat",
             "example": "cm123abc"
           },
           "chatName": {
             "type": "string",
-            "description": "Chat name",
+            "description": "Display name for the chat session",
             "example": "Gift for Mom"
           },
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "description": "Created at timestamp",
+            "description": "Timestamp when the chat was created",
             "example": "2025-01-15T10:30:00Z"
           },
           "isInterviewCompleted": {
             "type": "boolean",
-            "description": "Whether the chat interview has been completed",
+            "description": "Indicates whether the gift interview process has been completed",
             "example": false
           },
           "giftCount": {
             "type": "number",
-            "description": "Number of gifts in the chat",
+            "description": "Total number of gift suggestions generated in this chat",
             "example": 3
           },
           "reasoningSummary": {
@@ -817,7 +1003,16 @@
         "type": "object",
         "properties": {
           "chats": {
-            "description": "List of user's chats",
+            "description": "Array of chat sessions belonging to the user",
+            "example": [
+              {
+                "chatId": "cm123abc",
+                "chatName": "Gift for Mom",
+                "createdAt": "2025-01-15T10:30:00Z",
+                "isInterviewCompleted": false,
+                "giftCount": 3
+              }
+            ],
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ChatDto"
@@ -840,20 +1035,12 @@
             "example": "Gift for Mom's Birthday"
           },
           "reasoningSummary": {
-            "type": "object",
             "description": "Reasoning summary with recipient profile and key themes",
-            "example": {
-              "recipientProfile": {
-                "name": "Mom",
-                "age": 55,
-                "interests": ["gardening", "cooking"]
-              },
-              "keyThemesAndKeywords": [
-                "gardening tools",
-                "cookbook",
-                "kitchen gadgets"
-              ]
-            }
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReasoningSummaryDto"
+              }
+            ]
           }
         },
         "required": ["chatId", "chatName"]

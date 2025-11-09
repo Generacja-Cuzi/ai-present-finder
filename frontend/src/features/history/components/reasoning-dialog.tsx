@@ -10,10 +10,13 @@ interface ReasoningDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   chatName?: string;
-  reasoningSummary: {
-    recipientProfile?: components["schemas"]["RecipientProfileDto"];
-    keyThemesAndKeywords?: string[];
-  } | null;
+  reasoningSummary?:
+    | {
+        recipientProfile?: components["schemas"]["RecipientProfileDto"];
+        keyThemesAndKeywords?: string[];
+      }
+    | null
+    | undefined;
 }
 
 export function ReasoningDialog({

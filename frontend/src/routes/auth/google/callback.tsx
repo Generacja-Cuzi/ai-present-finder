@@ -18,7 +18,7 @@ export const Route = createFileRoute("/auth/google/callback")({
     const handled = store.get(oauthHandledAtom);
     if (handled) {
       store.set(oauthHandledAtom, false);
-      return redirect({ to: "/stalking", replace: true });
+      return redirect({ to: "/start-search", replace: true });
     }
 
     try {
@@ -37,7 +37,7 @@ export const Route = createFileRoute("/auth/google/callback")({
 
       await new Promise((resolve) => setTimeout(resolve, 50));
 
-      return redirect({ to: "/stalking", replace: true });
+      return redirect({ to: "/start-search", replace: true });
     } catch (error) {
       console.error("OAuth error:", error);
       store.set(oauthHandledAtom, false);

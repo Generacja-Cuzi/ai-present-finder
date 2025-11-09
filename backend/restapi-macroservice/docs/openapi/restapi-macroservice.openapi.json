@@ -190,6 +190,35 @@
         "tags": ["chats"]
       }
     },
+    "/chats/{chatId}": {
+      "get": {
+        "operationId": "ChatController_getChatById",
+        "parameters": [
+          {
+            "name": "chatId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the chat details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get a specific chat by ID",
+        "tags": ["chats"]
+      }
+    },
     "/chats/{chatId}/listings": {
       "get": {
         "operationId": "ChatController_getChatListings",
@@ -664,6 +693,24 @@
             "example": "John Doe",
             "nullable": true
           },
+          "givenName": {
+            "type": "string",
+            "description": "User given name",
+            "example": "John",
+            "nullable": true
+          },
+          "familyName": {
+            "type": "string",
+            "description": "User family name",
+            "example": "Doe",
+            "nullable": true
+          },
+          "picture": {
+            "type": "string",
+            "description": "User profile picture URL",
+            "example": "https://lh3.googleusercontent.com/a/example",
+            "nullable": true
+          },
           "role": {
             "description": "User role",
             "example": "user",
@@ -674,7 +721,15 @@
             ]
           }
         },
-        "required": ["id", "email", "name", "role"]
+        "required": [
+          "id",
+          "email",
+          "name",
+          "givenName",
+          "familyName",
+          "picture",
+          "role"
+        ]
       },
       "AuthResponseDto": {
         "type": "object",
@@ -714,6 +769,24 @@
             "example": "John Doe",
             "nullable": true
           },
+          "givenName": {
+            "type": "string",
+            "description": "User given name",
+            "example": "John",
+            "nullable": true
+          },
+          "familyName": {
+            "type": "string",
+            "description": "User family name",
+            "example": "Doe",
+            "nullable": true
+          },
+          "picture": {
+            "type": "string",
+            "description": "User profile picture URL",
+            "example": "https://lh3.googleusercontent.com/a/example",
+            "nullable": true
+          },
           "role": {
             "type": "string",
             "description": "User role",
@@ -721,7 +794,15 @@
             "enum": ["user", "admin"]
           }
         },
-        "required": ["id", "email", "name", "role"]
+        "required": [
+          "id",
+          "email",
+          "name",
+          "givenName",
+          "familyName",
+          "picture",
+          "role"
+        ]
       },
       "PersonalInfoDto": {
         "type": "object",

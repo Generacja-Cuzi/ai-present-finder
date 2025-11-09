@@ -30,6 +30,15 @@ export class User {
   @Column({ type: "varchar", nullable: true })
   name: string | null;
 
+  @Column({ name: "given_name", type: "varchar", nullable: true })
+  givenName: string | null;
+
+  @Column({ name: "family_name", type: "varchar", nullable: true })
+  familyName: string | null;
+
+  @Column({ type: "text", nullable: true })
+  picture: string | null;
+
   @Column({ name: "access_token", type: "text", nullable: true })
   accessToken: string | null;
 

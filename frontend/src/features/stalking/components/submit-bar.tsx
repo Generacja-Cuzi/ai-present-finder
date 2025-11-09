@@ -7,7 +7,7 @@ interface SubmitBarProps {
 
 export function SubmitBar({ disabled, isPending }: SubmitBarProps) {
   return (
-    <div className="fixed bottom-20 left-0 right-0 bg-transparent px-6 py-4 shadow-none">
+    <div className="px-6 py-4 shadow-none">
       <Button
         type="submit"
         disabled={disabled}

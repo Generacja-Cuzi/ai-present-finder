@@ -123,7 +123,7 @@ export function ChatCard({
       <div>
         {isInterviewCompleted ? (
           <NavButton
-            to={`/history/chat/${chatId}`}
+            to={`/chat/${chatId}`}
             className="bg-primary mt-4 w-full text-white hover:bg-amber-600"
             label="View Results"
             icon={<ArrowRight className="h-5 w-5" />}

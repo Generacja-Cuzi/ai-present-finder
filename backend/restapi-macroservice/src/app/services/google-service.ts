@@ -62,9 +62,14 @@ export class GoogleService {
     });
     return { url: authorizeUrl };
   }
-  async getAuthClientData(
-    code: string,
-  ): Promise<{ email: string; refreshToken: string; accessToken: string }> {
+  async getAuthClientData(code: string): Promise<{
+    email: string;
+    refreshToken: string;
+    accessToken: string;
+    givenName: string;
+    familyName: string;
+    picture: string;
+  }> {
     const authClient = this.getAuthClient();
     const tokenData = await authClient.getToken(code);
     const tokens = tokenData.tokens;
@@ -79,7 +84,11 @@ export class GoogleService {
     });
 
     const googleUserInfo = await googleAuth.userinfo.get();
+
     const email = googleUserInfo.data.email ?? "";
+    const givenName = googleUserInfo.data.given_name ?? "";
+    const familyName = googleUserInfo.data.family_name ?? "";
+    const picture = googleUserInfo.data.picture ?? "";
 
     if (email.length === 0) {
       throw new Error("Failed to retrieve email from Google");
@@ -91,7 +100,7 @@ export class GoogleService {
       throw new Error("Failed to retrieve access token from Google");
     }
 
-    return { email, refreshToken, accessToken };
+    return { email, refreshToken, accessToken, givenName, familyName, picture };
   }
 }
 export interface IGoogleAuthCredentials {

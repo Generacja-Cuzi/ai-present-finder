@@ -42,12 +42,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
           const response = await fetchClient.GET("/auth/me");
           if (response.response.ok && response.data !== undefined) {
-            // Update user data from server to ensure role is synced
             const userData = response.data;
             setUser({
               id: userData.id,
               email: userData.email,
-              name: userData.name,
+              givenName: userData.givenName,
+              familyName: userData.familyName,
+              picture: userData.picture,
               role: userData.role,
             });
           } else {

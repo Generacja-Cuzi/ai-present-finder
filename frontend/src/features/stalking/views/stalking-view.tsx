@@ -130,7 +130,7 @@ export function StalkingView() {
       <FormProvider {...methods}>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex-1 overflow-y-auto px-6 py-6 pb-28"
+          className="flex-1 overflow-y-auto px-6 py-6"
         >
           <SocialLinksSection />
           <OccasionSelector />

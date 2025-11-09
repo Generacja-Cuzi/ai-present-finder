@@ -36,8 +36,8 @@ function LandingPage() {
               Welcome back, {user.email}!
             </p>
             <Link
-              href="/stalking"
-              to={"/stalking"}
+              href="/start-search"
+              to={"/start-search"}
               className="text-primary underline"
             >
               Begin

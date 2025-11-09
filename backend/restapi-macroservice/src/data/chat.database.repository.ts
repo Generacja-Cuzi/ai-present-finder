@@ -22,6 +22,13 @@ export class ChatDatabaseRepository implements IChatRepository {
     return this.chatRepository.findOne({ where: { chatId } });
   }
 
+  async findByChatIdWithListings(chatId: string): Promise<Chat | null> {
+    return this.chatRepository.findOne({
+      where: { chatId },
+      relations: ["listings"],
+    });
+  }
+
   async findByUserId(userId: string): Promise<Chat[]> {
     return this.chatRepository.find({
       where: { userId },

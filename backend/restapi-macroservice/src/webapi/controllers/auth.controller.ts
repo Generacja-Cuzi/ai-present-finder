@@ -82,6 +82,9 @@ export class AuthController {
         id: result.user.id,
         email: result.user.email,
         name: result.user.name,
+        givenName: result.user.givenName ?? "",
+        familyName: result.user.familyName ?? "",
+        picture: result.user.picture ?? "",
         role: result.user.role,
       },
     };
@@ -128,6 +131,9 @@ export class AuthController {
         id: user.id,
         email: user.email,
         name: user.name,
+        givenName: user.givenName ?? "",
+        familyName: user.familyName ?? "",
+        picture: user.picture ?? "",
         role: user.role,
       };
     } catch {

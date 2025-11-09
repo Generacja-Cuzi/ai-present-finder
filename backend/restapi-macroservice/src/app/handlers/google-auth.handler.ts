@@ -29,7 +29,7 @@ export class ValidateGoogleTokenHandler
     this.logger.log(
       `validateGoogleToken called with code: ${code.slice(0, 10)}...`,
     );
-    const { email, refreshToken, accessToken } =
+    const { email, refreshToken, accessToken, givenName, familyName, picture } =
       await this.googleService.getAuthClientData(code);
 
     this.logger.log(`Got user email: ${email}`);
@@ -46,6 +46,9 @@ export class ValidateGoogleTokenHandler
       user = await this.userRepository.create({
         email,
         googleId: email,
+        givenName,
+        familyName,
+        picture,
         accessToken,
         refreshToken,
         role: UserRole.USER,
@@ -56,6 +59,9 @@ export class ValidateGoogleTokenHandler
       user = await this.userRepository.update(user.id, {
         accessToken,
         refreshToken,
+        givenName,
+        familyName,
+        picture,
       });
       this.logger.log(`User updated successfully`);
     }

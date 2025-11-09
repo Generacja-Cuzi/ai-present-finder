@@ -11,7 +11,9 @@ export const UserRoleEnum = {
 export interface User {
   id: string;
   email: string;
-  name: string | null;
+  givenName: string | null;
+  familyName: string | null;
+  picture: string | null;
   role: UserRole;
 }
 

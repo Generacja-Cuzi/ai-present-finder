@@ -9,11 +9,11 @@ export function SocialLinksSection() {
   return (
     <section className="mb-8">
       <h2 className="text-foreground mb-2 text-2xl font-bold">
-        Tell us about the person
+        Opowiedz nam o tej osobie
       </h2>
       <p className="mb-6 text-base text-gray-500">
-        Enter their social media profile URL. We support Instagram, X, and
-        TikTok.
+        Wpisz adres URL jej profilu w mediach społecznościowych. Obsługujemy
+        Instagram, X i TikTok.
       </p>
 
       <div className="space-y-4">
@@ -30,7 +30,7 @@ export function SocialLinksSection() {
               />
               {Boolean(fieldState.error) && (
                 <p className="text-sm text-red-500">
-                  {fieldState.error?.message ?? "Invalid URL"}
+                  {fieldState.error?.message ?? "Nieprawidłowy adres URL"}
                 </p>
               )}
             </div>
@@ -50,7 +50,7 @@ export function SocialLinksSection() {
               />
               {Boolean(fieldState.error) && (
                 <p className="text-sm text-red-500">
-                  {fieldState.error?.message ?? "Invalid URL"}
+                  {fieldState.error?.message ?? "Nieprawidłowy adres URL"}
                 </p>
               )}
             </div>
@@ -70,7 +70,7 @@ export function SocialLinksSection() {
               />
               {Boolean(fieldState.error) && (
                 <p className="text-sm text-red-500">
-                  {fieldState.error?.message ?? "Invalid URL"}
+                  {fieldState.error?.message ?? "Nieprawidłowy adres URL"}
                 </p>
               )}
             </div>

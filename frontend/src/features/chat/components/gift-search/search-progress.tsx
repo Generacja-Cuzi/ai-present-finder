@@ -11,7 +11,7 @@ export function SearchProgress({
     <div className="mb-4">
       <div className="mb-2">
         <p className="text-foreground/70 text-lg font-medium">
-          {isComplete ? "Complete!" : "Analyzing preferences"}
+          {isComplete ? "Gotowe!" : "Analizuję preferencje"}
         </p>
       </div>
 

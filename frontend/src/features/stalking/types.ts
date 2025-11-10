@@ -3,19 +3,19 @@ import { z } from "zod";
 const instagramUrlSchema = z.union([
   z.literal(""),
   z.url().refine((url) => url.includes("instagram"), {
-    message: "URL must be a valid Instagram URL",
+    message: "Adres URL musi być prawidłowym adresem URL Instagram",
   }),
 ]);
 const xUrlSchema = z.union([
   z.literal(""),
   z.url().refine((url) => url.includes("x"), {
-    message: "URL must be a valid X (formerly Twitter) URL",
+    message: "Adres URL musi być prawidłowym adresem URL X (wcześniej Twitter)",
   }),
 ]);
 const tiktokUrlSchema = z.union([
   z.literal(""),
   z.url().refine((url) => url.includes("tiktok"), {
-    message: "URL must be a valid TikTok URL",
+    message: "Adres URL musi być prawidłowym adresem URL TikTok",
   }),
 ]);
 
@@ -24,7 +24,7 @@ export const stalkingFormSchema = z.object({
   xUrl: xUrlSchema,
   tiktokUrl: tiktokUrlSchema,
   occasion: z.enum(["birthday", "anniversary", "holiday", "just-because"], {
-    message: "Please select an occasion",
+    message: "Proszę wybrać okazję",
   }),
 });
 

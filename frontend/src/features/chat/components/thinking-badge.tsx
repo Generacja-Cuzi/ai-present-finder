@@ -16,7 +16,7 @@ export function ThinkingBadge() {
             style={{ animationDelay: "0.2s" }}
           ></div>
         </div>
-        <span className="text-muted-foreground text-sm">Thinking...</span>
+        <span className="text-muted-foreground text-sm">Myślę...</span>
       </div>
     </div>
   );

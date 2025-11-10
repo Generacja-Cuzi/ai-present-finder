@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 export function Avatar({
   src,
-  alt = "Avatar",
+  alt = "Awatar",
   className,
 }: {
   src?: string;

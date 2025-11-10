@@ -139,7 +139,7 @@ export function RecommendationView({
             <GiftCard
               key={gift.listingId || gift.link || index}
               gift={gift}
-              provider={gift.provider ?? "Unknown"}
+              provider={gift.provider ?? "Nieznany"}
               listingId={gift.listingId}
               initialIsFavorited={Boolean(gift.isFavorited) || false}
               chatId={clientId}

@@ -15,10 +15,10 @@ export function SearchRecommendationView({
   const { data, isLoading, isError } = useGetChatListingsQuery(chatId);
   if (hasGifts) {
     if (isLoading) {
-      return <div>Loading listings...</div>;
+      return <div>Ładowanie ofert...</div>;
     }
     if (isError) {
-      return <div>Error loading listings.</div>;
+      return <div>Błąd podczas ładowania ofert.</div>;
     }
     if (data !== undefined) {
       const listingsWithId = data.listings.map((listing) => ({

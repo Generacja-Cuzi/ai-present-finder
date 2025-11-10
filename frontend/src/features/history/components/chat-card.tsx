@@ -35,7 +35,7 @@ export function ChatCard({
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [showSummary, setShowSummary] = useState(false);
-  const formattedDate = new Date(createdAt).toLocaleDateString("en-US", {
+  const formattedDate = new Date(createdAt).toLocaleDateString("pl-PL", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -45,7 +45,7 @@ export function ChatCard({
     <Card className="max-h-200 min-h-fit bg-white p-4 shadow-sm">
       <Button
         className="absolute right-2 top-2 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-        aria-label="Delete chat"
+        aria-label="Usuń rozmowę"
       >
         <X className="h-5 w-5" />
       </Button>
@@ -58,10 +58,10 @@ export function ChatCard({
       <div>
         {giftCount > 0 ? (
           <p className="text-sm text-gray-600">
-            Found {giftCount} gift{giftCount === 1 ? "" : "s"}
+            Znaleziono {giftCount} prezent{giftCount === 1 ? "" : "ów"}
           </p>
         ) : (
-          <p className="text-sm text-gray-600">No gifts found</p>
+          <p className="text-sm text-gray-600">Nie znaleziono prezentów</p>
         )}
       </div>
 
@@ -92,7 +92,7 @@ export function ChatCard({
           <NavButton
             to={`/chat/${chatId}`}
             className="bg-primary mt-4 w-full text-white hover:bg-amber-600"
-            label="View Results"
+            label="Pokaż wyniki"
             icon={<ArrowRight className="h-5 w-5" />}
           />
         ) : (
@@ -111,7 +111,7 @@ export function ChatCard({
             }}
             className="bg-primary mt-4 w-full text-white hover:bg-amber-600"
           >
-            Continue Chat
+            Kontynuuj rozmowę
             <MessageCircle className="h-5 w-5" />
           </Button>
         )}

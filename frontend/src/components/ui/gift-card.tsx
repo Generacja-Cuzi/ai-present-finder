@@ -34,7 +34,7 @@ export function GiftCard({
 
   const handleBookmark = async () => {
     if (listingId === undefined || listingId === "") {
-      toast.error("Cannot bookmark this item");
+      toast.error("Nie można dodać tego przedmiotu do ulubionych");
       return;
     }
 
@@ -46,12 +46,12 @@ export function GiftCard({
         await addToFavorites.mutateAsync({
           body: { listingId },
         });
-        toast.success("Added to favorites");
+        toast.success("Dodano do ulubionych");
       } else {
         await removeFromFavorites.mutateAsync({
           params: { path: { listingId } },
         });
-        toast.success("Removed from favorites");
+        toast.success("Usunięto z ulubionych");
       }
 
       await queryClient.invalidateQueries({
@@ -67,8 +67,8 @@ export function GiftCard({
       setIsBookmarked(!newBookmarkState);
       toast.error(
         newBookmarkState
-          ? "Failed to add to favorites"
-          : "Failed to remove from favorites",
+          ? "Nie udało się dodać do ulubionych"
+          : "Nie udało się usunąć z ulubionych",
       );
       console.error("Bookmark error:", error);
     }
@@ -88,7 +88,9 @@ export function GiftCard({
           variant="ghost"
           size="icon"
           className="relative z-20 h-8 w-8 flex-shrink-0 rounded-full bg-gray-800/80 p-0 backdrop-blur-sm transition-colors hover:bg-gray-700/80"
-          aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"}
+          aria-label={
+            isBookmarked ? "Usuń z ulubionych" : "Dodaj do ulubionych"
+          }
         >
           <Bookmark
             className={`h-4 w-4 ${isBookmarked ? "fill-white text-white" : "text-white"}`}
@@ -117,7 +119,7 @@ export function GiftCard({
         <div className="flex-1 px-4 pt-4">
           <p className="text-xl font-semibold text-gray-900">
             {gift.price.value === null
-              ? "Price not available"
+              ? "Cena niedostępna"
               : `${gift.price.value} ${gift.price.currency ?? "zł"}`}
           </p>
           <h3 className="mt-1 line-clamp-2 text-sm font-medium text-gray-700">

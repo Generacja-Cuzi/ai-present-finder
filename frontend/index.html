@@ -1,22 +1,96 @@
 <!doctype html>
-<html lang="en">
+<html lang="pl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/favicon.ico" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#F97316" />
     <meta
       name="description"
-      content="Web site created using create-tsrouter-app"
+      content="AI Present Finder - Znajdź idealny prezent dla bliskich dzięki spersonalizowanym rekomendacjom napędzanym przez sztuczną inteligencję. Analizujemy profile społecznościowe i preferencje, aby znaleźć coś naprawdę wyjątkowego."
     />
+    <meta
+      name="keywords"
+      content="prezent, prezenty, AI, sztuczna inteligencja, rekomendacje prezentów, pomysły na prezenty, wyszukiwarka prezentów, urodziny, rocznica, święta, gift finder"
+    />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://aipf.o.suzuya.dev/" />
+    <meta
+      property="og:title"
+      content="AI Present Finder - Inteligentne rekomendacje prezentów"
+    />
+    <meta
+      property="og:description"
+      content="Znajdź idealny prezent dla bliskich dzięki AI. Analizujemy profile społecznościowe i preferencje, aby znaleźć coś naprawdę wyjątkowego."
+    />
+    <meta
+      property="og:image"
+      content="https://aipf.o.suzuya.dev/og-image.png"
+    />
+    <meta property="og:locale" content="pl_PL" />
+    <meta property="og:site_name" content="AI Present Finder" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://aipf.o.suzuya.dev/" />
+    <meta
+      property="twitter:title"
+      content="AI Present Finder - Inteligentne rekomendacje prezentów"
+    />
+    <meta
+      property="twitter:description"
+      content="Znajdź idealny prezent dla bliskich dzięki AI. Analizujemy profile społecznościowe i preferencje, aby znaleźć coś naprawdę wyjątkowego."
+    />
+    <meta
+      property="twitter:image"
+      content="https://aipf.o.suzuya.dev/twitter-image.png"
+    />
+
     <link rel="apple-touch-icon" href="/logo192.png" />
     <link rel="manifest" href="/manifest.json" />
-    <title>Create TanStack App - gift-ai-client</title>
+    <title>
+      AI Present Finder - Inteligentne rekomendacje prezentów napędzane AI
+    </title>
   </head>
   <body>
     <div id="app"></div>
     <!-- Load runtime config first (generated at container startup) -->
     <script src="/config.js"></script>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "AI Present Finder",
+        "alternateName": "Inteligentne rekomendacje prezentów",
+        "url": "https://aipf.o.suzuya.dev",
+        "description": "Aplikacja napędzana AI do znajdowania idealnych prezentów dla bliskich. Analizujemy profile społecznościowe i preferencje, aby dostarczyć spersonalizowane rekomendacje prezentów.",
+        "applicationCategory": "LifestyleApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "PLN"
+        },
+        "creator": {
+          "@type": "Organization",
+          "name": "AI Present Finder Team"
+        },
+        "inLanguage": "pl-PL",
+        "featureList": [
+          "Analiza profili społecznościowych (Instagram, TikTok, X)",
+          "Konwersacyjny asystent AI",
+          "Spersonalizowane rekomendacje prezentów",
+          "Filtrowanie według ceny, kategorii i sklepu",
+          "Zapisywanie ulubionych prezentów",
+          "Historia wyszukiwań"
+        ],
+        "screenshot": "https://aipf.o.suzuya.dev/screenshot.png"
+      }
+    </script>
   </body>
 </html>

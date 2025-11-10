@@ -42,7 +42,6 @@ export function SavedView() {
   }
 
   const favorites = data.favorites;
-
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
       <SavedHeader />
@@ -56,6 +55,7 @@ export function SavedView() {
               provider="Saved"
               listingId={listing.id}
               initialIsFavorited={true}
+              chatId={listing.chatId ?? ""}
             />
           ))}
         </div>

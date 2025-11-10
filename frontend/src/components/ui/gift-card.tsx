@@ -1,4 +1,5 @@
 import type { ListingPayload, ListingWithId } from "@core/types";
+import { useQueryClient } from "@tanstack/react-query";
 import { Bookmark, Image as ImageIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -16,14 +17,16 @@ export function GiftCard({
   provider,
   listingId,
   initialIsFavorited = false,
+  chatId,
 }: {
   gift: ListingPayload | ListingWithId;
   provider: string;
   listingId?: string;
   initialIsFavorited?: boolean;
+  chatId: string;
 }) {
   const [imageError, setImageError] = useState(false);
-
+  const queryClient = useQueryClient();
   const addToFavorites = useAddToFavoritesMutation();
   const removeFromFavorites = useRemoveFromFavoritesMutation();
 
@@ -50,8 +53,17 @@ export function GiftCard({
         });
         toast.success("Removed from favorites");
       }
+
+      await queryClient.invalidateQueries({
+        queryKey: ["get", "/favorites"],
+      });
+
+      if (chatId) {
+        await queryClient.invalidateQueries({
+          queryKey: ["get", `/chats/${chatId}/listings`],
+        });
+      }
     } catch (error) {
-      // Revert the state on error
       setIsBookmarked(!newBookmarkState);
       toast.error(
         newBookmarkState

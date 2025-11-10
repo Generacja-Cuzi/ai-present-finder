@@ -13,7 +13,6 @@ export function SearchRecommendationView({
 }) {
   const { state } = useSseGiftSearching({ clientId: chatId });
   const { data, isLoading, isError } = useGetChatListingsQuery(chatId);
-
   if (hasGifts) {
     if (isLoading) {
       return <div>Loading listings...</div>;
@@ -35,7 +34,6 @@ export function SearchRecommendationView({
   if (state.type === "searching") {
     return <GiftSearching />;
   }
-
   return (
     <RecommendationView clientId={chatId} giftIdeas={state.data.giftIdeas} />
   );

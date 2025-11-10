@@ -25,8 +25,7 @@ interface SociaNetworksProps {
 
 const teamList: TeamProps[] = [
   {
-    imageUrl:
-      "https://media.licdn.com/dms/image/v2/D4D03AQHH1ttU04oa8Q/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1726961344926?e=1764201600&v=beta&t=1z4zhTN3T2opGwFrRhPK6naGzA8tSXFNY_u0vMi02us",
+    imageUrl: "/dawid.jpg",
     name: "Dawid Chudzicki",
     position: "Fullstack Developer",
     description: "Pasjonat programowania tworzący innowacyjne rozwiązania.",
@@ -42,8 +41,7 @@ const teamList: TeamProps[] = [
     ],
   },
   {
-    imageUrl:
-      "https://media.licdn.com/dms/image/v2/D4D03AQFMrh4hIOuUWw/profile-displayphoto-scale_400_400/B4DZkKNJaSHYAk-/0/1756812844850?e=1764201600&v=beta&t=ESoMh7ClHPQdcNXpxBjym_uP7BB4GRmXuw1pNyLBeOk",
+    imageUrl: "/marcin.jpg",
     name: "Marcin Dolatowski",
     position: "Fullstack Developer",
     description: "Pasjonat programowania tworzący innowacyjne rozwiązania.",
@@ -59,8 +57,7 @@ const teamList: TeamProps[] = [
     ],
   },
   {
-    imageUrl:
-      "https://media.licdn.com/dms/image/v2/C4E03AQHDsr7aer_sig/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1656863838670?e=1764201600&v=beta&t=AEvRwWM6Gar0iPE9kbglr6UzSN4qoguEHIWf2wq8xf0",
+    imageUrl: "/bartek.jpg",
     name: "Bartosz Gotowski",
     position: "Fullstack Developer",
     description: "Pasjonat programowania tworzący innowacyjne rozwiązania.",
@@ -76,8 +73,7 @@ const teamList: TeamProps[] = [
     ],
   },
   {
-    imageUrl:
-      "https://media.licdn.com/dms/image/v2/D4E03AQFFBUoNyWJrsw/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1712598996898?e=1764201600&v=beta&t=7O73tzo23AhhUBz90Es1ac4euSAzOxKPbPU7KohGwj8",
+    imageUrl: "/szymon.jpg",
     name: "Szymon Kowaliński",
     position: "Fullstack Developer",
     description: "Pasjonat programowania tworzący innowacyjne rozwiązania.",
@@ -100,9 +96,11 @@ export function Team() {
       case "Linkedin": {
         return <FaLinkedin />;
       }
-
       case "GitHub": {
         return <FaGithub />;
+      }
+      default: {
+        return null;
       }
     }
   };

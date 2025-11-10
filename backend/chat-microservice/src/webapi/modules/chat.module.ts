@@ -26,7 +26,9 @@ import { TypeOrmModule } from "@nestjs/typeorm";
     }),
     TypeOrmModule.forRoot(
       getDatabaseConfig({
-        migrations: ["dist/data/migrations/*.js"],
+        migrations: [
+          "./dist/backend/chat-microservice/src/data/migrations/*.js",
+        ],
         migrationsRun: true,
       }),
     ),

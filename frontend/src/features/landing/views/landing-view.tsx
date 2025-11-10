@@ -6,7 +6,7 @@ import { Team } from "../components/team";
 
 export function LandingView() {
   return (
-    <main className="flex min-h-screen flex-col px-4 lg:px-16">
+    <main className="flex min-h-screen flex-col items-center px-4 lg:px-16">
       <Hero />
       <HowItWorks />
       <Team />

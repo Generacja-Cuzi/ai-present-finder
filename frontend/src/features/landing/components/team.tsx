@@ -108,7 +108,7 @@ export function Team() {
   };
 
   return (
-    <section id="team" className="container py-24 sm:py-32">
+    <section id="team" className="container py-8 sm:py-12">
       <h2 className="text-3xl font-bold md:text-4xl">
         <span className="from-primary/60 to-primary bg-gradient-to-b bg-clip-text text-transparent">
           Our Dedicated{" "}

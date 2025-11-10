@@ -7,7 +7,6 @@ import { Module } from "@nestjs/common";
 import { ClientsModule, Transport } from "@nestjs/microservices";
 import { TerminusModule } from "@nestjs/terminus";
 
-import { RabbitMQHealthIndicator } from "../../app/health/rabbitmq.health";
 import { HealthController } from "../controllers/health.controller";
 
 /**
@@ -47,6 +46,6 @@ import { HealthController } from "../controllers/health.controller";
     ]),
   ],
   controllers: [HealthController],
-  providers: [RabbitMQHealthIndicator],
+  providers: [],
 })
 export class HealthModule {}

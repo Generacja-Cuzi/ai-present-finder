@@ -1,7 +1,10 @@
-import { RabbitMQHealthIndicator } from "src/app/health/rabbitmq.health";
 import { HealthController } from "src/webapi/controllers/health.controller";
 
-import { HealthCheckService, TypeOrmHealthIndicator } from "@nestjs/terminus";
+import {
+  HealthCheckService,
+  MicroserviceHealthIndicator,
+  TypeOrmHealthIndicator,
+} from "@nestjs/terminus";
 import type { HealthCheckResult } from "@nestjs/terminus";
 import { Test } from "@nestjs/testing";
 import type { TestingModule } from "@nestjs/testing";
@@ -38,9 +41,9 @@ describe("HealthController", () => {
           },
         },
         {
-          provide: RabbitMQHealthIndicator,
+          provide: MicroserviceHealthIndicator,
           useValue: {
-            isHealthy: jest
+            pingCheck: jest
               .fn()
               .mockResolvedValue({ rabbitmq: { status: "up" } }),
           },

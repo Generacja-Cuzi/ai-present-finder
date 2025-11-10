@@ -1,5 +1,5 @@
-import { Controller, Get, Inject } from "@nestjs/common";
-import { ClientProxy } from "@nestjs/microservices";
+import { Controller, Get } from "@nestjs/common";
+import { RmqOptions, Transport } from "@nestjs/microservices";
 import {
   ApiOkResponse,
   ApiOperation,
@@ -10,10 +10,9 @@ import {
   HealthCheck,
   HealthCheckResult,
   HealthCheckService,
+  MicroserviceHealthIndicator,
   TypeOrmHealthIndicator,
 } from "@nestjs/terminus";
-
-import { RabbitMQHealthIndicator } from "../../app/health/rabbitmq.health";
 
 /**
  * Health check controller for monitoring service dependencies.
@@ -25,11 +24,7 @@ export class HealthController {
   constructor(
     private readonly health: HealthCheckService,
     private readonly database: TypeOrmHealthIndicator,
-    private readonly rabbitmq: RabbitMQHealthIndicator,
-    @Inject("STALKING_ANALYZE_REQUESTED_EVENT")
-    private readonly stalkingClient: ClientProxy,
-    @Inject("CHAT_START_INTERVIEW_EVENT")
-    private readonly chatClient: ClientProxy,
+    private readonly microservice: MicroserviceHealthIndicator,
   ) {}
 
   /**
@@ -85,7 +80,15 @@ export class HealthController {
   async check(): Promise<HealthCheckResult> {
     return this.health.check([
       async () => this.database.pingCheck("database"),
-      async () => this.rabbitmq.isHealthy("rabbitmq", this.stalkingClient),
+      async () =>
+        this.microservice.pingCheck<RmqOptions>("rabbitmq", {
+          transport: Transport.RMQ,
+          options: {
+            urls: [
+              process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
+            ],
+          },
+        }),
     ]);
   }
 
@@ -105,7 +108,15 @@ export class HealthController {
   async readiness(): Promise<HealthCheckResult> {
     return this.health.check([
       async () => this.database.pingCheck("database"),
-      async () => this.rabbitmq.isHealthy("rabbitmq", this.stalkingClient),
+      async () =>
+        this.microservice.pingCheck<RmqOptions>("rabbitmq", {
+          transport: Transport.RMQ,
+          options: {
+            urls: [
+              process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
+            ],
+          },
+        }),
     ]);
   }
 
@@ -164,7 +175,15 @@ export class HealthController {
   @ApiServiceUnavailableResponse({ description: "RabbitMQ is unhealthy" })
   async checkRabbitMQ(): Promise<HealthCheckResult> {
     return this.health.check([
-      async () => this.rabbitmq.isHealthy("rabbitmq", this.stalkingClient),
+      async () =>
+        this.microservice.pingCheck<RmqOptions>("rabbitmq", {
+          transport: Transport.RMQ,
+          options: {
+            urls: [
+              process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
+            ],
+          },
+        }),
     ]);
   }
 }

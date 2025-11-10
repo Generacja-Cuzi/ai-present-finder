@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { GoogleService } from "./app/services/google-service";
+import { HealthModule } from "./webapi/modules/health.module";
 import { RestApiModule } from "./webapi/modules/restapi.module";
 
 @Module({
@@ -12,6 +13,7 @@ import { RestApiModule } from "./webapi/modules/restapi.module";
       isGlobal: true,
     }),
     RestApiModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService, GoogleService, ConfigService],

@@ -6,10 +6,6 @@ import { GoogleService } from "./app/services/google-service";
 export class AppService {
   constructor(private googleService: GoogleService) {}
 
-  getHello(): string {
-    return "Hello World!";
-  }
-
   googleAuth(): { url: string } {
     return this.googleService.getOAuth2ClientUrl();
   }

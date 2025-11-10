@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import type { MigrationInterface, QueryRunner } from "typeorm";
 
 export class GivenNameLastNamePictureColumnsUser1762372288643
   implements MigrationInterface

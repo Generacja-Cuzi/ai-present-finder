@@ -40,9 +40,9 @@ COPY deployment/ecosystem.config.cjs ./ecosystem.config.cjs
 # Expose ports (for documentation, not used by Coolify)
 EXPOSE 3000 3010 3020 3030 3040 3050 8011 8012 8013 8014
 
-# Health check on main REST API
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/health/readiness', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"
 
 # Start all services with PM2
 CMD ["pm2-runtime", "start", "ecosystem.config.cjs"]

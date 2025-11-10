@@ -77,10 +77,10 @@ export function PriceRangeFilterDialog({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">
-                ${sliderMin.toFixed(2)}
+                {sliderMin.toFixed(2)} PLN
               </span>
               <span className="text-sm font-medium">
-                ${sliderMax.toFixed(2)}
+                {sliderMax.toFixed(2)} PLN
               </span>
             </div>
 
@@ -99,7 +99,7 @@ export function PriceRangeFilterDialog({
               <Label htmlFor="min-price">Min Price</Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
-                  $
+                  PLN
                 </span>
                 <Input
                   id="min-price"
@@ -109,7 +109,7 @@ export function PriceRangeFilterDialog({
                   onChange={(event_) => {
                     handleMinChange(event_.target.value);
                   }}
-                  className="pl-7"
+                  className="pl-12"
                   min={availableRange.min}
                   max={availableRange.max}
                 />
@@ -120,7 +120,7 @@ export function PriceRangeFilterDialog({
               <Label htmlFor="max-price">Max Price</Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
-                  $
+                  PLN
                 </span>
                 <Input
                   id="max-price"
@@ -130,7 +130,7 @@ export function PriceRangeFilterDialog({
                   onChange={(event_) => {
                     handleMaxChange(event_.target.value);
                   }}
-                  className="pl-7"
+                  className="pl-12"
                   min={availableRange.min}
                   max={availableRange.max}
                 />

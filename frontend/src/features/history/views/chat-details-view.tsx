@@ -116,6 +116,7 @@ export function ChatDetailsView({ chatId }: { chatId: string }) {
               provider="History"
               listingId={listing.id}
               initialIsFavorited={listing.isFavorited}
+              chatId={chatId}
             />
           ))}
         </div>

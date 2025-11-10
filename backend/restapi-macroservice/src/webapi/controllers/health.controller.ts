@@ -27,6 +27,17 @@ export class HealthController {
     private readonly microservice: MicroserviceHealthIndicator,
   ) {}
 
+  private getRabbitMqHealthCheckConfig() {
+    return {
+      transport: Transport.RMQ as const,
+      options: {
+        urls: [
+          process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
+        ],
+      },
+    };
+  }
+
   /**
    * Comprehensive health check including all dependencies.
    * Returns 200 if all checks pass, 503 if any fail.
@@ -81,14 +92,10 @@ export class HealthController {
     return this.health.check([
       async () => this.database.pingCheck("database"),
       async () =>
-        this.microservice.pingCheck<RmqOptions>("rabbitmq", {
-          transport: Transport.RMQ,
-          options: {
-            urls: [
-              process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
-            ],
-          },
-        }),
+        this.microservice.pingCheck<RmqOptions>(
+          "rabbitmq",
+          this.getRabbitMqHealthCheckConfig(),
+        ),
     ]);
   }
 
@@ -109,14 +116,10 @@ export class HealthController {
     return this.health.check([
       async () => this.database.pingCheck("database"),
       async () =>
-        this.microservice.pingCheck<RmqOptions>("rabbitmq", {
-          transport: Transport.RMQ,
-          options: {
-            urls: [
-              process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
-            ],
-          },
-        }),
+        this.microservice.pingCheck<RmqOptions>(
+          "rabbitmq",
+          this.getRabbitMqHealthCheckConfig(),
+        ),
     ]);
   }
 
@@ -176,14 +179,10 @@ export class HealthController {
   async checkRabbitMQ(): Promise<HealthCheckResult> {
     return this.health.check([
       async () =>
-        this.microservice.pingCheck<RmqOptions>("rabbitmq", {
-          transport: Transport.RMQ,
-          options: {
-            urls: [
-              process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
-            ],
-          },
-        }),
+        this.microservice.pingCheck<RmqOptions>(
+          "rabbitmq",
+          this.getRabbitMqHealthCheckConfig(),
+        ),
     ]);
   }
 }

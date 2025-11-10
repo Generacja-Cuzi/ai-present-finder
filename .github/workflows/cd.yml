@@ -84,5 +84,5 @@ jobs:
 
       - name: Deploy to production
         run: |
-          curl https://devops.solvro.pl/api/v1/deploy?uuid=do8gs88okgwgsg4skgw88kc8&force=false \
+          curl --fail --silent --show-error https://devops.solvro.pl/api/v1/deploy?uuid=do8gs88okgwgsg4skgw88kc8&force=false \
           --header 'Authorization: Bearer ${{ secrets.COOLIFY_API_KEY }}'

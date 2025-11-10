@@ -10,9 +10,9 @@ export function OccasionSelector() {
   return (
     <section className="mb-8">
       <h2 className="text-foreground mb-2 text-xl font-bold">
-        Gift Parameters
+        Parametry prezentu
       </h2>
-      <p className="mb-4 text-base text-gray-500">What&apos;s the occasion?</p>
+      <p className="mb-4 text-base text-gray-500">Jaka jest okazja?</p>
 
       <div className="grid grid-cols-2 gap-4">
         {(["birthday", "anniversary", "holiday", "just-because"] as const).map(
@@ -33,7 +33,7 @@ export function OccasionSelector() {
 
       {Boolean(formState.errors.occasion) && (
         <p className="mt-2 text-sm text-red-500">
-          {formState.errors.occasion?.message ?? "Please select an occasion"}
+          {formState.errors.occasion?.message ?? "Proszę wybrać okazję"}
         </p>
       )}
     </section>

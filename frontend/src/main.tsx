@@ -1,6 +1,8 @@
 import { createRouter } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
+import * as z from "zod";
+import { pl } from "zod/locales";
 
 import { RootApp } from "@/components/root-app";
 import { AuthProvider } from "@/features/auth/auth-provider";
@@ -10,6 +12,8 @@ import { getContext } from "@/lib/tanstack-query/get-context";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
+
+z.config(pl());
 
 const queryClientContext = getContext();
 

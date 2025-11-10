@@ -19,7 +19,9 @@ export function ChatView({ clientId }: { clientId: string }) {
   }
 
   if (isChatInfoError) {
-    return <div>Error loading chat information. Please try again.</div>;
+    return (
+      <div>Błąd podczas ładowania informacji o rozmowie. Spróbuj ponownie.</div>
+    );
   }
 
   return (

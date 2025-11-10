@@ -28,14 +28,14 @@ export function GiftSearching() {
   }, []);
 
   return (
-    <SearchingLayout title="Finding the perfect gift">
+    <SearchingLayout title="Szukanie idealnego prezentu">
       <div className="mb-16 flex justify-center">
         <GiftIcon />
       </div>
 
       <SearchProgress progress={progress} />
 
-      <SearchMessage message="We're diving deep into their interests, hobbies, and past gifts to find something truly special." />
+      <SearchMessage message="Analizujemy głęboko ich zainteresowania, hobby i poprzednie prezenty, aby znaleźć coś naprawdę specjalnego." />
     </SearchingLayout>
   );
 }

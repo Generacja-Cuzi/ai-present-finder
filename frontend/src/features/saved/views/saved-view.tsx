@@ -54,7 +54,7 @@ export function SavedView() {
             <GiftCard
               key={listing.id}
               gift={listing}
-              provider="Saved"
+              provider="Zapisane"
               listingId={listing.id}
               initialIsFavorited={true}
               chatId={listing.chatId ?? ""}

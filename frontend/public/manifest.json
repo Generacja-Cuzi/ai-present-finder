@@ -1,6 +1,7 @@
 {
-  "short_name": "TanStack App",
-  "name": "Create TanStack App Sample",
+  "short_name": "AI Present Finder",
+  "name": "AI Present Finder - Inteligentne rekomendacje prezentów",
+  "description": "Znajdź idealny prezent dla bliskich dzięki spersonalizowanym rekomendacjom napędzanym przez AI",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +21,9 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#F97316",
+  "background_color": "#FFF8F0",
+  "lang": "pl",
+  "dir": "ltr",
+  "categories": ["lifestyle", "shopping"]
 }

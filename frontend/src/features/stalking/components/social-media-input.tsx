@@ -10,9 +10,9 @@ const platformIcons = {
 };
 
 const platformLabels = {
-  instagram: "Instagram URL",
-  x: "X (formerly Twitter) URL",
-  tiktok: "TikTok URL",
+  instagram: "Adres URL Instagram",
+  x: "Adres URL X (wcześniej Twitter)",
+  tiktok: "Adres URL TikTok",
 };
 
 export function SocialMediaInput({

@@ -11,7 +11,7 @@ export function Message({ message }: { message: ChatMessage }) {
       className={`flex gap-3 ${isUser ? "flex-row-reverse" : "flex-row"}`}
     >
       <Avatar
-        alt={isUser ? "User" : "AI Present Finder"}
+        alt={isUser ? "Użytkownik" : "AI Present Finder"}
         className="mt-1 flex-shrink-0"
       />
       <div

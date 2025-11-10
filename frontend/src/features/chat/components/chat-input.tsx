@@ -34,7 +34,7 @@ export function ChatInput({
               setInputValue(event.target.value);
             }}
             onKeyDown={handleKeyPress}
-            placeholder="Type her interests here..."
+            placeholder="Wpisz tutaj jej zainteresowania..."
             className={cn(
               "w-full rounded-3xl border-2 border-gray-200 px-6 py-4 pr-16 text-base leading-relaxed",
               "bg-background text-foreground",

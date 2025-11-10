@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="text-lg">Loading...</div>
+        <div className="text-lg">Ładowanie...</div>
       </div>
     );
   }

@@ -42,7 +42,7 @@ export function ChatDetailsView({ chatId }: { chatId: string }) {
           }}
         />
         <div className="flex flex-1 items-center justify-center">
-          <p className="text-gray-500">Loading gift recommendations...</p>
+          <p className="text-gray-500">Ładowanie rekomendacji prezentów...</p>
         </div>
       </div>
     );
@@ -60,9 +60,11 @@ export function ChatDetailsView({ chatId }: { chatId: string }) {
         <div className="flex flex-1 items-center justify-center">
           <div className="text-center">
             <p className="text-lg font-medium text-gray-900">
-              Error loading results
+              Błąd podczas ładowania wyników
             </p>
-            <p className="mt-1 text-sm text-gray-500">Please try again later</p>
+            <p className="mt-1 text-sm text-gray-500">
+              Spróbuj ponownie później
+            </p>
           </div>
         </div>
       </div>
@@ -99,12 +101,9 @@ export function ChatDetailsView({ chatId }: { chatId: string }) {
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
 
           <div className="flex gap-2 overflow-x-auto">
-            <FilterButton label="Shops" onClick={handleShopsFilter} />
-            <FilterButton
-              label="Price Range"
-              onClick={handlePriceRangeFilter}
-            />
-            <FilterButton label="Category" onClick={handleCategoryFilter} />
+            <FilterButton label="Sklepy" onClick={handleShopsFilter} />
+            <FilterButton label="Zakres cen" onClick={handlePriceRangeFilter} />
+            <FilterButton label="Kategoria" onClick={handleCategoryFilter} />
           </div>
         </div>
 
@@ -113,7 +112,7 @@ export function ChatDetailsView({ chatId }: { chatId: string }) {
             <GiftCard
               key={listing.id}
               gift={listing}
-              provider="History"
+              provider="Historia"
               listingId={listing.id}
               initialIsFavorited={listing.isFavorited}
               chatId={chatId}
@@ -123,9 +122,11 @@ export function ChatDetailsView({ chatId }: { chatId: string }) {
 
         {listings.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <p className="text-lg font-medium text-gray-900">No gifts found</p>
+            <p className="text-lg font-medium text-gray-900">
+              Nie znaleziono prezentów
+            </p>
             <p className="mt-1 text-sm text-gray-500">
-              This chat doesn&apos;t have any gift recommendations yet
+              Ta rozmowa nie ma jeszcze żadnych rekomendacji prezentów
             </p>
           </div>
         )}

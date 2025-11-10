@@ -7,95 +7,75 @@ on:
     types: [published]
 
 jobs:
-  build-and-push:
+  deploy-migrations:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
-
+    if: github.event_name == 'release' || github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Setup SSH tunnel
+        run: |
+          # Create SSH key file
+          mkdir -p ~/.ssh
+          echo "${{ secrets.COOLIFY_SSH_KEY }}" > ~/.ssh/coolify_key
+          chmod 600 ~/.ssh/coolify_key
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          # Add server to known_hosts
+          ssh-keyscan -H ${{ secrets.COOLIFY_SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: Extract metadata for backend
-        id: meta-backend
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}/app
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=ref,event=tag
+          # Create SSH tunnel to PostgreSQL (forward local 5432 to remote postgres container)
+          ssh -i ~/.ssh/coolify_key \
+            -L 5432:localhost:5432 \
+            -N -f \
+            ${{ secrets.COOLIFY_SSH_USER }}@${{ secrets.COOLIFY_SERVER_IP }}
 
-      - name: Build and push backend image
-        id: build-backend
-        uses: docker/build-push-action@v5
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          context: .
-          file: ./deployment/Dockerfile
-          push: true
-          tags: ${{ steps.meta-backend.outputs.tags }}
-          labels: ${{ steps.meta-backend.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          platforms: linux/amd64,linux/arm64
+          version: 10
 
-      - name: Extract metadata for frontend
-        id: meta-frontend
-        uses: docker/metadata-action@v5
+      - name: Setup node
+        uses: actions/setup-node@v4
         with:
-          images: ghcr.io/${{ github.repository }}/frontend
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=ref,event=tag
+          node-version: 22
+          cache: "pnpm"
 
-      - name: Build and push frontend image
-        id: build-frontend
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./deployment/frontend.Dockerfile
-          push: true
-          tags: ${{ steps.meta-frontend.outputs.tags }}
-          labels: ${{ steps.meta-frontend.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          platforms: linux/amd64,linux/arm64
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: Generate artifact attestation for backend
-        if: github.event_name == 'release'
-        uses: actions/attest-build-provenance@v1
-        with:
-          subject-name: ghcr.io/${{ github.repository }}/app
-          subject-digest: ${{ steps.build-backend.outputs.digest }}
-          push-to-registry: true
+      - name: Run restapi-macroservice migrations
+        working-directory: backend/restapi-macroservice
+        run: pnpm migration:run
+        env:
+          DATABASE_URL: postgresql://restapi_user:${{ secrets.RESTAPI_DB_PASSWORD }}@localhost:5432/restapi_service
 
-      - name: Generate artifact attestation for frontend
-        if: github.event_name == 'release'
-        uses: actions/attest-build-provenance@v1
-        with:
-          subject-name: ghcr.io/${{ github.repository }}/frontend
-          subject-digest: ${{ steps.build-frontend.outputs.digest }}
-          push-to-registry: true
+      - name: Run chat-microservice migrations
+        working-directory: backend/chat-microservice
+        run: pnpm migration:run
+        env:
+          DATABASE_URL: postgresql://chat_user:${{ secrets.CHAT_DB_PASSWORD }}@localhost:5432/chat_service
+
+      - name: Run gift-ideas-microservice migrations
+        working-directory: backend/gift-ideas-microservice
+        run: pnpm migration:run
+        env:
+          DATABASE_URL: postgresql://gift_ideas_user:${{ secrets.GIFT_IDEAS_DB_PASSWORD }}@localhost:5432/gift_ideas_service
+
+      - name: Run reranking-microservice migrations
+        working-directory: backend/reranking-microservice
+        run: pnpm migration:run
+        env:
+          DATABASE_URL: postgresql://reranking_user:${{ secrets.RERANKING_DB_PASSWORD }}@localhost:5432/reranking_service
+
+      - name: Close SSH tunnel
+        if: always()
+        run: |
+          # Kill SSH tunnel process
+          pkill -f "ssh.*5432:localhost:5432" || true
 
   deploy:
-    needs: build-and-push
+    needs: deploy-migrations
     runs-on: ubuntu-latest
     if: github.event_name == 'release' || github.ref == 'refs/heads/main'
     steps:
@@ -104,7 +84,5 @@ jobs:
 
       - name: Deploy to production
         run: |
-          echo "🚀 Deployment triggered for ${{ github.ref }}"
-          echo "Backend image: ghcr.io/${{ github.repository }}/app:latest"
-          echo "Frontend image: ghcr.io/${{ github.repository }}/frontend:latest"
-          echo "Add your deployment commands here (e.g., update docker-compose, restart services, etc.)"
+          curl https://devops.solvro.pl/api/v1/deploy?uuid=do8gs88okgwgsg4skgw88kc8&force=false \
+          --header 'Authorization: Bearer ${{ secrets.COOLIFY_API_KEY }}'

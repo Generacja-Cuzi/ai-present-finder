@@ -23,6 +23,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
       POSTGRES_DB: postgres
       POSTGRES_MULTIPLE_DATABASES: restapi_service,reranking_service,fetch_service,stalking_service,chat_service,gift_ideas_service
+    ports:
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker-init-db.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
@@ -58,7 +60,6 @@ services:
       STALKING_DATABASE_URL: postgresql://${STALKING_DB_USER:-stalking_user}:${STALKING_DB_PASSWORD:-stalking_password}@postgres:5432/stalking_service
       CHAT_DATABASE_URL: postgresql://${CHAT_DB_USER:-chat_user}:${CHAT_DB_PASSWORD:-chat_password}@postgres:5432/chat_service
       GIFT_IDEAS_DATABASE_URL: postgresql://${GIFT_IDEAS_DB_USER:-gift_ideas_user}:${GIFT_IDEAS_DB_PASSWORD:-gift_ideas_password}@postgres:5432/gift_ideas_service
-      TYPEORM_SYNCHRONIZE: true
       # Service ports (internal)
       RESTAPI_PORT: 3000
       STALKING_PORT: 3010

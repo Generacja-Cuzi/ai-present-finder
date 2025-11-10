@@ -82,7 +82,9 @@ import { UserProfileController } from "../controllers/user-profile.controller";
     TypeOrmModule.forRootAsync({
       useFactory: () => {
         return getDatabaseConfig({
-          migrations: ["dist/data/migrations/*.js"],
+          migrations: [
+            "./dist/backend/restapi-macroservice/src/data/migrations/*.js",
+          ],
           migrationsRun: true,
         });
       },

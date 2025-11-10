@@ -45,7 +45,9 @@ const QueryHandlers = [GetSessionProductsHandler, ScoreProductsHandler];
     ScheduleModule.forRoot(),
     TypeOrmModule.forRoot(
       getDatabaseConfig({
-        migrations: ["dist/data/migrations/*.js"],
+        migrations: [
+          "./dist/backend/reranking-microservice/src/data/migrations/*.js",
+        ],
         migrationsRun: true,
       }),
     ),

@@ -24,7 +24,7 @@ function LoginPage() {
   return (
     <div className="bg-background flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm text-center">
-        <h1 className="text-foreground mb-6 text-4xl font-bold">Sign In</h1>
+        <h1 className="text-foreground mb-6 text-4xl font-bold">Zaloguj się</h1>
 
         <Button
           onClick={() => {
@@ -32,7 +32,7 @@ function LoginPage() {
           }}
           className="bg-primary text-primary-foreground hover:bg-primary/90 w-full rounded-full py-6 text-lg font-semibold shadow-lg transition-all active:scale-95"
         >
-          Sign in with Google
+          Zaloguj się przez Google
         </Button>
       </div>
     </div>

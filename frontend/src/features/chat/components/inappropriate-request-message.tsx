@@ -3,7 +3,7 @@ export function InappropriateRequestMessage({ reason }: { reason: string }) {
     <div className="flex h-[90vh] items-center justify-center">
       <div className="text-center">
         <div className="text-destructive text-xl font-semibold">
-          ⚠️ Inappropriate Request Detected
+          ⚠️ Wykryto nieodpowiednie żądanie
         </div>
         <div className="text-muted-foreground mt-2">{reason}</div>
       </div>

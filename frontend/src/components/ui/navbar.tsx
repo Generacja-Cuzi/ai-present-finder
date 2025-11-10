@@ -6,22 +6,22 @@ import { cn } from "@/lib/utils";
 const navItems = [
   {
     icon: Search,
-    label: "Search",
+    label: "Szukaj",
     path: "/start-search",
   },
   {
     icon: Bookmark,
-    label: "Saved",
+    label: "Zapisane",
     path: "/saved",
   },
   {
     icon: History,
-    label: "History",
+    label: "Historia",
     path: "/history",
   },
   {
     icon: User,
-    label: "Profile",
+    label: "Profil",
     path: "/profile",
   },
 ] as const;

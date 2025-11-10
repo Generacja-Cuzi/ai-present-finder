@@ -131,7 +131,7 @@ export function GiftCard({
             className="bg-primary hover:bg-primary h-11 w-full rounded-xl text-base font-semibold"
           >
             <a href={gift.link} target="_blank" rel="noopener noreferrer">
-              Buy Now
+              Kup teraz
             </a>
           </Button>
         </div>

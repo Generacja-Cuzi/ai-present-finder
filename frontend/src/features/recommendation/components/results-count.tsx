@@ -8,14 +8,16 @@ export function ResultsCount({
   if (total === filtered) {
     return (
       <p className="px-4 py-2 text-sm text-gray-600">
-        Showing {total} {total === 1 ? "gift" : "gifts"}
+        Wyświetlanie {total}{" "}
+        {total === 1 ? "prezentu" : total < 5 ? "prezentów" : "prezentów"}
       </p>
     );
   }
 
   return (
     <p className="px-4 py-2 text-sm text-gray-600">
-      Showing {filtered} of {total} {total === 1 ? "gift" : "gifts"}
+      Wyświetlanie {filtered} z {total}{" "}
+      {total === 1 ? "prezentu" : total < 5 ? "prezentów" : "prezentów"}
     </p>
   );
 }

@@ -12,7 +12,7 @@ export function HistoryView() {
       <div className="flex min-h-screen flex-col bg-gray-50">
         <HistoryHeader />
         <div className="flex flex-1 items-center justify-center">
-          <p className="text-gray-500">Loading your chat history...</p>
+          <p className="text-gray-500">Ładowanie historii rozmów...</p>
         </div>
         <Navbar />
       </div>
@@ -26,9 +26,11 @@ export function HistoryView() {
         <div className="flex flex-1 items-center justify-center">
           <div className="text-center">
             <p className="text-lg font-medium text-gray-900">
-              Error loading chats
+              Błąd podczas ładowania rozmów
             </p>
-            <p className="mt-1 text-sm text-gray-500">Please try again later</p>
+            <p className="mt-1 text-sm text-gray-500">
+              Spróbuj ponownie później
+            </p>
           </div>
         </div>
         <Navbar />
@@ -46,10 +48,10 @@ export function HistoryView() {
         {chats.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <p className="text-lg font-medium text-gray-900">
-              No search history yet
+              Brak historii wyszukiwań
             </p>
             <p className="mt-1 text-sm text-gray-500">
-              Start a new chat to find the perfect gift
+              Rozpocznij nową rozmowę, aby znaleźć idealny prezent
             </p>
           </div>
         ) : (

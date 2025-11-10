@@ -12,7 +12,7 @@ export function SavedView() {
       <div className="flex min-h-screen flex-col bg-gray-50">
         <SavedHeader />
         <div className="flex flex-1 items-center justify-center">
-          <p className="text-gray-500">Loading your saved gifts...</p>
+          <p className="text-gray-500">Ładowanie zapisanych prezentów...</p>
         </div>
         <Navbar />
       </div>
@@ -27,11 +27,13 @@ export function SavedView() {
         <div className="flex flex-1 items-center justify-center">
           <div className="text-center">
             <p className="text-lg font-medium text-gray-900">
-              {hasError ? "Failed to load saved gifts" : "No data available"}
+              {hasError
+                ? "Nie udało się załadować zapisanych prezentów"
+                : "Brak dostępnych danych"}
             </p>
             {hasError ? (
               <p className="mt-1 text-sm text-gray-500">
-                Please try again later
+                Spróbuj ponownie później
               </p>
             ) : null}
           </div>
@@ -63,10 +65,10 @@ export function SavedView() {
         {favorites.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <p className="text-lg font-medium text-gray-900">
-              No saved gifts yet
+              Brak zapisanych prezentów
             </p>
             <p className="mt-1 text-sm text-gray-500">
-              Start browsing to find the perfect present!
+              Zacznij przeglądać, aby znaleźć idealny prezent!
             </p>
           </div>
         )}

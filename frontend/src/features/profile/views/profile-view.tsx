@@ -35,7 +35,7 @@ export function ProfileView() {
             </Button>
           ) : null}
           <h1 className="text-foreground text-center text-xl font-semibold">
-            Profile
+            Profil
           </h1>
         </div>
         {user === null ? null : (
@@ -43,7 +43,7 @@ export function ProfileView() {
             <div className="relative mb-4">
               <img
                 src={user.picture ?? "https://via.placeholder.com/150"}
-                alt={`${user.givenName ?? "User"}'s profile`}
+                alt={`Profil użytkownika ${user.givenName ?? "Użytkownik"}`}
                 className="h-32 w-32 rounded-full object-cover ring-4 ring-gray-200"
               />
             </div>
@@ -52,7 +52,7 @@ export function ProfileView() {
               <p className="text-2xl font-semibold">
                 {user.givenName !== null && user.familyName !== null
                   ? `${user.givenName} ${user.familyName}`
-                  : "User"}
+                  : "Użytkownik"}
               </p>
             </div>
 
@@ -79,7 +79,7 @@ export function ProfileView() {
             className="w-full rounded-full py-6 text-lg font-semibold shadow-lg transition-all active:scale-95"
           >
             <BarChart3 className="mr-2 h-5 w-5" />
-            View Feedbacks
+            Zobacz opinie
           </Button>
         </div>
       ) : null}
@@ -90,7 +90,7 @@ export function ProfileView() {
           variant="ghost"
           className="text-lg text-red-600 hover:text-red-700"
         >
-          Log Out
+          Wyloguj się
         </Button>
       </div>
     </div>

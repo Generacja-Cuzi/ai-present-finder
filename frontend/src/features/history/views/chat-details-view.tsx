@@ -156,7 +156,7 @@ function ChatDetailsHeader({
         <div className="flex items-center gap-3">
           <NavButton to="/history" />
           <h1 className="text-lg font-semibold">
-            {chatName ?? "Gift Recommendations"}
+            {chatName ?? "Rekomendacje prezentów"}
           </h1>
         </div>
         {hasReasoning ? (

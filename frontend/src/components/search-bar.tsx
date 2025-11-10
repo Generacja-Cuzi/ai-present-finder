@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 export function SearchBar({
   value,
   onChange,
-  placeholder = "Search for...",
+  placeholder = "Szukaj...",
 }: {
   value: string;
   onChange: (value: string) => void;

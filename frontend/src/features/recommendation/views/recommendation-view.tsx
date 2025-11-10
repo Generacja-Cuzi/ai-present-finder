@@ -88,7 +88,7 @@ export function RecommendationView({
                 disabled={isFeedbackLoading}
               >
                 <MessageSquare className="h-4 w-4" />
-                Leave Feedback
+                Oceń wyniki
               </Button>
             </div>
           )}
@@ -97,7 +97,7 @@ export function RecommendationView({
 
           <div className="flex items-center gap-2 overflow-x-auto">
             <FilterButton
-              label="Shops"
+              label="Sklepy"
               onClick={() => {
                 setShopsDialogOpen(true);
               }}
@@ -105,7 +105,7 @@ export function RecommendationView({
               activeCount={filters.shops.length}
             />
             <FilterButton
-              label="Price Range"
+              label="Zakres cen"
               onClick={() => {
                 setPriceDialogOpen(true);
               }}
@@ -115,7 +115,7 @@ export function RecommendationView({
               }
             />
             <FilterButton
-              label="Category"
+              label="Kategoria"
               onClick={() => {
                 setCategoryDialogOpen(true);
               }}
@@ -149,9 +149,11 @@ export function RecommendationView({
 
         {filteredGiftIdeas.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <p className="text-lg font-medium text-gray-900">No gifts found</p>
+            <p className="text-lg font-medium text-gray-900">
+              Nie znaleziono prezentów
+            </p>
             <p className="mt-1 text-sm text-gray-500">
-              Try adjusting your search or filters
+              Spróbuj dostosować wyszukiwanie lub filtry
             </p>
           </div>
         )}

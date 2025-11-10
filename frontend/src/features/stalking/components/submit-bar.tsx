@@ -13,7 +13,7 @@ export function SubmitBar({ disabled, isPending }: SubmitBarProps) {
         disabled={disabled}
         className="bg-primary text-primary-foreground hover:bg-primary/90 w-full rounded-full py-6 text-lg font-semibold shadow-lg transition-all active:scale-95 disabled:bg-gray-300 disabled:text-gray-500"
       >
-        {isPending ? "Starting..." : "Find Gift Ideas"}
+        {isPending ? "Rozpoczynanie..." : "Znajdź pomysły na prezenty"}
       </Button>
     </div>
   );

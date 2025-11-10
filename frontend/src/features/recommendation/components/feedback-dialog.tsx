@@ -34,7 +34,7 @@ export function FeedbackDialog({
 
   const handleSubmit = async () => {
     if (rating === 0) {
-      toast.error("Please select a rating before submitting");
+      toast.error("Proszę wybrać ocenę przed wysłaniem");
       return;
     }
 
@@ -50,8 +50,8 @@ export function FeedbackDialog({
         body: feedbackData,
       });
 
-      toast.success("Thank you for your feedback!", {
-        description: "Your feedback has been submitted successfully",
+      toast.success("Dziękujemy za opinię!", {
+        description: "Twoja opinia została pomyślnie przesłana",
       });
 
       // Reset form
@@ -60,7 +60,7 @@ export function FeedbackDialog({
       onOpenChange(false);
       onSuccess?.();
     } catch {
-      toast.error("Failed to submit feedback. Please try again.");
+      toast.error("Nie udało się wysłać opinii. Spróbuj ponownie.");
     }
   };
 
@@ -68,15 +68,14 @@ export function FeedbackDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Share Your Feedback</DialogTitle>
+          <DialogTitle>Podziel się opinią</DialogTitle>
           <DialogDescription>
-            Help us improve by rating your experience with these gift
-            recommendations
+            Pomóż nam się poprawić, oceniając te rekomendacje prezentów
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="rating">Rating *</Label>
+            <Label htmlFor="rating">Ocena *</Label>
             <div className="flex gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -105,19 +104,19 @@ export function FeedbackDialog({
             </div>
             {rating > 0 && (
               <p className="text-sm text-gray-500">
-                {rating === 1 && "Poor"}
-                {rating === 2 && "Fair"}
-                {rating === 3 && "Good"}
-                {rating === 4 && "Very Good"}
-                {rating === 5 && "Excellent"}
+                {rating === 1 && "Słabo"}
+                {rating === 2 && "W porządku"}
+                {rating === 3 && "Dobrze"}
+                {rating === 4 && "Bardzo dobrze"}
+                {rating === 5 && "Doskonale"}
               </p>
             )}
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="comment">Comment (optional)</Label>
+            <Label htmlFor="comment">Komentarz (opcjonalnie)</Label>
             <Textarea
               id="comment"
-              placeholder="Tell us more about your experience..."
+              placeholder="Opowiedz nam więcej o swoim doświadczeniu..."
               value={comment}
               onChange={(event) => {
                 setComment(event.target.value);
@@ -135,7 +134,7 @@ export function FeedbackDialog({
             }}
             disabled={createFeedback.isPending}
           >
-            Cancel
+            Anuluj
           </Button>
           <Button
             onClick={() => {
@@ -143,7 +142,7 @@ export function FeedbackDialog({
             }}
             disabled={createFeedback.isPending || rating === 0}
           >
-            {createFeedback.isPending ? "Submitting..." : "Submit Feedback"}
+            {createFeedback.isPending ? "Wysyłanie..." : "Wyślij opinię"}
           </Button>
         </DialogFooter>
       </DialogContent>

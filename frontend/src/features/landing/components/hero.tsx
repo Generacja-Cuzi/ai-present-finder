@@ -18,14 +18,14 @@ export function Hero() {
         </main>
 
         <p className="text-muted-foreground mx-auto text-xl md:w-10/12 lg:mx-0">
-          Find the perfect gift ideas for your loved ones with personalized
-          AI-driven recommendations.
+          Znajdź idealne pomysły na prezenty dla bliskich dzięki
+          spersonalizowanym rekomendacjom napędzanym przez AI.
         </p>
 
         <div className="space-y-4 md:space-x-4 md:space-y-0">
           <Button className="w-full md:w-1/3" asChild>
             <Link to="/start-search" href="/start-search">
-              Get Started
+              Rozpocznij
             </Link>
           </Button>
         </div>

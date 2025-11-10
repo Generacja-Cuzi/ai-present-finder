@@ -13,33 +13,33 @@ interface FAQProps {
 
 const FAQList: FAQProps[] = [
   {
-    question: "How does the AI gift finder work?",
+    question: "Jak działa wyszukiwarka prezentów AI?",
     answer:
-      "Our AI analyzes social media profiles and chat responses to understand the recipient's interests, hobbies, and personality. It then searches through thousands of products to find personalized gift recommendations that match their unique profile.",
+      "Nasza AI analizuje profile w mediach społecznościowych i odpowiedzi z czatu, aby zrozumieć zainteresowania, hobby i osobowość odbiorcy. Następnie przeszukuje tysiące produktów, aby znaleźć spersonalizowane rekomendacje prezentów, które pasują do ich unikalnego profilu.",
     value: "item-1",
   },
   {
-    question: "What social media platforms do you support?",
+    question: "Jakie platformy społecznościowe obsługujecie?",
     answer:
-      "We currently support major social media platforms including Instagram, Twitter, and TikTok. Simply provide the profile links during the setup process, and our AI will gather relevant insights.",
+      "Obecnie obsługujemy główne platformy społecznościowe, w tym Instagram, Twitter i TikTok. Wystarczy podać linki do profili podczas procesu konfiguracji, a nasza AI zbierze odpowiednie informacje.",
     value: "item-2",
   },
   {
-    question: "Is my data and privacy protected?",
+    question: "Czy moje dane i prywatność są chronione?",
     answer:
-      "Absolutely. We take privacy seriously. All social media analysis is done securely, and we only access publicly available information. Your data is encrypted and never shared with third parties. You can delete your data at any time.",
+      "Absolutnie. Poważnie traktujemy prywatność. Cała analiza mediów społecznościowych jest wykonywana bezpiecznie i mamy dostęp tylko do publicznie dostępnych informacji. Twoje dane są zaszyfrowane i nigdy nie są udostępniane stronom trzecim. Możesz usunąć swoje dane w dowolnym momencie.",
     value: "item-3",
   },
   {
-    question: "Can I filter the gift recommendations?",
+    question: "Czy mogę filtrować rekomendacje prezentów?",
     answer:
-      "Yes! Once you receive your personalized recommendations, you can filter results by price range, category, occasion, shipping options, and more. You can also save favorites to compare later.",
+      "Tak! Po otrzymaniu spersonalizowanych rekomendacji możesz filtrować wyniki według zakresu cen, kategorii, okazji, opcji wysyłki i innych. Możesz również zapisać ulubione, aby porównać je później.",
     value: "item-4",
   },
   {
-    question: "How accurate are the gift recommendations?",
+    question: "Jak dokładne są rekomendacje prezentów?",
     answer:
-      "Our AI combines social media insights with conversational context to provide highly accurate recommendations. The more information you provide during the chat, the better the suggestions. Most users find their perfect gift within the top 10 recommendations.",
+      "Nasza AI łączy informacje z mediów społecznościowych z kontekstem rozmowy, aby zapewnić bardzo dokładne rekomendacje. Im więcej informacji podasz podczas czatu, tym lepsze sugestie. Większość użytkowników znajdzie swój idealny prezent w pierwszych 10 rekomendacjach.",
     value: "item-5",
   },
 ];
@@ -48,9 +48,9 @@ export function FAQ() {
   return (
     <section id="faq" className="container py-8 sm:py-12">
       <h2 className="mb-4 text-3xl font-bold md:text-4xl">
-        Frequently Asked{" "}
+        Najczęściej zadawane{" "}
         <span className="from-primary/60 to-primary bg-gradient-to-b bg-clip-text text-transparent">
-          Questions
+          pytania
         </span>
       </h2>
 

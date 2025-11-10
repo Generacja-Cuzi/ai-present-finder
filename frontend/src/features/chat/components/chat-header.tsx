@@ -12,7 +12,7 @@ export function ChatHeader({
     <div className="bg-background flex-shrink-0 border-b">
       <div className="flex items-center justify-between">
         <NavButton to="/" />
-        <h1 className="text-xl font-semibold">New Gift</h1>
+        <h1 className="text-xl font-semibold">Nowy prezent</h1>
         <div className="size-10" />
       </div>
       <div className="px-4 pb-4">

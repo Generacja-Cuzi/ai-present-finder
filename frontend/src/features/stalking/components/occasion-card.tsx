@@ -8,22 +8,22 @@ export type Occasion = "birthday" | "anniversary" | "holiday" | "just-because";
 const occasionConfig = {
   birthday: {
     icon: Cake,
-    label: "Birthday",
+    label: "Urodziny",
     color: "text-primary",
   },
   anniversary: {
     icon: Heart,
-    label: "Anniversary",
+    label: "Rocznica",
     color: "text-primary",
   },
   holiday: {
     icon: Flame,
-    label: "Holiday",
+    label: "Święta",
     color: "text-primary",
   },
   "just-because": {
     icon: Smile,
-    label: "Just Because",
+    label: "Tak po prostu",
     color: "text-primary",
   },
 };

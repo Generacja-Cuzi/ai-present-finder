@@ -58,14 +58,14 @@ export function CategoryFilterDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="flex max-h-[90vh] flex-col sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Filter by Category</DialogTitle>
+          <DialogTitle>Filtruj według kategorii</DialogTitle>
         </DialogHeader>
 
         <ScrollArea className="flex-1 pr-4">
           <div className="space-y-4 py-4">
             {availableCategories.length === 0 ? (
               <p className="text-center text-sm text-gray-500">
-                No categories available
+                Brak dostępnych kategorii
               </p>
             ) : (
               availableCategories.map((category) => (
@@ -98,10 +98,10 @@ export function CategoryFilterDialog({
             onClick={handleClear}
             className="flex-1 sm:flex-1"
           >
-            Clear
+            Wyczyść
           </Button>
           <Button onClick={handleApply} className="flex-1 sm:flex-1">
-            Apply ({temporarySelection.length})
+            Zastosuj ({temporarySelection.length})
           </Button>
         </DialogFooter>
       </DialogContent>

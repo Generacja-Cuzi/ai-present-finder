@@ -56,14 +56,14 @@ export function ShopsFilterDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="flex max-h-[90vh] flex-col sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Filter by Shops</DialogTitle>
+          <DialogTitle>Filtruj według sklepów</DialogTitle>
         </DialogHeader>
 
         <ScrollArea className="flex-1 pr-4">
           <div className="space-y-4 py-4">
             {availableShops.length === 0 ? (
               <p className="text-center text-sm text-gray-500">
-                No shops available
+                Brak dostępnych sklepów
               </p>
             ) : (
               availableShops.map((shop) => (
@@ -96,10 +96,10 @@ export function ShopsFilterDialog({
             onClick={handleClear}
             className="flex-1 sm:flex-1"
           >
-            Clear
+            Wyczyść
           </Button>
           <Button onClick={handleApply} className="flex-1 sm:flex-1">
-            Apply ({temporarySelection.length})
+            Zastosuj ({temporarySelection.length})
           </Button>
         </DialogFooter>
       </DialogContent>

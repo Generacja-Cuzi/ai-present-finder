@@ -29,7 +29,7 @@ const teamList: TeamProps[] = [
       "https://media.licdn.com/dms/image/v2/D4D03AQHH1ttU04oa8Q/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1726961344926?e=1764201600&v=beta&t=1z4zhTN3T2opGwFrRhPK6naGzA8tSXFNY_u0vMi02us",
     name: "Dawid Chudzicki",
     position: "Fullstack Developer",
-    description: "Passionate programmer building innovative solutions.",
+    description: "Pasjonat programowania tworzący innowacyjne rozwiązania.",
     socialNetworks: [
       {
         platform: "Linkedin",
@@ -46,7 +46,7 @@ const teamList: TeamProps[] = [
       "https://media.licdn.com/dms/image/v2/D4D03AQFMrh4hIOuUWw/profile-displayphoto-scale_400_400/B4DZkKNJaSHYAk-/0/1756812844850?e=1764201600&v=beta&t=ESoMh7ClHPQdcNXpxBjym_uP7BB4GRmXuw1pNyLBeOk",
     name: "Marcin Dolatowski",
     position: "Fullstack Developer",
-    description: "Passionate programmer building innovative solutions.",
+    description: "Pasjonat programowania tworzący innowacyjne rozwiązania.",
     socialNetworks: [
       {
         platform: "Linkedin",
@@ -63,7 +63,7 @@ const teamList: TeamProps[] = [
       "https://media.licdn.com/dms/image/v2/C4E03AQHDsr7aer_sig/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1656863838670?e=1764201600&v=beta&t=AEvRwWM6Gar0iPE9kbglr6UzSN4qoguEHIWf2wq8xf0",
     name: "Bartosz Gotowski",
     position: "Fullstack Developer",
-    description: "Passionate programmer building innovative solutions.",
+    description: "Pasjonat programowania tworzący innowacyjne rozwiązania.",
     socialNetworks: [
       {
         platform: "Linkedin",
@@ -80,7 +80,7 @@ const teamList: TeamProps[] = [
       "https://media.licdn.com/dms/image/v2/D4E03AQFFBUoNyWJrsw/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1712598996898?e=1764201600&v=beta&t=7O73tzo23AhhUBz90Es1ac4euSAzOxKPbPU7KohGwj8",
     name: "Szymon Kowaliński",
     position: "Fullstack Developer",
-    description: "Passionate programmer building innovative solutions.",
+    description: "Pasjonat programowania tworzący innowacyjne rozwiązania.",
     socialNetworks: [
       {
         platform: "Linkedin",
@@ -111,14 +111,14 @@ export function Team() {
     <section id="team" className="container py-8 sm:py-12">
       <h2 className="text-3xl font-bold md:text-4xl">
         <span className="from-primary/60 to-primary bg-gradient-to-b bg-clip-text text-transparent">
-          Our Dedicated{" "}
+          Nasz zaangażowany{" "}
         </span>
-        Crew
+        zespół
       </h2>
 
       <p className="text-muted-foreground mb-10 mt-4 text-xl">
-        Meet our team of passionate programmers dedicated to building innovative
-        AI-powered solutions.
+        Poznaj nasz zespół pasjonatów programowania, którzy tworzą innowacyjne
+        rozwiązania napędzane AI.
       </p>
 
       <div className="grid gap-8 gap-y-10 md:grid-cols-2 lg:grid-cols-4">

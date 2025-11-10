@@ -42,7 +42,6 @@ export function RecommendationView({
     resetFilters,
     activeFiltersCount,
   } = useGiftFilters();
-
   const [shopsDialogOpen, setShopsDialogOpen] = useState(false);
   const [priceDialogOpen, setPriceDialogOpen] = useState(false);
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
@@ -142,6 +141,8 @@ export function RecommendationView({
               gift={gift}
               provider={gift.provider ?? "Unknown"}
               listingId={gift.listingId}
+              initialIsFavorited={Boolean(gift.isFavorited) || false}
+              chatId={clientId}
             />
           ))}
         </div>

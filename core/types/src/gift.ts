@@ -11,6 +11,7 @@ export interface ListingPayload {
   };
   category?: string | null;
   provider?: string;
+  isFavorited?: boolean;
 }
 
 export interface ListingWithId extends ListingPayload {

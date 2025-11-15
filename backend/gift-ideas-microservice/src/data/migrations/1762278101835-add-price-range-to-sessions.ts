@@ -15,7 +15,7 @@ export class AddPriceRangeToSessions1762278101835
       (column) => column.name === "max_price",
     );
 
-    if (!hasMinPrice) {
+    if (hasMinPrice === undefined) {
       await queryRunner.addColumn(
         "chat_sessions",
         new TableColumn({
@@ -28,7 +28,7 @@ export class AddPriceRangeToSessions1762278101835
       );
     }
 
-    if (!hasMaxPrice) {
+    if (hasMaxPrice === undefined) {
       await queryRunner.addColumn(
         "chat_sessions",
         new TableColumn({

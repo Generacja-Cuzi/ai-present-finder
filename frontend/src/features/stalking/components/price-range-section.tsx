@@ -34,7 +34,7 @@ export function PriceRangeSection() {
             {...register("minPrice")}
             className="w-full"
           />
-          {errors.minPrice && (
+          {errors.minPrice !== undefined && (
             <p className="text-sm text-red-500">{errors.minPrice.message}</p>
           )}
         </div>
@@ -51,12 +51,12 @@ export function PriceRangeSection() {
             {...register("maxPrice")}
             className="w-full"
           />
-          {errors.maxPrice && (
+          {errors.maxPrice !== undefined && (
             <p className="text-sm text-red-500">{errors.maxPrice.message}</p>
           )}
         </div>
       </div>
-      {errors.root && (
+      {errors.root !== undefined && (
         <p className="mt-2 text-sm text-red-500">{errors.root.message}</p>
       )}
     </section>

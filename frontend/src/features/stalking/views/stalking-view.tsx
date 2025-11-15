@@ -1,5 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import type { SubmitHandler } from "react-hook-form";
 import { FormProvider } from "react-hook-form";
 import { toast } from "sonner";
 import { v7 as uuidv7 } from "uuid";
@@ -32,7 +33,7 @@ export function StalkingView() {
   );
 
   const methods = useStalkingForm();
-  const { handleSubmit, formState } = methods;
+  const { formState } = methods;
 
   const handleUseProfile = () => {
     setShowProfileQuestion(false);
@@ -47,7 +48,7 @@ export function StalkingView() {
     setSelectedProfile(profile);
   };
 
-  const onSubmit = async (data: StalkingFormData) => {
+  const onSubmit: SubmitHandler<StalkingFormData> = async (data) => {
     try {
       const clientId = uuidv7();
 
@@ -131,7 +132,10 @@ export function StalkingView() {
 
       <FormProvider {...methods}>
         <form
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={(event) => {
+            // @ts-expect-error - FormProvider loses type specificity but the types are correct
+            void methods.handleSubmit(onSubmit)(event);
+          }}
           className="flex-1 overflow-y-auto px-6 py-6"
         >
           <SocialLinksSection />

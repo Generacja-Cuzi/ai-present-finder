@@ -155,11 +155,11 @@ export class FetchEbayHandler {
       maxPrice !== undefined &&
       maxPrice !== null
     ) {
-      parameters.filter = `price:[${minPrice}..${maxPrice}],priceCurrency:PLN`;
+      parameters.filter = `price:[${String(minPrice)}..${String(maxPrice)}],priceCurrency:PLN`;
     } else if (minPrice !== undefined && minPrice !== null) {
-      parameters.filter = `price:[${minPrice}..],priceCurrency:PLN`;
+      parameters.filter = `price:[${String(minPrice)}..],priceCurrency:PLN`;
     } else if (maxPrice !== undefined && maxPrice !== null) {
-      parameters.filter = `price:[..${maxPrice}],priceCurrency:PLN`;
+      parameters.filter = `price:[..${String(maxPrice)}],priceCurrency:PLN`;
     }
 
     return parameters;

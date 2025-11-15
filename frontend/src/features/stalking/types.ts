@@ -32,7 +32,7 @@ export const stalkingFormSchema = z
   })
   .refine(
     (data) => {
-      if (data.minPrice && data.maxPrice) {
+      if (data.minPrice !== undefined && data.maxPrice !== undefined) {
         return data.minPrice <= data.maxPrice;
       }
       return true;

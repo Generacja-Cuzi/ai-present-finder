@@ -6,5 +6,7 @@ export class FetchOlxEvent {
     public readonly chatId: string,
     public readonly eventId: string,
     public readonly totalEvents: number,
+    public readonly minPrice?: number | null,
+    public readonly maxPrice?: number | null,
   ) {}
 }

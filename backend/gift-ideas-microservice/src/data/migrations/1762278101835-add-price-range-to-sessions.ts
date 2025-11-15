@@ -1,30 +1,44 @@
 import { MigrationInterface, QueryRunner, TableColumn } from "typeorm";
 
-export class AddPriceRangeToSessions1731677000000
+export class AddPriceRangeToSessions1762278101835
   implements MigrationInterface
 {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.addColumn(
-      "chat_sessions",
-      new TableColumn({
-        name: "min_price",
-        type: "decimal",
-        precision: 10,
-        scale: 2,
-        isNullable: true,
-      }),
+    // Check if columns already exist before adding them
+    const table = await queryRunner.getTable("chat_sessions");
+
+    const hasMinPrice = table?.columns.find(
+      (column) => column.name === "min_price",
+    );
+    const hasMaxPrice = table?.columns.find(
+      (column) => column.name === "max_price",
     );
 
-    await queryRunner.addColumn(
-      "chat_sessions",
-      new TableColumn({
-        name: "max_price",
-        type: "decimal",
-        precision: 10,
-        scale: 2,
-        isNullable: true,
-      }),
-    );
+    if (!hasMinPrice) {
+      await queryRunner.addColumn(
+        "chat_sessions",
+        new TableColumn({
+          name: "min_price",
+          type: "decimal",
+          precision: 10,
+          scale: 2,
+          isNullable: true,
+        }),
+      );
+    }
+
+    if (!hasMaxPrice) {
+      await queryRunner.addColumn(
+        "chat_sessions",
+        new TableColumn({
+          name: "max_price",
+          type: "decimal",
+          precision: 10,
+          scale: 2,
+          isNullable: true,
+        }),
+      );
+    }
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

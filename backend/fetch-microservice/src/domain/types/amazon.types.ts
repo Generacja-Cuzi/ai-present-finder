@@ -30,4 +30,6 @@ export interface AmazonSearchParameters {
   query: string;
   country: string;
   page: string;
+  minPrice?: number | null;
+  maxPrice?: number | null;
 }

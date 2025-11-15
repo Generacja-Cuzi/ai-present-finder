@@ -41,7 +41,9 @@ export class FetchOlxHandler {
 
   @EventPattern(FetchOlxEvent.name)
   async handle(event: FetchOlxEvent): Promise<void> {
-    this.logger.log(`Handling OLX fetch for query: ${event.query}`);
+    this.logger.log(
+      `Handling OLX fetch for query: ${event.query}, minPrice: ${String(event.minPrice)}, maxPrice: ${String(event.maxPrice)}`,
+    );
 
     try {
       const listings = await this.fetchOlxProducts(event);
@@ -78,7 +80,31 @@ export class FetchOlxHandler {
     query: string,
     limit: number,
     offset: number,
+    minPrice?: number | null,
+    maxPrice?: number | null,
   ): OlxGraphQLQuery {
+    const searchParameters: Array<{ key: string; value: string }> = [
+      { key: "offset", value: String(offset) },
+      { key: "limit", value: String(limit) },
+      { key: "query", value: query },
+      { key: "filter_refiners", value: "spell_checker" },
+      { key: "suggest_filters", value: "true" },
+    ];
+
+    // Add price filters if provided
+    if (minPrice !== undefined && minPrice !== null) {
+      searchParameters.push({
+        key: "filter_float_price:from",
+        value: String(minPrice),
+      });
+    }
+    if (maxPrice !== undefined && maxPrice !== null) {
+      searchParameters.push({
+        key: "filter_float_price:to",
+        value: String(maxPrice),
+      });
+    }
+
     return {
       query: `
         query ListingSearchQuery($searchParameters: [SearchParameter!] = { key: "", value: "" }) {
@@ -111,13 +137,7 @@ export class FetchOlxHandler {
         }
       `,
       variables: {
-        searchParameters: [
-          { key: "offset", value: String(offset) },
-          { key: "limit", value: String(limit) },
-          { key: "query", value: query },
-          { key: "filter_refiners", value: "spell_checker" },
-          { key: "suggest_filters", value: "true" },
-        ],
+        searchParameters,
       },
     };
   }
@@ -247,7 +267,7 @@ export class FetchOlxHandler {
   private async fetchOlxProducts(
     event: FetchOlxEvent,
   ): Promise<ListingPayload[]> {
-    const { query, limit, offset } = event;
+    const { query, limit, offset, minPrice, maxPrice } = event;
     let attempt = 0;
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -256,10 +276,16 @@ export class FetchOlxHandler {
 
       try {
         this.logger.log(
-          `Searching OLX for "${query}" (limit=${limit.toString()}, offset=${offset.toString()}), attempt ${attempt.toString()}`,
+          `Searching OLX for "${query}" (limit=${limit.toString()}, offset=${offset.toString()}, minPrice=${String(minPrice)}, maxPrice=${String(maxPrice)}), attempt ${attempt.toString()}`,
         );
 
-        const graphqlQuery = this.createGraphQLQuery(query, limit, offset);
+        const graphqlQuery = this.createGraphQLQuery(
+          query,
+          limit,
+          offset,
+          minPrice,
+          maxPrice,
+        );
         const headers = this.createHeaders();
         const json = await this.performOlxSearch(graphqlQuery, headers);
         const listings = this.processOlxResponse(json);

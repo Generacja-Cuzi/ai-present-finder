@@ -10,6 +10,7 @@ import type { paths } from "@/lib/api/types";
 import { useStalkingRequestMutation } from "../api/stalking-request";
 import {
   OccasionSelector,
+  PriceRangeSection,
   SocialLinksSection,
   StalkingHeader,
   SubmitBar,
@@ -59,6 +60,8 @@ export function StalkingView() {
             chatId: clientId,
             occasion: data.occasion,
             profileId: selectedProfile?.id,
+            minPrice: data.minPrice,
+            maxPrice: data.maxPrice,
           },
         },
         {
@@ -133,6 +136,7 @@ export function StalkingView() {
         >
           <SocialLinksSection />
           <OccasionSelector />
+          <PriceRangeSection />
           <SubmitBar
             disabled={!formState.isValid || isPending}
             isPending={isPending}

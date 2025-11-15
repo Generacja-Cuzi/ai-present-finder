@@ -19,14 +19,29 @@ const tiktokUrlSchema = z.union([
   }),
 ]);
 
-export const stalkingFormSchema = z.object({
-  instagramUrl: instagramUrlSchema,
-  xUrl: xUrlSchema,
-  tiktokUrl: tiktokUrlSchema,
-  occasion: z.enum(["birthday", "anniversary", "holiday", "just-because"], {
-    message: "Proszę wybrać okazję",
-  }),
-});
+export const stalkingFormSchema = z
+  .object({
+    instagramUrl: instagramUrlSchema,
+    xUrl: xUrlSchema,
+    tiktokUrl: tiktokUrlSchema,
+    occasion: z.enum(["birthday", "anniversary", "holiday", "just-because"], {
+      message: "Proszę wybrać okazję",
+    }),
+    minPrice: z.coerce.number().positive().optional(),
+    maxPrice: z.coerce.number().positive().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.minPrice && data.maxPrice) {
+        return data.minPrice <= data.maxPrice;
+      }
+      return true;
+    },
+    {
+      message: "Cena minimalna musi być mniejsza lub równa cenie maksymalnej",
+      path: ["maxPrice"],
+    },
+  );
 
 export type StalkingFormData = z.infer<typeof stalkingFormSchema>;
 

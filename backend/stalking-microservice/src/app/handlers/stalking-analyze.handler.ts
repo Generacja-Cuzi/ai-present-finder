@@ -41,6 +41,8 @@ export class StalkingAnalyzeHandler
     const event = new StalkingCompletedEvent(
       keywords,
       command.stalkingAnalyzeRequestDto.chatId,
+      command.stalkingAnalyzeRequestDto.minPrice,
+      command.stalkingAnalyzeRequestDto.maxPrice,
     );
 
     this.eventBus.emit(StalkingCompletedEvent.name, event);

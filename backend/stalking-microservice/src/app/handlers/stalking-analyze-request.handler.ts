@@ -17,6 +17,8 @@ export class StalkingAnalyzeRequestHandler {
       tiktokUrl: event.tiktokUrl,
       xUrl: event.xUrl,
       chatId: event.chatId,
+      minPrice: event.minPrice,
+      maxPrice: event.maxPrice,
     };
 
     await this.commandBus.execute(

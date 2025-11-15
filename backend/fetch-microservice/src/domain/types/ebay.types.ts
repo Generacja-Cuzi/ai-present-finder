@@ -74,7 +74,9 @@ export interface EbaySearchParameters {
   aspect_filter?: string;
   category_ids?: string;
   fieldgroups?: string;
-  [key: string]: string | undefined;
+  minPrice?: number | null;
+  maxPrice?: number | null;
+  [key: string]: string | number | undefined | null;
 }
 
 export interface EbayRequestHeaders {

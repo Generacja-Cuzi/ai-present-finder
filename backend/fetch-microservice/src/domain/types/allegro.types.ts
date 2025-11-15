@@ -48,4 +48,6 @@ export interface AllegroTokenCache {
 export interface AllegroSearchOptions {
   offset?: number;
   limit?: number;
+  minPrice?: number | null;
+  maxPrice?: number | null;
 }

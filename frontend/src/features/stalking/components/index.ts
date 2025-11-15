@@ -3,5 +3,6 @@ export { SocialMediaInput } from "./social-media-input";
 
 export { OccasionSelector } from "./occasion-selection";
 export { SocialLinksSection } from "./social-links-section";
+export { PriceRangeSection } from "./price-range-section";
 export { SubmitBar } from "./submit-bar";
 export { StalkingHeader } from "./stalking-header";

@@ -77,6 +77,8 @@ export class StartProcessingCommandHandler
       analyzeRequestedDto.tiktokUrl,
       analyzeRequestedDto.xUrl,
       analyzeRequestedDto.chatId,
+      analyzeRequestedDto.minPrice,
+      analyzeRequestedDto.maxPrice,
     );
 
     this.stalkingEventBus.emit(

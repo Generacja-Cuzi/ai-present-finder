@@ -29,7 +29,8 @@ export class EmitFetchEventsHandler
   // Event emission is synchronous (fire-and-forget)
   // eslint-disable-next-line @typescript-eslint/require-await
   async execute(command: EmitFetchEventsCommand): Promise<number> {
-    const { searchQueries, chatId, eventId, totalEvents } = command;
+    const { searchQueries, chatId, eventId, totalEvents, minPrice, maxPrice } =
+      command;
 
     const filteredSearchQueries = filterDisabledServices(searchQueries);
 
@@ -43,6 +44,8 @@ export class EmitFetchEventsHandler
             chatId,
             eventId,
             totalEvents,
+            minPrice,
+            maxPrice,
           );
           this.olxEventBus.emit(FetchOlxEvent.name, fetchOlxEvent);
           break;
@@ -55,6 +58,8 @@ export class EmitFetchEventsHandler
             chatId,
             eventId,
             totalEvents,
+            minPrice,
+            maxPrice,
           );
           this.allegroEventBus.emit(FetchAllegroEvent.name, fetchAllegroEvent);
           break;
@@ -69,6 +74,8 @@ export class EmitFetchEventsHandler
             chatId,
             eventId,
             totalEvents,
+            minPrice,
+            maxPrice,
           );
           this.amazonEventBus.emit(FetchAmazonEvent.name, fetchAmazonEvent);
           break;
@@ -81,6 +88,8 @@ export class EmitFetchEventsHandler
             chatId,
             eventId,
             totalEvents,
+            minPrice,
+            maxPrice,
           );
           this.ebayEventBus.emit(FetchEbayEvent.name, fetchEbayEvent);
           break;

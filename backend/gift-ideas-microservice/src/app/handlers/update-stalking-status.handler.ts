@@ -13,6 +13,8 @@ interface UpsertResult {
   interview_profile: RecipientProfile | null;
   interview_keywords: string[] | null;
   stalking_keywords: string[] | null;
+  min_price: number | null;
+  max_price: number | null;
   gift_generation_triggered: boolean;
   both_complete: boolean;
 }
@@ -29,7 +31,7 @@ export class UpdateStalkingStatusHandler
   ) {}
 
   async execute(command: UpdateStalkingStatusCommand): Promise<void> {
-    const { chatId, keywords } = command;
+    const { chatId, keywords, minPrice, maxPrice } = command;
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -56,13 +58,17 @@ export class UpdateStalkingStatusHandler
             interview_status, 
             gift_generation_triggered,
             stalking_keywords,
+            min_price,
+            max_price,
             created_at, 
             updated_at
           )
-          VALUES ($1, $2, $3, $4, $5::jsonb, NOW(), NOW())
+          VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7, NOW(), NOW())
           ON CONFLICT (chat_id) DO UPDATE SET
             stalking_status = $2,
             stalking_keywords = $5::jsonb,
+            min_price = $6,
+            max_price = $7,
             gift_generation_triggered = CASE
               WHEN chat_sessions.interview_status::text = $2::text
                    AND NOT chat_sessions.gift_generation_triggered
@@ -75,6 +81,8 @@ export class UpdateStalkingStatusHandler
             interview_profile,
             interview_keywords,
             stalking_keywords,
+            min_price,
+            max_price,
             gift_generation_triggered,
             interview_status::text = $2::text as both_complete
         )
@@ -86,6 +94,8 @@ export class UpdateStalkingStatusHandler
           SessionStatus.IN_PROGRESS,
           false,
           JSON.stringify(keywords),
+          minPrice ?? null,
+          maxPrice ?? null,
         ],
       )) as UpsertResult[];
 
@@ -118,6 +128,8 @@ export class UpdateStalkingStatusHandler
               row.stalking_keywords ?? [],
               row.interview_keywords ?? [],
               chatId,
+              row.min_price,
+              row.max_price,
             ),
           );
         } catch (error: unknown) {

@@ -133,7 +133,6 @@ export function StalkingView() {
       <FormProvider {...methods}>
         <form
           onSubmit={(event) => {
-            // @ts-expect-error - FormProvider loses type specificity but the types are correct
             void methods.handleSubmit(onSubmit)(event);
           }}
           className="flex-1 overflow-y-auto px-6 py-6"

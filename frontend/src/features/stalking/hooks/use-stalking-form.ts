@@ -7,7 +7,7 @@ import type { StalkingFormData } from "../types";
 export function useStalkingForm() {
   return useForm<StalkingFormData>({
     resolver: zodResolver(stalkingFormSchema),
-    mode: "onChange",
+    mode: "onTouched",
     defaultValues: {
       instagramUrl: "",
       xUrl: "",

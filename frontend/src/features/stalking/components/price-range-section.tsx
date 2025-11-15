@@ -9,6 +9,8 @@ export function PriceRangeSection() {
   const {
     register,
     formState: { errors },
+    trigger,
+    getValues,
   } = useFormContext<StalkingFormData>();
 
   return (
@@ -25,16 +27,41 @@ export function PriceRangeSection() {
           <Label htmlFor="minPrice" className="text-sm font-medium">
             Cena minimalna (PLN)
           </Label>
-          <Input
-            id="minPrice"
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder="np. 50"
-            {...register("minPrice")}
-            className="w-full"
-          />
-          {errors.minPrice !== undefined && (
+          {(() => {
+            const minReg = register("minPrice", {
+              valueAsNumber: true,
+              validate: (value) => {
+                const max = getValues("maxPrice");
+                if (value == null) {
+                  return true;
+                }
+                if (max == null) {
+                  return true;
+                }
+                return (
+                  value <= max ||
+                  "Cena minimalna musi być mniejsza lub równa cenie maksymalnej"
+                );
+              },
+            });
+
+            return (
+              <Input
+                id="minPrice"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="np. 50"
+                {...minReg}
+                onChange={(event) => {
+                  void minReg.onChange(event);
+                  void trigger("maxPrice");
+                }}
+                className="w-full"
+              />
+            );
+          })()}
+          {errors.minPrice != null && (
             <p className="text-sm text-red-500">{errors.minPrice.message}</p>
           )}
         </div>
@@ -42,16 +69,41 @@ export function PriceRangeSection() {
           <Label htmlFor="maxPrice" className="text-sm font-medium">
             Cena maksymalna (PLN)
           </Label>
-          <Input
-            id="maxPrice"
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder="np. 200"
-            {...register("maxPrice")}
-            className="w-full"
-          />
-          {errors.maxPrice !== undefined && (
+          {(() => {
+            const maxReg = register("maxPrice", {
+              valueAsNumber: true,
+              validate: (value) => {
+                const min = getValues("minPrice");
+                if (value == null) {
+                  return true;
+                }
+                if (min == null) {
+                  return true;
+                }
+                return (
+                  value >= min ||
+                  "Cena minimalna musi być mniejsza lub równa cenie maksymalnej"
+                );
+              },
+            });
+
+            return (
+              <Input
+                id="maxPrice"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="np. 200"
+                {...maxReg}
+                onChange={(event) => {
+                  void maxReg.onChange(event);
+                  void trigger("minPrice");
+                }}
+                className="w-full"
+              />
+            );
+          })()}
+          {errors.maxPrice != null && (
             <p className="text-sm text-red-500">{errors.maxPrice.message}</p>
           )}
         </div>

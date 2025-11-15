@@ -19,6 +19,19 @@ const tiktokUrlSchema = z.union([
   }),
 ]);
 
+const optionalPriceSchema = z
+  .number()
+  .positive()
+  .optional()
+  .or(
+    z.nan().transform((value) => {
+      if (Number.isNaN(value)) {
+        return;
+      }
+      return value;
+    }),
+  );
+
 export const stalkingFormSchema = z
   .object({
     instagramUrl: instagramUrlSchema,
@@ -27,8 +40,8 @@ export const stalkingFormSchema = z
     occasion: z.enum(["birthday", "anniversary", "holiday", "just-because"], {
       message: "Proszę wybrać okazję",
     }),
-    minPrice: z.coerce.number().positive().optional(),
-    maxPrice: z.coerce.number().positive().optional(),
+    minPrice: optionalPriceSchema,
+    maxPrice: optionalPriceSchema,
   })
   .refine(
     (data) => {

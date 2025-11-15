@@ -141,7 +141,7 @@ export class FetchEbayHandler {
     minPrice?: number | null,
     maxPrice?: number | null,
   ): EbaySearchParameters {
-    const params: EbaySearchParameters = {
+    const parameters: EbaySearchParameters = {
       q: query,
       limit: limit.toString(),
       offset: offset.toString(),
@@ -155,14 +155,14 @@ export class FetchEbayHandler {
       maxPrice !== undefined &&
       maxPrice !== null
     ) {
-      params.filter = `price:[${minPrice}..${maxPrice}],priceCurrency:PLN`;
+      parameters.filter = `price:[${minPrice}..${maxPrice}],priceCurrency:PLN`;
     } else if (minPrice !== undefined && minPrice !== null) {
-      params.filter = `price:[${minPrice}..],priceCurrency:PLN`;
+      parameters.filter = `price:[${minPrice}..],priceCurrency:PLN`;
     } else if (maxPrice !== undefined && maxPrice !== null) {
-      params.filter = `price:[..${maxPrice}],priceCurrency:PLN`;
+      parameters.filter = `price:[..${maxPrice}],priceCurrency:PLN`;
     }
 
-    return params;
+    return parameters;
   }
 
   private createRequestHeaders(token: string): EbayRequestHeaders {

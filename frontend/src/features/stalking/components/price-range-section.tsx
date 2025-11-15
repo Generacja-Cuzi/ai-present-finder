@@ -12,13 +12,19 @@ export function PriceRangeSection() {
   } = useFormContext<StalkingFormData>();
 
   return (
-    <div className="bg-card mx-6 my-4 rounded-lg border p-6 shadow-sm">
-      <h3 className="mb-4 text-lg font-semibold">
+    <section className="mb-8">
+      <h2 className="text-foreground mb-2 text-xl font-bold">
         Zakres cenowy (opcjonalnie)
-      </h3>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      </h2>
+      <p className="mb-4 text-base text-gray-500">
+        Określ przedział cenowy, w którym chcesz szukać prezentu.
+      </p>
+
+      <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="minPrice">Cena minimalna (PLN)</Label>
+          <Label htmlFor="minPrice" className="text-sm font-medium">
+            Cena minimalna (PLN)
+          </Label>
           <Input
             id="minPrice"
             type="number"
@@ -26,15 +32,16 @@ export function PriceRangeSection() {
             min="0"
             placeholder="np. 50"
             {...register("minPrice")}
+            className="w-full"
           />
           {errors.minPrice && (
-            <p className="text-destructive text-sm">
-              {errors.minPrice.message}
-            </p>
+            <p className="text-sm text-red-500">{errors.minPrice.message}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="maxPrice">Cena maksymalna (PLN)</Label>
+          <Label htmlFor="maxPrice" className="text-sm font-medium">
+            Cena maksymalna (PLN)
+          </Label>
           <Input
             id="maxPrice"
             type="number"
@@ -42,14 +49,16 @@ export function PriceRangeSection() {
             min="0"
             placeholder="np. 200"
             {...register("maxPrice")}
+            className="w-full"
           />
           {errors.maxPrice && (
-            <p className="text-destructive text-sm">
-              {errors.maxPrice.message}
-            </p>
+            <p className="text-sm text-red-500">{errors.maxPrice.message}</p>
           )}
         </div>
       </div>
-    </div>
+      {errors.root && (
+        <p className="mt-2 text-sm text-red-500">{errors.root.message}</p>
+      )}
+    </section>
   );
 }

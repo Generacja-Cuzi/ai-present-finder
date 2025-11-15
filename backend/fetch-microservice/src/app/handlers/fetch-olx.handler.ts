@@ -83,7 +83,7 @@ export class FetchOlxHandler {
     minPrice?: number | null,
     maxPrice?: number | null,
   ): OlxGraphQLQuery {
-    const searchParameters: Array<{ key: string; value: string }> = [
+    const searchParameters: { key: string; value: string }[] = [
       { key: "offset", value: String(offset) },
       { key: "limit", value: String(limit) },
       { key: "query", value: query },

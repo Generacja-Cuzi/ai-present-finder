@@ -1,4 +1,5 @@
-import { MigrationInterface, QueryRunner, TableColumn } from "typeorm";
+import type { MigrationInterface, QueryRunner } from "typeorm";
+import { TableColumn } from "typeorm";
 
 export class AddPriceRangeToSessions1762278101835
   implements MigrationInterface

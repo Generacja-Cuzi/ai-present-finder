@@ -36,7 +36,7 @@ export async function giftInterviewFlow({
   while (retryCount <= maxRetries) {
     try {
       results = await generateText({
-        model: google("gemini-2.5-flash-lite"),
+        model: google("gemini-2.5-flash"),
         messages,
         system: giftConsultantPrompt(occasion, userProfile),
         stopWhen: stepCountIs(1),

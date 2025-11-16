@@ -18,15 +18,17 @@ export const giftIdeasGeneratorPrompt = `
        - Przykład: keywords = ["fotel", "gaming"]
          ✓ DOBRZE: fotel gamingowy, fotel biurowy ergonomiczny, fotel relaksacyjny, pad pod fotel
          ✗ ŹLE: słuchawki, klawiatura, mysz (nie związane z "fotel")
-    
+
     2. PROFIL UŻYTKOWNIKA - DRUGIE CO DO WAŻNOŚCI:
-       - Wiek, płeć, zawód - dopasuj prezenty do etapu życia
-       - Zainteresowania i hobby (primary_hobbies, lifestyle) - wsparcie dla keywords
+       - Wiek, płeć, zawód - dopasuj prezenty do etapu życia (personalInfoDescription.ageRange)
+       - Zainteresowania i hobby (lifestyleDescription) - wsparcie dla keywords
        - Styl życia (aktywny, spokojny, kreatywny, techniczny)
-       - Preferencje (kolory, style, marki jeśli podane w preferences)
-       - Relacja z obdarowywanym (personal_info.relationship) - określa budżet i intymność prezentu
-       - Okazja (personal_info.occasion, gift_context.occasion_significance)
-       - Wspomniane potrzeby (recent_life.mentioned_needs) - ważne wskazówki!
+       - Preferencje (preferencesDescription - kolory, style, marki)
+       - Relacja z obdarowywanym (personalInfoDescription.relationship) - określa budżet i intymność prezentu
+       - Okazja (personalInfoDescription.occasion)
+       - Posiadane przedmioty (possessions.what_already_has) - unikaj duplikatów!
+       - Brakujące potrzeby (possessions.what_is_missing) - KLUCZOWE wskazówki!
+       - Ostatnie wydarzenia (recentLifeDescription) - kontekst do dopasowania prezentów
     
     3. PARAMETR "keywords" - DODATKOWE WSKAZÓWKI:
        - To są dodatkowe słowa kluczowe przekazane osobno
@@ -36,8 +38,10 @@ export const giftIdeasGeneratorPrompt = `
     4. STRATEGIA DOPASOWANIA:
        - START: Przeczytaj key_themes_and_keywords - to jest TEMAT przewodni
        - NASTĘPNIE: Zobacz profil aby zrozumieć KONTEKST (dla kogo, styl, budżet)
-       - WYNIK: Pomysły które łączą TEMAT (keywords) z KONTEKSTEM (profil)
-       - Przykład: key_themes = ["fotel"], profil = "gracz, 25 lat, długie sesje"
+       - SPRAWDŹ POSIADANIE: possessions.what_already_has (unikaj duplikatów!)
+       - SPRAWDŹ BRAKI: possessions.what_is_missing (KLUCZOWE potrzeby!)
+       - WYNIK: Pomysły które łączą TEMAT (keywords) z KONTEKSTEM (profil) i uwzględniają posiadanie
+       - Przykład: key_themes = ["fotel"], profil = "programista, 28 lat, długie sesje", what_is_missing = ["ergonomiczne krzesło"]
          → fotel gamingowy z podpórką lędźwiową, fotel z RGB, poduszka pod plecy do fotela
   </profile_analysis_priority>
   
@@ -80,11 +84,13 @@ export const giftIdeasGeneratorPrompt = `
       - To pole określa GŁÓWNY TEMAT wszystkich pomysłów na prezenty
       - Zidentyfikuj główne zainteresowania z keywords - będą to GŁÓWNE KATEGORIE prezentów
       - NASTĘPNIE: Zobacz profil aby zrozumieć KONTEKST:
-        * Wiek, płeć, zawód (określa gust, potrzeby, styl)
-        * Lifestyle, hobby (dodatkowy kontekst do keywords)
-        * Preferencje stylistyczne (jak prezentować produkty z keywords)
-        * Relacja, okazja (budżet, formalność)
-        * Wspomniane potrzeby z recent_life.mentioned_needs
+        * Wiek, płeć, zawód (personalInfoDescription.ageRange - określa gust, potrzeby, styl)
+        * Lifestyle, hobby (lifestyleDescription - dodatkowy kontekst do keywords)
+        * Preferencje stylistyczne (preferencesDescription - jak prezentować produkty z keywords)
+        * Relacja, okazja (personalInfoDescription.relationship, personalInfoDescription.occasion - budżet, formalność)
+        * POSIADANIE: possessions.what_already_has - unikaj duplikatów!
+        * BRAKI: possessions.what_is_missing - KLUCZOWE potrzeby do zaspokojenia!
+        * Ostatnie wydarzenia (recentLifeDescription - kontekst życiowy)
       - Przeanalizuj parametr "keywords" jako dodatkowe wskazówki
       - ZAPAMIĘTAJ: 70%+ pomysłów MUSI być o tematach z key_themes_and_keywords!
     </step_1>
@@ -92,8 +98,8 @@ export const giftIdeasGeneratorPrompt = `
     <step_2>
       Wygeneruj 6-8 SPERSONALIZOWANYCH pomysłów SKUPIONYCH NA KEY_THEMES:
       - ⚠️ KRYTYCZNE: Minimum 5 z 6-8 pomysłów MUSI bezpośrednio odnosić się do key_themes_and_keywords
-      - Przykład A: key_themes = ["fotel", "ergonomia"], profil = "programista, 28 lat, praca zdalna"
-        ✓ DOBRZE: 
+      - Przykład A: key_themes = ["fotel", "ergonomia"], profil z what_is_missing = ["ergonomiczne krzesło"]
+        ✓ DOBRZE:
           1. Fotel biurowy ergonomiczny z podpórką lędźwiową
           2. Fotel gamingowy z regulacją wysokości
           3. Poduszka ortopedyczna pod plecy do fotela
@@ -101,16 +107,16 @@ export const giftIdeasGeneratorPrompt = `
           5. Podłokietniki wymienne do fotela biurowego
           6. Nakładka chłodząca na fotel
         ✗ ŹLE: słuchawki, monitor, klawiatura (NIE ma to związku z "fotel")
-      
-      - Przykład B: key_themes = ["kawa", "espresso"], profil = "miłośniczka kawy, 32 lata"
-        ✓ DOBRZE:
+
+      - Przykład B: key_themes = ["kawa", "espresso"], profil z what_already_has = ["ekspres do kawy"]
+        ✓ DOBRZE: (skup się na akcesoriach, nie na duplikatach!)
           1. Młynek do kawy żarnowy
-          2. Ekspres do kawy ciśnieniowy
-          3. Tamper do kawy profesjonalny
-          4. Dzbanek do spieniania mleka
-          5. Ziarna kawy specialty zestaw
-          6. Kubek termiczny do kawy
-        ✗ ŹLE: herbata, czekolada, ciastka (to NIE kawa!)
+          2. Tamper do kawy profesjonalny
+          3. Dzbanek do spieniania mleka
+          4. Ziarna kawy specialty zestaw
+          5. Kubek termiczny do kawy
+          6. Waga elektroniczna do kawy
+        ✗ ŹLE: ekspres do kawy (już posiada!), herbata, czekolada (to NIE kawa!)
       
       - Uwzględnij RÓŻNE ASPEKTY tego samego tematu z key_themes
       - Bądź konkretny - użyj szczegółów z profilu jako modyfikatory
@@ -230,8 +236,8 @@ export const giftIdeasGeneratorPrompt = `
        - Użyj różnych aspektów, wariantów i akcesoriów dla tematu z key_themes
        - 🔴 ZAKAZ: "vintage", "retro", "klasyczny", "używany" chyba że w key_themes!
        
-       - Przykład dla key_themes = ["fotel"], profil = "programista, praca zdalna":
-         ✓ DOBRZE:
+       - Przykład dla key_themes = ["fotel"], profil z what_is_missing = ["ergonomiczne krzesło"], what_already_has = ["stary fotel biurowy"]:
+         ✓ DOBRZE: (uwzględnij potrzeby i unikaj duplikatów!)
          * "fotel biurowy ergonomiczny"
          * "fotel gamingowy regulowany"
          * "poduszka ortopedyczna plecy"
@@ -245,8 +251,8 @@ export const giftIdeasGeneratorPrompt = `
          * "poduszka ortopedyczna vintage" ❌
          * "fotel relaksacyjny retro" ❌
          
-       - Przykład dla key_themes = ["kawa"], profil = "barista amator":
-         ✓ DOBRZE:
+       - Przykład dla key_themes = ["kawa"], profil z what_already_has = ["ekspres do kawy"], what_is_missing = ["młynek do kawy"]:
+         ✓ DOBRZE: (skup się na brakujących akcesoriach!)
          * "młynek kawy żarnowy"
          * "tamper kawy 58mm"
          * "dzbanek mleko spieniacz"

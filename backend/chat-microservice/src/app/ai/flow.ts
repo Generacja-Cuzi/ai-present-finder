@@ -30,7 +30,9 @@ export async function giftInterviewFlow({
   onInappropriateRequest: (reason: string) => void;
 }) {
   // Count questions asked so far (assistant messages)
-  const questionCount = messages.filter(msg => msg.role === 'assistant').length;
+  const questionCount = messages.filter(
+    (msg) => msg.role === "assistant",
+  ).length;
   const maxRetries = 3;
   let results: GenerateTextResult<typeof tools, never> | null = null;
   let retryCount = 0;

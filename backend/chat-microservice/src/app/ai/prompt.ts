@@ -4,107 +4,68 @@ const formatUserProfileContext = (profile: RecipientProfile): string => {
   const sections: string[] = [];
 
   // Personal info
+  const personalInfoParts: string[] = [];
   if (
-    profile.personal_info.person_name !== null &&
-    profile.personal_info.person_name !== undefined &&
-    profile.personal_info.person_name !== ""
+    profile.personalInfoDescription.relationship !== null &&
+    profile.personalInfoDescription.relationship !== undefined &&
+    profile.personalInfoDescription.relationship !== ""
   ) {
-    sections.push(`- Imię: ${profile.personal_info.person_name}`);
+    personalInfoParts.push(
+      `Relacja: ${profile.personalInfoDescription.relationship}`,
+    );
   }
   if (
-    profile.personal_info.relationship !== null &&
-    profile.personal_info.relationship !== undefined &&
-    profile.personal_info.relationship !== ""
+    profile.personalInfoDescription.ageRange !== null &&
+    profile.personalInfoDescription.ageRange !== undefined &&
+    profile.personalInfoDescription.ageRange !== ""
   ) {
-    sections.push(`- Relacja: ${profile.personal_info.relationship}`);
+    personalInfoParts.push(`Wiek: ${profile.personalInfoDescription.ageRange}`);
   }
-  if (
-    profile.personal_info.age_range !== null &&
-    profile.personal_info.age_range !== undefined &&
-    profile.personal_info.age_range !== ""
-  ) {
-    sections.push(`- Wiek: ${profile.personal_info.age_range}`);
+  if (personalInfoParts.length > 0) {
+    sections.push(`- Informacje osobowe: ${personalInfoParts.join(", ")}`);
   }
 
   // Lifestyle
   if (
-    profile.lifestyle.primary_hobbies !== null &&
-    profile.lifestyle.primary_hobbies !== undefined &&
-    profile.lifestyle.primary_hobbies.length > 0
+    profile.lifestyleDescription !== null &&
+    profile.lifestyleDescription !== undefined &&
+    profile.lifestyleDescription !== ""
   ) {
-    sections.push(`- Hobby: ${profile.lifestyle.primary_hobbies.join(", ")}`);
-  }
-  if (
-    profile.lifestyle.daily_routine !== null &&
-    profile.lifestyle.daily_routine !== undefined &&
-    profile.lifestyle.daily_routine !== ""
-  ) {
-    sections.push(`- Codzienna rutyna: ${profile.lifestyle.daily_routine}`);
-  }
-  if (
-    profile.lifestyle.work_style !== null &&
-    profile.lifestyle.work_style !== undefined &&
-    profile.lifestyle.work_style !== ""
-  ) {
-    sections.push(`- Styl pracy: ${profile.lifestyle.work_style}`);
+    sections.push(`- Styl życia: ${profile.lifestyleDescription}`);
   }
 
   // Preferences
   if (
-    profile.preferences.home_aesthetic !== null &&
-    profile.preferences.home_aesthetic !== undefined &&
-    profile.preferences.home_aesthetic !== ""
+    profile.preferencesDescription !== null &&
+    profile.preferencesDescription !== undefined &&
+    profile.preferencesDescription !== ""
   ) {
-    sections.push(`- Estetyka domu: ${profile.preferences.home_aesthetic}`);
-  }
-  if (
-    profile.preferences.favorite_beverages !== null &&
-    profile.preferences.favorite_beverages !== undefined &&
-    profile.preferences.favorite_beverages.length > 0
-  ) {
-    sections.push(
-      `- Ulubione napoje: ${profile.preferences.favorite_beverages.join(", ")}`,
-    );
-  }
-
-  // Media interests
-  if (
-    profile.media_interests.favorite_books !== null &&
-    profile.media_interests.favorite_books !== undefined &&
-    profile.media_interests.favorite_books.length > 0
-  ) {
-    sections.push(
-      `- Ulubione książki: ${profile.media_interests.favorite_books.join(", ")}`,
-    );
-  }
-  if (
-    profile.media_interests.music_preferences !== null &&
-    profile.media_interests.music_preferences !== undefined &&
-    profile.media_interests.music_preferences.length > 0
-  ) {
-    sections.push(
-      `- Muzyka: ${profile.media_interests.music_preferences.join(", ")}`,
-    );
+    sections.push(`- Preferencje: ${profile.preferencesDescription}`);
   }
 
   // Recent life
   if (
-    profile.recent_life.new_experiences !== null &&
-    profile.recent_life.new_experiences !== undefined &&
-    profile.recent_life.new_experiences.length > 0
+    profile.recentLifeDescription !== null &&
+    profile.recentLifeDescription !== undefined &&
+    profile.recentLifeDescription !== ""
   ) {
-    sections.push(
-      `- Nowe doświadczenia: ${profile.recent_life.new_experiences.join(", ")}`,
+    sections.push(`- Ostatnie życie: ${profile.recentLifeDescription}`);
+  }
+
+  // Possessions
+  const possessionsParts: string[] = [];
+  if (profile.possessions.what_already_has.length > 0) {
+    possessionsParts.push(
+      `Ma już: ${profile.possessions.what_already_has.join(", ")}`,
     );
   }
-  if (
-    profile.recent_life.mentioned_needs !== null &&
-    profile.recent_life.mentioned_needs !== undefined &&
-    profile.recent_life.mentioned_needs.length > 0
-  ) {
-    sections.push(
-      `- Wspomniane potrzeby: ${profile.recent_life.mentioned_needs.join(", ")}`,
+  if (profile.possessions.what_is_missing.length > 0) {
+    possessionsParts.push(
+      `Brakuje mu: ${profile.possessions.what_is_missing.join(", ")}`,
     );
+  }
+  if (possessionsParts.length > 0) {
+    sections.push(`- Posiadanie: ${possessionsParts.join("; ")}`);
   }
 
   return sections.length > 0 ? sections.join("\n") : "";
@@ -453,26 +414,61 @@ ${formatUserProfileContext(userProfile)}
     <output_rules>
       <key_themes_and_keywords>
         📋 15-20 tematów (GŁÓWNY OUTPUT!)
-        
+
         ✅ FRAZY (1-4 słowa) gdy stanowią całość:
         - "fotel gamingowy" (NIE: "fotel", "gaming")
         - "kawa espresso" (NIE: "kawa", "espresso")
         - "praca zdalna" (NIE: "praca", "zdalna")
-        
+
         ✅ Drąż głęboko z kontekstu:
         - Fotografię → "aparat", "statywy", "filtry obiektywu", "torby foto", "kursy fotografii"
         - Praca zdalna → "ergonomia biuro", "fotel biurowy", "oświetlenie", "słuchawki", "organizery"
         - Gotowanie → "noże kuchenne", "deski", "przyprawy", "książki kucharskie", "akcesoria"
-        
+
         ✅ Uwzględnij posiadanie:
         - "ma już X" → tematy: akcesoria do X, ulepszenia
         - "nie ma X" → tematy: X, podstawy X
-        
+
         ✅ Myśl produktowo:
         - "fotel gamingowy" = kategoria → będziemy szukać foteli
         - "kawa specialty" = kategoria → akcesoria do kawy
       </key_themes_and_keywords>
-      
+
+      <possessions>
+        📦 INFORMACJE O POSIADANIU (WAŻNE dla rekomendacji prezentów! - w recipient_profile)
+
+        ✅ what_already_has: Rzeczy które osoba JUŻ MA
+        - Wypisz konkretne przedmioty/akcesoria które zostały wspomniane
+        - "ma już słuchawki" → ["słuchawki"]
+        - "ma profesjonalny sprzęt kuchenny" → ["sprzęt kuchenny", "noże kuchenne"]
+
+        ✅ what_is_missing: Rzeczy których BRAKUJE lub które mogłyby się przydać
+        - Wypisz czego nie ma, ale mogłoby być przydatne
+        - "nie ma ergonomicznego fotela" → ["fotel biurowy", "ergonomiczne krzesło"]
+        - "mógłby mieć lepsze oświetlenie" → ["lampka biurko", "oświetlenie LED"]
+
+        ✅ Logika:
+        - Jeśli osoba ma podstawowe X → brakujące: lepsze wersje X, akcesoria do X
+        - Jeśli nie ma X w ogóle → brakujące: X, podstawowe akcesoria
+        - Skup się na rzeczach materialnych, nie abstrakcyjnych pojęciach
+      </possessions>
+
+      <recipient_profile>
+        📝 OPISY W FORMIE TEKSTU (nie strukturalne dane!)
+
+        ✅ personalInfoDescription: Podstawowe info o osobie
+        - "partner w wieku 26-35 lat"
+
+        ✅ lifestyleDescription: Styl życia, rutyna, praca, hobby
+        - "pracuje zdalnie w IT, gra na komputerze, lubi kawę"
+
+        ✅ preferencesDescription: Preferencje, gusta, upodobania
+        - "lubi nowoczesny design, pije specialty kawę, słucha muzyki elektronicznej"
+
+        ✅ recentLifeDescription: Aktualne wydarzenia, potrzeby, zmiany
+        - "ostatnio zmienił pracę, potrzebuje lepszego setupu biurowego, bolą go plecy"
+      </recipient_profile>
+
       <save_profile>ZAWSZE false (system zapyta automatycznie)</save_profile>
       <profile_name>ZAWSZE null (system zapyta automatycznie)</profile_name>
     </output_rules>
@@ -480,6 +476,31 @@ ${formatUserProfileContext(userProfile)}
     <example_output>
         end_conversation({
           "output": {
+            "recipient_profile": {
+              "personalInfoDescription": {
+                "relationship": "partner",
+                "occasion": "birthday",
+                "ageRange": "26-35"
+              },
+              "lifestyleDescription": "pracuje zdalnie w IT, dużo czasu spędza przy komputerze, gra na komputerze w wolnym czasie",
+              "preferencesDescription": "lubi nowoczesną technologię, gaming, wygodne wyposażenie biurowe",
+              "recentLifeDescription": "ostatnio skarżył się na bóle pleców od siedzenia przy biurku, zmienił pracę na zdalną",
+              "possessions": {
+                "what_already_has": [
+                  "podstawowe słuchawki",
+                  "stary monitor",
+                  "zwykłe krzesło kuchenne"
+                ],
+                "what_is_missing": [
+                  "ergonomiczny fotel biurowy",
+                  "profesjonalne słuchawki z mikrofonem",
+                  "dobre oświetlenie biurka",
+                  "mechaniczna klawiatura",
+                  "podkładka pod mysz",
+                  "organizery na biurko"
+                ]
+              }
+            },
             "key_themes_and_keywords": [
               "fotel gamingowy",
               "praca zdalna",
@@ -491,12 +512,12 @@ ${formatUserProfileContext(userProfile)}
               "słuchawki z mikrofonem",
               "webcam HD",
               "organizery biurko",
-            "stojak na laptopa",
-            "hub USB-C",
-            "kable management",
+              "stojak na laptopa",
+              "hub USB-C",
+              "kable management",
               "rośliny biurowe",
               "powerbank",
-            "gadżety tech"
+              "gadżety tech"
             ],
             "save_profile": false,
             "profile_name": null
@@ -523,9 +544,19 @@ ${formatUserProfileContext(userProfile)}
     
     <tool name="end_conversation">
       Finalizuj rozmowę z output
-      
+
       <params>
         output: {
+          recipient_profile: {
+            personalInfoDescription: { relationship?: string, occasion?: string, ageRange?: string },
+            lifestyleDescription?: string,
+            preferencesDescription?: string,
+            recentLifeDescription?: string,
+            possessions: {
+              what_already_has: string[],  // Rzeczy które osoba już ma
+              what_is_missing: string[]    // Rzeczy których brakuje lub mogłyby się przydać
+            }
+          },
           key_themes_and_keywords: string[15-20], // FRAZY nie pojedyncze słowa!
           save_profile: false,                     // ZAWSZE false
           profile_name: null                       // ZAWSZE null

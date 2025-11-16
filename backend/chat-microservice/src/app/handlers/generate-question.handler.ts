@@ -59,9 +59,7 @@ export class GenerateQuestionHandler
 
       // If user profile exists, skip the first question about who the gift is for
       if (userProfile !== undefined) {
-        const relationship =
-          userProfile.personal_info.relationship ?? "tej osoby";
-        const mockQuestion = `Świetnie! Mam już podstawowe informacje o ${relationship}. Powiedz mi, jak ${relationship} spędza wolny czas?`;
+        const mockQuestion = `Świetnie! Mam już podstawowe informacje o tej osobie. Powiedz mi, jak spędza ona wolny czas?`;
         const mockAnswers = {
           type: "select" as const,
           answers: [

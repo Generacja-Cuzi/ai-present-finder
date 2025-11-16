@@ -121,10 +121,11 @@ export function StalkingView() {
               Usuń
             </Button>
           </div>
-          {selectedProfile.profile.personal_info?.relationship !==
-            undefined && (
+          {selectedProfile.profile.personalInfoDescription.relationship !=
+            null && (
             <p className="text-muted-foreground text-sm">
-              Relacja: {selectedProfile.profile.personal_info.relationship}
+              Relacja:{" "}
+              {selectedProfile.profile.personalInfoDescription.relationship}
             </p>
           )}
         </div>

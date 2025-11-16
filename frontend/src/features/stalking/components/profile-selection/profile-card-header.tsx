@@ -7,8 +7,8 @@ type UserProfile =
   paths["/user-profiles"]["get"]["responses"]["200"]["content"]["application/json"]["profiles"][number];
 
 export function ProfileCardHeader({ profile }: { profile: UserProfile }) {
-  const relationship = profile.profile.personal_info?.relationship;
-  const occasion = profile.profile.personal_info?.occasion;
+  const relationship = profile.profile.personalInfoDescription.relationship;
+  const occasion = profile.profile.personalInfoDescription.occasion;
 
   return (
     <div className="flex items-start justify-between">

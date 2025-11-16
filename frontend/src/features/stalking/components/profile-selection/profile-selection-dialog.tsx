@@ -42,9 +42,10 @@ export function ProfileSelectionDialog({
     return profiles.filter((profile) => {
       const personName = profile.personName.toLowerCase();
       const relationship =
-        profile.profile.personal_info?.relationship?.toLowerCase() ?? "";
+        profile.profile.personalInfoDescription.relationship?.toLowerCase() ??
+        "";
       const occasion =
-        profile.profile.personal_info?.occasion?.toLowerCase() ?? "";
+        profile.profile.personalInfoDescription.occasion?.toLowerCase() ?? "";
 
       return (
         personName.includes(query) ||

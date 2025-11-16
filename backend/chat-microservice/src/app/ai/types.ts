@@ -1,38 +1,17 @@
 import { z } from "zod";
 
 export const recipientProfileSchema = z.object({
-  personal_info: z.object({
+  personalInfoDescription: z.object({
     relationship: z.string().nullish(),
     occasion: z.string().nullish(),
-    age_range: z.string().nullish(),
+    ageRange: z.string().nullish(),
   }),
-  lifestyle: z.object({
-    primary_hobbies: z.array(z.string()).nullish(),
-    daily_routine: z.string().nullish(),
-    relaxation_methods: z.array(z.string()).nullish(),
-    work_style: z.string().nullish(),
-  }),
-  preferences: z.object({
-    home_aesthetic: z.string().nullish(),
-    valued_items: z.array(z.string()).nullish(),
-    favorite_beverages: z.array(z.string()).nullish(),
-    comfort_foods: z.array(z.string()).nullish(),
-  }),
-  media_interests: z.object({
-    favorite_books: z.array(z.string()).nullish(),
-    must_watch_shows: z.array(z.string()).nullish(),
-    podcasts: z.array(z.string()).nullish(),
-    music_preferences: z.array(z.string()).nullish(),
-  }),
-  recent_life: z.object({
-    new_experiences: z.array(z.string()).nullish(),
-    mentioned_needs: z.array(z.string()).nullish(),
-    recent_achievements: z.array(z.string()).nullish(),
-  }),
-  gift_context: z.object({
-    occasion_significance: z.string().nullish(),
-    gift_message: z.string().nullish(),
-    previous_gift_successes: z.array(z.string()).nullish(),
+  lifestyleDescription: z.string().nullish(),
+  preferencesDescription: z.string().nullish(),
+  recentLifeDescription: z.string().nullish(),
+  possessions: z.object({
+    what_already_has: z.array(z.string()),
+    what_is_missing: z.array(z.string()),
   }),
 });
 

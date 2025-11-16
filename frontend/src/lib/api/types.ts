@@ -601,12 +601,7 @@ export interface components {
              */
             role: "user" | "admin";
         };
-        PersonalInfoDto: {
-            /**
-             * @description Name of the person receiving the gift
-             * @example John Doe
-             */
-            person_name?: string;
+        RecipientPersonalInfoDescriptionDto: {
             /**
              * @description Relationship to the gift recipient
              * @example brother
@@ -621,173 +616,48 @@ export interface components {
              * @description Age range of the gift recipient
              * @example 25-35
              */
-            age_range?: string;
+            ageRange?: string;
         };
-        LifestyleDto: {
+        RecipientPossessionsDto: {
             /**
-             * @description Primary hobbies and interests
+             * @description Items the recipient already owns
              * @example [
-             *       "reading",
-             *       "hiking",
-             *       "cooking"
-             *     ]
-             */
-            primary_hobbies?: string;
-            /**
-             * @description Daily routine description
-             * @example Early riser, works from home, enjoys evening walks
-             */
-            daily_routine?: string;
-            /**
-             * @description Methods used for relaxation
-             * @example [
-             *       "meditation",
-             *       "listening to music",
-             *       "gardening"
-             *     ]
-             */
-            relaxation_methods?: string;
-            /**
-             * @description Work style and environment preferences
-             * @example Creative, prefers flexible hours, enjoys collaborative work
-             */
-            work_style?: string;
-        };
-        PreferencesDto: {
-            /**
-             * @description Home aesthetic and decor preferences
-             * @example Minimalist, warm colors, natural materials
-             */
-            home_aesthetic?: string;
-            /**
-             * @description Items that hold sentimental or practical value
-             * @example [
-             *       "family photos",
-             *       "coffee maker",
-             *       "books"
-             *     ]
-             */
-            valued_items?: string;
-            /**
-             * @description Favorite beverages
-             * @example [
-             *       "coffee",
-             *       "green tea",
-             *       "craft beer"
-             *     ]
-             */
-            favorite_beverages?: string;
-            /**
-             * @description Comfort foods and favorite dishes
-             * @example [
-             *       "pasta",
-             *       "chocolate",
-             *       "homemade soup"
-             *     ]
-             */
-            comfort_foods?: string;
-        };
-        MediaInterestsDto: {
-            /**
-             * @description Favorite books or authors
-             * @example [
-             *       "fiction novels",
-             *       "biographies",
-             *       "science fiction"
-             *     ]
-             */
-            favorite_books?: string;
-            /**
-             * @description TV shows or movies that must be watched
-             * @example [
-             *       "Breaking Bad",
-             *       "The Office",
-             *       "Star Wars series"
-             *     ]
-             */
-            must_watch_shows?: string;
-            /**
-             * @description Favorite podcasts
-             * @example [
-             *       "Tech podcasts",
-             *       "true crime",
-             *       "science discussions"
-             *     ]
-             */
-            podcasts?: string;
-            /**
-             * @description Music genres and preferences
-             * @example [
-             *       "indie rock",
-             *       "jazz",
-             *       "electronic music"
-             *     ]
-             */
-            music_preferences?: string;
-        };
-        RecentLifeDto: {
-            /**
-             * @description Recent new experiences or life changes
-             * @example [
-             *       "started a new job",
-             *       "moved to a new city",
-             *       "learned a new skill"
-             *     ]
-             */
-            new_experiences?: string;
-            /**
-             * @description Needs or challenges mentioned during conversation
-             * @example [
-             *       "needs better organization tools",
-             *       "wants to improve fitness",
-             *       "looking for cooking inspiration"
-             *     ]
-             */
-            mentioned_needs?: string;
-            /**
-             * @description Recent achievements or accomplishments
-             * @example [
-             *       "completed a marathon",
-             *       "got promoted",
-             *       "published an article"
-             *     ]
-             */
-            recent_achievements?: string;
-        };
-        GiftContextDto: {
-            /**
-             * @description Significance or importance of the occasion
-             * @example First birthday after graduation, very important milestone
-             */
-            occasion_significance?: string;
-            /**
-             * @description Personal message to include with the gift
-             * @example Happy Birthday! Can't wait to celebrate with you.
-             */
-            gift_message?: string;
-            /**
-             * @description Previous gifts that were successful or well-received
-             * @example [
-             *       "coffee subscription",
              *       "wireless headphones",
-             *       "cooking class voucher"
+             *       "coffee maker",
+             *       "fitness tracker"
              *     ]
              */
-            previous_gift_successes?: string;
+            what_already_has: string[];
+            /**
+             * @description Items the recipient needs or would benefit from
+             * @example [
+             *       "ergonomic chair",
+             *       "smart home device",
+             *       "cooking tools"
+             *     ]
+             */
+            what_is_missing: string[];
         };
         RecipientProfileDto: {
             /** @description Basic personal information about the gift recipient */
-            personal_info?: components["schemas"]["PersonalInfoDto"];
-            /** @description Lifestyle preferences and daily habits */
-            lifestyle?: components["schemas"]["LifestyleDto"];
-            /** @description Personal preferences and tastes */
-            preferences?: components["schemas"]["PreferencesDto"];
-            /** @description Media and entertainment interests */
-            media_interests?: components["schemas"]["MediaInterestsDto"];
-            /** @description Recent life events and experiences */
-            recent_life?: components["schemas"]["RecentLifeDto"];
-            /** @description Context and details about the gift occasion */
-            gift_context?: components["schemas"]["GiftContextDto"];
+            personalInfoDescription: components["schemas"]["RecipientPersonalInfoDescriptionDto"];
+            /**
+             * @description Lifestyle description
+             * @example Works from home, enjoys gaming and coffee, prefers minimalist design
+             */
+            lifestyleDescription?: string;
+            /**
+             * @description Preferences description
+             * @example Loves tech gadgets, prefers modern aesthetics, enjoys craft coffee
+             */
+            preferencesDescription?: string;
+            /**
+             * @description Recent life events and experiences
+             * @example Recently started working remotely, experiencing back pain from poor posture
+             */
+            recentLifeDescription?: string;
+            /** @description Information about what the recipient already has and what they need */
+            possessions: components["schemas"]["RecipientPossessionsDto"];
         };
         ReasoningSummaryDto: {
             /** @description Recipient profile with detailed information */

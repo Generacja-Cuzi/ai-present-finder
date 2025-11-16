@@ -1,14 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-export class PersonalInfoDto {
-  @ApiPropertyOptional({
-    required: false,
-    type: String,
-    description: "Name of the person receiving the gift",
-    example: "John Doe",
-  })
-  person_name?: string | null;
-
+export class RecipientPersonalInfoDescriptionDto {
   @ApiPropertyOptional({
     required: false,
     type: String,
@@ -31,217 +23,67 @@ export class PersonalInfoDto {
     description: "Age range of the gift recipient",
     example: "25-35",
   })
-  age_range?: string | null;
+  ageRange?: string | null;
 }
 
-export class LifestyleDto {
-  @ApiPropertyOptional({
-    required: false,
+export class RecipientPossessionsDto {
+  @ApiProperty({
     type: String,
-    description: "Primary hobbies and interests",
-    example: ["reading", "hiking", "cooking"],
+    isArray: true,
+    description: "Items the recipient already owns",
+    example: ["wireless headphones", "coffee maker", "fitness tracker"],
   })
-  primary_hobbies?: string[] | null;
+  what_already_has: string[];
 
-  @ApiPropertyOptional({
-    required: false,
+  @ApiProperty({
     type: String,
-    description: "Daily routine description",
-    example: "Early riser, works from home, enjoys evening walks",
+    isArray: true,
+    description: "Items the recipient needs or would benefit from",
+    example: ["ergonomic chair", "smart home device", "cooking tools"],
   })
-  daily_routine?: string | null;
-
-  @ApiPropertyOptional({
-    required: false,
-    type: String,
-    description: "Methods used for relaxation",
-    example: ["meditation", "listening to music", "gardening"],
-  })
-  relaxation_methods?: string[] | null;
-
-  @ApiPropertyOptional({
-    required: false,
-    type: String,
-    description: "Work style and environment preferences",
-    example: "Creative, prefers flexible hours, enjoys collaborative work",
-  })
-  work_style?: string | null;
-}
-
-export class PreferencesDto {
-  @ApiPropertyOptional({
-    required: false,
-    type: String,
-    description: "Home aesthetic and decor preferences",
-    example: "Minimalist, warm colors, natural materials",
-  })
-  home_aesthetic?: string | null;
-
-  @ApiPropertyOptional({
-    required: false,
-    type: String,
-    description: "Items that hold sentimental or practical value",
-    example: ["family photos", "coffee maker", "books"],
-  })
-  valued_items?: string[] | null;
-
-  @ApiPropertyOptional({
-    required: false,
-    type: String,
-    description: "Favorite beverages",
-    example: ["coffee", "green tea", "craft beer"],
-  })
-  favorite_beverages?: string[] | null;
-
-  @ApiPropertyOptional({
-    required: false,
-    type: String,
-    description: "Comfort foods and favorite dishes",
-    example: ["pasta", "chocolate", "homemade soup"],
-  })
-  comfort_foods?: string[] | null;
-}
-
-export class MediaInterestsDto {
-  @ApiPropertyOptional({
-    required: false,
-    type: String,
-    description: "Favorite books or authors",
-    example: ["fiction novels", "biographies", "science fiction"],
-  })
-  favorite_books?: string[] | null;
-
-  @ApiPropertyOptional({
-    required: false,
-    type: String,
-    description: "TV shows or movies that must be watched",
-    example: ["Breaking Bad", "The Office", "Star Wars series"],
-  })
-  must_watch_shows?: string[] | null;
-
-  @ApiPropertyOptional({
-    required: false,
-    type: String,
-    description: "Favorite podcasts",
-    example: ["Tech podcasts", "true crime", "science discussions"],
-  })
-  podcasts?: string[] | null;
-
-  @ApiPropertyOptional({
-    required: false,
-    type: String,
-    description: "Music genres and preferences",
-    example: ["indie rock", "jazz", "electronic music"],
-  })
-  music_preferences?: string[] | null;
-}
-
-export class RecentLifeDto {
-  @ApiPropertyOptional({
-    required: false,
-    type: String,
-    description: "Recent new experiences or life changes",
-    example: [
-      "started a new job",
-      "moved to a new city",
-      "learned a new skill",
-    ],
-  })
-  new_experiences?: string[] | null;
-
-  @ApiPropertyOptional({
-    required: false,
-    type: String,
-    description: "Needs or challenges mentioned during conversation",
-    example: [
-      "needs better organization tools",
-      "wants to improve fitness",
-      "looking for cooking inspiration",
-    ],
-  })
-  mentioned_needs?: string[] | null;
-
-  @ApiPropertyOptional({
-    required: false,
-    type: String,
-    description: "Recent achievements or accomplishments",
-    example: ["completed a marathon", "got promoted", "published an article"],
-  })
-  recent_achievements?: string[] | null;
-}
-
-export class GiftContextDto {
-  @ApiPropertyOptional({
-    required: false,
-    type: String,
-    description: "Significance or importance of the occasion",
-    example: "First birthday after graduation, very important milestone",
-  })
-  occasion_significance?: string | null;
-
-  @ApiPropertyOptional({
-    required: false,
-    type: String,
-    description: "Personal message to include with the gift",
-    example: "Happy Birthday! Can't wait to celebrate with you.",
-  })
-  gift_message?: string | null;
-
-  @ApiPropertyOptional({
-    required: false,
-    type: String,
-    description: "Previous gifts that were successful or well-received",
-    example: [
-      "coffee subscription",
-      "wireless headphones",
-      "cooking class voucher",
-    ],
-  })
-  previous_gift_successes?: string[] | null;
+  what_is_missing: string[];
 }
 
 export class RecipientProfileDto {
-  @ApiPropertyOptional({
-    required: false,
-    type: PersonalInfoDto,
+  @ApiProperty({
+    type: RecipientPersonalInfoDescriptionDto,
     description: "Basic personal information about the gift recipient",
   })
-  personal_info?: PersonalInfoDto;
+  personalInfoDescription: RecipientPersonalInfoDescriptionDto;
 
   @ApiPropertyOptional({
     required: false,
-    type: LifestyleDto,
-    description: "Lifestyle preferences and daily habits",
+    type: String,
+    description: "Lifestyle description",
+    example:
+      "Works from home, enjoys gaming and coffee, prefers minimalist design",
   })
-  lifestyle?: LifestyleDto;
+  lifestyleDescription?: string | null;
 
   @ApiPropertyOptional({
     required: false,
-    type: PreferencesDto,
-    description: "Personal preferences and tastes",
+    type: String,
+    description: "Preferences description",
+    example:
+      "Loves tech gadgets, prefers modern aesthetics, enjoys craft coffee",
   })
-  preferences?: PreferencesDto;
+  preferencesDescription?: string | null;
 
   @ApiPropertyOptional({
     required: false,
-    type: MediaInterestsDto,
-    description: "Media and entertainment interests",
-  })
-  media_interests?: MediaInterestsDto;
-
-  @ApiPropertyOptional({
-    required: false,
-    type: RecentLifeDto,
+    type: String,
     description: "Recent life events and experiences",
+    example:
+      "Recently started working remotely, experiencing back pain from poor posture",
   })
-  recent_life?: RecentLifeDto;
+  recentLifeDescription?: string | null;
 
-  @ApiPropertyOptional({
-    required: false,
-    type: GiftContextDto,
-    description: "Context and details about the gift occasion",
+  @ApiProperty({
+    type: RecipientPossessionsDto,
+    description:
+      "Information about what the recipient already has and what they need",
   })
-  gift_context?: GiftContextDto;
+  possessions: RecipientPossessionsDto;
 }
 
 export class ReasoningSummaryDto {

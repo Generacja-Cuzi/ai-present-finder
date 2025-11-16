@@ -3,7 +3,7 @@ import { Progress } from "@/components/ui/progress";
 
 export function ChatHeader({
   currentStep,
-  totalSteps = 10,
+  totalSteps = 30,
 }: {
   currentStep: number;
   totalSteps?: number;

@@ -29,6 +29,8 @@ export async function giftInterviewFlow({
   onInterviewCompleted: (output: EndConversationOutput) => void;
   onInappropriateRequest: (reason: string) => void;
 }) {
+  // Count questions asked so far (assistant messages)
+  const questionCount = messages.filter(msg => msg.role === 'assistant').length;
   const maxRetries = 3;
   let results: GenerateTextResult<typeof tools, never> | null = null;
   let retryCount = 0;
@@ -38,7 +40,7 @@ export async function giftInterviewFlow({
       results = await generateText({
         model: google("gemini-2.5-flash"),
         messages,
-        system: giftConsultantPrompt(occasion, userProfile),
+        system: giftConsultantPrompt(occasion, userProfile, questionCount),
         stopWhen: stepCountIs(1),
         tools,
         toolChoice: "required", // This forces the AI to always call a tool

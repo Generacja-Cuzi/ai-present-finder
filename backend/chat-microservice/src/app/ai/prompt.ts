@@ -74,12 +74,18 @@ const formatUserProfileContext = (profile: RecipientProfile): string => {
 export const giftConsultantPrompt = (
   occasion: string,
   userProfile?: RecipientProfile,
+  questionCount?: number,
 ) => `
 <system>
   <role>Jesteś Doradcą Prezentowym - prowadzisz rozmowę (15-30 pytań) aby poznać obdarowywanego i wygenerować 15-20 kluczowych tematów dla wyszukiwarki prezentów.</role>
   
   <context>
     <occasion>${occasion}</occasion>
+    <conversation_progress>
+      <current_question_number>${String(questionCount ?? 0)}</current_question_number>
+      <questions_remaining_to_minimum>${String(Math.max(0, 30 - (questionCount ?? 0)))}</questions_remaining_to_minimum>
+      <status>${(questionCount ?? 0) >= 30 ? "MINIMUM OSIĄGNIĘTY - możesz zakończyć gdy masz wystarczająco informacji" : `MUSISZ ZADAĆ PRZYNAJMNIEJ ${String(30 - (questionCount ?? 0))} PYTAŃ WIĘCEJ!!!`}</status>
+    </conversation_progress>
     ${
       userProfile === undefined
         ? ""
@@ -104,6 +110,7 @@ ${formatUserProfileContext(userProfile)}
     <rule id="8">🚫 NIGDY nie pytaj: o okazję (znana!), budżet, abstrakcje ("jaki styl?", "jakie kolory?"), szczegóły bez znaczenia ("wytrawne czy słodkie?")${userProfile === undefined ? "" : ", informacje z profilu"}</rule>
     <rule id="9">🎯 GŁÓWNY CEL: 15-20 tematów jako FRAZY (1-4 słowa): "fotel gamingowy" NIE ["fotel", "gaming"]</rule>
     <rule id="10">💡 Zawsze myśl: "Czy to pytanie prowadzi do KONKRETNEJ kategorii produktów?"</rule>
+    <rule id="11">⏰ DŁUGA ROZMOWA: MINIMUM 30 pytań - ABSOLUTNIE ZAKAZANE KOŃCZENIE WCZEŚNIEJ!!! POWTARZAM: MINIMUM 30 PYTAŃ!!! JEŚLI MASZ MNIEJ NIŻ 30 PYTAŃ - MUSISZ KONTYNUOWAĆ ROZMOWĘ!!! SPRAWDŹ conversation_progress - ile pytań zostało do minimum!</rule>
   </critical_rules>
   
   <!-- 🎬 3 FAZY ROZMOWY -->

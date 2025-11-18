@@ -58,49 +58,55 @@ export function ReasoningDialog({
             <div className="space-y-3">
               <h3 className="font-semibold text-gray-900">Profil odbiorcy</h3>
 
-              {reasoningSummary.recipientProfile.personal_info !==
-                undefined && (
+              {
                 <InfoSection
                   title="Informacje osobiste"
-                  data={reasoningSummary.recipientProfile.personal_info}
+                  data={
+                    reasoningSummary.recipientProfile.personalInfoDescription
+                  }
                 />
+              }
+
+              {reasoningSummary.recipientProfile.lifestyleDescription !=
+                null && (
+                <div className="rounded-lg bg-gray-50 p-3">
+                  <h4 className="mb-2 text-sm font-medium text-gray-700">
+                    Styl życia
+                  </h4>
+                  <p className="text-sm text-gray-600">
+                    {reasoningSummary.recipientProfile.lifestyleDescription}
+                  </p>
+                </div>
               )}
 
-              {reasoningSummary.recipientProfile.lifestyle !== undefined && (
-                <InfoSection
-                  title="Styl życia"
-                  data={reasoningSummary.recipientProfile.lifestyle}
-                />
+              {reasoningSummary.recipientProfile.preferencesDescription !=
+                null && (
+                <div className="rounded-lg bg-gray-50 p-3">
+                  <h4 className="mb-2 text-sm font-medium text-gray-700">
+                    Preferencje
+                  </h4>
+                  <p className="text-sm text-gray-600">
+                    {reasoningSummary.recipientProfile.preferencesDescription}
+                  </p>
+                </div>
               )}
 
-              {reasoningSummary.recipientProfile.preferences !== undefined && (
-                <InfoSection
-                  title="Preferencje"
-                  data={reasoningSummary.recipientProfile.preferences}
-                />
+              {reasoningSummary.recipientProfile.recentLifeDescription !=
+                null && (
+                <div className="rounded-lg bg-gray-50 p-3">
+                  <h4 className="mb-2 text-sm font-medium text-gray-700">
+                    Ostatnie wydarzenia
+                  </h4>
+                  <p className="text-sm text-gray-600">
+                    {reasoningSummary.recipientProfile.recentLifeDescription}
+                  </p>
+                </div>
               )}
 
-              {reasoningSummary.recipientProfile.media_interests !==
-                undefined && (
-                <InfoSection
-                  title="Zainteresowania medialne"
-                  data={reasoningSummary.recipientProfile.media_interests}
-                />
-              )}
-
-              {reasoningSummary.recipientProfile.recent_life !== undefined && (
-                <InfoSection
-                  title="Ostatnie wydarzenia"
-                  data={reasoningSummary.recipientProfile.recent_life}
-                />
-              )}
-
-              {reasoningSummary.recipientProfile.gift_context !== undefined && (
-                <InfoSection
-                  title="Kontekst prezentu"
-                  data={reasoningSummary.recipientProfile.gift_context}
-                />
-              )}
+              <InfoSection
+                title="Posiadanie"
+                data={reasoningSummary.recipientProfile.possessions}
+              />
             </div>
           )}
 

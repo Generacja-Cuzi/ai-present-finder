@@ -1434,14 +1434,9 @@
           "role"
         ]
       },
-      "PersonalInfoDto": {
+      "RecipientPersonalInfoDescriptionDto": {
         "type": "object",
         "properties": {
-          "person_name": {
-            "type": "string",
-            "description": "Name of the person receiving the gift",
-            "example": "John Doe"
-          },
           "relationship": {
             "type": "string",
             "description": "Relationship to the gift recipient",
@@ -1452,196 +1447,79 @@
             "description": "Occasion for the gift",
             "example": "birthday"
           },
-          "age_range": {
+          "ageRange": {
             "type": "string",
             "description": "Age range of the gift recipient",
             "example": "25-35"
           }
         }
       },
-      "LifestyleDto": {
+      "RecipientPossessionsDto": {
         "type": "object",
         "properties": {
-          "primary_hobbies": {
-            "type": "string",
-            "description": "Primary hobbies and interests",
-            "example": ["reading", "hiking", "cooking"]
-          },
-          "daily_routine": {
-            "type": "string",
-            "description": "Daily routine description",
-            "example": "Early riser, works from home, enjoys evening walks"
-          },
-          "relaxation_methods": {
-            "type": "string",
-            "description": "Methods used for relaxation",
-            "example": ["meditation", "listening to music", "gardening"]
-          },
-          "work_style": {
-            "type": "string",
-            "description": "Work style and environment preferences",
-            "example": "Creative, prefers flexible hours, enjoys collaborative work"
-          }
-        }
-      },
-      "PreferencesDto": {
-        "type": "object",
-        "properties": {
-          "home_aesthetic": {
-            "type": "string",
-            "description": "Home aesthetic and decor preferences",
-            "example": "Minimalist, warm colors, natural materials"
-          },
-          "valued_items": {
-            "type": "string",
-            "description": "Items that hold sentimental or practical value",
-            "example": ["family photos", "coffee maker", "books"]
-          },
-          "favorite_beverages": {
-            "type": "string",
-            "description": "Favorite beverages",
-            "example": ["coffee", "green tea", "craft beer"]
-          },
-          "comfort_foods": {
-            "type": "string",
-            "description": "Comfort foods and favorite dishes",
-            "example": ["pasta", "chocolate", "homemade soup"]
-          }
-        }
-      },
-      "MediaInterestsDto": {
-        "type": "object",
-        "properties": {
-          "favorite_books": {
-            "type": "string",
-            "description": "Favorite books or authors",
-            "example": ["fiction novels", "biographies", "science fiction"]
-          },
-          "must_watch_shows": {
-            "type": "string",
-            "description": "TV shows or movies that must be watched",
-            "example": ["Breaking Bad", "The Office", "Star Wars series"]
-          },
-          "podcasts": {
-            "type": "string",
-            "description": "Favorite podcasts",
-            "example": ["Tech podcasts", "true crime", "science discussions"]
-          },
-          "music_preferences": {
-            "type": "string",
-            "description": "Music genres and preferences",
-            "example": ["indie rock", "jazz", "electronic music"]
-          }
-        }
-      },
-      "RecentLifeDto": {
-        "type": "object",
-        "properties": {
-          "new_experiences": {
-            "type": "string",
-            "description": "Recent new experiences or life changes",
+          "what_already_has": {
+            "description": "Items the recipient already owns",
             "example": [
-              "started a new job",
-              "moved to a new city",
-              "learned a new skill"
-            ]
-          },
-          "mentioned_needs": {
-            "type": "string",
-            "description": "Needs or challenges mentioned during conversation",
-            "example": [
-              "needs better organization tools",
-              "wants to improve fitness",
-              "looking for cooking inspiration"
-            ]
-          },
-          "recent_achievements": {
-            "type": "string",
-            "description": "Recent achievements or accomplishments",
-            "example": [
-              "completed a marathon",
-              "got promoted",
-              "published an article"
-            ]
-          }
-        }
-      },
-      "GiftContextDto": {
-        "type": "object",
-        "properties": {
-          "occasion_significance": {
-            "type": "string",
-            "description": "Significance or importance of the occasion",
-            "example": "First birthday after graduation, very important milestone"
-          },
-          "gift_message": {
-            "type": "string",
-            "description": "Personal message to include with the gift",
-            "example": "Happy Birthday! Can't wait to celebrate with you."
-          },
-          "previous_gift_successes": {
-            "type": "string",
-            "description": "Previous gifts that were successful or well-received",
-            "example": [
-              "coffee subscription",
               "wireless headphones",
-              "cooking class voucher"
-            ]
+              "coffee maker",
+              "fitness tracker"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "what_is_missing": {
+            "description": "Items the recipient needs or would benefit from",
+            "example": [
+              "ergonomic chair",
+              "smart home device",
+              "cooking tools"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
-        }
+        },
+        "required": ["what_already_has", "what_is_missing"]
       },
       "RecipientProfileDto": {
         "type": "object",
         "properties": {
-          "personal_info": {
+          "personalInfoDescription": {
             "description": "Basic personal information about the gift recipient",
             "allOf": [
               {
-                "$ref": "#/components/schemas/PersonalInfoDto"
+                "$ref": "#/components/schemas/RecipientPersonalInfoDescriptionDto"
               }
             ]
           },
-          "lifestyle": {
-            "description": "Lifestyle preferences and daily habits",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/LifestyleDto"
-              }
-            ]
+          "lifestyleDescription": {
+            "type": "string",
+            "description": "Lifestyle description",
+            "example": "Works from home, enjoys gaming and coffee, prefers minimalist design"
           },
-          "preferences": {
-            "description": "Personal preferences and tastes",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/PreferencesDto"
-              }
-            ]
+          "preferencesDescription": {
+            "type": "string",
+            "description": "Preferences description",
+            "example": "Loves tech gadgets, prefers modern aesthetics, enjoys craft coffee"
           },
-          "media_interests": {
-            "description": "Media and entertainment interests",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MediaInterestsDto"
-              }
-            ]
-          },
-          "recent_life": {
+          "recentLifeDescription": {
+            "type": "string",
             "description": "Recent life events and experiences",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/RecentLifeDto"
-              }
-            ]
+            "example": "Recently started working remotely, experiencing back pain from poor posture"
           },
-          "gift_context": {
-            "description": "Context and details about the gift occasion",
+          "possessions": {
+            "description": "Information about what the recipient already has and what they need",
             "allOf": [
               {
-                "$ref": "#/components/schemas/GiftContextDto"
+                "$ref": "#/components/schemas/RecipientPossessionsDto"
               }
             ]
           }
-        }
+        },
+        "required": ["personalInfoDescription", "possessions"]
       },
       "ReasoningSummaryDto": {
         "type": "object",

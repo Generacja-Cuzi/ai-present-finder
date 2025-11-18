@@ -1,9 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-class RecipientPersonalInfo {
-  @ApiPropertyOptional({ nullable: true, type: String })
-  person_name?: string | null;
-
+class RecipientPersonalInfoDescription {
   @ApiPropertyOptional({ nullable: true, type: String })
   relationship?: string | null;
 
@@ -11,91 +8,32 @@ class RecipientPersonalInfo {
   occasion?: string | null;
 
   @ApiPropertyOptional({ nullable: true, type: String })
-  age_range?: string | null;
+  ageRange?: string | null;
 }
 
-class RecipientLifestyle {
-  @ApiPropertyOptional({ nullable: true, type: [String] })
-  primary_hobbies?: string[] | null;
+class RecipientPossessions {
+  @ApiProperty({ type: String, isArray: true })
+  what_already_has: string[];
 
-  @ApiPropertyOptional({ nullable: true, type: String })
-  daily_routine?: string | null;
-
-  @ApiPropertyOptional({ nullable: true, type: [String] })
-  relaxation_methods?: string[] | null;
-
-  @ApiPropertyOptional({ nullable: true, type: String })
-  work_style?: string | null;
-}
-
-class RecipientPreferences {
-  @ApiPropertyOptional({ nullable: true, type: String })
-  home_aesthetic?: string | null;
-
-  @ApiPropertyOptional({ nullable: true, type: [String] })
-  valued_items?: string[] | null;
-
-  @ApiPropertyOptional({ nullable: true, type: [String] })
-  favorite_beverages?: string[] | null;
-
-  @ApiPropertyOptional({ nullable: true, type: [String] })
-  comfort_foods?: string[] | null;
-}
-
-class RecipientMediaInterests {
-  @ApiPropertyOptional({ nullable: true, type: [String] })
-  favorite_books?: string[] | null;
-
-  @ApiPropertyOptional({ nullable: true, type: [String] })
-  must_watch_shows?: string[] | null;
-
-  @ApiPropertyOptional({ nullable: true, type: [String] })
-  podcasts?: string[] | null;
-
-  @ApiPropertyOptional({ nullable: true, type: [String] })
-  music_preferences?: string[] | null;
-}
-
-class RecipientRecentLife {
-  @ApiPropertyOptional({ nullable: true, type: [String] })
-  new_experiences?: string[] | null;
-
-  @ApiPropertyOptional({ nullable: true, type: [String] })
-  mentioned_needs?: string[] | null;
-
-  @ApiPropertyOptional({ nullable: true, type: [String] })
-  recent_achievements?: string[] | null;
-}
-
-class RecipientGiftContext {
-  @ApiPropertyOptional({ nullable: true, type: String })
-  occasion_significance?: string | null;
-
-  @ApiPropertyOptional({ nullable: true, type: String })
-  gift_message?: string | null;
-
-  @ApiPropertyOptional({ nullable: true, type: [String] })
-  previous_gift_successes?: string[] | null;
+  @ApiProperty({ type: String, isArray: true })
+  what_is_missing: string[];
 }
 
 export class RecipientProfileDto {
-  @ApiProperty({ type: RecipientPersonalInfo })
-  personal_info: RecipientPersonalInfo;
+  @ApiProperty({ type: RecipientPersonalInfoDescription })
+  personalInfoDescription: RecipientPersonalInfoDescription;
 
-  @ApiProperty({ type: RecipientLifestyle })
-  lifestyle: RecipientLifestyle;
+  @ApiPropertyOptional({ nullable: true, type: String })
+  lifestyleDescription?: string | null;
 
-  @ApiProperty({ type: RecipientPreferences })
-  preferences: RecipientPreferences;
+  @ApiPropertyOptional({ nullable: true, type: String })
+  preferencesDescription?: string | null;
 
-  @ApiProperty({ type: RecipientMediaInterests })
-  media_interests: RecipientMediaInterests;
+  @ApiPropertyOptional({ nullable: true, type: String })
+  recentLifeDescription?: string | null;
 
-  @ApiProperty({ type: RecipientRecentLife })
-  recent_life: RecipientRecentLife;
-
-  @ApiProperty({ type: RecipientGiftContext })
-  gift_context: RecipientGiftContext;
+  @ApiProperty({ type: RecipientPossessions })
+  possessions: RecipientPossessions;
 }
 
 export class UserProfileDto {

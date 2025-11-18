@@ -874,6 +874,19 @@ importers:
         specifier: ^5.0.0
         version: 5.9.2
 
+  core/rabbitmq-config:
+    dependencies:
+      "@nestjs/microservices":
+        specifier: ^11.0.0
+        version: 11.1.6(@grpc/grpc-js@1.14.0)(@nestjs/common@11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(amqp-connection-manager@4.1.14(amqplib@0.10.9))(amqplib@0.10.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+    devDependencies:
+      "@types/node":
+        specifier: ^20.0.0
+        version: 20.19.25
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.2
+
   core/types:
     devDependencies:
       typescript:
@@ -4717,6 +4730,12 @@ packages:
     resolution:
       {
         integrity: sha512-hrmi5jWt2w60ayox3iIXwpMEnfUvOLJCRtrOPbHtH15nTjvO7uhnelvrdAs0dO0/zl5DZ3ZbahiaXEVb54ca/A==,
+      }
+
+  "@types/node@20.19.25":
+    resolution:
+      {
+        integrity: sha512-ZsJzA5thDQMSQO788d7IocwwQbI8B5OPzmqNvpf3NY/+MHDAS759Wo0gd2WQeXYt5AAAQjzcrTVC6SKCuYgoCQ==,
       }
 
   "@types/node@22.18.1":
@@ -16045,6 +16064,10 @@ snapshots:
   "@types/node@18.19.129":
     dependencies:
       undici-types: 5.26.5
+
+  "@types/node@20.19.25":
+    dependencies:
+      undici-types: 6.21.0
 
   "@types/node@22.18.1":
     dependencies:

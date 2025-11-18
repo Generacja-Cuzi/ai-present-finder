@@ -22,7 +22,8 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@core/events": ["../../core/events/src/index"],
-      "@core/types": ["../../core/types/src/index"]
+      "@core/types": ["../../core/types/src/index"],
+      "@core/rabbitmq-config": ["../../core/rabbitmq-config/src/index"]
     }
   }
 }

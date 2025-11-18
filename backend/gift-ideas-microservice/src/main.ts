@@ -4,11 +4,11 @@ import {
   RegenerateIdeasLoopEvent,
   StalkingCompletedEvent,
 } from "@core/events";
+import { createRabbitMQConsumer } from "@core/rabbitmq-config";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { Transport } from "@nestjs/microservices";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
@@ -19,35 +19,21 @@ async function bootstrap() {
 
   const port = Number(process.env.PORT ?? 3030);
   const portString = String(port);
-  const cloudAmqpUrl =
-    process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672";
 
-  const stalkingCompletedMicroserviceOptions = {
-    transport: Transport.RMQ,
-    options: {
-      urls: [cloudAmqpUrl],
-      queue: StalkingCompletedEvent.name,
-      queueOptions: { durable: false },
-    },
-  };
+  const stalkingCompletedMicroserviceOptions = createRabbitMQConsumer({
+    queue: StalkingCompletedEvent.name,
+    prefetchCount: 10,
+  });
 
-  const chatInterviewCompletedMicroserviceOptions = {
-    transport: Transport.RMQ,
-    options: {
-      urls: [cloudAmqpUrl],
-      queue: ChatInterviewCompletedEvent.name,
-      queueOptions: { durable: false },
-    },
-  };
+  const chatInterviewCompletedMicroserviceOptions = createRabbitMQConsumer({
+    queue: ChatInterviewCompletedEvent.name,
+    prefetchCount: 10,
+  });
 
-  const regenerateIdeasLoopMicroserviceOptions = {
-    transport: Transport.RMQ,
-    options: {
-      urls: [cloudAmqpUrl],
-      queue: RegenerateIdeasLoopEvent.name,
-      queueOptions: { durable: false },
-    },
-  };
+  const regenerateIdeasLoopMicroserviceOptions = createRabbitMQConsumer({
+    queue: RegenerateIdeasLoopEvent.name,
+    prefetchCount: 10,
+  });
 
   app.connectMicroservice(stalkingCompletedMicroserviceOptions);
   app.connectMicroservice(chatInterviewCompletedMicroserviceOptions);

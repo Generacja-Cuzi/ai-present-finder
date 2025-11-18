@@ -6,8 +6,21 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:?}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:?}
+      # Memory management - limit to 1.5GB with high watermark at 1GB
+      RABBITMQ_VM_MEMORY_HIGH_WATERMARK: 1073741824
+      # Enable memory alarms
+      RABBITMQ_VM_MEMORY_HIGH_WATERMARK_PAGING_RATIO: 0.75
+      # Queue TTL - auto-delete idle queues after 1 hour
+      RABBITMQ_DEFAULT_QUEUE_TTL: 3600000
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    # Hard memory limit to prevent OOM
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
+        reservations:
+          memory: 512M
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 30s

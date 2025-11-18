@@ -1,10 +1,10 @@
 // src/main.ts
 import { ChatStartInterviewEvent, ChatUserAnsweredEvent } from "@core/events";
+import { createRabbitMQConsumer } from "@core/rabbitmq-config";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { Transport } from "@nestjs/microservices";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
@@ -16,29 +16,19 @@ async function bootstrap() {
   const port = Number(process.env.PORT ?? 3020);
   const portString = String(port);
 
-  const cloudAmqpUrl =
-    process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672";
-
-  const chatAskQuestionMicroserviceOptions = {
-    transport: Transport.RMQ,
-    options: {
-      urls: [cloudAmqpUrl],
+  app.connectMicroservice(
+    createRabbitMQConsumer({
       queue: ChatStartInterviewEvent.name,
-      queueOptions: { durable: false },
-    },
-  };
+      prefetchCount: 10,
+    }),
+  );
 
-  const chatUserAnsweredMicroserviceOptions = {
-    transport: Transport.RMQ,
-    options: {
-      urls: [cloudAmqpUrl],
+  app.connectMicroservice(
+    createRabbitMQConsumer({
       queue: ChatUserAnsweredEvent.name,
-      queueOptions: { durable: false },
-    },
-  };
-
-  app.connectMicroservice(chatAskQuestionMicroserviceOptions);
-  app.connectMicroservice(chatUserAnsweredMicroserviceOptions);
+      prefetchCount: 10,
+    }),
+  );
 
   const swaggerServer =
     process.env.SWAGGER_SERVER ?? `http://localhost:${portString}`;

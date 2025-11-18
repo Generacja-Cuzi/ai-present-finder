@@ -1,6 +1,7 @@
 packages:
   - core/events
   - core/types
+  - core/rabbitmq-config
   - backend/chat-microservice
   - backend/fetch-microservice
   - backend/gift-ideas-microservice

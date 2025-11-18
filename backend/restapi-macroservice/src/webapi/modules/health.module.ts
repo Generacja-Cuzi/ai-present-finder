@@ -2,9 +2,10 @@ import {
   ChatStartInterviewEvent,
   StalkingAnalyzeRequestedEvent,
 } from "@core/events";
+import { createRabbitMQPublisher } from "@core/rabbitmq-config";
 
 import { Module } from "@nestjs/common";
-import { ClientsModule, Transport } from "@nestjs/microservices";
+import { ClientsModule } from "@nestjs/microservices";
 import { TerminusModule } from "@nestjs/terminus";
 
 import { HealthController } from "../controllers/health.controller";
@@ -17,32 +18,14 @@ import { HealthController } from "../controllers/health.controller";
   imports: [
     TerminusModule,
     ClientsModule.register([
-      {
-        name: "STALKING_ANALYZE_REQUESTED_EVENT",
-        transport: Transport.RMQ,
-        options: {
-          urls: [
-            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
-          ],
-          queue: StalkingAnalyzeRequestedEvent.name,
-          queueOptions: {
-            durable: false,
-          },
-        },
-      },
-      {
-        name: "CHAT_START_INTERVIEW_EVENT",
-        transport: Transport.RMQ,
-        options: {
-          urls: [
-            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
-          ],
-          queue: ChatStartInterviewEvent.name,
-          queueOptions: {
-            durable: false,
-          },
-        },
-      },
+      createRabbitMQPublisher(
+        "STALKING_ANALYZE_REQUESTED_EVENT",
+        StalkingAnalyzeRequestedEvent.name,
+      ),
+      createRabbitMQPublisher(
+        "CHAT_START_INTERVIEW_EVENT",
+        ChatStartInterviewEvent.name,
+      ),
     ]),
   ],
   controllers: [HealthController],

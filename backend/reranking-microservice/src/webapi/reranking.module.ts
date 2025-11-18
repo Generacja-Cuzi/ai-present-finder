@@ -1,7 +1,9 @@
+import { createRabbitMQPublisher } from "@core/rabbitmq-config";
+
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
-import { ClientsModule, Transport } from "@nestjs/microservices";
+import { ClientsModule } from "@nestjs/microservices";
 import { ScheduleModule } from "@nestjs/schedule";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
@@ -53,28 +55,11 @@ const QueryHandlers = [GetSessionProductsHandler, ScoreProductsHandler];
     ),
     TypeOrmModule.forFeature([GiftSession, GiftSessionProduct, Product]),
     ClientsModule.register([
-      {
-        name: "GIFT_READY_EVENT",
-        transport: Transport.RMQ,
-        options: {
-          urls: [
-            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
-          ],
-          queue: "GiftReadyEvent",
-          queueOptions: { durable: false },
-        },
-      },
-      {
-        name: "REGENERATE_IDEAS_LOOP_EVENT",
-        transport: Transport.RMQ,
-        options: {
-          urls: [
-            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
-          ],
-          queue: "RegenerateIdeasLoopEvent",
-          queueOptions: { durable: false },
-        },
-      },
+      createRabbitMQPublisher("GIFT_READY_EVENT", "GiftReadyEvent"),
+      createRabbitMQPublisher(
+        "REGENERATE_IDEAS_LOOP_EVENT",
+        "RegenerateIdeasLoopEvent",
+      ),
     ]),
   ],
   controllers: [ProductFetchedHandler, GiftContextInitializedHandler],

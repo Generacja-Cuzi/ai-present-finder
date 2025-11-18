@@ -1,10 +1,10 @@
 // src/main.ts
 import { StalkingAnalyzeRequestedEvent } from "@core/events";
+import { createRabbitMQConsumer } from "@core/rabbitmq-config";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { Transport } from "@nestjs/microservices";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
@@ -15,17 +15,11 @@ async function bootstrap() {
 
   const port = Number(process.env.PORT ?? 3010);
   const portString = String(port);
-  const cloudAmqpUrl =
-    process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672";
 
-  const microserviceOptions = {
-    transport: Transport.RMQ,
-    options: {
-      urls: [cloudAmqpUrl],
-      queue: StalkingAnalyzeRequestedEvent.name,
-      queueOptions: { durable: false },
-    },
-  };
+  const microserviceOptions = createRabbitMQConsumer({
+    queue: StalkingAnalyzeRequestedEvent.name,
+    prefetchCount: 5,
+  });
 
   const swaggerServer =
     process.env.SWAGGER_SERVER ?? `http://localhost:${portString}`;

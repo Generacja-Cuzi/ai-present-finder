@@ -34,4 +34,20 @@ export class StalkingAnalyzeRequestDto {
     example: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   })
   chatId: string;
+
+  @ApiPropertyOptional({
+    type: Number,
+    description: "Minimum price for gift search (in PLN)",
+    example: 50,
+    required: false,
+  })
+  minPrice?: number;
+
+  @ApiPropertyOptional({
+    type: Number,
+    description: "Maximum price for gift search (in PLN)",
+    example: 200,
+    required: false,
+  })
+  maxPrice?: number;
 }

@@ -13,6 +13,8 @@ interface UpsertResult {
   interview_profile: RecipientProfile | null;
   interview_keywords: string[] | null;
   stalking_keywords: string[] | null;
+  min_price: number | null;
+  max_price: number | null;
   gift_generation_triggered: boolean;
   both_complete: boolean;
   save_profile?: boolean | null;
@@ -85,6 +87,8 @@ export class UpdateInterviewStatusHandler
             stalking_keywords,
             save_profile,
             profile_name,
+            min_price,
+            max_price,
             gift_generation_triggered,
             stalking_status::text = $3::text as both_complete
         )
@@ -131,6 +135,8 @@ export class UpdateInterviewStatusHandler
               row.stalking_keywords ?? [],
               row.interview_keywords ?? [],
               chatId,
+              row.min_price,
+              row.max_price,
               row.save_profile ?? undefined,
               row.profile_name ?? undefined,
             ),

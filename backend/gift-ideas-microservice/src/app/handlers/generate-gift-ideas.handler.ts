@@ -28,12 +28,14 @@ export class GenerateGiftIdeasHandler
       keywords,
       keyThemes,
       chatId,
+      minPrice,
+      maxPrice,
       saveProfile,
       profileName,
     } = command;
 
     this.logger.log(
-      `GenerateGiftIdeasCommand received: chatId=${chatId}, saveProfile=${String(saveProfile)}, profileName=${String(profileName)}, keywords=${JSON.stringify(keywords)}, keyThemes=${JSON.stringify(keyThemes)}`,
+      `GenerateGiftIdeasCommand received: chatId=${chatId}, saveProfile=${String(saveProfile)}, profileName=${String(profileName)}, keywords=${JSON.stringify(keywords)}, keyThemes=${JSON.stringify(keyThemes)}, minPrice=${String(minPrice)}, maxPrice=${String(maxPrice)}`,
     );
 
     try {
@@ -89,6 +91,8 @@ export class GenerateGiftIdeasHandler
           chatId,
           eventId,
           giftIdeasOutput.search_queries.length,
+          minPrice,
+          maxPrice,
         ),
       );
     } catch (error) {

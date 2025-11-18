@@ -54,7 +54,9 @@ export class FetchAllegroHandler {
 
   @EventPattern(FetchAllegroEvent.name)
   async handle(event: FetchAllegroEvent): Promise<void> {
-    this.logger.log(`Handling Allegro fetch for query: ${event.query}`);
+    this.logger.log(
+      `Handling Allegro fetch for query: ${event.query}, minPrice: ${String(event.minPrice)}, maxPrice: ${String(event.maxPrice)}`,
+    );
 
     try {
       const listings = await this.fetchAllegroProducts(event);
@@ -134,7 +136,7 @@ export class FetchAllegroHandler {
     phrase: string,
     options: AllegroSearchOptions = {},
   ): Promise<AllegroSearchResponse> {
-    if (!phrase) {
+    if (phrase.trim() === "") {
       throw new Error("Musisz podać parametr phrase");
     }
 
@@ -147,6 +149,12 @@ export class FetchAllegroHandler {
     }
     if (options.limit != null) {
       parameters.set("limit", String(options.limit));
+    }
+    if (options.minPrice != null) {
+      parameters.set("price.from", String(options.minPrice));
+    }
+    if (options.maxPrice != null) {
+      parameters.set("price.to", String(options.maxPrice));
     }
 
     const url = `${this.config.searchUrl}?${parameters.toString()}`;
@@ -197,7 +205,7 @@ export class FetchAllegroHandler {
   private async fetchAllegroProducts(
     event: FetchAllegroEvent,
   ): Promise<ListingPayload[]> {
-    const { query, limit, offset } = event;
+    const { query, limit, offset, minPrice, maxPrice } = event;
     let attempt = 0;
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -206,10 +214,15 @@ export class FetchAllegroHandler {
 
       try {
         this.logger.log(
-          `Searching Allegro for "${query}" (limit=${limit.toString()}, offset=${offset.toString()}), attempt ${attempt.toString()}`,
+          `Searching Allegro for "${query}" (limit=${limit.toString()}, offset=${offset.toString()}, minPrice=${String(minPrice)}, maxPrice=${String(maxPrice)}), attempt ${attempt.toString()}`,
         );
 
-        const results = await this.searchOffers(query, { limit, offset });
+        const results = await this.searchOffers(query, {
+          limit,
+          offset,
+          minPrice,
+          maxPrice,
+        });
 
         const offers = [
           ...(results.items?.promoted ?? []),

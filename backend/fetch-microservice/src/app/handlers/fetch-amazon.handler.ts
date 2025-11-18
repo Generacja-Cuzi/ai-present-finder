@@ -44,7 +44,9 @@ export class FetchAmazonHandler {
 
   @EventPattern(FetchAmazonEvent.name)
   async handle(event: FetchAmazonEvent): Promise<void> {
-    this.logger.log(`Handling Amazon fetch for query: ${event.query}`);
+    this.logger.log(
+      `Handling Amazon fetch for query: ${event.query}, minPrice: ${String(event.minPrice)}, maxPrice: ${String(event.maxPrice)}`,
+    );
 
     try {
       const listings = await this.fetchAmazonProducts(event);
@@ -86,6 +88,20 @@ export class FetchAmazonHandler {
       page: searchParameters_.page,
     });
 
+    // Add price filters if provided
+    if (
+      searchParameters_.minPrice !== undefined &&
+      searchParameters_.minPrice !== null
+    ) {
+      searchParameters.set("min_price", String(searchParameters_.minPrice));
+    }
+    if (
+      searchParameters_.maxPrice !== undefined &&
+      searchParameters_.maxPrice !== null
+    ) {
+      searchParameters.set("max_price", String(searchParameters_.maxPrice));
+    }
+
     const searchUrl = `${this.config.apiUrl}?${searchParameters.toString()}`;
 
     const response = await fetch(searchUrl, {
@@ -109,7 +125,7 @@ export class FetchAmazonHandler {
   private async fetchAmazonProducts(
     event: FetchAmazonEvent,
   ): Promise<ListingPayload[]> {
-    const { query, limit, offset, country, page } = event;
+    const { query, limit, offset, country, page, minPrice, maxPrice } = event;
     let attempt = 0;
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -118,13 +134,15 @@ export class FetchAmazonHandler {
 
       try {
         this.logger.log(
-          `Searching Amazon for "${query}" (country=${country}, page=${page.toString()}), attempt ${attempt.toString()}`,
+          `Searching Amazon for "${query}" (country=${country}, page=${page.toString()}, minPrice=${String(minPrice)}, maxPrice=${String(maxPrice)}), attempt ${attempt.toString()}`,
         );
 
         const data = await this.searchAmazonProducts({
           query,
           country: country || this.config.defaultCountry,
           page: page.toString(),
+          minPrice,
+          maxPrice,
         });
 
         if (data.status !== "OK" || data.data?.products == null) {

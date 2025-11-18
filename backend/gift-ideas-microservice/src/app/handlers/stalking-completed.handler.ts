@@ -18,7 +18,12 @@ export class StalkingCompletedHandler {
     );
 
     await this.commandBus.execute(
-      new UpdateStalkingStatusCommand(event.chatId, event.keywords),
+      new UpdateStalkingStatusCommand(
+        event.chatId,
+        event.keywords,
+        event.minPrice,
+        event.maxPrice,
+      ),
     );
   }
 }

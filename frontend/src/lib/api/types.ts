@@ -460,6 +460,16 @@ export interface components {
              * @example 3fa85f64-5717-4562-b3fc-2c963f66afa6
              */
             profileId?: string;
+            /**
+             * @description Minimum price for gift search (in PLN)
+             * @example 50
+             */
+            minPrice?: number;
+            /**
+             * @description Maximum price for gift search (in PLN)
+             * @example 200
+             */
+            maxPrice?: number;
         };
         ChatMessageDto: {
             /**

@@ -4,7 +4,8 @@ import { OccasionCard } from "../components";
 import type { StalkingFormData } from "../types";
 
 export function OccasionSelector() {
-  const { watch, setValue, formState } = useFormContext<StalkingFormData>();
+  const { watch, setValue, formState, trigger } =
+    useFormContext<StalkingFormData>();
   const selectedOccasion = watch("occasion");
 
   return (
@@ -25,6 +26,8 @@ export function OccasionSelector() {
                 setValue("occasion", o, {
                   shouldValidate: true,
                 });
+                // Rewaliduj pola cenowe jeśli zostały wypełnione
+                void trigger(["minPrice", "maxPrice"]);
               }}
             />
           ),

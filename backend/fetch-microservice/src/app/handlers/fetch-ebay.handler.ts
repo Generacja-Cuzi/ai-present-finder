@@ -51,7 +51,9 @@ export class FetchEbayHandler {
 
   @EventPattern(FetchEbayEvent.name)
   async handle(event: FetchEbayEvent): Promise<void> {
-    this.logger.log(`Handling eBay fetch for query: ${event.query}`);
+    this.logger.log(
+      `Handling eBay fetch for query: ${event.query}, minPrice: ${String(event.minPrice)}, maxPrice: ${String(event.maxPrice)}`,
+    );
 
     try {
       const listings = await this.fetchEbayProducts(event);
@@ -136,14 +138,31 @@ export class FetchEbayHandler {
     query: string,
     limit: number,
     offset: number,
+    minPrice?: number | null,
+    maxPrice?: number | null,
   ): EbaySearchParameters {
-    return {
+    const parameters: EbaySearchParameters = {
       q: query,
       limit: limit.toString(),
       offset: offset.toString(),
-      // Add additional filters if needed
-      // filter: 'conditionIds:{1000|1500|2000|2500|3000|4000|5000}', // New, Used, etc.
     };
+
+    // Build price filter if min or max price is provided
+    // eBay filter format: price:[minPrice..maxPrice],priceCurrency:PLN
+    if (
+      minPrice !== undefined &&
+      minPrice !== null &&
+      maxPrice !== undefined &&
+      maxPrice !== null
+    ) {
+      parameters.filter = `price:[${String(minPrice)}..${String(maxPrice)}],priceCurrency:PLN`;
+    } else if (minPrice !== undefined && minPrice !== null) {
+      parameters.filter = `price:[${String(minPrice)}..],priceCurrency:PLN`;
+    } else if (maxPrice !== undefined && maxPrice !== null) {
+      parameters.filter = `price:[..${String(maxPrice)}],priceCurrency:PLN`;
+    }
+
+    return parameters;
   }
 
   private createRequestHeaders(token: string): EbayRequestHeaders {
@@ -234,7 +253,7 @@ export class FetchEbayHandler {
   private async fetchEbayProducts(
     event: FetchEbayEvent,
   ): Promise<ListingPayload[]> {
-    const { query, limit, offset } = event;
+    const { query, limit, offset, minPrice, maxPrice } = event;
     let attempt = 0;
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -243,7 +262,7 @@ export class FetchEbayHandler {
 
       try {
         this.logger.log(
-          `Searching eBay for "${query}" (limit=${limit.toString()}, offset=${offset.toString()}), attempt ${attempt.toString()}`,
+          `Searching eBay for "${query}" (limit=${limit.toString()}, offset=${offset.toString()}, minPrice=${String(minPrice)}, maxPrice=${String(maxPrice)}), attempt ${attempt.toString()}`,
         );
 
         // Get access token
@@ -254,6 +273,8 @@ export class FetchEbayHandler {
           query,
           limit,
           offset,
+          minPrice,
+          maxPrice,
         );
         const headers = this.createRequestHeaders(token);
 

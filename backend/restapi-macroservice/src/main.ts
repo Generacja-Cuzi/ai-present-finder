@@ -5,12 +5,12 @@ import {
   ChatQuestionAskedEvent,
   GiftReadyEvent,
 } from "@core/events";
+import { createRabbitMQConsumer } from "@core/rabbitmq-config";
 import * as cookieParser from "cookie-parser";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { Transport } from "@nestjs/microservices";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./app.module";
@@ -23,8 +23,6 @@ async function bootstrap() {
 
   const port = Number(process.env.PORT ?? 3000);
   const portString = String(port);
-  const cloudAmqpUrl =
-    process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672";
 
   // Build CORS allowed origins from environment or defaults
   const corsOrigins =
@@ -69,46 +67,30 @@ async function bootstrap() {
     customSiteTitle: "AI Present Finder — REST API Docs",
   });
 
-  const chatQuestionAskedMicroserviceOptions = {
-    transport: Transport.RMQ,
-    options: {
-      urls: [cloudAmqpUrl],
+  app.connectMicroservice(
+    createRabbitMQConsumer({
       queue: ChatQuestionAskedEvent.name,
-      queueOptions: { durable: false },
-    },
-  };
-
-  const giftReadyMicroserviceOptions = {
-    transport: Transport.RMQ,
-    options: {
-      urls: [cloudAmqpUrl],
+      prefetchCount: 10,
+    }),
+  );
+  app.connectMicroservice(
+    createRabbitMQConsumer({
       queue: GiftReadyEvent.name,
-      queueOptions: { durable: false },
-    },
-  };
-
-  const chatInappropriateRequestMicroserviceOptions = {
-    transport: Transport.RMQ,
-    options: {
-      urls: [cloudAmqpUrl],
+      prefetchCount: 10,
+    }),
+  );
+  app.connectMicroservice(
+    createRabbitMQConsumer({
       queue: ChatInappropriateRequestEvent.name,
-      queueOptions: { durable: false },
-    },
-  };
-
-  const chatCompletedNotifyUserMicroserviceOptions = {
-    transport: Transport.RMQ,
-    options: {
-      urls: [cloudAmqpUrl],
+      prefetchCount: 10,
+    }),
+  );
+  app.connectMicroservice(
+    createRabbitMQConsumer({
       queue: ChatCompletedNotifyUserEvent.name,
-      queueOptions: { durable: false },
-    },
-  };
-
-  app.connectMicroservice(chatQuestionAskedMicroserviceOptions);
-  app.connectMicroservice(giftReadyMicroserviceOptions);
-  app.connectMicroservice(chatInappropriateRequestMicroserviceOptions);
-  app.connectMicroservice(chatCompletedNotifyUserMicroserviceOptions);
+      prefetchCount: 10,
+    }),
+  );
 
   await app.startAllMicroservices();
   await app.listen(port);

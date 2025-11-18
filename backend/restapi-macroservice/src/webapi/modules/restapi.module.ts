@@ -3,6 +3,7 @@ import {
   ChatUserAnsweredEvent,
   StalkingAnalyzeRequestedEvent,
 } from "@core/events";
+import { createRabbitMQPublisher } from "@core/rabbitmq-config";
 import { JwtAuthGuard } from "src/app/guards/jwt-auth.guard";
 import { ResourceOwnershipGuard } from "src/app/guards/resource-ownership.guard";
 import { AddToFavoritesHandler } from "src/app/handlers/add-to-favorites.handler";
@@ -49,7 +50,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
 import { JwtModule } from "@nestjs/jwt";
-import { ClientsModule, Transport } from "@nestjs/microservices";
+import { ClientsModule } from "@nestjs/microservices";
 import { PassportModule } from "@nestjs/passport";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
@@ -91,45 +92,18 @@ import { UserProfileController } from "../controllers/user-profile.controller";
     }),
     TypeOrmModule.forFeature(entities),
     ClientsModule.register([
-      {
-        name: "STALKING_ANALYZE_REQUESTED_EVENT",
-        transport: Transport.RMQ,
-        options: {
-          urls: [
-            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
-          ],
-          queue: StalkingAnalyzeRequestedEvent.name,
-          queueOptions: {
-            durable: false,
-          },
-        },
-      },
-      {
-        name: "CHAT_START_INTERVIEW_EVENT",
-        transport: Transport.RMQ,
-        options: {
-          urls: [
-            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
-          ],
-          queue: ChatStartInterviewEvent.name,
-          queueOptions: {
-            durable: false,
-          },
-        },
-      },
-      {
-        name: "CHAT_USER_ANSWERED_EVENT",
-        transport: Transport.RMQ,
-        options: {
-          urls: [
-            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
-          ],
-          queue: ChatUserAnsweredEvent.name,
-          queueOptions: {
-            durable: false,
-          },
-        },
-      },
+      createRabbitMQPublisher(
+        "STALKING_ANALYZE_REQUESTED_EVENT",
+        StalkingAnalyzeRequestedEvent.name,
+      ),
+      createRabbitMQPublisher(
+        "CHAT_START_INTERVIEW_EVENT",
+        ChatStartInterviewEvent.name,
+      ),
+      createRabbitMQPublisher(
+        "CHAT_USER_ANSWERED_EVENT",
+        ChatUserAnsweredEvent.name,
+      ),
     ]),
   ],
   controllers: [

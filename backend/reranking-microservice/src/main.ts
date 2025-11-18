@@ -1,10 +1,10 @@
 // src/main.ts
 import { GiftContextInitializedEvent, ProductFetchedEvent } from "@core/events";
+import { createRabbitMQConsumer } from "@core/rabbitmq-config";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { Transport } from "@nestjs/microservices";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 import { AppModule } from "./webapi/reranking.module";
@@ -15,28 +15,21 @@ async function bootstrap() {
 
   const port = Number(process.env.PORT ?? 3091);
   const portString = String(port);
-  const cloudAmqpUrl =
-    process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672";
 
-  const productFetchedOptions = {
-    transport: Transport.RMQ,
-    options: {
-      urls: [cloudAmqpUrl],
+  app.connectMicroservice(
+    createRabbitMQConsumer({
       queue: ProductFetchedEvent.name,
-      queueOptions: { durable: false },
-    },
-  };
-  app.connectMicroservice(productFetchedOptions);
+      prefetchCount: 20,
+    }),
+  );
 
-  const giftContextInitializedOptions = {
-    transport: Transport.RMQ,
-    options: {
-      urls: [cloudAmqpUrl],
+  app.connectMicroservice(
+    createRabbitMQConsumer({
       queue: GiftContextInitializedEvent.name,
-      queueOptions: { durable: false },
-    },
-  };
-  app.connectMicroservice(giftContextInitializedOptions);
+      prefetchCount: 10,
+    }),
+  );
+
   const swaggerServer =
     process.env.SWAGGER_SERVER ?? `http://localhost:${portString}`;
 

@@ -4,19 +4,16 @@ import {
   FetchEbayEvent,
   FetchOlxEvent,
 } from "@core/events";
+import { createRabbitMQConsumer } from "@core/rabbitmq-config";
 
 import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { Transport } from "@nestjs/microservices";
 
 import { AppModule } from "./app.module";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger("FetchMicroservice");
-
-  const cloudAmqpUrl =
-    process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672";
 
   const provider = process.env.FETCH_PROVIDER ?? "allegro";
 
@@ -38,14 +35,10 @@ async function bootstrap() {
   logger.log(`Starting fetch microservice for provider: ${provider}`);
   logger.log(`Listening on queue: ${queueName}`);
 
-  const microserviceOptions = {
-    transport: Transport.RMQ,
-    options: {
-      urls: [cloudAmqpUrl],
-      queue: queueName,
-      queueOptions: { durable: false },
-    },
-  };
+  const microserviceOptions = createRabbitMQConsumer({
+    queue: queueName,
+    prefetchCount: 15,
+  });
 
   app.connectMicroservice(microserviceOptions);
 

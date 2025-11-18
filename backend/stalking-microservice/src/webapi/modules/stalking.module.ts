@@ -1,4 +1,5 @@
 import { StalkingCompletedEvent } from "@core/events";
+import { createRabbitMQPublisher } from "@core/rabbitmq-config";
 import { StalkingAnalyzeRequestHandler } from "src/app/handlers/stalking-analyze-request.handler";
 import { StalkingAnalyzeHandler } from "src/app/handlers/stalking-analyze.handler";
 import { BrightDataService } from "src/app/services/brightdata.service";
@@ -7,7 +8,7 @@ import { validate } from "src/webapi/config/environment.config";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
-import { ClientsModule, Transport } from "@nestjs/microservices";
+import { ClientsModule } from "@nestjs/microservices";
 
 @Module({
   imports: [
@@ -17,19 +18,10 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
       validate,
     }),
     ClientsModule.register([
-      {
-        name: "STALKING_COMPLETED_EVENT",
-        transport: Transport.RMQ,
-        options: {
-          urls: [
-            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
-          ],
-          queue: StalkingCompletedEvent.name,
-          queueOptions: {
-            durable: false,
-          },
-        },
-      },
+      createRabbitMQPublisher(
+        "STALKING_COMPLETED_EVENT",
+        StalkingCompletedEvent.name,
+      ),
     ]),
   ],
   controllers: [StalkingAnalyzeRequestHandler],

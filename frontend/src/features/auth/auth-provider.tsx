@@ -5,6 +5,7 @@ import { isAuthenticatedAtom, userAtom } from "@/lib/login/auth.store";
 import type { User } from "@/lib/login/auth.store";
 
 import { fetchClient } from "../../lib/api/client";
+import { refreshAccessToken } from "../../lib/login/refresh-token";
 import { AuthContext } from "./auth-context";
 
 export interface AuthState {
@@ -66,6 +67,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     void validateSession();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- user is intentionally excluded to avoid infinite validation loop
   }, [setUser]);
+
+  // Auto-refresh token every 10 minutes
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    const refreshInterval = setInterval(
+      () => {
+        void (async () => {
+          const success = await refreshAccessToken();
+          if (!success) {
+            console.warn("Failed to refresh token, logging out");
+            setUser(null);
+          }
+        })();
+      },
+      10 * 60 * 1000,
+    ); // 10 minutes
+
+    return () => {
+      clearInterval(refreshInterval);
+    };
+  }, [isAuthenticated, setUser]);
 
   const logout = async () => {
     try {

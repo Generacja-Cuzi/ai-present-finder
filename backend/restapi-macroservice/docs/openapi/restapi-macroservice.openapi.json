@@ -130,6 +130,19 @@
         "tags": ["auth"]
       }
     },
+    "/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refreshToken",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns new access token"
+          }
+        },
+        "summary": "Refresh access token using refresh token",
+        "tags": ["auth"]
+      }
+    },
     "/chats": {
       "get": {
         "operationId": "ChatController_getUserChats",
@@ -1369,6 +1382,11 @@
             "description": "JWT access token",
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
           },
+          "refreshToken": {
+            "type": "string",
+            "description": "JWT refresh token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
           "user": {
             "description": "User information",
             "allOf": [
@@ -1378,7 +1396,7 @@
             ]
           }
         },
-        "required": ["accessToken", "user"]
+        "required": ["accessToken", "refreshToken", "user"]
       },
       "UserInfoDto": {
         "type": "object",

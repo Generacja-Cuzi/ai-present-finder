@@ -2,10 +2,14 @@ import { GoogleService } from "src/app/services/google-service";
 import { ValidateGoogleTokenCommand } from "src/domain/commands/validate-google-token.command";
 import type { User } from "src/domain/entities/user.entity";
 import { UserRole } from "src/domain/entities/user.entity";
-import type { JwtPayload } from "src/domain/models/auth.types";
+import type {
+  JwtPayload,
+  RefreshTokenPayload,
+} from "src/domain/models/auth.types";
 import { IUserRepository } from "src/domain/repositories/iuser.repository";
 
 import { Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { JwtService } from "@nestjs/jwt";
 
@@ -19,11 +23,12 @@ export class ValidateGoogleTokenHandler
     private readonly userRepository: IUserRepository,
     private readonly jwtService: JwtService,
     private readonly googleService: GoogleService,
+    private readonly configService: ConfigService,
   ) {}
 
   async execute(
     command: ValidateGoogleTokenCommand,
-  ): Promise<{ accessToken: string; user: User }> {
+  ): Promise<{ accessToken: string; refreshToken: string; user: User }> {
     const { code } = command;
 
     this.logger.log(
@@ -67,8 +72,9 @@ export class ValidateGoogleTokenHandler
     }
 
     const jwt = this.generateJwt(user);
+    const refreshJwt = this.generateRefreshToken(user);
 
-    return { accessToken: jwt, user };
+    return { accessToken: jwt, refreshToken: refreshJwt, user };
   }
 
   private generateJwt(user: User): string {
@@ -76,6 +82,23 @@ export class ValidateGoogleTokenHandler
       sub: user.id,
       email: user.email,
     };
-    return this.jwtService.sign(payload);
+    return this.jwtService.sign(payload, { expiresIn: "15m" });
+  }
+
+  private generateRefreshToken(user: User): string {
+    const payload: RefreshTokenPayload = {
+      sub: user.id,
+      email: user.email,
+      type: "refresh",
+    };
+    const secret =
+      this.configService.get<string>("JWT_REFRESH_SECRET") ??
+      this.configService.get<string>("JWT_SECRET") ??
+      "your-refresh-secret-key-change-in-prod";
+
+    return this.jwtService.sign(payload, {
+      secret,
+      expiresIn: "7d",
+    });
   }
 }

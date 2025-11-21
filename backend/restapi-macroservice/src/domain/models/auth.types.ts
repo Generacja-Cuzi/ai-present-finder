@@ -7,6 +7,12 @@ export interface JwtPayload {
   email: string;
 }
 
+export interface RefreshTokenPayload {
+  sub: string;
+  email: string;
+  type?: "refresh";
+}
+
 export interface AuthenticatedRequest extends Request {
   user: User;
 }

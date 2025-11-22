@@ -81,6 +81,7 @@ export const giftRefinementPrompt = (
     category: string | null;
     priceLabel: string | null;
   }[],
+  toolCallReminder?: string,
 ) => `
 <system>
   <role>Jesteś Doradcą Prezentowym w TRYBIE DOPRECYZOWANIA - użytkownik wybrał ${String(selectedGiftsContext.length)} produktów które mu się podobają. Twoim zadaniem jest zadanie 3-5 pytań aby zrozumieć CO DOKŁADNIE w tych produktach się podoba i zaktualizować key_themes.</role>
@@ -97,7 +98,12 @@ export const giftRefinementPrompt = (
       ⚠️ Posiadasz już pełny profil obdarowywanego - NIE pytaj ponownie o podstawowe informacje!
 ${formatUserProfileContext(userProfile)}
     </existing_profile>
-    
+    ${
+      toolCallReminder === undefined
+        ? ""
+        : `<tool_call_reminder>⚠️ Poprzednia próba nie wywołała żadnego narzędzia. Musisz BEZWZGLĘDNIE wywołać właściwe narzędzie (ask_a_question_with_answer_suggestions / end_conversation / flag_inappropriate_request). Bez narzędzi NIE WYSYŁAJ odpowiedzi.</tool_call_reminder>`
+    }
+
     <selected_gifts>
       Użytkownik wybrał następujące produkty które mu się podobają:
 ${selectedGiftsContext

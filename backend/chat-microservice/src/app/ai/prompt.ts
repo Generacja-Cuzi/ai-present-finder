@@ -75,6 +75,7 @@ export const giftConsultantPrompt = (
   occasion: string,
   userProfile?: RecipientProfile,
   questionCount?: number,
+  toolCallReminder?: string,
 ) => `
 <system>
   <role>Jesteś Doradcą Prezentowym - prowadzisz rozmowę (15-30 pytań) aby poznać obdarowywanego i wygenerować 15-20 kluczowych tematów dla wyszukiwarki prezentów.</role>
@@ -95,6 +96,11 @@ export const giftConsultantPrompt = (
 ${formatUserProfileContext(userProfile)}
     </existing_profile>
     `
+    }
+    ${
+      toolCallReminder === undefined
+        ? ""
+        : `<tool_call_reminder>⚠️ Poprzednia próba nie wywołała żadnego narzędzia. Musisz BEZWZGLĘDNIE wywołać właściwe narzędzie (ask_a_question_with_answer_suggestions / end_conversation / flag_inappropriate_request). Bez narzędzi NIE WYSYŁAJ odpowiedzi.</tool_call_reminder>`
     }
   </context>
   

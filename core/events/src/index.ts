@@ -5,6 +5,7 @@ export * from "./chat/chat-user-answered.event";
 export * from "./chat/chat-start-interview.event";
 export * from "./chat/chat-inappropriate-request.event";
 export * from "./chat/chat-completed-notify-user.event";
+export * from "./chat/chat-refinement-started.event";
 
 // Gift events
 export * from "./gift/gift-context-initialized.event";

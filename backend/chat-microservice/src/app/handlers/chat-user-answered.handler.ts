@@ -43,6 +43,26 @@ export class ChatUserAnsweredHandler {
       throw new Error(`No session found for chat ${event.chatId}`);
     }
 
+    // Obsługa fazy doprecyzowania (refinement)
+    if (session.phase === "refinement") {
+      // In refinement mode, we're asking follow-up questions about selected gifts
+      // Continue with the normal flow to generate more questions or complete
+      const occasion = await this.queryBus.execute(
+        new GetOccasionQuery(event.chatId),
+      );
+
+      if (occasion == null) {
+        throw new Error(`No occasion found for chat ${event.chatId}`);
+      }
+
+      this.logger.log(`Processing refinement answer for chat ${event.chatId}`);
+
+      await this.commandBus.execute(
+        new GenerateQuestionCommand(event.chatId, occasion, event.messages),
+      );
+      return;
+    }
+
     // Obsługa pytania o zapisanie profilu
     if (session.phase === "ask_save_profile") {
       const lastMessage = event.messages.at(-1);

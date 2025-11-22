@@ -1,3 +1,4 @@
+import { StartChatRefinementCommand } from "src/domain/commands/start-chat-refinement.command";
 import type { Chat } from "src/domain/entities/chat.entity";
 import type { AuthenticatedRequest } from "src/domain/models/auth.types";
 import { GetChatListingsQuery } from "src/domain/queries/get-chat-listings.query";
@@ -5,9 +6,22 @@ import { GetChatWithListingsByIdQuery } from "src/domain/queries/get-chat-with-l
 import { GetUserChatsQuery } from "src/domain/queries/get-user-chats.query";
 import { IListingRepository } from "src/domain/repositories/ilisting.repository";
 import { ChatListingsResponseDto } from "src/webapi/dtos/chat-listings.dto";
+import {
+  StartChatRefinementDto,
+  StartChatRefinementResponseDto,
+  startChatRefinementDtoSchema,
+} from "src/webapi/dtos/start-chat-refinement.dto";
 
-import { Controller, Get, Param, Req, UseGuards } from "@nestjs/common";
-import { QueryBus } from "@nestjs/cqrs";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from "@nestjs/common";
+import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { JwtAuthGuard } from "../../app/guards/jwt-auth.guard";
@@ -24,6 +38,7 @@ import { ResourceType } from "../../domain/models/resource-ownership.types";
 export class ChatController {
   constructor(
     private readonly queryBus: QueryBus,
+    private readonly commandBus: CommandBus,
     private readonly listingRepository: IListingRepository,
   ) {}
 
@@ -32,11 +47,10 @@ export class ChatController {
       chatId: chat.chatId,
       chatName: chat.chatName,
       createdAt: chat.createdAt,
-      isInterviewCompleted:
-        chat.isInterviewCompleted ||
-        (Boolean(chat.listings) && chat.listings.length > 0),
+      isInterviewCompleted: chat.isInterviewCompleted,
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       giftCount: chat.listings?.length ?? 0,
+      status: chat.status,
     };
   }
 
@@ -55,18 +69,6 @@ export class ChatController {
       new GetUserChatsQuery(request.user.id),
     );
 
-    return {
-      chats: chatsResult.map((chat) => ({
-        giftCount: chat.listings.length,
-        chatId: chat.chatId,
-        chatName: chat.chatName,
-        createdAt: chat.createdAt,
-        isInterviewCompleted:
-          chat.isInterviewCompleted ||
-          (Boolean(chat.listings) && chat.listings.length > 0),
-        reasoningSummary: chat.reasoningSummary,
-      })),
-    };
     return { chats: chatsResult.map((chat) => this.mapChatToDto(chat)) };
   }
 
@@ -90,7 +92,6 @@ export class ChatController {
       GetChatWithListingsByIdQuery,
       Chat
     >(new GetChatWithListingsByIdQuery(chatId, request.user.id));
-
     return this.mapChatToDto(chat);
   }
 
@@ -152,6 +153,62 @@ export class ChatController {
         reasoningSummary: result.chat.reasoningSummary,
       },
       listings: listingsWithFavoriteStatus,
+    };
+  }
+
+  @Post(":chatId/refine")
+  @UseGuards(JwtAuthGuard, RolesGuard, ResourceOwnershipGuard)
+  @Roles(UserRole.USER, UserRole.ADMIN)
+  @RequireResourceOwnership({
+    resourceType: ResourceType.CHAT,
+    paramName: "chatId",
+  })
+  @ApiOperation({
+    summary: "Start chat refinement with selected gift listings",
+    description:
+      "Continue the conversation with selected gift listings to refine search results",
+  })
+  @ApiOkResponse({
+    description: "Refinement started successfully",
+    type: StartChatRefinementResponseDto,
+  })
+  async startRefinement(
+    @Param("chatId") chatId: string,
+    @Body() dto: StartChatRefinementDto,
+    @Req() request: AuthenticatedRequest,
+  ): Promise<StartChatRefinementResponseDto> {
+    // Validate DTO
+    const validatedDto = startChatRefinementDtoSchema.parse(dto);
+
+    // Verify all listings belong to this chat and are owned by the user
+    for (const listingId of validatedDto.selectedListingIds) {
+      const listing = await this.listingRepository.findById(listingId);
+      if (listing === null) {
+        throw new Error(`Listing ${listingId} not found`);
+      }
+      if (listing.chatId !== chatId) {
+        throw new Error(
+          `Listing ${listingId} does not belong to chat ${chatId}`,
+        );
+      }
+      // Verify ownership through chat
+      const isOwned = await this.listingRepository.isOwnedByUser(
+        listingId,
+        request.user.id,
+      );
+      if (!isOwned) {
+        throw new Error(`User does not own listing ${listingId}`);
+      }
+    }
+
+    // Execute command
+    await this.commandBus.execute(
+      new StartChatRefinementCommand(chatId, validatedDto.selectedListingIds),
+    );
+
+    return {
+      message: "Refinement started successfully",
+      chatId,
     };
   }
 }

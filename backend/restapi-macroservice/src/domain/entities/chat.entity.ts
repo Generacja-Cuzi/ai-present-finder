@@ -49,6 +49,14 @@ export class Chat {
   @Column({ name: "is_interview_completed", default: false })
   isInterviewCompleted: boolean;
 
+  @Column({
+    name: "status",
+    type: "enum",
+    enum: ["interview", "searching", "completed"],
+    default: "interview",
+  })
+  status: "interview" | "searching" | "completed";
+
   @Column({ name: "reasoning_summary", type: "jsonb", nullable: true })
   reasoningSummary: {
     recipientProfile?: RecipientProfile;

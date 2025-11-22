@@ -1,7 +1,8 @@
-export { CategoryFilterDialog } from "./category-filter-dialog";
-export { ClearFiltersButton } from "./clear-filters-button";
-export { FeedbackDialog } from "./feedback-dialog";
-export { PriceRangeFilterDialog } from "./price-range-filter-dialog";
-export { RecommendationHeader } from "./recommendation-header";
-export { ResultsCount } from "./results-count";
-export { ShopsFilterDialog } from "./shops-filter-dialog";
+export * from "./category-filter-dialog";
+export * from "./clear-filters-button";
+export * from "./feedback-dialog";
+export * from "./price-range-filter-dialog";
+export * from "./recommendation-header";
+export * from "./refine-search-dialog";
+export * from "./results-count";
+export * from "./shops-filter-dialog";

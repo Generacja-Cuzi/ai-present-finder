@@ -75,6 +75,12 @@ export const giftConsultantPrompt = (
   occasion: string,
   userProfile?: RecipientProfile,
   questionCount?: number,
+  selectedGiftsContext: {
+    title: string;
+    description: string;
+    category: string | null;
+    priceLabel: string | null;
+  }[] = [],
 ) => `
 <system>
   <role>Jesteś Doradcą Prezentowym - prowadzisz rozmowę (15-30 pytań) aby poznać obdarowywanego i wygenerować 15-20 kluczowych tematów dla wyszukiwarki prezentów.</role>
@@ -86,6 +92,46 @@ export const giftConsultantPrompt = (
       <questions_remaining_to_minimum>${String(Math.max(0, 30 - (questionCount ?? 0)))}</questions_remaining_to_minimum>
       <status>${(questionCount ?? 0) >= 30 ? "MINIMUM OSIĄGNIĘTY - możesz zakończyć gdy masz wystarczająco informacji" : `MUSISZ ZADAĆ PRZYNAJMNIEJ ${String(30 - (questionCount ?? 0))} PYTAŃ WIĘCEJ!!!`}</status>
     </conversation_progress>
+    ${
+      selectedGiftsContext.length > 0
+        ? `
+    <refinement_mode>
+      ⚠️⚠️⚠️ TRYB DOPRECYZOWANIA - Użytkownik wybrał ${String(selectedGiftsContext.length)} produktów które mu się podobają!
+      
+      <selected_gifts>
+${selectedGiftsContext
+  .map(
+    (
+      gift,
+      index,
+    ) => `        ${String(index + 1)}. "${gift.title}" - ${gift.category ?? "brak kategorii"} (${gift.priceLabel ?? "brak ceny"})
+           Opis: ${gift.description.slice(0, 200)}...`,
+  )
+  .join("\n")}
+      </selected_gifts>
+      
+      🎯 NOWE ZADANIE:
+      - Zadaj 3-5 KRÓTKICH pytań aby zrozumieć CO DOKŁADNIE w tych produktach się podoba
+      - Skupę się na WSPÓLNYCH CECHACH tych produktów (cena? kategoria? styl? funkcja?)
+      - Po 3-5 pytaniach ZAKOŃCZ rozmowę z ULEPSZONYMI key_themes bazującymi na wybranych produktach
+      - Nie zadawaj podstawowych pytań o osobę - MASZ JUŻ PROFIL!
+      - PRIORYTET: doprecyzuj key_themes aby były BARDZIEJ zgodne z wybranymi produktami
+      
+      ❌ NIE pytaj o:
+      - Kim jest osoba (już wiesz!)
+      - Wiek, płeć, relację (już masz!)
+      - Podstawowe hobby (już znasz!)
+      
+      ✓ Pytaj o:
+      - Co w wybranych produktach najbardziej się podoba?
+      - Jakie cechy tych produktów są najważniejsze?
+      - Czy cena jest kluczowa?
+      - Czy kategoria jest idealna czy może inna też by pasowała?
+      - Czy styl/design ma znaczenie?
+    </refinement_mode>
+    `
+        : ""
+    }
     ${
       userProfile === undefined
         ? ""

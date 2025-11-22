@@ -1,4 +1,5 @@
 import {
+  ChatRefinementStartedEvent,
   ChatStartInterviewEvent,
   ChatUserAnsweredEvent,
   StalkingAnalyzeRequestedEvent,
@@ -26,6 +27,7 @@ import { SaveListingsHandler } from "src/app/handlers/save-listings.handler";
 import { SaveMessageHandler } from "src/app/handlers/save-message.handler";
 import { SaveUserProfileHandler } from "src/app/handlers/save-user-profile.handler";
 import { SendUserMessageHandler } from "src/app/handlers/send-user-message.handler";
+import { StartChatRefinementHandler } from "src/app/handlers/start-chat-refinement.handler";
 import { StartProcessingCommandHandler } from "src/app/handlers/start-processing.handler";
 import { ValidateGoogleTokenHandler } from "src/app/handlers/validate-google-token.command";
 import { DatabaseSeederService } from "src/app/services/database-seeder.service";
@@ -130,6 +132,19 @@ import { UserProfileController } from "../controllers/user-profile.controller";
           },
         },
       },
+      {
+        name: "CHAT_REFINEMENT_STARTED_EVENT",
+        transport: Transport.RMQ,
+        options: {
+          urls: [
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
+          ],
+          queue: ChatRefinementStartedEvent.name,
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
     ]),
   ],
   controllers: [
@@ -167,6 +182,7 @@ import { UserProfileController } from "../controllers/user-profile.controller";
     CreateFeedbackHandler,
     GetFeedbackByChatIdHandler,
     GetAllFeedbacksHandler,
+    StartChatRefinementHandler,
 
     // Services
     SseService,

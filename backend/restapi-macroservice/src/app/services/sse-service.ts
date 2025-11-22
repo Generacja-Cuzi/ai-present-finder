@@ -20,7 +20,7 @@ export class SseService {
         () => {
           const connection = this.allSubscribedUsers.get(notification.userId);
           if (connection == null) {
-            throw new Error("this should not happen");
+            throw new Error("this should not happen, no connection found");
           }
           this.logger.log(`Sending message ${JSON.stringify(notification)}`);
           connection.eventSubject.next(
@@ -65,7 +65,7 @@ export class SseService {
     if (this.allSubscribedUsers.has(id)) {
       const existing = this.allSubscribedUsers.get(id);
       if (existing == null) {
-        throw new Error("this should not happen");
+        throw new Error("this should not happen when adding user");
       }
       this.allSubscribedUsers.set(id, {
         ...existing,
@@ -83,7 +83,7 @@ export class SseService {
     if (this.allSubscribedUsers.has(id)) {
       const existing = this.allSubscribedUsers.get(id);
       if (existing == null) {
-        throw new Error("this should not happen");
+        throw new Error("this should not happen when removing user");
       }
       if (existing.count === 1) {
         this.allSubscribedUsers.delete(id);

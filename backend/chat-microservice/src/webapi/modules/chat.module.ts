@@ -4,6 +4,7 @@ import {
   ChatInterviewCompletedEvent,
   ChatQuestionAskedEvent,
 } from "@core/events";
+import { ChatRefinementStartedHandler } from "src/app/handlers/chat-refinement-started.handler";
 import { ChatStartInterviewHandler } from "src/app/handlers/chat-start-interview.handler";
 import { ChatUserAnsweredHandler } from "src/app/handlers/chat-user-answered.handler";
 import { GenerateQuestionHandler } from "src/app/handlers/generate-question.handler";
@@ -88,7 +89,11 @@ import { TypeOrmModule } from "@nestjs/typeorm";
       },
     ]),
   ],
-  controllers: [ChatStartInterviewHandler, ChatUserAnsweredHandler],
+  controllers: [
+    ChatStartInterviewHandler,
+    ChatUserAnsweredHandler,
+    ChatRefinementStartedHandler,
+  ],
   providers: [GenerateQuestionHandler, SetOccasionHandler, GetOccasionHandler],
 })
 export class ChatModule {}

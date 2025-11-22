@@ -18,12 +18,14 @@ export function GiftCard({
   listingId,
   initialIsFavorited = false,
   chatId,
+  selectionMode = false,
 }: {
   gift: ListingPayload | ListingWithId;
   provider: string;
   listingId?: string;
   initialIsFavorited?: boolean;
   chatId: string;
+  selectionMode?: boolean;
 }) {
   const [imageError, setImageError] = useState(false);
   const queryClient = useQueryClient();
@@ -32,7 +34,13 @@ export function GiftCard({
 
   const [isBookmarked, setIsBookmarked] = useState(initialIsFavorited);
 
-  const handleBookmark = async () => {
+  const handleBookmark = async (event: React.MouseEvent) => {
+    event.stopPropagation();
+
+    if (selectionMode) {
+      return;
+    }
+
     if (listingId === undefined || listingId === "") {
       toast.error("Nie można dodać tego przedmiotu do ulubionych");
       return;
@@ -83,19 +91,21 @@ export function GiftCard({
           {provider}
         </div>
 
-        <Button
-          onClick={handleBookmark}
-          variant="ghost"
-          size="icon"
-          className="relative z-20 h-8 w-8 flex-shrink-0 rounded-full bg-gray-800/80 p-0 backdrop-blur-sm transition-colors hover:bg-gray-700/80"
-          aria-label={
-            isBookmarked ? "Usuń z ulubionych" : "Dodaj do ulubionych"
-          }
-        >
-          <Bookmark
-            className={`h-4 w-4 ${isBookmarked ? "fill-white text-white" : "text-white"}`}
-          />
-        </Button>
+        {!selectionMode && (
+          <Button
+            onClick={handleBookmark}
+            variant="ghost"
+            size="icon"
+            className="relative z-20 h-8 w-8 flex-shrink-0 rounded-full bg-gray-800/80 p-0 backdrop-blur-sm transition-colors hover:bg-gray-700/80"
+            aria-label={
+              isBookmarked ? "Usuń z ulubionych" : "Dodaj do ulubionych"
+            }
+          >
+            <Bookmark
+              className={`h-4 w-4 ${isBookmarked ? "fill-white text-white" : "text-white"}`}
+            />
+          </Button>
+        )}
       </div>
 
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
@@ -128,14 +138,23 @@ export function GiftCard({
         </div>
 
         <div className="px-4 pb-4 pt-3">
-          <Button
-            asChild
-            className="bg-primary hover:bg-primary h-11 w-full rounded-xl text-base font-semibold"
-          >
-            <a href={gift.link} target="_blank" rel="noopener noreferrer">
-              Kup teraz
-            </a>
-          </Button>
+          {selectionMode ? (
+            <Button
+              disabled
+              className="bg-primary/50 h-11 w-full rounded-xl text-base font-semibold"
+            >
+              Tryb wyboru
+            </Button>
+          ) : (
+            <Button
+              asChild
+              className="bg-primary hover:bg-primary h-11 w-full rounded-xl text-base font-semibold"
+            >
+              <a href={gift.link} target="_blank" rel="noopener noreferrer">
+                Kup teraz
+              </a>
+            </Button>
+          )}
         </div>
       </div>
     </Card>

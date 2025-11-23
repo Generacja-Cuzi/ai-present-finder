@@ -251,8 +251,20 @@ export function RecommendationView({
                     handleToggleSelection(listingId);
                   }
                 }}
+                onKeyDown={(event) => {
+                  if (
+                    selectionMode &&
+                    listingId &&
+                    (event.key === "Enter" || event.key === " ")
+                  ) {
+                    event.preventDefault();
+                    handleToggleSelection(listingId);
+                  }
+                }}
+                role={selectionMode && listingId ? "button" : undefined}
+                tabIndex={selectionMode && listingId ? 0 : undefined}
               >
-                {selectionMode && listingId && (
+                {selectionMode && listingId ? (
                   <div
                     className={`absolute inset-0 z-20 rounded-2xl border-4 transition-all ${
                       isSelected
@@ -261,12 +273,12 @@ export function RecommendationView({
                     }`}
                   >
                     <div className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-md">
-                      {isSelected && (
+                      {isSelected ? (
                         <CheckCircle2 className="h-5 w-5 text-purple-600" />
-                      )}
+                      ) : null}
                     </div>
                   </div>
-                )}
+                ) : null}
                 <GiftCard
                   gift={gift}
                   provider={gift.provider ?? "Nieznany"}

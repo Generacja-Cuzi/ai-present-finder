@@ -10,21 +10,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-interface RefineSearchDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  selectedCount: number;
-  onConfirm: () => void;
-  isLoading?: boolean;
-}
-
 export function RefineSearchDialog({
   open,
   onOpenChange,
   selectedCount,
   onConfirm,
   isLoading = false,
-}: RefineSearchDialogProps) {
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  selectedCount: number;
+  onConfirm: () => void;
+  isLoading?: boolean;
+}) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -65,7 +63,7 @@ export function RefineSearchDialog({
           </Button>
           <Button
             onClick={onConfirm}
-            disabled={isLoading}
+            disabled={isLoading || selectedCount === 0}
             className="bg-purple-600 hover:bg-purple-700"
           >
             {isLoading ? (

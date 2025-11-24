@@ -48,12 +48,16 @@ export class ChatRefinementStartedHandler {
       `Session ${event.chatId} updated to refinement phase (iteration ${String(session.refinementCount + 1)})`,
     );
 
+    if (session.occasion === null || session.occasion === undefined) {
+      throw new Error(`No occasion found for chat ${event.chatId}`);
+    }
+
     // Generate first refinement question
     // The generate-question handler will use the selected listings context
     await this.commandBus.execute(
       new GenerateQuestionCommand(
         event.chatId,
-        session.occasion ?? "unknown",
+        session.occasion,
         [], // Start fresh conversation for refinement
       ),
     );

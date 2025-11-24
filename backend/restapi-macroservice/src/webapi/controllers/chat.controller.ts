@@ -13,9 +13,12 @@ import {
 } from "src/webapi/dtos/start-chat-refinement.dto";
 
 import {
+  BadRequestException,
   Body,
   Controller,
+  ForbiddenException,
   Get,
+  NotFoundException,
   Param,
   Post,
   Req,
@@ -48,6 +51,7 @@ export class ChatController {
       chatName: chat.chatName,
       createdAt: chat.createdAt,
       isInterviewCompleted: chat.isInterviewCompleted,
+      reasoningSummary: chat.reasoningSummary,
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       giftCount: chat.listings?.length ?? 0,
       status: chat.status,
@@ -184,10 +188,10 @@ export class ChatController {
     for (const listingId of validatedDto.selectedListingIds) {
       const listing = await this.listingRepository.findById(listingId);
       if (listing === null) {
-        throw new Error(`Listing ${listingId} not found`);
+        throw new NotFoundException(`Listing ${listingId} not found`);
       }
       if (listing.chatId !== chatId) {
-        throw new Error(
+        throw new BadRequestException(
           `Listing ${listingId} does not belong to chat ${chatId}`,
         );
       }
@@ -197,7 +201,7 @@ export class ChatController {
         request.user.id,
       );
       if (!isOwned) {
-        throw new Error(`User does not own listing ${listingId}`);
+        throw new ForbiddenException(`User does not own listing ${listingId}`);
       }
     }
 

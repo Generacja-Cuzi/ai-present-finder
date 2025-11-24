@@ -14,6 +14,7 @@ export async function giftInterviewFlow({
   occasion,
   messages,
   userProfile,
+  selectedGiftsContext,
   onQuestionAsked,
   onInterviewCompleted,
   onInappropriateRequest,
@@ -22,6 +23,12 @@ export async function giftInterviewFlow({
   occasion: string;
   messages: ModelMessage[];
   userProfile?: RecipientProfile;
+  selectedGiftsContext?: {
+    title: string;
+    description: string;
+    category: string | null;
+    priceLabel: string | null;
+  }[];
   onQuestionAsked: (
     question: string,
     potentialAnswers: PotencialAnswers,
@@ -31,7 +38,7 @@ export async function giftInterviewFlow({
 }) {
   // Count questions asked so far (assistant messages)
   const questionCount = messages.filter(
-    (msg) => msg.role === "assistant",
+    (message) => message.role === "assistant",
   ).length;
   const maxRetries = 3;
   let results: GenerateTextResult<typeof tools, never> | null = null;
@@ -42,7 +49,12 @@ export async function giftInterviewFlow({
       results = await generateText({
         model: google("gemini-2.5-flash"),
         messages,
-        system: giftConsultantPrompt(occasion, userProfile, questionCount),
+        system: giftConsultantPrompt(
+          occasion,
+          userProfile,
+          questionCount,
+          selectedGiftsContext ?? [],
+        ),
         stopWhen: stepCountIs(1),
         tools,
         toolChoice: "required", // This forces the AI to always call a tool

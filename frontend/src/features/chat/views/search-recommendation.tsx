@@ -13,6 +13,7 @@ export function SearchRecommendationView({
 }) {
   const { state } = useSseGiftSearching({ clientId: chatId });
   const { data, isLoading, isError } = useGetChatListingsQuery(chatId);
+
   if (hasGifts) {
     if (isLoading) {
       return <div>Ładowanie ofert...</div>;

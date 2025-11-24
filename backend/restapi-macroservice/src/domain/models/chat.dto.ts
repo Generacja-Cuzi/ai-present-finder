@@ -139,6 +139,13 @@ export class ChatDto {
   })
   giftCount: number;
 
+  @ApiProperty({
+    description: "Current status of the chat session",
+    enum: ["interview", "searching", "completed"],
+    example: "interview",
+  })
+  status: "interview" | "searching" | "completed";
+
   @ApiPropertyOptional({
     description: "Summary of the reasoning behind gift suggestions",
     type: ReasoningSummaryDto,

@@ -50,6 +50,49 @@ export class GenerateQuestionHandler
   async execute(command: GenerateQuestionCommand) {
     const { chatId, occasion, history, userProfile } = command;
 
+    // Check if we're in refinement mode
+    const session = await this.chatSessionRepository.findOne({
+      where: { chatId },
+    });
+
+    if (session?.phase === "refinement" && history.length === 0) {
+      // Starting refinement - generate question based on selected listings
+      this.logger.log(
+        `Starting refinement for chat ${chatId} with ${String(session.selectedListingIds?.length ?? 0)} selected gifts`,
+      );
+
+      const selectedGiftsContext = session.selectedListingsContext ?? [];
+      const mockQuestion = `Świetnie! Widzę że wybrałeś ${String(selectedGiftsContext.length)} prezentów które Ci się podobają. Powiedz mi, co w nich najbardziej przemawia do Ciebie?`;
+      const mockAnswers = {
+        type: "select" as const,
+        answers: [
+          {
+            answerFullSentence: "Cena - mieszczą się w moim budżecie",
+            answerShortForm: "Cena",
+          },
+          {
+            answerFullSentence: "Kategoria produktu jest idealna",
+            answerShortForm: "Kategoria",
+          },
+          {
+            answerFullSentence: "Styl i design produktów",
+            answerShortForm: "Styl",
+          },
+          {
+            answerFullSentence: "Funkcjonalność i zastosowanie",
+            answerShortForm: "Funkcjonalność",
+          },
+        ],
+      };
+      const event = new ChatQuestionAskedEvent(
+        chatId,
+        mockQuestion,
+        mockAnswers,
+      );
+      this.eventBus.emit(ChatQuestionAskedEvent.name, event);
+      return;
+    }
+
     // Mock the first question if no history exists
     if (history.length === 0) {
       this.logger.log(
@@ -131,6 +174,7 @@ export class GenerateQuestionHandler
         role: message.sender,
       })),
       userProfile,
+      selectedGiftsContext: session?.selectedListingsContext,
       onQuestionAsked: (
         question: string,
         potentialAnswers: PotencialAnswers,
@@ -150,16 +194,15 @@ export class GenerateQuestionHandler
         );
 
         // Zapisz dane profilu tymczasowo w sesji
-        const session = await this.chatSessionRepository.findOne({
+        const completedSession = await this.chatSessionRepository.findOne({
           where: { chatId },
         });
-        if (session !== null) {
-          session.phase = "ask_save_profile" as ChatSessionPhase;
-          session.pendingProfileData = structuredClone(output) as Record<
-            string,
-            unknown
-          >;
-          await this.chatSessionRepository.save(session);
+        if (completedSession !== null) {
+          completedSession.phase = "ask_save_profile" as ChatSessionPhase;
+          completedSession.pendingProfileData = structuredClone(
+            output,
+          ) as Record<string, unknown>;
+          await this.chatSessionRepository.save(completedSession);
         }
 
         // Zadaj pytanie o zapisanie profilu

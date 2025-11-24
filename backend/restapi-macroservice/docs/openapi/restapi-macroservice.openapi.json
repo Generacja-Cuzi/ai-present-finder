@@ -221,6 +221,46 @@
         "tags": ["chats"]
       }
     },
+    "/chats/{chatId}/refine": {
+      "post": {
+        "description": "Continue the conversation with selected gift listings to refine search results",
+        "operationId": "ChatController_startRefinement",
+        "parameters": [
+          {
+            "name": "chatId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartChatRefinementDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Refinement started successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartChatRefinementResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Start chat refinement with selected gift listings",
+        "tags": ["chats"]
+      }
+    },
     "/favorites": {
       "get": {
         "operationId": "FavoritesController_getFavorites",
@@ -1589,6 +1629,12 @@
             "description": "Total number of gift suggestions generated in this chat",
             "example": 3
           },
+          "status": {
+            "type": "string",
+            "description": "Current status of the chat session",
+            "enum": ["interview", "searching", "completed"],
+            "example": "interview"
+          },
           "reasoningSummary": {
             "description": "Summary of the reasoning behind gift suggestions",
             "allOf": [
@@ -1603,7 +1649,8 @@
           "chatName",
           "createdAt",
           "isInterviewCompleted",
-          "giftCount"
+          "giftCount",
+          "status"
         ]
       },
       "ChatsResponseDto": {
@@ -1786,6 +1833,39 @@
           }
         },
         "required": ["chat", "listings"]
+      },
+      "StartChatRefinementDto": {
+        "type": "object",
+        "properties": {
+          "selectedListingIds": {
+            "description": "Array of listing IDs that the user selected/liked",
+            "example": [
+              "550e8400-e29b-41d4-a716-446655440000",
+              "550e8400-e29b-41d4-a716-446655440001"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["selectedListingIds"]
+      },
+      "StartChatRefinementResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Success message",
+            "example": "Refinement started successfully"
+          },
+          "chatId": {
+            "type": "string",
+            "description": "Chat ID",
+            "example": "chat-123"
+          }
+        },
+        "required": ["message", "chatId"]
       },
       "FavoritesResponseDto": {
         "type": "object",

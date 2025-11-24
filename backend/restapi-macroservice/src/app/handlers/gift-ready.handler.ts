@@ -49,19 +49,29 @@ export class GiftReadyHandler {
     if (chat === null) {
       this.logger.error(`Chat ${event.chatId} not found`);
     } else {
-      // Save reasoning summary to chat
+      // Save reasoning summary and update status to completed
+      const updateData: Partial<{
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        reasoningSummary: any;
+        status: "completed" | "interview" | "searching";
+      }> = {
+        status: "completed",
+      };
+
       if (
         event.profile?.recipient_profile != null ||
         event.profile?.key_themes_and_keywords != null
       ) {
-        await this.chatRepository.update(chat.id, {
-          reasoningSummary: {
-            recipientProfile: event.profile.recipient_profile ?? undefined,
-            keyThemesAndKeywords: event.profile.key_themes_and_keywords,
-          },
-        });
-        this.logger.log(`Reasoning summary saved for chat ${event.chatId}`);
+        updateData.reasoningSummary = {
+          recipientProfile: event.profile.recipient_profile ?? undefined,
+          keyThemesAndKeywords: event.profile.key_themes_and_keywords,
+        };
       }
+
+      await this.chatRepository.update(chat.id, updateData);
+      this.logger.log(
+        `Chat ${event.chatId} status updated to completed with gifts`,
+      );
 
       // Save user profile if requested
       if (

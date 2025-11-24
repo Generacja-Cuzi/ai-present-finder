@@ -1,5 +1,9 @@
 // src/main.ts
-import { ChatStartInterviewEvent, ChatUserAnsweredEvent } from "@core/events";
+import {
+  ChatRefinementStartedEvent,
+  ChatStartInterviewEvent,
+  ChatUserAnsweredEvent,
+} from "@core/events";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 
 import { Logger } from "@nestjs/common";
@@ -37,8 +41,18 @@ async function bootstrap() {
     },
   };
 
+  const chatRefinementStartedMicroserviceOptions = {
+    transport: Transport.RMQ,
+    options: {
+      urls: [cloudAmqpUrl],
+      queue: ChatRefinementStartedEvent.name,
+      queueOptions: { durable: false },
+    },
+  };
+
   app.connectMicroservice(chatAskQuestionMicroserviceOptions);
   app.connectMicroservice(chatUserAnsweredMicroserviceOptions);
+  app.connectMicroservice(chatRefinementStartedMicroserviceOptions);
 
   const swaggerServer =
     process.env.SWAGGER_SERVER ?? `http://localhost:${portString}`;

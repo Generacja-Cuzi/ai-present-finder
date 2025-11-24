@@ -27,8 +27,13 @@ export class ChatCompletedNotifyUserHandler {
       return;
     }
 
-    await this.chatRepository.update(chat.id, { isInterviewCompleted: true });
-    this.logger.log(`Marked chat ${event.chatId} as completed`);
+    await this.chatRepository.update(chat.id, {
+      isInterviewCompleted: true,
+      status: "searching",
+    });
+    this.logger.log(
+      `Marked chat ${event.chatId} as completed and searching for gifts`,
+    );
 
     await this.commandBus.execute(
       new NotifyUserSseCommand(event.chatId, {

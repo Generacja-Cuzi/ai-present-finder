@@ -106,6 +106,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Refresh access token using refresh token */
+        post: operations["AuthController_refreshToken"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/chats": {
         parameters: {
             query?: never;
@@ -151,6 +168,26 @@ export interface paths {
         get: operations["ChatController_getChatListings"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/chats/{chatId}/refine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start chat refinement with selected gift listings
+         * @description Continue the conversation with selected gift listings to refine search results
+         */
+        post: operations["ChatController_startRefinement"];
         delete?: never;
         options?: never;
         head?: never;
@@ -560,6 +597,11 @@ export interface components {
              * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
              */
             accessToken: string;
+            /**
+             * @description JWT refresh token
+             * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+             */
+            refreshToken: string;
             /** @description User information */
             user: components["schemas"]["UserDto"];
         };
@@ -699,6 +741,12 @@ export interface components {
              * @example 3
              */
             giftCount: number;
+            /**
+             * @description Current status of the chat session
+             * @example interview
+             * @enum {string}
+             */
+            status: "interview" | "searching" | "completed";
             /** @description Summary of the reasoning behind gift suggestions */
             reasoningSummary?: components["schemas"]["ReasoningSummaryDto"];
         };
@@ -821,6 +869,28 @@ export interface components {
             chat: components["schemas"]["ChatInfoDto"];
             /** @description List of listings for the chat */
             listings: components["schemas"]["ListingResponseDto"][];
+        };
+        StartChatRefinementDto: {
+            /**
+             * @description Array of listing IDs that the user selected/liked
+             * @example [
+             *       "550e8400-e29b-41d4-a716-446655440000",
+             *       "550e8400-e29b-41d4-a716-446655440001"
+             *     ]
+             */
+            selectedListingIds: string[];
+        };
+        StartChatRefinementResponseDto: {
+            /**
+             * @description Success message
+             * @example Refinement started successfully
+             */
+            message: string;
+            /**
+             * @description Chat ID
+             * @example chat-123
+             */
+            chatId: string;
         };
         FavoritesResponseDto: {
             /** @description List of favorite listings */
@@ -1288,6 +1358,24 @@ export interface operations {
             };
         };
     };
+    AuthController_refreshToken: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns new access token */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     ChatController_getUserChats: {
         parameters: {
             query?: never;
@@ -1348,6 +1436,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChatListingsResponseDto"];
+                };
+            };
+        };
+    };
+    ChatController_startRefinement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                chatId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartChatRefinementDto"];
+            };
+        };
+        responses: {
+            /** @description Refinement started successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StartChatRefinementResponseDto"];
                 };
             };
         };

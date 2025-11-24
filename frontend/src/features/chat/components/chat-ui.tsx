@@ -1,5 +1,4 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -24,7 +23,6 @@ export function ChatUI({
     initialState,
   });
   const sendMessage = useSendMessage();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const [inputValue, setInputValue] = useState("");
@@ -39,6 +37,8 @@ export function ChatUI({
   useEffect(() => {
     if (chatState.type === "chat-interview-completed") {
       // Invalidate the chat query to refetch with updated isInterviewCompleted status
+      // Don't navigate - we're already on the correct route, and navigation can cause
+      // the SSE connection to close. The query invalidation will trigger a re-render.
       void queryClient.invalidateQueries({
         queryKey: [
           "get",
@@ -46,15 +46,8 @@ export function ChatUI({
           { params: { path: { chatId: clientId } } },
         ],
       });
-
-      // Navigate to trigger re-render with updated data
-      void navigate({
-        to: "/chat/$id",
-        params: { id: clientId },
-        replace: true,
-      });
     }
-  }, [chatState.type, clientId, navigate, queryClient]);
+  }, [chatState.type, clientId, queryClient]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isChatbotProcessing) {

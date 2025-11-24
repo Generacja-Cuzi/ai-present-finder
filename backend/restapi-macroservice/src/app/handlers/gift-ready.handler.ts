@@ -103,6 +103,9 @@ export class GiftReadyHandler {
       }
     }
 
+    this.logger.log(
+      `Attempting to send SSE notification for chatId: ${event.chatId}`,
+    );
     await this.commandBus.execute(
       new NotifyUserSseCommand(event.chatId, {
         type: "gift-ready",

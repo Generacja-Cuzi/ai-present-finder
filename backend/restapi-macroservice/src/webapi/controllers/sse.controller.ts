@@ -10,7 +10,7 @@ import {
   SseMessageDto,
 } from "src/domain/models/sse-message.dto";
 
-import { Controller, Query, Res, Sse } from "@nestjs/common";
+import { Controller, Logger, Query, Res, Sse } from "@nestjs/common";
 import {
   ApiExtraModels,
   ApiOperation,
@@ -28,6 +28,8 @@ import {
 @ApiTags("sse")
 @Controller()
 export class SseController {
+  private readonly logger = new Logger(SseController.name);
+
   constructor(private readonly sseService: SseService) {}
 
   @Sse("sse")
@@ -46,8 +48,12 @@ export class SseController {
       throw new Error("query.clientId is required");
     }
 
+    this.logger.log(
+      `SSE connection established for clientId: ${query.clientId}`,
+    );
     this.sseService.addUser(query.clientId);
     response.on("close", () => {
+      this.logger.log(`SSE connection closed for clientId: ${query.clientId}`);
       this.sseService.removeUser(query.clientId);
     });
     return this.sseService.events(query.clientId);

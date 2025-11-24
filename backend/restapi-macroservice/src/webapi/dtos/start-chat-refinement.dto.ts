@@ -12,7 +12,7 @@ export const startChatRefinementDtoSchema = z.object({
 export class StartChatRefinementDto {
   @ApiProperty({
     description: "Array of listing IDs that the user selected/liked",
-    type: [String],
+    type: String,
     isArray: true,
     example: [
       "550e8400-e29b-41d4-a716-446655440000",

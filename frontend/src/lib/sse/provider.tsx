@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { SSEProvider } from "react-hooks-sse";
 
 import { getBackendUrl } from "@/lib/backend-url";
@@ -11,7 +11,10 @@ export function CustomSseProvider({
   clientId: string;
 }) {
   const baseUrl = getBackendUrl();
-  const sseEndpoint = `${baseUrl}/sse?clientId=${clientId}`;
+  const sseEndpoint = useMemo(
+    () => `${baseUrl}/sse?clientId=${clientId}`,
+    [baseUrl, clientId],
+  );
 
   return <SSEProvider endpoint={sseEndpoint}>{children}</SSEProvider>;
 }

@@ -26,7 +26,7 @@ export function SocialLinksSection() {
                 platform="instagram"
                 value={field.value}
                 onChange={field.onChange}
-                placeholder="Instagram URL"
+                placeholder="instagram.com/username"
               />
               {Boolean(fieldState.error) && (
                 <p className="text-sm text-red-500">
@@ -46,7 +46,7 @@ export function SocialLinksSection() {
                 platform="x"
                 value={field.value}
                 onChange={field.onChange}
-                placeholder="X (formerly Twitter) URL"
+                placeholder="x.com/username"
               />
               {Boolean(fieldState.error) && (
                 <p className="text-sm text-red-500">
@@ -66,7 +66,7 @@ export function SocialLinksSection() {
                 platform="tiktok"
                 value={field.value}
                 onChange={field.onChange}
-                placeholder="TikTok URL"
+                placeholder="tiktok.com/@username"
               />
               {Boolean(fieldState.error) && (
                 <p className="text-sm text-red-500">

@@ -7,7 +7,7 @@ import { FilterButton } from "@/components/filter-button";
 import { SearchBar } from "@/components/search-bar";
 import { Button } from "@/components/ui/button";
 import { GiftCard } from "@/components/ui/gift-card";
-import { NavButton } from "@/components/ui/nav-button";
+import { PageHeader } from "@/components/ui/page-header";
 
 import { useGetChatListingsQuery } from "../api/chats.api";
 import { ReasoningDialog } from "../components/reasoning-dialog";
@@ -152,15 +152,12 @@ function ChatDetailsHeader({
   onShowReasoning: () => void;
 }) {
   return (
-    <header className="sticky top-0 z-10 border-b border-gray-200 bg-white">
-      <div className="flex items-center justify-between gap-3 px-4 py-3">
-        <div className="flex items-center gap-3">
-          <NavButton to="/history" />
-          <h1 className="text-lg font-semibold">
-            {chatName ?? "Rekomendacje prezentów"}
-          </h1>
-        </div>
-        {hasReasoning ? (
+    <PageHeader
+      title={chatName ?? "Rekomendacje prezentów"}
+      backTo="/history"
+      sticky
+      actions={
+        hasReasoning ? (
           <Button
             variant="outline"
             size="sm"
@@ -170,8 +167,8 @@ function ChatDetailsHeader({
             <InfoIcon className="h-4 w-4" />
             <span className="hidden sm:inline">Zobacz tok myślowy</span>
           </Button>
-        ) : null}
-      </div>
-    </header>
+        ) : undefined
+      }
+    />
   );
 }

@@ -2,6 +2,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
+import { cn } from "@/lib/utils";
+
 import { useSendMessage } from "../api/send-message";
 import { useSseChat } from "../hooks/use-sse-chat";
 import type { ChatState } from "../types";
@@ -112,7 +114,12 @@ export function ChatUI({
 
       <ChatMessages messages={messages} isProcessing={isChatbotProcessing} />
 
-      <div className="bg-transparent p-2">
+      <div
+        className={cn(
+          "h-[260px] bg-transparent p-2 transition-opacity duration-300",
+          isChatbotProcessing ? "pointer-events-none opacity-0" : "opacity-100",
+        )}
+      >
         {potentialAnswers.length > 0 ? (
           <PotentialAnswers
             answers={potentialAnswers}
@@ -123,7 +130,6 @@ export function ChatUI({
             inputValue={inputValue}
             setInputValue={setInputValue}
             handleSendMessage={handleSendMessage}
-            isLoading={isChatbotProcessing}
           />
         )}
       </div>

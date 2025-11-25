@@ -33,9 +33,11 @@ import {
 export function RecommendationView({
   clientId,
   giftIdeas,
+  backTo,
 }: {
   clientId: string;
   giftIdeas: ListingWithId[];
+  backTo?: string;
 }) {
   const {
     filters,
@@ -138,7 +140,7 @@ export function RecommendationView({
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
-      <RecommendationHeader />
+      <RecommendationHeader backTo={backTo} />
 
       <main className="flex-1 pb-20">
         <div className="space-y-4 bg-white p-4 pb-6">

@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { useAutoScroll } from "../hooks/use-auto-scroll";
 import { Message } from "./message";
-import { ThinkingBadge } from "./thinking-badge";
+import { TypingIndicator } from "./typing-indicator";
 
 export function ChatMessages({
   messages,
@@ -21,7 +21,7 @@ export function ChatMessages({
         {messages.map((message) => (
           <Message key={message.id} message={message} />
         ))}
-        {isProcessing ? <ThinkingBadge /> : null}
+        {isProcessing ? <TypingIndicator /> : null}
       </div>
     </ScrollArea>
   );

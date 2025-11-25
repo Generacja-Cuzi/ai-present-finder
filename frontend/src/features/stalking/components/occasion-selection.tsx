@@ -10,9 +10,7 @@ export function OccasionSelector() {
 
   return (
     <section className="mb-8">
-      <h2 className="text-foreground mb-2 text-xl font-bold">
-        Parametry prezentu
-      </h2>
+      <h2 className="text-foreground mb-2 text-xl font-bold">Detale</h2>
       <p className="mb-4 text-base text-gray-500">Jaka jest okazja?</p>
 
       <div className="grid grid-cols-2 gap-4">

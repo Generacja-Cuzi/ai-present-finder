@@ -7,9 +7,11 @@ import { useSseGiftSearching } from "../hooks/use-sse-gift-searching";
 export function SearchRecommendationView({
   chatId,
   hasGifts,
+  backTo,
 }: {
   chatId: string;
   hasGifts: boolean;
+  backTo?: string;
 }) {
   const { state } = useSseGiftSearching({ clientId: chatId });
   const { data, isLoading, isError } = useGetChatListingsQuery(chatId);
@@ -27,7 +29,11 @@ export function SearchRecommendationView({
         listingId: listing.id,
       }));
       return (
-        <RecommendationView clientId={chatId} giftIdeas={listingsWithId} />
+        <RecommendationView
+          clientId={chatId}
+          giftIdeas={listingsWithId}
+          backTo={backTo}
+        />
       );
     }
   }
@@ -36,6 +42,10 @@ export function SearchRecommendationView({
     return <GiftSearching />;
   }
   return (
-    <RecommendationView clientId={chatId} giftIdeas={state.data.giftIdeas} />
+    <RecommendationView
+      clientId={chatId}
+      giftIdeas={state.data.giftIdeas}
+      backTo={backTo}
+    />
   );
 }

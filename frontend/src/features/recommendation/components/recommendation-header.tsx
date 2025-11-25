@@ -1,10 +1,11 @@
-import { NavButton } from "@/components/ui/nav-button";
+import { PageHeader } from "@/components/ui/page-header";
 
-export function RecommendationHeader() {
-  return (
-    <header className="sticky top-0 z-10 flex items-center gap-3 border-b bg-white px-4 py-3">
-      <NavButton to="/" />
-      <h1 className="text-lg font-semibold">Rekomendacje prezentów</h1>
-    </header>
-  );
+interface RecommendationHeaderProps {
+  backTo?: string;
+}
+
+export function RecommendationHeader({
+  backTo = "/start-search",
+}: RecommendationHeaderProps) {
+  return <PageHeader title="Rekomendacje prezentów" backTo={backTo} sticky />;
 }

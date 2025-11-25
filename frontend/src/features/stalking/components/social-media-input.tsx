@@ -1,12 +1,12 @@
-import { Music, X } from "lucide-react";
-
 import { InstagramIcon } from "@/components/icons/instagram-icon";
+import { TiktokIcon } from "@/components/icons/tiktok-icon";
+import { XIcon } from "@/components/icons/x-icon";
 import { Input } from "@/components/ui/input";
 
 const platformIcons = {
   instagram: InstagramIcon,
-  x: X,
-  tiktok: Music,
+  x: XIcon,
+  tiktok: TiktokIcon,
 };
 
 const platformLabels = {

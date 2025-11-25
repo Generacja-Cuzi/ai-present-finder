@@ -7,7 +7,13 @@ import { useInitialChatState } from "../hooks/use-initial-state";
 import { SearchRecommendationView } from "./search-recommendation";
 import { SearchingView } from "./searching-view";
 
-export function ChatView({ clientId }: { clientId: string }) {
+export function ChatView({
+  clientId,
+  backTo,
+}: {
+  clientId: string;
+  backTo?: string;
+}) {
   const { initialState, isLoading } = useInitialChatState(clientId);
   const {
     data: chatInfo,
@@ -29,6 +35,7 @@ export function ChatView({ clientId }: { clientId: string }) {
         <SearchRecommendationView
           chatId={clientId}
           hasGifts={chatInfo.giftCount > 0}
+          backTo={backTo}
         />
       ) : chatInfo?.status === "searching" ? (
         <SearchingView clientId={clientId} />

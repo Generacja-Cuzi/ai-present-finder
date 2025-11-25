@@ -5,6 +5,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { components } from "@/lib/api/types";
+import { formatRecipientProfile } from "@/lib/utils/recipient-profile-translator";
 
 interface ReasoningDialogProps {
   open: boolean;
@@ -58,55 +59,20 @@ export function ReasoningDialog({
             <div className="space-y-3">
               <h3 className="font-semibold text-gray-900">Profil odbiorcy</h3>
 
-              {
-                <InfoSection
-                  title="Informacje osobiste"
-                  data={
-                    reasoningSummary.recipientProfile.personalInfoDescription
-                  }
-                />
-              }
-
-              {reasoningSummary.recipientProfile.lifestyleDescription !=
-                null && (
-                <div className="rounded-lg bg-gray-50 p-3">
-                  <h4 className="mb-2 text-sm font-medium text-gray-700">
-                    Styl życia
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    {reasoningSummary.recipientProfile.lifestyleDescription}
-                  </p>
-                </div>
-              )}
-
-              {reasoningSummary.recipientProfile.preferencesDescription !=
-                null && (
-                <div className="rounded-lg bg-gray-50 p-3">
-                  <h4 className="mb-2 text-sm font-medium text-gray-700">
-                    Preferencje
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    {reasoningSummary.recipientProfile.preferencesDescription}
-                  </p>
-                </div>
-              )}
-
-              {reasoningSummary.recipientProfile.recentLifeDescription !=
-                null && (
-                <div className="rounded-lg bg-gray-50 p-3">
-                  <h4 className="mb-2 text-sm font-medium text-gray-700">
-                    Ostatnie wydarzenia
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    {reasoningSummary.recipientProfile.recentLifeDescription}
-                  </p>
-                </div>
-              )}
-
-              <InfoSection
-                title="Posiadanie"
-                data={reasoningSummary.recipientProfile.possessions}
-              />
+              <div className="space-y-2">
+                {formatRecipientProfile(reasoningSummary.recipientProfile).map(
+                  ({ label, value }) => (
+                    <div key={label} className="rounded-lg bg-gray-50 p-3">
+                      <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-600">
+                        {label}
+                      </h4>
+                      <p className="text-sm leading-relaxed text-gray-900">
+                        {value}
+                      </p>
+                    </div>
+                  ),
+                )}
+              </div>
             </div>
           )}
 
@@ -119,56 +85,4 @@ export function ReasoningDialog({
       </DialogContent>
     </Dialog>
   );
-}
-
-function InfoSection({
-  title,
-  data,
-}: {
-  title: string;
-  data: Record<string, unknown>;
-}) {
-  const entries = Object.entries(data).filter(
-    ([, value]) =>
-      value !== null &&
-      value !== undefined &&
-      value !== "" &&
-      (Array.isArray(value) ? value.length > 0 : true),
-  );
-
-  if (entries.length === 0) {
-    return null;
-  }
-
-  return (
-    <div className="rounded-lg bg-gray-50 p-3">
-      <h4 className="mb-2 text-sm font-medium text-gray-700">{title}</h4>
-      <dl className="space-y-1">
-        {entries.map(([key, value]) => (
-          <div key={key} className="text-sm">
-            <dt className="inline font-medium text-gray-600">
-              {formatLabel(key)}:{" "}
-            </dt>
-            <dd className="inline text-gray-900">{formatValue(value)}</dd>
-          </div>
-        ))}
-      </dl>
-    </div>
-  );
-}
-
-function formatLabel(key: string): string {
-  return key
-    .replaceAll("_", " ")
-    .replaceAll(/\b\w/g, (char) => char.toUpperCase());
-}
-
-function formatValue(value: unknown): string {
-  if (Array.isArray(value)) {
-    return value.join(", ");
-  }
-  if (typeof value === "object" && value !== null) {
-    return JSON.stringify(value);
-  }
-  return String(value);
 }

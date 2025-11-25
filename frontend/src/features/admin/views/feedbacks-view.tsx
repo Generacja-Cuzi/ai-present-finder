@@ -82,13 +82,15 @@ export function FeedbacksView() {
         </div>
 
         <div className="space-y-6">
-          {[...feedbacksByChat.entries()].map(([chatId, chatFeedbacks]) => (
-            <FeedbackCard
-              key={chatId}
-              chatId={chatId}
-              feedbacks={chatFeedbacks}
-            />
-          ))}
+          {[...feedbacksByChat.entries()].map(
+            ([chatId, chatFeedbacks]: [string, Feedback[]]) => (
+              <FeedbackCard
+                key={chatId}
+                chatId={chatId}
+                feedbacks={chatFeedbacks}
+              />
+            ),
+          )}
           {feedbacksByChat.size === 0 && (
             <div className="text-muted-foreground py-12 text-center">
               <p className="text-lg">Brak feedbacków do wyświetlenia</p>

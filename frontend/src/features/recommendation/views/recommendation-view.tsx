@@ -81,25 +81,25 @@ export function RecommendationView({
     }
     const map = new Map<string, boolean>();
     for (const feedback of existingFeedback) {
-      // Type guard dla feedbacku
       if (
-        typeof feedback === "object" &&
-        feedback !== null &&
-        "productId" in feedback &&
-        "isGeneralFeedback" in feedback
+        typeof feedback !== "object" ||
+        feedback === null ||
+        !("productId" in feedback) ||
+        !("isGeneralFeedback" in feedback)
       ) {
-        const productId = feedback.productId;
-        if (
-          productId !== null &&
-          productId !== undefined &&
-          typeof productId === "string"
-        ) {
-          map.set(productId, true);
-        }
-        const isGeneral = feedback.isGeneralFeedback;
-        if (isGeneral === true) {
-          map.set("__general__", true);
-        }
+        continue;
+      }
+
+      const { productId, isGeneralFeedback: isGeneral } = feedback as {
+        productId?: string | null;
+        isGeneralFeedback?: boolean | null;
+      };
+
+      if (typeof productId === "string") {
+        map.set(productId, true);
+      }
+      if (isGeneral === true) {
+        map.set("__general__", true);
       }
     }
     return map;

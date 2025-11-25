@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import { $api } from "@/lib/api/client";
 import type { components } from "@/lib/api/types";
+import { formatRecipientProfile } from "@/lib/utils/recipient-profile-translator";
 
 type Feedback = components["schemas"]["FeedbackResponseDto"];
 
@@ -86,9 +87,9 @@ export function FeedbackCard({
             </CardTitle>
             <CardDescription className="mt-1">
               Średnia ocena: {averageRating} / 5.0 •{" "}
-              {feedbacks[0] !== null && feedbacks[0] !== undefined
+              {feedbacks.length > 0
                 ? formatDate(feedbacks[0].createdAt)
-                : ""}
+                : "Brak daty"}
             </CardDescription>
           </div>
           <div className="flex items-center gap-4">
@@ -115,7 +116,7 @@ export function FeedbackCard({
         </div>
       </CardHeader>
 
-      {expanded && reasoningSummary !== null && (
+      {expanded && reasoningSummary != null ? (
         <CardContent className="space-y-6">
           {/* Thinking Process */}
           <div className="rounded-lg border bg-slate-50 p-4">
@@ -124,48 +125,51 @@ export function FeedbackCard({
               Tok myślowy AI
             </div>
             <div className="space-y-2 text-sm">
-              {reasoningSummary.recipientProfile !== null &&
-                reasoningSummary.recipientProfile !== undefined && (
-                  <div>
-                    <p className="font-medium text-slate-600">
-                      Profil odbiorcy:
-                    </p>
-                    <pre className="mt-1 whitespace-pre-wrap rounded bg-white p-2 text-xs">
-                      {JSON.stringify(
-                        reasoningSummary.recipientProfile,
-                        null,
-                        2,
-                      )}
-                    </pre>
+              {reasoningSummary.recipientProfile != null && (
+                <div>
+                  <p className="mb-2 font-medium text-slate-600">
+                    Profil odbiorcy:
+                  </p>
+                  <div className="space-y-2">
+                    {formatRecipientProfile(
+                      reasoningSummary.recipientProfile,
+                    ).map(({ label, value }) => (
+                      <div key={label} className="rounded bg-white p-3">
+                        <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          {label}
+                        </h4>
+                        <p className="text-sm leading-relaxed text-slate-800">
+                          {value}
+                        </p>
+                      </div>
+                    ))}
                   </div>
-                )}
-              {reasoningSummary.keyThemesAndKeywords !== null &&
-                reasoningSummary.keyThemesAndKeywords !== undefined && (
-                  <div>
-                    <p className="font-medium text-slate-600">
-                      Kluczowe tematy i słowa:
-                    </p>
-                    <div className="mt-1 flex flex-wrap gap-1">
-                      {reasoningSummary.keyThemesAndKeywords.map(
-                        (keyword, index) => (
-                          <span
-                            key={String(index)}
-                            className="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-700"
-                          >
-                            {keyword}
-                          </span>
-                        ),
-                      )}
-                    </div>
+                </div>
+              )}
+              {reasoningSummary.keyThemesAndKeywords != null && (
+                <div>
+                  <p className="font-medium text-slate-600">
+                    Kluczowe tematy i słowa:
+                  </p>
+                  <div className="mt-1 flex flex-wrap gap-1">
+                    {reasoningSummary.keyThemesAndKeywords.map((keyword) => (
+                      <span
+                        key={keyword}
+                        className="rounded-full bg-amber-100 px-2 py-1 text-xs text-amber-800"
+                      >
+                        {keyword}
+                      </span>
+                    ))}
                   </div>
-                )}
+                </div>
+              )}
             </div>
           </div>
 
           {/* General Feedback */}
           {generalFeedback !== undefined && (
-            <div className="rounded-lg border-2 border-purple-200 bg-purple-50 p-4">
-              <div className="mb-2 flex items-center gap-2 font-semibold text-purple-700">
+            <div className="rounded-lg border-2 border-orange-200 bg-orange-50 p-4">
+              <div className="mb-2 flex items-center gap-2 font-semibold text-orange-700">
                 <MessageSquare className="h-5 w-5" />
                 Ogólna opinia
               </div>
@@ -181,9 +185,9 @@ export function FeedbackCard({
                   />
                 ))}
               </div>
-              {generalFeedback.comment &&
-                generalFeedback.comment.trim() !== "" && (
-                  <p className="mt-2 text-sm italic text-purple-900">
+              {generalFeedback.comment != null &&
+                generalFeedback.comment.trim().length > 0 && (
+                  <p className="mt-2 text-sm italic text-orange-900">
                     &ldquo;{generalFeedback.comment}&rdquo;
                   </p>
                 )}
@@ -207,19 +211,17 @@ export function FeedbackCard({
                       className="group relative rounded-lg border bg-white p-3 transition-all hover:shadow-md"
                     >
                       <div className="flex gap-3">
-                        {listing?.image !== null &&
-                        listing?.image !== undefined &&
-                        listing.image.trim() !== "" ? (
+                        {listing?.image != null &&
+                        listing.image.trim().length > 0 ? (
                           <img
                             src={listing.image}
-                            alt={listing.title ?? "Product"}
+                            alt={listing.title}
                             className="h-16 w-16 rounded object-cover"
                           />
                         ) : null}
                         <div className="flex-1">
                           <p className="font-medium text-gray-800">
-                            {listing?.title ??
-                              `Produkt ${String(feedback.productId ?? "").slice(0, 8) || "nieznany"}...`}
+                            {listing?.title ?? "Produkt nieznany"}
                           </p>
                           <div className="mt-1 flex items-center gap-1">
                             {Array.from({ length: 5 }).map((_, index) => (
@@ -252,7 +254,7 @@ export function FeedbackCard({
             </div>
           )}
         </CardContent>
-      )}
+      ) : null}
     </Card>
   );
 }

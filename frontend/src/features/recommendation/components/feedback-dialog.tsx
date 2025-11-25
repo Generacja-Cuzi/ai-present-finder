@@ -86,7 +86,7 @@ export function FeedbackDialog({
     if (isGeneralFeedback) {
       return "Ogólna opinia o wyszukiwaniu";
     }
-    if (productTitle && productTitle.trim() !== "") {
+    if (productTitle != null && productTitle.trim().length > 0) {
       return `Oceń: ${productTitle}`;
     }
     return "Podziel się opinią";

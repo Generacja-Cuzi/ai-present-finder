@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button";
 import type { paths } from "@/lib/api/types";
 
 import { useStalkingRequestMutation } from "../api/stalking-request";
+import { useUserProfiles } from "../api/user-profiles";
 import {
+  BudgetSection,
   OccasionSelector,
-  PriceRangeSection,
   SocialLinksSection,
   StalkingHeader,
   SubmitBar,
@@ -26,22 +27,30 @@ type UserProfile =
 export function StalkingView() {
   const navigate = useNavigate();
   const { mutateAsync: sendRequest, isPending } = useStalkingRequestMutation();
-  const [showProfileQuestion, setShowProfileQuestion] = useState(true);
+  const [hasDismissedProfileQuestion, setHasDismissedProfileQuestion] =
+    useState(false);
   const [showProfileDialog, setShowProfileDialog] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<UserProfile | null>(
     null,
   );
 
+  // Fetch user profiles to determine if we should show the question
+  const { data: profilesData, isLoading: isLoadingProfiles } =
+    useUserProfiles(true);
+  const profileCount = profilesData?.profiles.length ?? 0;
+  const hasProfiles = !isLoadingProfiles && profileCount > 0;
+  const shouldShowProfileQuestion = hasProfiles && !hasDismissedProfileQuestion;
+
   const methods = useStalkingForm();
   const { formState } = methods;
 
   const handleUseProfile = () => {
-    setShowProfileQuestion(false);
+    setHasDismissedProfileQuestion(true);
     setShowProfileDialog(true);
   };
 
   const handleSkipProfile = () => {
-    setShowProfileQuestion(false);
+    setHasDismissedProfileQuestion(true);
   };
 
   const handleProfileSelect = (profile: UserProfile) => {
@@ -85,7 +94,7 @@ export function StalkingView() {
     <div className="bg-background flex min-h-screen flex-col pb-20">
       <StalkingHeader />
 
-      {showProfileQuestion ? (
+      {shouldShowProfileQuestion ? (
         <div className="bg-card mx-6 my-4 rounded-lg border p-6 shadow-sm">
           <h3 className="mb-2 text-lg font-semibold">
             Czy chcesz wczytać profil osoby?
@@ -136,11 +145,11 @@ export function StalkingView() {
           onSubmit={(event) => {
             void methods.handleSubmit(onSubmit)(event);
           }}
-          className="flex-1 overflow-y-auto px-6 py-6"
+          className="flex-1 overflow-y-auto px-6 py-6 pb-28"
         >
           <SocialLinksSection />
           <OccasionSelector />
-          <PriceRangeSection />
+          <BudgetSection />
           <SubmitBar
             disabled={!formState.isValid || isPending}
             isPending={isPending}

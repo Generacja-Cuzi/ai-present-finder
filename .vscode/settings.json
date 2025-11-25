@@ -4,5 +4,6 @@
     {
       "text": "Use conventional commit message format."
     }
-  ]
+  ],
+  "kiroAgent.configureMCP": "Disabled"
 }

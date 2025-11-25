@@ -35,7 +35,7 @@ export function PotentialAnswers({
   };
 
   return (
-    <div className="mx-2 flex flex-col gap-2 rounded-t-2xl p-4 pt-2">
+    <div className="mx-2 flex h-[200px] flex-col gap-1.5 rounded-t-2xl px-4 py-2">
       {answers.map((answer) => (
         <Button
           variant="outline"
@@ -84,11 +84,11 @@ export function PotentialAnswers({
       ) : (
         <Button
           variant="outline"
-          size="lg"
+          size="sm"
           onClick={() => {
             setShowOtherInput(true);
           }}
-          className="justify-start rounded-2xl"
+          className="h-auto min-h-[36px] justify-start rounded-2xl py-2"
         >
           Inne...
         </Button>

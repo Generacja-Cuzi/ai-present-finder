@@ -91,6 +91,7 @@ export function ChatCard({
         {isInterviewCompleted ? (
           <NavButton
             to={`/chat/${chatId}`}
+            search={{ from: "history" }}
             className="bg-primary mt-4 w-full text-white hover:bg-amber-600"
             label="Pokaż wyniki"
             icon={<ArrowRight className="h-5 w-5" />}
@@ -107,7 +108,10 @@ export function ChatCard({
                   },
                 }),
               );
-              void navigate({ to: `/chat/${chatId}` });
+              void navigate({
+                to: `/chat/${chatId}`,
+                search: { from: "history" },
+              });
             }}
             className="bg-primary mt-4 w-full text-white hover:bg-amber-600"
           >

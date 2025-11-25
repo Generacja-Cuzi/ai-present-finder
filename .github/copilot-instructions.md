@@ -5,20 +5,26 @@ These notes make AI coding agents immediately productive in this repo. Keep edit
 ## Architecture at a glance
 
 - Monorepo with pnpm workspaces: backend microservices (NestJS 11 + CQRS + RabbitMQ) and a React frontend.
-  - backend/restapi-macroservice: HTTP entrypoint + SSE fanout; publishes/consumes RMQ events.
-  - backend/stalking-microservice: consumes StalkingAnalyzeRequestedEvent, scrapes via BrightData, emits StalkingCompletedEvent.
-  - backend/chat-microservice: drives interview flow (ChatStartInterviewEvent/ChatUserAnsweredEvent), emits ChatQuestionAskedEvent, ChatInterviewCompletedEvent, ChatInappropriateRequestEvent.
-  - backend/gift-microservice: consumes GiftGenerateRequestedEvent, emits GiftReadyEvent.
+  - **backend/restapi-macroservice**: HTTP entrypoint + SSE fanout; TypeORM + PostgreSQL; publishes/consumes RMQ events.
+  - **backend/stalking-microservice**: consumes StalkingAnalyzeRequestedEvent, scrapes via BrightData, emits StalkingCompletedEvent.
+  - **backend/chat-microservice**: drives interview flow (ChatStartInterviewEvent/ChatUserAnsweredEvent), emits ChatQuestionAskedEvent, ChatInterviewCompletedEvent, ChatInappropriateRequestEvent.
+  - **backend/gift-ideas-microservice**: consumes StalkingCompletedEvent + ChatInterviewCompletedEvent, emits RegenerateIdeasLoopEvent + GiftContextInitializedEvent.
+  - **backend/fetch-microservice**: Multi-instance service (allegro/amazon/ebay/olx); each instance runs with FETCH_PROVIDER env var on different ports (8011-8014); consumes provider-specific FetchEvents, emits ProductFetchedEvent.
+  - **backend/reranking-microservice**: consumes ProductFetchedEvent + GiftContextInitializedEvent; filters/reranks gift recommendations; TypeORM + PostgreSQL.
+- **Shared packages**: `@core/events` (all event classes), `@core/types` (shared TypeScript types like RecipientProfile).
 - RabbitMQ (AMQP) is the backbone. Queue names equal the event class name (EventClass.name) and durability is non‑durable by default.
+- **Persistence**: TypeORM with PostgreSQL. Each service has its own database (configured via SERVICE_NAME_DATABASE_URL env vars). Repositories live in `src/data/*.database.repository.ts` and implement interfaces from `src/domain/repositories/i*.repository.ts`.
 - Swagger is generated for each service and written to docs/openapi/\*.openapi.json, exposed at /docs.
 
 ## Runbook and workflows
 
-- Prereqs: unlock secrets once per clone (git-crypt unlock ./private_key). Start RabbitMQ: docker compose up (uses admin/admin on localhost:5672).
-- Install/build/dev from the root: pnpm install; pnpm dev (parallel) or cd into a service and pnpm dev; pnpm build; pnpm test.
-- Default ports: REST 3000, Stalking 3010, Chat 3020, Gift 3030; Frontend dev 5713.
-- Swagger UI: http://localhost:3000/docs (REST), http://localhost:3010/docs (Stalking), http://localhost:3020/docs (Chat), http://localhost:3030/docs (Gift).
-- CI runs format:check, lint, test, build on Node 22 with pnpm 10.
+- **Prereqs**: Unlock secrets once per clone: `git-crypt unlock ./private_key`. Start infrastructure: `docker compose up` (RabbitMQ admin/admin on localhost:5672, PostgreSQL instances on 5432-5638).
+- **Install/build/dev** from root: `pnpm install` → `pnpm dev` (parallel). For single service: `cd backend/<service>` → `pnpm dev`.
+- **Database migrations**: From root `pnpm migration:run` (runs all services); per-service `cd backend/<service>` → `pnpm migration:run`.
+- **Default ports**: REST 3000, Stalking 3010, Chat 3020, Gift Ideas 3030, Reranking 3091, Fetch (allegro 8012, amazon 8014, ebay 8013, olx 8011); Frontend dev 5713.
+- **Swagger UI**: http://localhost:3000/docs (REST), http://localhost:3010/docs (Stalking), http://localhost:3020/docs (Chat), http://localhost:3030/docs (Gift Ideas), http://localhost:3091/docs (Reranking).
+- **Production**: Uses single Docker container running all microservices via PM2 (see `deployment/ecosystem.config.cjs`). Single PostgreSQL with multiple databases. Deploy to Coolify (docs in `docs/deployment/`).
+- **CI** (Node 22 + pnpm 10): format:check, lint, test, build. Pre-commit hooks via husky + lint-staged run prettier.
 
 ## Key patterns and conventions
 
@@ -29,7 +35,13 @@ These notes make AI coding agents immediately productive in this repo. Keep edit
   - Configure consumers/producers with Transport.RMQ and queue equal to the event class name. See backend/restapi-macroservice/src/webapi/modules/restapi.module.ts and stalking-microservice/src/webapi/modules/stalking.module.ts.
 - SSE fanout lives in REST API at GET /sse?clientId=... (Register/cleanup via SseService). Send user messages to /restapi/send-message; request stalking via /restapi/stalking-request (see RestApiController).
 - Config/env: CLOUDAMQP_URL (defaults to amqp://admin:admin@localhost:5672), PORT, SWAGGER_SERVER for docs server URL. Services call ConfigModule.forRoot({ isGlobal: true }).
-- AI usage: ai-sdk + @ai-sdk/openai in stalking-microservice/src/app/ai/flow.ts with generateObject and zod schema. OpenAI key expected via .env in chat-microservice per root README.
+- **AI Flows** (Vercel AI SDK):
+  - Each service with AI logic has `src/app/ai/flow.ts` exporting functions that encapsulate AI calls.
+  - **stalking-microservice**: `extractFacts()` uses `generateObject()` with `@ai-sdk/openai` and zod schema to extract keywords from scraped profiles.
+  - **chat-microservice**: `giftInterviewFlow()` uses `generateText()` with `@ai-sdk/google` (Gemini), tools, and multi-step execution to conduct conversational interviews.
+  - **gift-ideas-microservice**: `giftIdeasFlow()` uses `generateObject()` with `@ai-sdk/openai` to generate gift ideas and search queries based on recipient profile.
+  - **reranking-microservice**: `scoreProductsFlow()` uses `generateObject()` with `@ai-sdk/google` to score/rank products against recipient profile.
+  - Pattern: flows take structured inputs, call AI SDK with zod schemas, return typed objects. Keep prompts in separate `prompt.ts` files.
 - OpenAPI generation is intentional: DocumentBuilder + SwaggerModule.createDocument then write to docs/openapi/<service>.openapi.json and serve /docs.
 
 ## When adding or changing functionality
@@ -41,17 +53,30 @@ These notes make AI coding agents immediately productive in this repo. Keep edit
 
 ## Pointers to exemplars
 
-- RMQ setup: stalking-microservice/src/main.ts, restapi-macroservice/src/main.ts (multiple consumers), gift-microservice/src/main.ts.
-- REST + SSE: restapi-macroservice/src/webapi/controllers/restapi.controller.ts and sse.controller.ts.
-- CQRS: stalking-analyze.handler.ts and stalking-analyze-request.handler.ts; restapi StalkingAnalyzeRequestCommand.
-- BrightData integration: stalking-microservice/src/app/services/brightdata.service.ts (+ DATASET_MAP) and its tests.
+- **RMQ setup**: `stalking-microservice/src/main.ts`, `restapi-macroservice/src/main.ts` (multiple consumers), `gift-ideas-microservice/src/main.ts` (3 queues), `fetch-microservice/src/main.ts` (dynamic queue per provider).
+- **REST + SSE**: `restapi-macroservice/src/webapi/controllers/restapi.controller.ts` and `sse.controller.ts`.
+- **CQRS**: `stalking-analyze.handler.ts` and `stalking-analyze-request.handler.ts`; restapi `StalkingAnalyzeRequestCommand`.
+- **Repository pattern**: Interface in `src/domain/repositories/ilisting.repository.ts`, implementation in `src/data/listing.database.repository.ts`, wired in module providers.
+- **BrightData integration**: `stalking-microservice/src/app/services/brightdata.service.ts` (+ DATASET_MAP) and its tests.
+- **Multi-instance pattern**: `fetch-microservice/src/main.ts` reads `FETCH_PROVIDER` env to determine which queue to listen to; root `package.json` scripts spawn 4 instances concurrently.
+- **AI flow patterns**: `stalking-microservice/src/app/ai/flow.ts` (simple generateObject), `chat-microservice/src/app/ai/flow.ts` (multi-step tools + retry logic), `gift-ideas-microservice/src/app/ai/flow.ts` (complex prompt composition), `reranking-microservice/src/app/ai/score-products-flow.ts` (batch scoring).
 
 ## Guidelines
 
 - Don't write README.md files about new features. The root README.md covers everything.
-- Try to use the least amount of mocks that you can get away with in tests. Prefer real instances. If that's too slow, fake the external dependencies, but keep our code - just mock http requests or packages directly.
+- **Testing** (Jest + NestJS Testing):
+  - Tests live alongside code in `src/` (e.g., `*.spec.ts`) or in dedicated `test/` directories.
+  - Minimize mocks: prefer real service instances; only mock external HTTP calls (fetch, axios) and third-party packages.
+  - Use NestJS `Test.createTestingModule()` to build test modules with real providers.
+  - Mock external services (BrightData, AI flows) at the boundary: mock `fetch` or the imported flow function itself (see `stalking-analyze.handler.spec.ts`).
+  - Load real `.env` config in integration tests using `ConfigModule.forRoot({ envFilePath: '.env' })`.
+  - Run tests: `pnpm test` (all), `pnpm test:watch` (watch mode), `pnpm test:cov` (coverage).
 - Before running commands - always "cd" into the relevant package folder
-- When changing events or communication patterns, update the AsyncAPI docs in backend/docs/asyncapi/\*.asyncapi.yml and sequence diagrams in backend/docs/diagrams/ if applicable.
+- **Documentation updates**: When changing events, service boundaries, or data flows:
+  - Update AsyncAPI specs in `backend/docs/asyncapi/*.asyncapi.yml`
+  - Update C4 diagrams in `docs/C4_v0.2.0/*.puml` (use PlantUML extension in VS Code)
+  - Update sequence diagrams in `docs/sequence_diagram/*/` if interaction flow changes
+  - Version diagrams by creating new C4_vX.X.X folders for major architecture changes
 
 ### **Project Architectural Guidelines & File Structure**
 
@@ -99,8 +124,10 @@ This layer contains all the details for interacting with the outside world, such
     - `controllers/`: NestJS controllers that handle incoming requests. Their only job is to validate input (DTOs), call the correct handler in the `app` layer, and format the response.
     - `modules/`: The NestJS modules that act as our **Composition Root**, wiring all the dependencies together for a feature.
     - `dtos/`: **(New convention)** A dedicated folder for Data Transfer Objects used by the controllers. This keeps them out of the `domain`.
-  - **`infrastructure/` or `persistence/`**: **(New convention)** A dedicated folder at the `src` root for concrete implementations of external-facing concerns.
-    - e.g., `persistence/prisma/gift-session.prisma.repository.ts`. This class would implement the repository interface defined in the `domain`.
+  - **`data/`**: Contains TypeORM database implementations.
+    - `*.database.repository.ts`: Concrete repository implementations (e.g., `listing.database.repository.ts` implements `IListingRepository`).
+    - `data-source.ts` + `database.config.ts`: TypeORM configuration for migrations.
+    - `migrations/`: TypeORM migration files.
 
 #### **4. The Composition Root: The Feature Module**
 
@@ -138,12 +165,13 @@ src/
 ├── domain/
 │   ├── commands/
 │   │   └── create-order.command.ts
-│   ├── models/
-│   │   └── order.ts
+│   ├── entities/
+│   │   └── order.entity.ts      // TypeORM entity
 │   └── repositories/
 │       └── iorder.repository.ts
-├── persistence/
-│   └── order.db.repository.ts    // Implements IOrderRepository
+├── data/
+│   ├── order.database.repository.ts  // Implements IOrderRepository
+│   └── migrations/
 └── webapi/
     ├── controllers/
     │   └── order.controller.ts

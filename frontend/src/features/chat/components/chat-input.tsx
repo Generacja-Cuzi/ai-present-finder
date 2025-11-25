@@ -1,4 +1,4 @@
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -9,15 +9,13 @@ export function ChatInput({
   inputValue,
   setInputValue,
   handleSendMessage,
-  isLoading = false,
 }: {
   inputValue: string;
   setInputValue: (value: string) => void;
   handleSendMessage: () => void;
-  isLoading?: boolean;
 }) {
   const handleKeyPress = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter" && !event.shiftKey && !isLoading) {
+    if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       handleSendMessage();
     }
@@ -43,11 +41,10 @@ export function ChatInput({
               "max-h-[400px] min-h-[164px]",
             )}
             rows={2}
-            disabled={isLoading}
           />
           <Button
             onClick={handleSendMessage}
-            disabled={isLoading || !inputValue.trim()}
+            disabled={!inputValue.trim()}
             size="icon"
             className={cn(
               "absolute bottom-3 right-3 size-12 rounded-full shadow-md",
@@ -55,11 +52,7 @@ export function ChatInput({
               "disabled:opacity-40 disabled:shadow-none",
             )}
           >
-            {isLoading ? (
-              <Loader2 className="size-5 animate-spin" />
-            ) : (
-              <ArrowRight className="size-5" />
-            )}
+            <ArrowRight className="size-5" />
           </Button>
         </div>
       </div>

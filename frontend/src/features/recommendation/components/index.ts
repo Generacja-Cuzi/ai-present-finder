@@ -5,4 +5,5 @@ export * from "./price-range-filter-dialog";
 export * from "./recommendation-header";
 export * from "./refine-search-dialog";
 export * from "./results-count";
+export * from "./rounds-filter-dialog";
 export * from "./shops-filter-dialog";

@@ -74,6 +74,7 @@ export class FavoritesController {
       category: listing.category,
       provider: listing.provider,
       isFavorited: true,
+      round: listing.round,
       createdAt: listing.createdAt,
     }));
 

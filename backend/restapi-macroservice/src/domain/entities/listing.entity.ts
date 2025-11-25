@@ -71,6 +71,9 @@ export class Listing {
   @Column({ name: "provider", type: "varchar", default: "unknown" })
   provider: string;
 
+  @Column({ name: "round", type: "int", default: 1 })
+  round: number;
+
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 

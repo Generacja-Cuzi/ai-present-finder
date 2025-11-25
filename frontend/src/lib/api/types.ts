@@ -858,6 +858,11 @@ export interface components {
              */
             isFavorited: boolean;
             /**
+             * @description Round number when this listing was generated
+             * @example 1
+             */
+            round: number;
+            /**
              * Format: date-time
              * @description Created at timestamp
              * @example 2025-01-15T10:30:00Z
@@ -867,6 +872,11 @@ export interface components {
         ChatListingsResponseDto: {
             /** @description Chat information including reasoning summary */
             chat: components["schemas"]["ChatInfoDto"];
+            /**
+             * @description Maximum round number for this chat
+             * @example 3
+             */
+            maxRound: number;
             /** @description List of listings for the chat */
             listings: components["schemas"]["ListingResponseDto"][];
         };

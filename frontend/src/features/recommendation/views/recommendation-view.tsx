@@ -20,11 +20,13 @@ import {
   RecommendationHeader,
   RefineSearchDialog,
   ResultsCount,
+  RoundsFilterDialog,
   ShopsFilterDialog,
 } from "../components";
 import { useGiftFilters } from "../hooks/use-gift-filters";
 import {
   filterGifts,
+  getAvailableRounds,
   getPriceRange,
   getUniqueCategories,
   getUniqueShops,
@@ -33,10 +35,12 @@ import {
 export function RecommendationView({
   clientId,
   giftIdeas,
+  maxRound = 0,
   backTo,
 }: {
   clientId: string;
   giftIdeas: ListingWithId[];
+  maxRound?: number;
   backTo?: string;
 }) {
   const {
@@ -45,12 +49,14 @@ export function RecommendationView({
     updateShops,
     updatePriceRange,
     updateCategories,
+    updateRounds,
     resetFilters,
     activeFiltersCount,
   } = useGiftFilters();
   const [shopsDialogOpen, setShopsDialogOpen] = useState(false);
   const [priceDialogOpen, setPriceDialogOpen] = useState(false);
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
+  const [roundsDialogOpen, setRoundsDialogOpen] = useState(false);
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
   const [refineDialogOpen, setRefineDialogOpen] = useState(false);
   const [selectionMode, setSelectionMode] = useState(false);
@@ -75,6 +81,10 @@ export function RecommendationView({
   const availablePriceRange = useMemo(
     () => getPriceRange(giftIdeas),
     [giftIdeas],
+  );
+  const availableRounds = useMemo(
+    () => getAvailableRounds(maxRound),
+    [maxRound],
   );
 
   const filteredGiftIdeas = useMemo(
@@ -227,6 +237,14 @@ export function RecommendationView({
               isActive={filters.categories.length > 0}
               activeCount={filters.categories.length}
             />
+            <FilterButton
+              label="Tury"
+              onClick={() => {
+                setRoundsDialogOpen(true);
+              }}
+              isActive={filters.rounds.length > 0}
+              activeCount={filters.rounds.length}
+            />
             <ClearFiltersButton
               activeCount={activeFiltersCount}
               onClear={resetFilters}
@@ -330,6 +348,14 @@ export function RecommendationView({
         availableCategories={availableCategories}
         selectedCategories={filters.categories}
         onApply={updateCategories}
+      />
+
+      <RoundsFilterDialog
+        open={roundsDialogOpen}
+        onOpenChange={setRoundsDialogOpen}
+        availableRounds={availableRounds}
+        selectedRounds={filters.rounds}
+        onApply={updateRounds}
       />
 
       <FeedbackDialog

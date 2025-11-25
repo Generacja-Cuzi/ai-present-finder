@@ -1,6 +1,7 @@
 export {
   extractDomain,
   filterGifts,
+  getAvailableRounds,
   getPriceRange,
   getUniqueCategories,
   getUniqueShops,

@@ -12,6 +12,7 @@ export interface ListingPayload {
   category?: string | null;
   provider?: string;
   isFavorited?: boolean;
+  round?: number;
 }
 
 export interface ListingWithId extends ListingPayload {

@@ -40,6 +40,12 @@ export class ListingResponseDto extends BaseListingDto {
   isFavorited: boolean;
 
   @ApiProperty({
+    description: "Round number when this listing was generated",
+    example: 1,
+  })
+  round: number;
+
+  @ApiProperty({
     description: "Created at timestamp",
     example: "2025-01-15T10:30:00Z",
   })

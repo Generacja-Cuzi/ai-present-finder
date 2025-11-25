@@ -118,8 +118,10 @@ export function RecommendationView({
 
       toast.success("Rozpoczynamy doprecyzowanie!");
       setRefineDialogOpen(false);
+      setSelectionMode(false);
+      setSelectedGifts(new Set());
 
-      // Navigate back to chat
+      // Navigate back to chat immediately
       await navigate({
         to: "/chat/$id",
         params: { id: clientId },

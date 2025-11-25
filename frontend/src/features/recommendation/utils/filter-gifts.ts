@@ -113,8 +113,10 @@ export function getPriceRange(gifts: ListingWithId[]): {
 }
 
 export function getAvailableRounds(maxRound: number): number[] {
-  if (maxRound === 0) return [];
+  if (maxRound === 0) {
+    return [];
+  }
 
   // Create array from 1 to maxRound
-  return Array.from({ length: maxRound }, (_, i) => i + 1);
+  return Array.from({ length: maxRound }, (_, index) => index + 1);
 }

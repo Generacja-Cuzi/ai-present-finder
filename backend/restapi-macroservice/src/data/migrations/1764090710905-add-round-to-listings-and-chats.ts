@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import type { MigrationInterface, QueryRunner } from "typeorm";
 
 export class AddRoundToListingsAndChats1764090710905
   implements MigrationInterface
@@ -10,11 +10,11 @@ export class AddRoundToListingsAndChats1764090710905
       `ALTER TABLE "chats" ADD "current_round" integer NOT NULL DEFAULT '0'`,
     );
 
-    const hasRoundColumn = await queryRunner.query(`
+    const hasRoundColumn: { column_name: string }[] = (await queryRunner.query(`
             SELECT column_name 
             FROM information_schema.columns 
             WHERE table_name='listings' AND column_name='round'
-        `);
+        `)) as { column_name: string }[];
 
     if (hasRoundColumn.length === 0) {
       await queryRunner.query(

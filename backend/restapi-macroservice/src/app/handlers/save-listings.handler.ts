@@ -26,7 +26,7 @@ export class SaveListingsHandler
 
     // Get current chat to retrieve currentRound
     const chat = await this.chatRepository.findByChatId(chatId);
-    if (!chat) {
+    if (chat === null) {
       throw new Error(`Chat with chatId ${chatId} not found`);
     }
 

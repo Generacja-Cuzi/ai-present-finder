@@ -69,17 +69,17 @@ export function RoundsFilterDialog({
               availableRounds.map((round) => (
                 <div key={round} className="flex items-center space-x-3">
                   <Checkbox
-                    id={`round-${round}`}
+                    id={`round-${String(round)}`}
                     checked={temporarySelection.includes(round)}
                     onCheckedChange={(checked) => {
                       handleCheckChange(round, checked === true);
                     }}
                   />
                   <label
-                    htmlFor={`round-${round}`}
+                    htmlFor={`round-${String(round)}`}
                     className="flex-1 cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    Tura {round}
+                    Tura {String(round)}
                   </label>
                   {temporarySelection.includes(round) && (
                     <Check className="h-4 w-4 text-green-600" />

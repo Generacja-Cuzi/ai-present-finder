@@ -18,8 +18,11 @@ export class FeedbackDatabaseRepository implements IFeedbackRepository {
     return this.feedbackRepository.findOne({ where: { id } });
   }
 
-  async findByChatId(chatId: string): Promise<Feedback | null> {
-    return this.feedbackRepository.findOne({ where: { chatId } });
+  async findByChatId(chatId: string): Promise<Feedback[]> {
+    return this.feedbackRepository.find({
+      where: { chatId },
+      order: { createdAt: "DESC" },
+    });
   }
 
   async findByUserId(userId: string): Promise<Feedback[]> {
@@ -57,5 +60,20 @@ export class FeedbackDatabaseRepository implements IFeedbackRepository {
   async existsByChatId(chatId: string): Promise<boolean> {
     const count = await this.feedbackRepository.count({ where: { chatId } });
     return count > 0;
+  }
+
+  async findByChatIdAndProductId(
+    chatId: string,
+    productId: string,
+  ): Promise<Feedback | null> {
+    return this.feedbackRepository.findOne({
+      where: { chatId, productId },
+    });
+  }
+
+  async findGeneralByChatId(chatId: string): Promise<Feedback | null> {
+    return this.feedbackRepository.findOne({
+      where: { chatId, isGeneralFeedback: true },
+    });
   }
 }

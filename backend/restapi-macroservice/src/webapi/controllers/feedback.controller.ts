@@ -60,6 +60,8 @@ export class FeedbackController {
         createFeedbackDto.chatId,
         createFeedbackDto.rating,
         createFeedbackDto.comment ?? null,
+        createFeedbackDto.productId ?? null,
+        createFeedbackDto.isGeneralFeedback ?? false,
       ),
     );
 
@@ -86,6 +88,8 @@ export class FeedbackController {
       userId: feedback.userId,
       rating: feedback.rating,
       comment: feedback.comment,
+      productId: feedback.productId,
+      isGeneralFeedback: feedback.isGeneralFeedback,
       createdAt: feedback.createdAt,
       updatedAt: feedback.updatedAt,
     }));
@@ -94,34 +98,29 @@ export class FeedbackController {
   @Get("chat/:chatId")
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.USER, UserRole.ADMIN)
-  @ApiOperation({ summary: "Get feedback for a specific chat" })
+  @ApiOperation({ summary: "Get feedbacks for a specific chat" })
   @ApiOkResponse({
-    description: "Returns feedback for the chat",
-    type: FeedbackResponseDto,
-  })
-  @ApiNotFoundResponse({
-    description: "Feedback not found for this chat",
+    description: "Returns feedbacks for the chat",
+    type: [FeedbackResponseDto],
   })
   async getFeedbackByChatId(
     @Param("chatId") chatId: string,
-  ): Promise<FeedbackResponseDto> {
-    const feedback = await this.queryBus.execute<
+  ): Promise<FeedbackResponseDto[]> {
+    const feedbacks = await this.queryBus.execute<
       GetFeedbackByChatIdQuery,
-      Feedback | null
+      Feedback[]
     >(new GetFeedbackByChatIdQuery(chatId));
 
-    if (feedback === null) {
-      throw new NotFoundException(`Feedback not found for chat ${chatId}`);
-    }
-
-    return {
+    return feedbacks.map((feedback) => ({
       id: feedback.id,
       chatId: feedback.chatId,
       userId: feedback.userId,
       rating: feedback.rating,
       comment: feedback.comment,
+      productId: feedback.productId,
+      isGeneralFeedback: feedback.isGeneralFeedback,
       createdAt: feedback.createdAt,
       updatedAt: feedback.updatedAt,
-    };
+    }));
   }
 }

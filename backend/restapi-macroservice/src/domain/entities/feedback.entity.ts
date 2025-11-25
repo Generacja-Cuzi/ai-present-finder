@@ -14,12 +14,12 @@ import { Chat } from "./chat.entity";
 import { User } from "./user.entity";
 
 @Entity("feedbacks")
-@Index(["chatId"], { unique: true })
+@Index(["chatId", "productId"], { unique: true })
 export class Feedback {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column({ name: "chat_id", unique: true })
+  @Column({ name: "chat_id" })
   chatId: string;
 
   @OneToOne(() => Chat, { onDelete: "CASCADE" })
@@ -32,6 +32,12 @@ export class Feedback {
   @ManyToOne(() => User, { onDelete: "CASCADE" })
   @JoinColumn({ name: "user_id" })
   user: User;
+
+  @Column({ name: "product_id", type: "varchar", nullable: true })
+  productId: string | null;
+
+  @Column({ name: "is_general_feedback", type: "boolean", default: false })
+  isGeneralFeedback: boolean;
 
   @Column({ type: "int" })
   rating: number;

@@ -20,11 +20,17 @@ export function FeedbackDialog({
   open,
   onOpenChange,
   chatId,
+  productId,
+  isGeneralFeedback = false,
+  productTitle,
   onSuccess,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   chatId: string;
+  productId?: string | null;
+  isGeneralFeedback?: boolean;
+  productTitle?: string;
   onSuccess?: () => void;
 }) {
   const [rating, setRating] = useState(0);
@@ -32,9 +38,19 @@ export function FeedbackDialog({
   const [comment, setComment] = useState("");
   const createFeedback = useCreateFeedback();
 
+  const maxWords = 50;
+  const wordCount =
+    comment.trim() === "" ? 0 : comment.trim().split(/\s+/).length;
+  const isWordLimitExceeded = wordCount > maxWords;
+
   const handleSubmit = async () => {
     if (rating === 0) {
       toast.error("Proszę wybrać ocenę przed wysłaniem");
+      return;
+    }
+
+    if (isWordLimitExceeded) {
+      toast.error(`Opinia może mieć maksymalnie ${String(maxWords)} słów`);
       return;
     }
 
@@ -44,6 +60,8 @@ export function FeedbackDialog({
         chatId,
         rating,
         comment: trimmedComment === "" ? null : trimmedComment,
+        productId: productId ?? null,
+        isGeneralFeedback,
       };
 
       await createFeedback.mutateAsync({
@@ -64,14 +82,29 @@ export function FeedbackDialog({
     }
   };
 
+  const getDialogTitle = () => {
+    if (isGeneralFeedback) {
+      return "Ogólna opinia o wyszukiwaniu";
+    }
+    if (productTitle && productTitle.trim() !== "") {
+      return `Oceń: ${productTitle}`;
+    }
+    return "Podziel się opinią";
+  };
+
+  const getDialogDescription = () => {
+    if (isGeneralFeedback) {
+      return "Oceń ogólną jakość wyników wyszukiwania";
+    }
+    return "Pomóż nam się poprawić, oceniając ten produkt";
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Podziel się opinią</DialogTitle>
-          <DialogDescription>
-            Pomóż nam się poprawić, oceniając te rekomendacje prezentów
-          </DialogDescription>
+          <DialogTitle>{getDialogTitle()}</DialogTitle>
+          <DialogDescription>{getDialogDescription()}</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
@@ -113,7 +146,9 @@ export function FeedbackDialog({
             )}
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="comment">Komentarz (opcjonalnie)</Label>
+            <Label htmlFor="comment">
+              Komentarz (opcjonalnie, max {maxWords} słów)
+            </Label>
             <Textarea
               id="comment"
               placeholder="Opowiedz nam więcej o swoim doświadczeniu..."
@@ -122,8 +157,20 @@ export function FeedbackDialog({
                 setComment(event.target.value);
               }}
               rows={4}
-              className="resize-none"
+              className={`resize-none ${isWordLimitExceeded ? "border-red-500" : ""}`}
             />
+            <div className="flex justify-between text-xs">
+              <span
+                className={
+                  isWordLimitExceeded ? "text-red-500" : "text-gray-500"
+                }
+              >
+                {wordCount} / {maxWords} słów
+              </span>
+              {isWordLimitExceeded ? (
+                <span className="text-red-500">Przekroczono limit!</span>
+              ) : null}
+            </div>
           </div>
         </div>
         <DialogFooter>
@@ -140,7 +187,9 @@ export function FeedbackDialog({
             onClick={() => {
               void handleSubmit();
             }}
-            disabled={createFeedback.isPending || rating === 0}
+            disabled={
+              createFeedback.isPending || rating === 0 || isWordLimitExceeded
+            }
           >
             {createFeedback.isPending ? "Wysyłanie..." : "Wyślij opinię"}
           </Button>

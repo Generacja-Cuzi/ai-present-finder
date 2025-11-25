@@ -60,18 +60,52 @@ export function RecommendationView({
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
   const [refineDialogOpen, setRefineDialogOpen] = useState(false);
   const [selectionMode, setSelectionMode] = useState(false);
+  const [reviewMode, setReviewMode] = useState(false);
   const [selectedGifts, setSelectedGifts] = useState<Set<string>>(new Set());
+  const [currentReviewProduct, setCurrentReviewProduct] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
+  const [isGeneralFeedback, setIsGeneralFeedback] = useState(false);
 
   const navigate = useNavigate();
   const startRefinement = useStartChatRefinement();
 
-  const {
-    data: existingFeedback,
-    isLoading: isFeedbackLoading,
-    refetch: refetchFeedback,
-  } = useGetFeedbackByChatId(clientId);
+  const { data: existingFeedback, refetch: refetchFeedback } =
+    useGetFeedbackByChatId(clientId);
 
-  const hasFeedback = !isFeedbackLoading && existingFeedback !== undefined;
+  // Mapa feedbacków według productId dla szybkiego sprawdzania
+  const feedbackMap = useMemo(() => {
+    if (existingFeedback === undefined || !Array.isArray(existingFeedback)) {
+      return new Map();
+    }
+    const map = new Map<string, boolean>();
+    for (const feedback of existingFeedback) {
+      // Type guard dla feedbacku
+      if (
+        typeof feedback === "object" &&
+        feedback !== null &&
+        "productId" in feedback &&
+        "isGeneralFeedback" in feedback
+      ) {
+        const productId = feedback.productId;
+        if (
+          productId !== null &&
+          productId !== undefined &&
+          typeof productId === "string"
+        ) {
+          map.set(productId, true);
+        }
+        const isGeneral = feedback.isGeneralFeedback;
+        if (isGeneral === true) {
+          map.set("__general__", true);
+        }
+      }
+    }
+    return map;
+  }, [existingFeedback]);
+
+  const hasGeneralFeedback = feedbackMap.has("__general__");
 
   const availableShops = useMemo(() => getUniqueShops(giftIdeas), [giftIdeas]);
   const availableCategories = useMemo(
@@ -142,6 +176,36 @@ export function RecommendationView({
     setSelectedGifts(new Set());
   };
 
+  const handleEnterReviewMode = () => {
+    setReviewMode(true);
+  };
+
+  const handleExitReviewMode = () => {
+    setReviewMode(false);
+    setCurrentReviewProduct(null);
+    setIsGeneralFeedback(false);
+  };
+
+  const handleProductReviewClick = (listingId: string, title: string) => {
+    if (feedbackMap.has(listingId)) {
+      toast.info("Już wystawiłeś opinię dla tego produktu");
+      return;
+    }
+    setCurrentReviewProduct({ id: listingId, title });
+    setIsGeneralFeedback(false);
+    setFeedbackDialogOpen(true);
+  };
+
+  const handleGeneralReviewClick = () => {
+    if (hasGeneralFeedback) {
+      toast.info("Już wystawiłeś ogólną opinię");
+      return;
+    }
+    setCurrentReviewProduct(null);
+    setIsGeneralFeedback(true);
+    setFeedbackDialogOpen(true);
+  };
+
   const handleConfirmSelection = () => {
     if (selectedGifts.size === 0) {
       toast.error("Wybierz przynajmniej jeden prezent");
@@ -181,6 +245,30 @@ export function RecommendationView({
                   Doprecyzuj ({selectedGifts.size})
                 </Button>
               </>
+            ) : reviewMode ? (
+              <>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleExitReviewMode}
+                  >
+                    Anuluj
+                  </Button>
+                  <span className="text-sm text-gray-600">
+                    Kliknij produkt aby ocenić
+                  </span>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={handleGeneralReviewClick}
+                  disabled={hasGeneralFeedback}
+                  className="gap-2"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  Ogólna opinia
+                </Button>
+              </>
             ) : (
               <>
                 <Button
@@ -192,20 +280,15 @@ export function RecommendationView({
                   <CheckCircle2 className="h-4 w-4" />
                   Wybierz prezenty
                 </Button>
-                {!hasFeedback && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setFeedbackDialogOpen(true);
-                    }}
-                    className="gap-2"
-                    disabled={isFeedbackLoading}
-                  >
-                    <MessageSquare className="h-4 w-4" />
-                    Oceń wyniki
-                  </Button>
-                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleEnterReviewMode}
+                  className="gap-2"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  Oceń wyniki
+                </Button>
               </>
             )}
           </div>
@@ -263,6 +346,7 @@ export function RecommendationView({
           {filteredGiftIdeas.map((gift, index) => {
             const listingId = gift.listingId || "";
             const isSelected = selectedGifts.has(listingId);
+            const hasReview = feedbackMap.has(listingId);
 
             return (
               <div
@@ -271,6 +355,8 @@ export function RecommendationView({
                 onClick={() => {
                   if (selectionMode && listingId) {
                     handleToggleSelection(listingId);
+                  } else if (reviewMode && listingId) {
+                    handleProductReviewClick(listingId, gift.title);
                   }
                 }}
                 onKeyDown={(event) => {
@@ -281,10 +367,23 @@ export function RecommendationView({
                   ) {
                     event.preventDefault();
                     handleToggleSelection(listingId);
+                  } else if (
+                    reviewMode &&
+                    listingId &&
+                    (event.key === "Enter" || event.key === " ")
+                  ) {
+                    event.preventDefault();
+                    handleProductReviewClick(listingId, gift.title);
                   }
                 }}
-                role={selectionMode && listingId ? "button" : undefined}
-                tabIndex={selectionMode && listingId ? 0 : undefined}
+                role={
+                  (selectionMode || reviewMode) && listingId
+                    ? "button"
+                    : undefined
+                }
+                tabIndex={
+                  (selectionMode || reviewMode) && listingId ? 0 : undefined
+                }
               >
                 {selectionMode && listingId ? (
                   <div
@@ -301,13 +400,30 @@ export function RecommendationView({
                     </div>
                   </div>
                 ) : null}
+                {reviewMode && listingId ? (
+                  <div
+                    className={`absolute inset-0 z-20 rounded-2xl border-4 transition-all ${
+                      hasReview
+                        ? "cursor-not-allowed border-green-600 bg-green-600/10"
+                        : "cursor-pointer border-transparent hover:border-blue-300"
+                    }`}
+                  >
+                    <div className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-md">
+                      {hasReview ? (
+                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                      ) : (
+                        <MessageSquare className="h-5 w-5 text-blue-600" />
+                      )}
+                    </div>
+                  </div>
+                ) : null}
                 <GiftCard
                   gift={gift}
                   provider={gift.provider ?? "Nieznany"}
                   listingId={listingId}
                   initialIsFavorited={Boolean(gift.isFavorited) || false}
                   chatId={clientId}
-                  selectionMode={selectionMode}
+                  selectionMode={selectionMode || reviewMode}
                 />
               </div>
             );
@@ -362,10 +478,21 @@ export function RecommendationView({
 
       <FeedbackDialog
         open={feedbackDialogOpen}
-        onOpenChange={setFeedbackDialogOpen}
+        onOpenChange={(open) => {
+          setFeedbackDialogOpen(open);
+          if (!open) {
+            setCurrentReviewProduct(null);
+            setIsGeneralFeedback(false);
+          }
+        }}
         chatId={clientId}
+        productId={currentReviewProduct?.id ?? null}
+        isGeneralFeedback={isGeneralFeedback}
+        productTitle={currentReviewProduct?.title}
         onSuccess={() => {
           void refetchFeedback();
+          setCurrentReviewProduct(null);
+          setIsGeneralFeedback(false);
         }}
       />
 

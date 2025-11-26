@@ -87,7 +87,6 @@ export class FeedbackResponseDto {
     description: "Whether this is general feedback",
     example: false,
     type: Boolean,
-    required: true,
   })
   isGeneralFeedback!: boolean;
 

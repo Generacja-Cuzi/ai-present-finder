@@ -53,10 +53,8 @@ export function FeedbackCard({
     },
   );
 
-  const generalFeedback = feedbacks.find((f) => f.isGeneralFeedback === true);
-  const productFeedbacks = feedbacks.filter(
-    (f) => f.isGeneralFeedback !== true,
-  );
+  const generalFeedback = feedbacks.find((f) => f.isGeneralFeedback);
+  const productFeedbacks = feedbacks.filter((f) => !f.isGeneralFeedback);
 
   const averageRating =
     feedbacks.length > 0

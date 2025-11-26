@@ -76,29 +76,17 @@ export function RecommendationView({
 
   // Mapa feedbacków według productId dla szybkiego sprawdzania
   const feedbackMap = useMemo(() => {
-    if (existingFeedback === undefined || !Array.isArray(existingFeedback)) {
+    if (existingFeedback === undefined) {
       return new Map();
     }
     const map = new Map<string, boolean>();
     for (const feedback of existingFeedback) {
-      if (
-        typeof feedback !== "object" ||
-        feedback === null ||
-        !("productId" in feedback) ||
-        !("isGeneralFeedback" in feedback)
-      ) {
-        continue;
-      }
+      const { productId, isGeneralFeedback: isGeneral } = feedback;
 
-      const { productId, isGeneralFeedback: isGeneral } = feedback as {
-        productId?: string | null;
-        isGeneralFeedback?: boolean | null;
-      };
-
-      if (typeof productId === "string") {
+      if (productId != null) {
         map.set(productId, true);
       }
-      if (isGeneral === true) {
+      if (isGeneral) {
         map.set("__general__", true);
       }
     }

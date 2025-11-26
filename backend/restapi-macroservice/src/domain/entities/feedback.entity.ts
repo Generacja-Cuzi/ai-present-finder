@@ -5,7 +5,6 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -22,7 +21,7 @@ export class Feedback {
   @Column({ name: "chat_id" })
   chatId: string;
 
-  @OneToOne(() => Chat, { onDelete: "CASCADE" })
+  @ManyToOne(() => Chat, { onDelete: "CASCADE" })
   @JoinColumn({ name: "chat_id", referencedColumnName: "chatId" })
   chat: Chat;
 

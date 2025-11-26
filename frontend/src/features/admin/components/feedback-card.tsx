@@ -87,7 +87,7 @@ export function FeedbackCard({
             </CardTitle>
             <CardDescription className="mt-1">
               Średnia ocena: {averageRating} / 5.0 •{" "}
-              {feedbacks.length > 0
+              {feedbacks.length > 0 && feedbacks[0] !== undefined
                 ? formatDate(feedbacks[0].createdAt)
                 : "Brak daty"}
             </CardDescription>

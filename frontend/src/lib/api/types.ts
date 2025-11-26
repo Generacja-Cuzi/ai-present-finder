@@ -254,7 +254,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get feedback for a specific chat */
+        /** Get feedbacks for a specific chat */
         get: operations["FeedbackController_getFeedbackByChatId"];
         put?: never;
         post?: never;
@@ -925,10 +925,21 @@ export interface components {
              */
             rating: number;
             /**
-             * @description Optional comment about the chat experience
+             * @description Optional comment about the chat experience (max 50 words)
              * @example Great recommendations, very helpful!
              */
             comment?: string | null;
+            /**
+             * @description ID of the product this feedback is for (null for general feedback)
+             * @example 550e8400-e29b-41d4-a716-446655440003
+             */
+            productId?: string | null;
+            /**
+             * @description Whether this is general feedback for the entire search
+             * @default false
+             * @example false
+             */
+            isGeneralFeedback: boolean;
         };
         FeedbackResponseDto: {
             /**
@@ -956,6 +967,16 @@ export interface components {
              * @example Great recommendations, very helpful!
              */
             comment?: string | null;
+            /**
+             * @description ID of the product this feedback is for
+             * @example 550e8400-e29b-41d4-a716-446655440003
+             */
+            productId?: string | null;
+            /**
+             * @description Whether this is general feedback
+             * @example false
+             */
+            isGeneralFeedback: boolean;
             /**
              * Format: date-time
              * @description When the feedback was created
@@ -1591,21 +1612,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Returns feedback for the chat */
+            /** @description Returns feedbacks for the chat */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["FeedbackResponseDto"];
+                    "application/json": components["schemas"]["FeedbackResponseDto"][];
                 };
-            };
-            /** @description Feedback not found for this chat */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };

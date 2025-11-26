@@ -14,7 +14,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  NotFoundException,
   Param,
   Post,
   Req,
@@ -23,7 +22,6 @@ import {
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
   ApiCreatedResponse,
-  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,

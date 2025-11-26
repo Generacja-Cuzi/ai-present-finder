@@ -79,12 +79,15 @@ export class FeedbackResponseDto {
     example: "550e8400-e29b-41d4-a716-446655440003",
     nullable: true,
     type: String,
+    required: false,
   })
   productId!: string | null;
 
   @ApiProperty({
     description: "Whether this is general feedback",
     example: false,
+    type: Boolean,
+    required: true,
   })
   isGeneralFeedback!: boolean;
 

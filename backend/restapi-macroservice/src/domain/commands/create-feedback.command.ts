@@ -7,7 +7,7 @@ export class CreateFeedbackCommand extends Command<void> {
     public readonly rating: number,
     public readonly comment: string | null,
     public readonly productId: string | null = null,
-    public readonly isGeneralFeedback: boolean = false,
+    public readonly isGeneralFeedback = false,
   ) {
     super();
   }

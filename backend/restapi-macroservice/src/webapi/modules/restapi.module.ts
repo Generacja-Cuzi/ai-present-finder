@@ -35,12 +35,14 @@ import { GoogleService } from "src/app/services/google-service";
 import { SseService } from "src/app/services/sse-service";
 import { JwtStrategy } from "src/app/strategies/jwt.strategy";
 import { ChatDatabaseRepository } from "src/data/chat.database.repository";
+import { FeedbackImageDatabaseRepository } from "src/data/feedback-image.database.repository";
 import { FeedbackDatabaseRepository } from "src/data/feedback.database.repository";
 import { ListingDatabaseRepository } from "src/data/listing.database.repository";
 import { MessageDatabaseRepository } from "src/data/message.database.repository";
 import { UserProfileDatabaseRepository } from "src/data/user-profile.database.repository";
 import { UserDatabaseRepository } from "src/data/user.database.repository";
 import { IChatRepository } from "src/domain/repositories/ichat.repository";
+import { IFeedbackImageRepository } from "src/domain/repositories/ifeedback-image.repository";
 import { IFeedbackRepository } from "src/domain/repositories/ifeedback.repository";
 import { IListingRepository } from "src/domain/repositories/ilisting.repository";
 import { IMessageRepository } from "src/domain/repositories/imessage.repository";
@@ -218,6 +220,10 @@ import { UserProfileController } from "../controllers/user-profile.controller";
     {
       provide: IFeedbackRepository,
       useClass: FeedbackDatabaseRepository,
+    },
+    {
+      provide: IFeedbackImageRepository,
+      useClass: FeedbackImageDatabaseRepository,
     },
   ],
 })

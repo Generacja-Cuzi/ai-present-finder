@@ -5,11 +5,13 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 
 import { Chat } from "./chat.entity";
+import { FeedbackImage } from "./feedback-image.entity";
 import { User } from "./user.entity";
 
 @Entity("feedbacks")
@@ -43,6 +45,9 @@ export class Feedback {
 
   @Column({ type: "text", nullable: true })
   comment: string | null;
+
+  @OneToMany(() => FeedbackImage, (image) => image.feedback, { cascade: true })
+  images: FeedbackImage[];
 
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;

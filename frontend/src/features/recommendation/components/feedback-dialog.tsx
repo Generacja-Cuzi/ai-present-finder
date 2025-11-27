@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { ImagePlus, Star, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -36,12 +36,43 @@ export function FeedbackDialog({
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [images, setImages] = useState<File[]>([]);
   const createFeedback = useCreateFeedback();
 
   const maxWords = isGeneralFeedback ? 300 : 100;
+  const maxImages = 5;
+  const maxImageSize = 5 * 1024 * 1024; // 5MB
   const wordCount =
     comment.trim() === "" ? 0 : comment.trim().split(/\s+/).length;
   const isWordLimitExceeded = wordCount > maxWords;
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+
+    if (images.length + files.length > maxImages) {
+      toast.error(`Możesz dodać maksymalnie ${String(maxImages)} zdjęć`);
+      return;
+    }
+
+    const invalidFiles = files.filter((file) => {
+      if (file.size > maxImageSize) {
+        toast.error(`Plik ${file.name} jest za duży (max 5MB)`);
+        return true;
+      }
+      if (!file.type.startsWith("image/")) {
+        toast.error(`Plik ${file.name} nie jest obrazem`);
+        return true;
+      }
+      return false;
+    });
+
+    const validFiles = files.filter((file) => !invalidFiles.includes(file));
+    setImages([...images, ...validFiles]);
+  };
+
+  const removeImage = (index: number) => {
+    setImages(images.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async () => {
     if (rating === 0) {
@@ -56,16 +87,19 @@ export function FeedbackDialog({
 
     try {
       const trimmedComment = comment.trim();
-      const feedbackData = {
-        chatId,
-        rating,
-        comment: trimmedComment === "" ? null : trimmedComment,
-        productId: productId ?? null,
-        isGeneralFeedback,
-      };
+      const formData = new FormData();
+      formData.append("chatId", chatId);
+      formData.append("rating", rating.toString());
+      formData.append("comment", trimmedComment === "" ? "" : trimmedComment);
+      formData.append("productId", productId ?? "");
+      formData.append("isGeneralFeedback", isGeneralFeedback.toString());
+
+      images.forEach((image) => {
+        formData.append("images", image);
+      });
 
       await createFeedback.mutateAsync({
-        body: feedbackData,
+        body: formData as never,
       });
 
       toast.success("Dziękujemy za opinię!", {
@@ -75,6 +109,7 @@ export function FeedbackDialog({
       // Reset form
       setRating(0);
       setComment("");
+      setImages([]);
       onOpenChange(false);
       onSuccess?.();
     } catch {
@@ -172,6 +207,58 @@ export function FeedbackDialog({
               ) : null}
             </div>
           </div>
+          {isGeneralFeedback ? (
+            <div className="grid gap-2">
+              <Label htmlFor="images">
+                Zdjęcia (opcjonalnie, max {maxImages})
+              </Label>
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-wrap gap-2">
+                  {images.map((image, index) => (
+                    <div
+                      key={index}
+                      className="relative h-20 w-20 overflow-hidden rounded-lg border"
+                    >
+                      <img
+                        src={URL.createObjectURL(image)}
+                        alt={`Preview ${String(index + 1)}`}
+                        className="h-full w-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          removeImage(index);
+                        }}
+                        className="absolute right-0 top-0 rounded-bl-lg bg-red-500 p-1 text-white hover:bg-red-600"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                  {images.length < maxImages ? (
+                    <label
+                      htmlFor="image-upload"
+                      className="flex h-20 w-20 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 hover:border-gray-400"
+                    >
+                      <ImagePlus className="h-6 w-6 text-gray-400" />
+                      <span className="mt-1 text-xs text-gray-500">Dodaj</span>
+                      <input
+                        id="image-upload"
+                        type="file"
+                        accept="image/jpeg,image/png,image/gif,image/webp"
+                        multiple
+                        className="hidden"
+                        onChange={handleImageChange}
+                      />
+                    </label>
+                  ) : null}
+                </div>
+                <p className="text-xs text-gray-500">
+                  {images.length} / {maxImages} zdjęć (max 5MB każde)
+                </p>
+              </div>
+            </div>
+          ) : null}
         </div>
         <DialogFooter>
           <Button

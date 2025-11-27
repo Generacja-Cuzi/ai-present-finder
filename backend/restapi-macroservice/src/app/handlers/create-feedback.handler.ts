@@ -1,5 +1,6 @@
 import { CreateFeedbackCommand } from "src/domain/commands/create-feedback.command";
 import { IChatRepository } from "src/domain/repositories/ichat.repository";
+import { IFeedbackImageRepository } from "src/domain/repositories/ifeedback-image.repository";
 import { IFeedbackRepository } from "src/domain/repositories/ifeedback.repository";
 
 import {
@@ -16,6 +17,7 @@ export class CreateFeedbackHandler
   constructor(
     private readonly feedbackRepository: IFeedbackRepository,
     private readonly chatRepository: IChatRepository,
+    private readonly feedbackImageRepository: IFeedbackImageRepository,
   ) {}
 
   async execute(command: CreateFeedbackCommand): Promise<void> {
@@ -75,8 +77,44 @@ export class CreateFeedbackHandler
       }
     }
 
+    // Validate images
+    const maxImages = 5;
+    const maxImageSize = 5 * 1024 * 1024; // 5MB
+    const allowedMimeTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+    ];
+
+    // Images are only allowed for general feedback
+    if (command.images.length > 0 && !command.isGeneralFeedback) {
+      throw new BadRequestException(
+        "Images can only be attached to general feedback",
+      );
+    }
+
+    if (command.images.length > maxImages) {
+      throw new BadRequestException(
+        `You can upload a maximum of ${String(maxImages)} images`,
+      );
+    }
+
+    for (const image of command.images) {
+      if (image.size > maxImageSize) {
+        throw new BadRequestException(
+          `Image size cannot exceed ${String(maxImageSize / (1024 * 1024))}MB`,
+        );
+      }
+      if (!allowedMimeTypes.includes(image.mimeType)) {
+        throw new BadRequestException(
+          `Only JPEG, PNG, GIF, and WebP images are allowed`,
+        );
+      }
+    }
+
     // Create feedback
-    await this.feedbackRepository.create({
+    const feedback = await this.feedbackRepository.create({
       chatId: command.chatId,
       userId: command.userId,
       rating: command.rating,
@@ -84,5 +122,15 @@ export class CreateFeedbackHandler
       productId: command.productId,
       isGeneralFeedback: command.isGeneralFeedback,
     });
+
+    // Create feedback images
+    for (const image of command.images) {
+      await this.feedbackImageRepository.create({
+        feedbackId: feedback.id,
+        imageData: image.buffer,
+        mimeType: image.mimeType,
+        fileSize: image.size,
+      });
+    }
   }
 }

@@ -19,6 +19,10 @@ import { $api } from "@/lib/api/client";
 import type { components } from "@/lib/api/types";
 import { formatRecipientProfile } from "@/lib/utils/recipient-profile-translator";
 
+import { useGetFeedbackImages } from "../api/feedback-images";
+import { FeedbackImage } from "./feedback-image";
+import { ImageLightbox } from "./image-lightbox";
+
 type Feedback = components["schemas"]["FeedbackResponseDto"];
 
 const formatDate = (dateString: string) => {
@@ -39,6 +43,7 @@ export function FeedbackCard({
   feedbacks: Feedback[];
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   // Pobierz dane czatu aby uzyskać reasoning summary i listingi
   const { data: chatData } = $api.useQuery("get", "/chats/{chatId}", {
@@ -55,6 +60,11 @@ export function FeedbackCard({
 
   const generalFeedback = feedbacks.find((f) => f.isGeneralFeedback);
   const productFeedbacks = feedbacks.filter((f) => !f.isGeneralFeedback);
+
+  // Pobierz obrazy dla ogólnej opinii
+  const { data: generalFeedbackImages } = useGetFeedbackImages(
+    generalFeedback?.id,
+  );
 
   const averageRating =
     feedbacks.length > 0
@@ -189,6 +199,25 @@ export function FeedbackCard({
                     &ldquo;{generalFeedback.comment}&rdquo;
                   </p>
                 )}
+              {generalFeedbackImages !== undefined &&
+                generalFeedbackImages.length > 0 && (
+                  <div className="mt-3">
+                    <p className="mb-2 text-sm font-medium text-orange-700">
+                      Załączone zdjęcia:
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {generalFeedbackImages.map((image) => (
+                        <FeedbackImage
+                          key={image.id}
+                          imageId={image.id}
+                          onClick={() => {
+                            setLightboxImage(image.id);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
             </div>
           )}
 
@@ -253,6 +282,14 @@ export function FeedbackCard({
           )}
         </CardContent>
       ) : null}
+      {lightboxImage !== null && (
+        <ImageLightbox
+          imageId={lightboxImage}
+          onClose={() => {
+            setLightboxImage(null);
+          }}
+        />
+      )}
     </Card>
   );
 }

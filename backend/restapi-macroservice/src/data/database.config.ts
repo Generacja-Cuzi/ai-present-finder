@@ -9,13 +9,22 @@ import "dotenv/config";
 import type { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 
 import { Chat } from "../domain/entities/chat.entity";
+import { FeedbackImage } from "../domain/entities/feedback-image.entity";
 import { Feedback } from "../domain/entities/feedback.entity";
 import { Listing } from "../domain/entities/listing.entity";
 import { Message } from "../domain/entities/message.entity";
 import { UserProfile } from "../domain/entities/user-profile.entity";
 import { User } from "../domain/entities/user.entity";
 
-export const entities = [User, Chat, Listing, Message, UserProfile, Feedback];
+export const entities = [
+  User,
+  Chat,
+  Listing,
+  Message,
+  UserProfile,
+  Feedback,
+  FeedbackImage,
+];
 
 class DatabaseEnvironmentVariables {
   @IsString()

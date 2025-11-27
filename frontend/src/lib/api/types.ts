@@ -264,6 +264,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/feedback/{feedbackId}/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get image metadata for a feedback */
+        get: operations["FeedbackController_getFeedbackImages"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/feedback/images/{imageId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a feedback image */
+        get: operations["FeedbackController_getFeedbackImage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/messages/chat/{chatId}": {
         parameters: {
             query?: never;
@@ -913,34 +947,6 @@ export interface components {
              */
             listingId: string;
         };
-        CreateFeedbackDto: {
-            /**
-             * @description ID of the chat to provide feedback for
-             * @example 550e8400-e29b-41d4-a716-446655440000
-             */
-            chatId: string;
-            /**
-             * @description Rating from 1 to 5
-             * @example 5
-             */
-            rating: number;
-            /**
-             * @description Optional comment about the chat experience (max 300 words for general feedback, max 100 words for product feedback)
-             * @example Great recommendations, very helpful!
-             */
-            comment?: string | null;
-            /**
-             * @description ID of the product this feedback is for (null for general feedback)
-             * @example 550e8400-e29b-41d4-a716-446655440003
-             */
-            productId?: string | null;
-            /**
-             * @description Whether this is general feedback for the entire search
-             * @default false
-             * @example false
-             */
-            isGeneralFeedback: boolean;
-        };
         FeedbackResponseDto: {
             /**
              * @description Unique identifier of the feedback
@@ -978,6 +984,11 @@ export interface components {
              */
             isGeneralFeedback: boolean;
             /**
+             * @description Number of images attached to this feedback
+             * @example 2
+             */
+            imageCount: number;
+            /**
              * Format: date-time
              * @description When the feedback was created
              * @example 2023-12-01T10:00:00.000Z
@@ -989,6 +1000,29 @@ export interface components {
              * @example 2023-12-01T10:00:00.000Z
              */
             updatedAt: string;
+        };
+        FeedbackImageResponseDto: {
+            /**
+             * @description Unique identifier of the image
+             * @example 550e8400-e29b-41d4-a716-446655440005
+             */
+            id: string;
+            /**
+             * @description MIME type of the image
+             * @example image/jpeg
+             */
+            mimeType: string;
+            /**
+             * @description Size of the image in bytes
+             * @example 102400
+             */
+            fileSize: number;
+            /**
+             * Format: date-time
+             * @description When the image was uploaded
+             * @example 2023-12-01T10:00:00.000Z
+             */
+            createdAt: string;
         };
         /**
          * @description Message role
@@ -1588,7 +1622,14 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateFeedbackDto"];
+                "multipart/form-data": {
+                    chatId?: string;
+                    rating?: number;
+                    comment?: string | null;
+                    productId?: string | null;
+                    isGeneralFeedback?: boolean;
+                    images?: string[];
+                };
             };
         };
         responses: {
@@ -1620,6 +1661,48 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["FeedbackResponseDto"][];
                 };
+            };
+        };
+    };
+    FeedbackController_getFeedbackImages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                feedbackId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns image metadata for the feedback */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedbackImageResponseDto"][];
+                };
+            };
+        };
+    };
+    FeedbackController_getFeedbackImage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                imageId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns the image file */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

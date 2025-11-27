@@ -24,11 +24,14 @@ export class CreateFeedbackHandler
       throw new BadRequestException("Rating must be between 1 and 5");
     }
 
-    // Validate comment length (max 50 words)
+    // Validate comment length (max 300 words for general feedback, max 100 words for product feedback)
     if (command.comment !== null && command.comment.trim() !== "") {
       const wordCount = command.comment.trim().split(/\s+/).length;
-      if (wordCount > 50) {
-        throw new BadRequestException("Comment cannot exceed 50 words");
+      const maxWords = command.isGeneralFeedback ? 300 : 100;
+      if (wordCount > maxWords) {
+        throw new BadRequestException(
+          `Comment cannot exceed ${String(maxWords)} words`,
+        );
       }
     }
 

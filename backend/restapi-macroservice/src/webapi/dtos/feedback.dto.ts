@@ -16,7 +16,8 @@ export class CreateFeedbackDto {
   rating!: number;
 
   @ApiPropertyOptional({
-    description: "Optional comment about the chat experience (max 50 words)",
+    description:
+      "Optional comment about the chat experience (max 300 words for general feedback, max 100 words for product feedback)",
     example: "Great recommendations, very helpful!",
     nullable: true,
     type: String,
@@ -65,7 +66,7 @@ export class FeedbackResponseDto {
   })
   rating!: number;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "Optional comment about the chat experience",
     example: "Great recommendations, very helpful!",
     nullable: true,

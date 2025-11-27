@@ -179,15 +179,8 @@ export class AuthController {
     }
 
     try {
-      const secret =
-        this.configService.get<string>("JWT_REFRESH_SECRET") ??
-        this.configService.get<string>("JWT_SECRET") ??
-        "your-refresh-secret-key-change-in-prod";
-
-      const payload = this.jwtService.verify<RefreshTokenPayload>(
-        refreshToken,
-        { secret },
-      );
+      // Use the same secret as access token
+      const payload = this.jwtService.verify<RefreshTokenPayload>(refreshToken);
 
       if (payload.type !== "refresh") {
         throw new UnauthorizedException("Invalid token type");
@@ -217,7 +210,10 @@ export class AuthController {
       });
 
       return { message: "Token refreshed successfully" };
-    } catch {
+    } catch (error) {
+      this.logger.error(
+        `Failed to refresh token: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
       throw new UnauthorizedException("Invalid refresh token");
     }
   }

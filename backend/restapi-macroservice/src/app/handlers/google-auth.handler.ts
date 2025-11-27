@@ -91,13 +91,9 @@ export class ValidateGoogleTokenHandler
       email: user.email,
       type: "refresh",
     };
-    const secret =
-      this.configService.get<string>("JWT_REFRESH_SECRET") ??
-      this.configService.get<string>("JWT_SECRET") ??
-      "your-refresh-secret-key-change-in-prod";
 
+    // Use the same secret as access token for consistency
     return this.jwtService.sign(payload, {
-      secret,
       expiresIn: "7d",
     });
   }

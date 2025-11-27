@@ -3,6 +3,7 @@ import {
   FetchAmazonEvent,
   FetchEbayEvent,
   FetchOlxEvent,
+  ScrapeOkazjeEvent,
 } from "@core/events";
 
 import { Inject, Logger } from "@nestjs/common";
@@ -24,6 +25,8 @@ export class EmitFetchEventsHandler
     private readonly allegroEventBus: ClientProxy,
     @Inject("FETCH_AMAZON_EVENT") private readonly amazonEventBus: ClientProxy,
     @Inject("FETCH_EBAY_EVENT") private readonly ebayEventBus: ClientProxy,
+    @Inject("SCRAPE_OKAZJE_EVENT")
+    private readonly okazjeEventBus: ClientProxy,
   ) {}
 
   // Event emission is synchronous (fire-and-forget)
@@ -92,6 +95,16 @@ export class EmitFetchEventsHandler
             maxPrice,
           );
           this.ebayEventBus.emit(FetchEbayEvent.name, fetchEbayEvent);
+          break;
+        }
+        case "okazje": {
+          const scrapeOkazjeEvent = new ScrapeOkazjeEvent(
+            query,
+            chatId,
+            eventId,
+            totalEvents,
+          );
+          this.okazjeEventBus.emit(ScrapeOkazjeEvent.name, scrapeOkazjeEvent);
           break;
         }
         default: {

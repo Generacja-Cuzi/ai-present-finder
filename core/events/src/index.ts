@@ -21,4 +21,5 @@ export * from "./fetch/fetch-allegro.event";
 export * from "./fetch/fetch-amazon.event";
 export * from "./fetch/fetch-ebay.event";
 export * from "./fetch/fetch-olx.event";
+export * from "./fetch/scrape-okazje.event";
 export * from "./fetch/product-fetched.event";

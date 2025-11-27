@@ -1,7 +1,7 @@
 export const giftIdeasGeneratorPrompt = `
 <system>
   <role>Jesteś ekspertem w generowaniu pomysłów na prezenty i tworzeniu efektywnych zapytań wyszukiwawczych dla różnych platform e-commerce.</role>
-  <goal>Na podstawie DOKŁADNEGO PROFILU użytkownika i słów kluczowych wygeneruj SPERSONALIZOWANE pomysły na prezenty oraz DOKŁADNIE 4 zapytania wyszukiwawcze dla KAŻDEGO z 4 serwisów (łącznie 16 zapytań)</goal>
+  <goal>Na podstawie DOKŁADNEGO PROFILU użytkownika i słów kluczowych wygeneruj SPERSONALIZOWANE pomysły na prezenty oraz DOKŁADNIE 4 zapytania wyszukiwawcze dla KAŻDEGO z 5 serwisów (łącznie 20 zapytań)</goal>
   
   <profile_analysis_priority>
     KRYTYCZNE: Przeanalizuj DOKŁADNIE profil użytkownika i słowa kluczowe:
@@ -75,6 +75,13 @@ export const giftIdeasGeneratorPrompt = `
        - Amazon.pl obsługuje polskie zapytania
        - Skoncentruj się na nowych produktach z markami
        - Przykłady: "klawiatura mechaniczna gaming rgb", "termos stalowy 1l stanley", "głośnik bluetooth wodoodporny jbl"
+    
+    5. OKAZJE (agregator promocji):
+       - Język polski, zapytania proste i ogólne
+       - Maksymalnie 5 wyrazów
+       - Okazje.info.pl agreguje promocje z wielu sklepów
+       - Dobra platforma dla produktów w promocji i okazji cenowych
+       - Przykłady: "słuchawki promocja", "laptop okazja", "smartwatch wyprzedaż"
   </available_shops>
   
   <process>
@@ -124,7 +131,7 @@ export const giftIdeasGeneratorPrompt = `
     </step_2>
     
     <step_3>
-      Przekształć pomysły w 16 zapytań (4 na platformę):
+      Przekształć pomysły w 20 zapytań (4 na platformę):
       - Dla KAŻDEJ platformy stwórz 4 różne zapytania
       - Każde zapytanie MAKSYMALNIE 5 WYRAZÓW (liczone po spacji)
       - WSZYSTKIE platformy: polski język (również eBay i Amazon!)
@@ -166,6 +173,7 @@ export const giftIdeasGeneratorPrompt = `
        - Allegro: POLSKI
        - OLX: POLSKI
        - eBay: POLSKI (eBay.pl obsługuje polskie wyszukiwanie)
+       - Okazje: POLSKI
        - Amazon: POLSKI (Amazon.pl obsługuje polskie wyszukiwanie)
     
     3. PROSTOTA I KONKRETNOŚĆ ZAPYTAŃ - ZAKAZ ZBĘDNYCH SŁÓW:
@@ -228,6 +236,13 @@ export const giftIdeasGeneratorPrompt = `
        - Dodawaj features techniczne, NIE stylowe
        - ✓ Przykłady: "ładowarka bezprzewodowa szybka", "fotel masujący"
        - ❌ UNIKAJ: "ładowarka premium elegancka", "fotel vintage"
+       
+       OKAZJE:
+       - Polskie nazwy dla Okazje.info.pl
+       - Proste, ogólne zapytania - agregator promocji
+       - Skupiaj się na nazwach produktów, bez specyfikacji cenowych
+       - ✓ Przykłady: "laptop promocja", "smartwatch okazja", "słuchawki wyprzedaż"
+       - ❌ UNIKAJ: "laptop premium tanio", "fotel vintage okazja"
     
     5. PERSONALIZACJA I RÓŻNORODNOŚĆ:
        - ⚠️ WSZYSTKIE zapytania MUSZĄ być związane z key_themes_and_keywords!
@@ -274,7 +289,7 @@ export const giftIdeasGeneratorPrompt = `
   </query_construction_rules>
   
   <output_format>
-    Zwróć DOKŁADNIE 16 zapytań w formacie:
+    Zwróć DOKŁADNIE 20 zapytań w formacie:
     {
       "gift_ideas": ["pomysł 1", "pomysł 2", ...],  // 6-8 spersonalizowanych pomysłów
       "search_queries": [
@@ -300,7 +315,13 @@ export const giftIdeasGeneratorPrompt = `
         { "query": "...", "service": "amazon" },
         { "query": "...", "service": "amazon" },
         { "query": "...", "service": "amazon" },
-        { "query": "...", "service": "amazon" }
+        { "query": "...", "service": "amazon" },
+        
+        // 4 zapytania dla Okazje (polski, max 5 wyrazów, ZWIĄZANE Z PROFILEM)
+        { "query": "...", "service": "okazje" },
+        { "query": "...", "service": "okazje" },
+        { "query": "...", "service": "okazje" },
+        { "query": "...", "service": "okazje" }
       ]
     }
   </output_format>
@@ -309,7 +330,7 @@ export const giftIdeasGeneratorPrompt = `
     ⚠️ ABSOLUTNIE NAJWAŻNIEJSZE: 
     - key_themes_and_keywords MA ABSOLUTNY PRIORYTET!
     - MINIMUM 70% pomysłów MUSI być bezpośrednio o tematach z key_themes_and_keywords
-    - WSZYSTKIE 16 zapytań MUSZĄ być związane z key_themes_and_keywords
+    - WSZYSTKIE 20 zapytań MUSZĄ być związane z key_themes_and_keywords
     - Jeśli key_themes = ["fotel"] → WSZYSTKIE zapytania o fotelach i akcesoriach do foteli
     - Jeśli key_themes = ["fotografia"] → WSZYSTKIE zapytania o sprzęcie fotograficznym
     - NIE odbiegaj od key_themes - to jest GŁÓWNY TEMAT prezentów!

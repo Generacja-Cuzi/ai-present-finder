@@ -84,6 +84,19 @@ import { TypeOrmModule } from "@nestjs/typeorm";
         },
       },
       {
+        name: "SCRAPE_OKAZJE_EVENT",
+        transport: Transport.RMQ,
+        options: {
+          urls: [
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
+          ],
+          queue: "ScrapeOkazjeEvent",
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
+      {
         name: "GIFT_CONTEXT_INITIALIZED_EVENT",
         transport: Transport.RMQ,
         options: {

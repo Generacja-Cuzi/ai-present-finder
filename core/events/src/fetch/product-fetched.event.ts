@@ -4,7 +4,7 @@ export class ProductFetchedEvent {
   constructor(
     public readonly products: ListingPayload[],
     public readonly chatId: string,
-    public readonly provider: "allegro" | "amazon" | "ebay" | "olx",
+    public readonly provider: "allegro" | "amazon" | "ebay" | "olx" | "okazje",
     public readonly success: boolean,
     public readonly eventId: string,
     public readonly totalEvents: number,

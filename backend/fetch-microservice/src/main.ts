@@ -3,6 +3,7 @@ import {
   FetchAmazonEvent,
   FetchEbayEvent,
   FetchOlxEvent,
+  ScrapeOkazjeEvent,
 } from "@core/events";
 
 import { Logger } from "@nestjs/common";
@@ -31,9 +32,11 @@ async function bootstrap() {
           ? FetchEbayEvent.name
           : provider === "olx"
             ? FetchOlxEvent.name
-            : (() => {
-                throw new Error(`Unsupported provider: ${provider}`);
-              })();
+            : provider === "okazje"
+              ? ScrapeOkazjeEvent.name
+              : (() => {
+                  throw new Error(`Unsupported provider: ${provider}`);
+                })();
 
   logger.log(`Starting fetch microservice for provider: ${provider}`);
   logger.log(`Listening on queue: ${queueName}`);

@@ -38,7 +38,7 @@ export function FeedbackDialog({
   const [comment, setComment] = useState("");
   const createFeedback = useCreateFeedback();
 
-  const maxWords = 50;
+  const maxWords = isGeneralFeedback ? 300 : 100;
   const wordCount =
     comment.trim() === "" ? 0 : comment.trim().split(/\s+/).length;
   const isWordLimitExceeded = wordCount > maxWords;

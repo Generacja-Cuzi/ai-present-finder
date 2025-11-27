@@ -51,6 +51,13 @@ export function filterGifts(
       return false;
     }
 
+    if (
+      filters.rounds.length > 0 &&
+      (gift.round === undefined || !filters.rounds.includes(gift.round))
+    ) {
+      return false;
+    }
+
     return true;
   });
 }
@@ -103,4 +110,13 @@ export function getPriceRange(gifts: ListingWithId[]): {
     min: Math.floor(Math.min(...prices)),
     max: Math.ceil(Math.max(...prices)),
   };
+}
+
+export function getAvailableRounds(maxRound: number): number[] {
+  if (maxRound === 0) {
+    return [];
+  }
+
+  // Create array from 1 to maxRound
+  return Array.from({ length: maxRound }, (_, index) => index + 1);
 }

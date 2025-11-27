@@ -22,6 +22,10 @@ export function useGiftFilters() {
     setFilters((previous) => ({ ...previous, categories }));
   };
 
+  const updateRounds = (rounds: number[]) => {
+    setFilters((previous) => ({ ...previous, rounds }));
+  };
+
   const resetFilters = () => {
     setFilters(DEFAULT_FILTERS);
   };
@@ -37,6 +41,9 @@ export function useGiftFilters() {
     if (filters.categories.length > 0) {
       count++;
     }
+    if (filters.rounds.length > 0) {
+      count++;
+    }
     return count;
   }, [filters]);
 
@@ -46,6 +53,7 @@ export function useGiftFilters() {
     updateShops,
     updatePriceRange,
     updateCategories,
+    updateRounds,
     resetFilters,
     activeFiltersCount,
   };

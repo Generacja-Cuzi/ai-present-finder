@@ -60,6 +60,7 @@ describe("filterGifts", () => {
       shops: [],
       priceRange: { min: null, max: null },
       categories: [],
+      rounds: [],
     };
 
     const result = filterGifts(mockGifts, filters);
@@ -72,6 +73,7 @@ describe("filterGifts", () => {
       shops: [],
       priceRange: { min: null, max: null },
       categories: [],
+      rounds: [],
     };
 
     const result = filterGifts(mockGifts, filters);
@@ -85,6 +87,7 @@ describe("filterGifts", () => {
       shops: [],
       priceRange: { min: null, max: null },
       categories: [],
+      rounds: [],
     };
 
     const result = filterGifts(mockGifts, filters);
@@ -98,6 +101,7 @@ describe("filterGifts", () => {
       shops: ["amazon"],
       priceRange: { min: null, max: null },
       categories: [],
+      rounds: [],
     };
 
     const result = filterGifts(mockGifts, filters);
@@ -111,6 +115,7 @@ describe("filterGifts", () => {
       shops: ["amazon", "ebay"],
       priceRange: { min: null, max: null },
       categories: [],
+      rounds: [],
     };
 
     const result = filterGifts(mockGifts, filters);
@@ -123,6 +128,7 @@ describe("filterGifts", () => {
       shops: [],
       priceRange: { min: 75, max: null },
       categories: [],
+      rounds: [],
     };
 
     const result = filterGifts(mockGifts, filters);
@@ -136,6 +142,7 @@ describe("filterGifts", () => {
       shops: [],
       priceRange: { min: null, max: 75 },
       categories: [],
+      rounds: [],
     };
 
     const result = filterGifts(mockGifts, filters);
@@ -149,6 +156,7 @@ describe("filterGifts", () => {
       shops: [],
       priceRange: { min: 50, max: 75 },
       categories: [],
+      rounds: [],
     };
 
     const result = filterGifts(mockGifts, filters);
@@ -161,6 +169,7 @@ describe("filterGifts", () => {
       shops: [],
       priceRange: { min: null, max: null },
       categories: ["Electronics"],
+      rounds: [],
     };
 
     const result = filterGifts(mockGifts, filters);
@@ -174,6 +183,7 @@ describe("filterGifts", () => {
       shops: [],
       priceRange: { min: null, max: null },
       categories: ["Electronics", "Books"],
+      rounds: [],
     };
 
     const result = filterGifts(mockGifts, filters);
@@ -186,6 +196,7 @@ describe("filterGifts", () => {
       shops: ["amazon"],
       priceRange: { min: 50, max: 100 },
       categories: ["Electronics"],
+      rounds: [],
     };
 
     const result = filterGifts(mockGifts, filters);
@@ -199,6 +210,7 @@ describe("filterGifts", () => {
       shops: [],
       priceRange: { min: 0, max: null },
       categories: [],
+      rounds: [],
     };
 
     const result = filterGifts(mockGifts, filters);

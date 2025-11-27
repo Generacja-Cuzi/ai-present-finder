@@ -4,6 +4,7 @@ import {
   ChatQuestionAskedEvent,
   ChatUserAnsweredEvent,
 } from "@core/events";
+import type { RecipientProfile } from "@core/types";
 import type { EndConversationOutput } from "src/app/ai/types";
 import { GenerateQuestionCommand } from "src/domain/commands/generate-question.command";
 import { ChatSession } from "src/domain/entities/chat-session.entity";
@@ -55,10 +56,30 @@ export class ChatUserAnsweredHandler {
         throw new Error(`No occasion found for chat ${event.chatId}`);
       }
 
+      // Extract user profile from pendingProfileData for refinement
+      const pendingProfileData = session.pendingProfileData as {
+        recipient_profile?: RecipientProfile;
+      } | null;
+      const userProfile = pendingProfileData?.recipient_profile;
+
+      if (userProfile === undefined) {
+        this.logger.error(
+          `No recipient profile found in pendingProfileData for refinement in chat ${event.chatId}`,
+        );
+        throw new Error(
+          `No recipient profile found for refinement in chat ${event.chatId}`,
+        );
+      }
+
       this.logger.log(`Processing refinement answer for chat ${event.chatId}`);
 
       await this.commandBus.execute(
-        new GenerateQuestionCommand(event.chatId, occasion, event.messages),
+        new GenerateQuestionCommand(
+          event.chatId,
+          occasion,
+          event.messages,
+          userProfile,
+        ),
       );
       return;
     }

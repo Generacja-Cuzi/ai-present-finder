@@ -39,6 +39,12 @@ export class ChatListingsResponseDto {
   chat: ChatInfoDto;
 
   @ApiProperty({
+    description: "Maximum round number for this chat",
+    example: 3,
+  })
+  maxRound: number;
+
+  @ApiProperty({
     description: "List of listings for the chat",
     type: ListingResponseDto,
     isArray: true,

@@ -1,5 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
+import { useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import type { components } from "@/lib/api/types";
@@ -13,6 +14,20 @@ export function FeedbacksView() {
   const { data, isLoading } = useGetAllFeedbacks();
   const navigate = useNavigate();
 
+  // Grupuj feedbacki według chatId
+  const feedbacksByChat = useMemo(() => {
+    if (isLoading || data === undefined) {
+      return new Map();
+    }
+    const grouped = new Map<string, Feedback[]>();
+    for (const feedback of data) {
+      const chatFeedbacks = grouped.get(feedback.chatId) ?? [];
+      chatFeedbacks.push(feedback);
+      grouped.set(feedback.chatId, chatFeedbacks);
+    }
+    return grouped;
+  }, [data, isLoading]);
+
   if (isLoading || data === undefined) {
     return (
       <div className="bg-background flex min-h-screen flex-col items-center justify-center">
@@ -24,6 +39,7 @@ export function FeedbacksView() {
   const feedbacks: Feedback[] = data;
 
   const totalFeedbacks = feedbacks.length;
+  const totalChats = feedbacksByChat.size;
   const averageRating =
     totalFeedbacks > 0
       ? (
@@ -51,7 +67,12 @@ export function FeedbacksView() {
           </h1>
           <div className="text-muted-foreground flex gap-6 text-sm">
             <div>
-              Łącznie: <span className="font-semibold">{totalFeedbacks}</span>
+              Łącznie feedbacków:{" "}
+              <span className="font-semibold">{totalFeedbacks}</span>
+            </div>
+            <div>
+              Sesji z feedbackami:{" "}
+              <span className="font-semibold">{totalChats}</span>
             </div>
             <div>
               Średnia ocena:{" "}
@@ -60,12 +81,17 @@ export function FeedbacksView() {
           </div>
         </div>
 
-        <div className="space-y-4">
-          {feedbacks.length > 0 ? (
-            feedbacks.map((feedback: Feedback) => (
-              <FeedbackCard key={feedback.id} feedback={feedback} />
-            ))
-          ) : (
+        <div className="space-y-6">
+          {[...feedbacksByChat.entries()].map(
+            ([chatId, chatFeedbacks]: [string, Feedback[]]) => (
+              <FeedbackCard
+                key={chatId}
+                chatId={chatId}
+                feedbacks={chatFeedbacks}
+              />
+            ),
+          )}
+          {feedbacksByChat.size === 0 && (
             <div className="text-muted-foreground py-12 text-center">
               <p className="text-lg">Brak feedbacków do wyświetlenia</p>
             </div>

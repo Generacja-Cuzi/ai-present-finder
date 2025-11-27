@@ -145,10 +145,17 @@ export class ChatController {
           category: listing.category,
           provider: listing.provider,
           isFavorited,
+          round: listing.round,
           createdAt: listing.createdAt,
         };
       }),
     );
+
+    // Calculate max round from listings
+    const maxRound =
+      result.listings.length > 0
+        ? Math.max(...result.listings.map((l) => l.round))
+        : 0;
 
     return {
       chat: {
@@ -156,6 +163,7 @@ export class ChatController {
         chatName: result.chat.chatName,
         reasoningSummary: result.chat.reasoningSummary,
       },
+      maxRound,
       listings: listingsWithFavoriteStatus,
     };
   }

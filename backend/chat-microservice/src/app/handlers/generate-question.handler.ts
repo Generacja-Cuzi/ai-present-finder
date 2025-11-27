@@ -14,7 +14,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { ClientProxy } from "@nestjs/microservices";
 import { InjectRepository } from "@nestjs/typeorm";
 
-import { giftInterviewFlow } from "../ai/flow";
+import { giftInterviewFlow, giftRefinementFlow } from "../ai/flow";
 import type { EndConversationOutput, PotencialAnswers } from "../ai/types";
 
 @CommandHandler(GenerateQuestionCommand)
@@ -55,41 +55,94 @@ export class GenerateQuestionHandler
       where: { chatId },
     });
 
-    if (session?.phase === "refinement" && history.length === 0) {
-      // Starting refinement - generate question based on selected listings
+    if (session?.phase === "refinement") {
+      // In refinement mode - use the specialized refinement flow
       this.logger.log(
-        `Starting refinement for chat ${chatId} with ${String(session.selectedListingIds?.length ?? 0)} selected gifts`,
+        `Processing refinement for chat ${chatId} with ${String(session.selectedListingIds?.length ?? 0)} selected gifts`,
       );
 
       const selectedGiftsContext = session.selectedListingsContext ?? [];
-      const mockQuestion = `Świetnie! Widzę że wybrałeś ${String(selectedGiftsContext.length)} prezentów które Ci się podobają. Powiedz mi, co w nich najbardziej przemawia do Ciebie?`;
-      const mockAnswers = {
-        type: "select" as const,
-        answers: [
-          {
-            answerFullSentence: "Cena - mieszczą się w moim budżecie",
-            answerShortForm: "Cena",
-          },
-          {
-            answerFullSentence: "Kategoria produktu jest idealna",
-            answerShortForm: "Kategoria",
-          },
-          {
-            answerFullSentence: "Styl i design produktów",
-            answerShortForm: "Styl",
-          },
-          {
-            answerFullSentence: "Funkcjonalność i zastosowanie",
-            answerShortForm: "Funkcjonalność",
-          },
-        ],
-      };
-      const event = new ChatQuestionAskedEvent(
-        chatId,
-        mockQuestion,
-        mockAnswers,
-      );
-      this.eventBus.emit(ChatQuestionAskedEvent.name, event);
+
+      if (selectedGiftsContext.length === 0) {
+        throw new Error(
+          `No selected gifts context found for refinement in chat ${chatId}`,
+        );
+      }
+
+      if (userProfile === undefined) {
+        throw new Error(
+          `No user profile found for refinement in chat ${chatId}`,
+        );
+      }
+
+      await giftRefinementFlow({
+        logger: this.logger,
+        occasion: this.getOccasionLabel(occasion),
+        messages: history.map((message) => ({
+          ...message,
+          role: message.sender,
+        })),
+        userProfile,
+        selectedGiftsContext,
+        onQuestionAsked: (
+          question: string,
+          potentialAnswers: PotencialAnswers,
+        ) => {
+          const event = new ChatQuestionAskedEvent(
+            chatId,
+            question,
+            potentialAnswers,
+          );
+          this.eventBus.emit(ChatQuestionAskedEvent.name, event);
+        },
+        onInterviewCompleted: async (output: EndConversationOutput) => {
+          // In refinement mode, we don't ask about saving profile
+          // We directly complete with the updated profile
+          this.logger.log(
+            `Refinement completed for chat ${chatId}, updating session`,
+          );
+
+          const finalOutput: EndConversationOutput = {
+            ...output,
+            save_profile: false, // Don't save during refinement
+            profile_name: null,
+          };
+
+          await this.chatSessionRepository.update(
+            { chatId },
+            { phase: "completed" },
+          );
+
+          const event = new ChatQuestionAskedEvent(
+            chatId,
+            "Dziękuję za odpowiedzi! Teraz wyszukam dla Ciebie lepsze prezenty na podstawie Twoich wyborów.",
+            { type: "long_free_text" },
+          );
+          this.eventBus.emit(ChatQuestionAskedEvent.name, event);
+
+          // Emit interview completed event with updated key_themes
+          const interviewEvent = {
+            chatId,
+            output: finalOutput,
+          };
+          this.chatInterviewCompletedEventEventBus.emit(
+            "ChatInterviewCompletedEvent",
+            interviewEvent,
+          );
+
+          this.logger.log(`Refinement completed event emitted for ${chatId}`);
+        },
+        onInappropriateRequest: (reason: string) => {
+          const inappropriateEvent = new ChatInappropriateRequestEvent(
+            reason,
+            chatId,
+          );
+          this.inappropriateRequestEventBus.emit(
+            ChatInappropriateRequestEvent.name,
+            inappropriateEvent,
+          );
+        },
+      });
       return;
     }
 
@@ -174,7 +227,6 @@ export class GenerateQuestionHandler
         role: message.sender,
       })),
       userProfile,
-      selectedGiftsContext: session?.selectedListingsContext,
       onQuestionAsked: (
         question: string,
         potentialAnswers: PotencialAnswers,

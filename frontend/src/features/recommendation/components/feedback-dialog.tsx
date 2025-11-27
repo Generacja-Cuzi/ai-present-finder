@@ -47,31 +47,31 @@ export function FeedbackDialog({
   const isWordLimitExceeded = wordCount > maxWords;
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files ?? []);
+    const files = [...(event.target.files ?? [])];
 
     if (images.length + files.length > maxImages) {
       toast.error(`Możesz dodać maksymalnie ${String(maxImages)} zdjęć`);
       return;
     }
 
-    const invalidFiles = files.filter((file) => {
+    const invalidFiles = new Set<File>();
+    for (const file of files) {
       if (file.size > maxImageSize) {
         toast.error(`Plik ${file.name} jest za duży (max 5MB)`);
-        return true;
+        invalidFiles.add(file);
       }
       if (!file.type.startsWith("image/")) {
         toast.error(`Plik ${file.name} nie jest obrazem`);
-        return true;
+        invalidFiles.add(file);
       }
-      return false;
-    });
+    }
 
-    const validFiles = files.filter((file) => !invalidFiles.includes(file));
+    const validFiles = files.filter((file) => !invalidFiles.has(file));
     setImages([...images, ...validFiles]);
   };
 
   const removeImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index));
+    setImages(images.filter((_, index_) => index_ !== index));
   };
 
   const handleSubmit = async () => {
@@ -94,9 +94,9 @@ export function FeedbackDialog({
       formData.append("productId", productId ?? "");
       formData.append("isGeneralFeedback", isGeneralFeedback.toString());
 
-      images.forEach((image) => {
+      for (const image of images) {
         formData.append("images", image);
-      });
+      }
 
       await createFeedback.mutateAsync({
         body: formData as never,
@@ -216,7 +216,7 @@ export function FeedbackDialog({
                 <div className="flex flex-wrap gap-2">
                   {images.map((image, index) => (
                     <div
-                      key={index}
+                      key={`${image.name}-${String(index)}`}
                       className="relative h-20 w-20 overflow-hidden rounded-lg border"
                     >
                       <img

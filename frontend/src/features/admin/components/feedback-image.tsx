@@ -22,7 +22,7 @@ export function FeedbackImage({
 }) {
   const { data: imageUrl, isLoading } = useQuery({
     queryKey: ["feedback-image", imageId],
-    queryFn: () => fetchImageBlob(imageId),
+    queryFn: async () => fetchImageBlob(imageId),
     enabled: imageId.length > 0,
     staleTime: Infinity, // Image won't change
   });

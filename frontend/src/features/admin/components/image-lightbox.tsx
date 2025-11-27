@@ -25,14 +25,14 @@ export function ImageLightbox({
 }) {
   const { data: imageUrl, isLoading } = useQuery({
     queryKey: ["feedback-image-lightbox", imageId],
-    queryFn: () => fetchImageBlob(imageId),
+    queryFn: async () => fetchImageBlob(imageId),
     enabled: imageId.length > 0,
     staleTime: Infinity,
   });
 
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
         onClose();
       }
     };
@@ -45,8 +45,15 @@ export function ImageLightbox({
   if (isLoading || imageUrl === undefined) {
     return (
       <div
+        role="button"
+        tabIndex={0}
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
         onClick={onClose}
+        onKeyDown={(event_) => {
+          if (event_.key === "Enter" || event_.key === " ") {
+            onClose();
+          }
+        }}
       >
         <div className="text-white">Ładowanie...</div>
       </div>
@@ -55,8 +62,15 @@ export function ImageLightbox({
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
       onClick={onClose}
+      onKeyDown={(event_) => {
+        if (event_.key === "Enter" || event_.key === " ") {
+          onClose();
+        }
+      }}
     >
       <Button
         variant="ghost"
@@ -66,14 +80,19 @@ export function ImageLightbox({
       >
         <X className="h-6 w-6" />
       </Button>
-      <img
-        src={imageUrl}
-        alt="Powiększone zdjęcie"
-        className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
-        onClick={(e) => {
-          e.stopPropagation();
+      <button
+        type="button"
+        className="max-h-[90vh] max-w-[90vw]"
+        onClick={(event_) => {
+          event_.stopPropagation();
         }}
-      />
+      >
+        <img
+          src={imageUrl}
+          alt="Powiększone zdjęcie"
+          className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
+        />
+      </button>
     </div>
   );
 }

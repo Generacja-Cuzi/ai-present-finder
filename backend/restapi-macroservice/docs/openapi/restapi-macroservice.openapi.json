@@ -398,20 +398,20 @@
         ],
         "responses": {
           "200": {
-            "description": "Returns feedback for the chat",
+            "description": "Returns feedbacks for the chat",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FeedbackResponseDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FeedbackResponseDto"
+                  }
                 }
               }
             }
-          },
-          "404": {
-            "description": "Feedback not found for this chat"
           }
         },
-        "summary": "Get feedback for a specific chat",
+        "summary": "Get feedbacks for a specific chat",
         "tags": ["feedback"]
       }
     },
@@ -1919,9 +1919,21 @@
           },
           "comment": {
             "type": "string",
-            "description": "Optional comment about the chat experience",
+            "description": "Optional comment about the chat experience (max 50 words)",
             "example": "Great recommendations, very helpful!",
             "nullable": true
+          },
+          "productId": {
+            "type": "string",
+            "description": "ID of the product this feedback is for (null for general feedback)",
+            "example": "550e8400-e29b-41d4-a716-446655440003",
+            "nullable": true
+          },
+          "isGeneralFeedback": {
+            "type": "boolean",
+            "description": "Whether this is general feedback for the entire search",
+            "example": false,
+            "default": false
           }
         },
         "required": ["chatId", "rating"]
@@ -1955,6 +1967,17 @@
             "example": "Great recommendations, very helpful!",
             "nullable": true
           },
+          "productId": {
+            "type": "string",
+            "description": "ID of the product this feedback is for",
+            "example": "550e8400-e29b-41d4-a716-446655440003",
+            "nullable": true
+          },
+          "isGeneralFeedback": {
+            "type": "boolean",
+            "description": "Whether this is general feedback",
+            "example": false
+          },
           "createdAt": {
             "format": "date-time",
             "type": "string",
@@ -1973,6 +1996,7 @@
           "chatId",
           "userId",
           "rating",
+          "isGeneralFeedback",
           "createdAt",
           "updatedAt"
         ]

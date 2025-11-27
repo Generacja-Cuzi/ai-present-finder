@@ -16,12 +16,28 @@ export class CreateFeedbackDto {
   rating!: number;
 
   @ApiPropertyOptional({
-    description: "Optional comment about the chat experience",
+    description: "Optional comment about the chat experience (max 50 words)",
     example: "Great recommendations, very helpful!",
     nullable: true,
     type: String,
   })
   comment?: string | null;
+
+  @ApiPropertyOptional({
+    description:
+      "ID of the product this feedback is for (null for general feedback)",
+    example: "550e8400-e29b-41d4-a716-446655440003",
+    nullable: true,
+    type: String,
+  })
+  productId?: string | null;
+
+  @ApiPropertyOptional({
+    description: "Whether this is general feedback for the entire search",
+    example: false,
+    default: false,
+  })
+  isGeneralFeedback?: boolean;
 }
 
 export class FeedbackResponseDto {
@@ -57,6 +73,22 @@ export class FeedbackResponseDto {
     type: String,
   })
   comment!: string | null;
+
+  @ApiPropertyOptional({
+    description: "ID of the product this feedback is for",
+    example: "550e8400-e29b-41d4-a716-446655440003",
+    nullable: true,
+    type: String,
+    required: false,
+  })
+  productId!: string | null;
+
+  @ApiProperty({
+    description: "Whether this is general feedback",
+    example: false,
+    type: Boolean,
+  })
+  isGeneralFeedback!: boolean;
 
   @ApiProperty({
     description: "When the feedback was created",

@@ -24,6 +24,14 @@ export class CreateFeedbackHandler
       throw new BadRequestException("Rating must be between 1 and 5");
     }
 
+    // Validate comment length (max 50 words)
+    if (command.comment !== null && command.comment.trim() !== "") {
+      const wordCount = command.comment.trim().split(/\s+/).length;
+      if (wordCount > 50) {
+        throw new BadRequestException("Comment cannot exceed 50 words");
+      }
+    }
+
     // Check if chat exists
     const chat = await this.chatRepository.findByChatId(command.chatId);
     if (chat === null) {
@@ -41,12 +49,27 @@ export class CreateFeedbackHandler
       );
     }
 
-    // Check if feedback already exists for this chat
-    const existingFeedback = await this.feedbackRepository.existsByChatId(
-      command.chatId,
-    );
-    if (existingFeedback) {
-      throw new BadRequestException("Feedback already exists for this chat");
+    // Check if feedback already exists for this specific product or general feedback
+    if (command.isGeneralFeedback) {
+      const existingGeneral = await this.feedbackRepository.findGeneralByChatId(
+        command.chatId,
+      );
+      if (existingGeneral !== null) {
+        throw new BadRequestException(
+          "General feedback already exists for this chat",
+        );
+      }
+    } else if (command.productId !== null) {
+      const existingProduct =
+        await this.feedbackRepository.findByChatIdAndProductId(
+          command.chatId,
+          command.productId,
+        );
+      if (existingProduct !== null) {
+        throw new BadRequestException(
+          "Feedback already exists for this product",
+        );
+      }
     }
 
     // Create feedback
@@ -55,6 +78,8 @@ export class CreateFeedbackHandler
       userId: command.userId,
       rating: command.rating,
       comment: command.comment,
+      productId: command.productId,
+      isGeneralFeedback: command.isGeneralFeedback,
     });
   }
 }

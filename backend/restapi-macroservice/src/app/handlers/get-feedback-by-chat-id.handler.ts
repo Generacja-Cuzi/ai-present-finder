@@ -10,7 +10,7 @@ export class GetFeedbackByChatIdHandler
 {
   constructor(private readonly feedbackRepository: IFeedbackRepository) {}
 
-  async execute(query: GetFeedbackByChatIdQuery): Promise<Feedback | null> {
+  async execute(query: GetFeedbackByChatIdQuery): Promise<Feedback[]> {
     return this.feedbackRepository.findByChatId(query.chatId);
   }
 }

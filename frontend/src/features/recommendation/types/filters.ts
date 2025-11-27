@@ -8,6 +8,7 @@ export interface GiftFilters {
   shops: string[];
   priceRange: PriceRange;
   categories: string[];
+  rounds: number[];
 }
 
 export const DEFAULT_FILTERS: GiftFilters = {
@@ -15,4 +16,5 @@ export const DEFAULT_FILTERS: GiftFilters = {
   shops: [],
   priceRange: { min: null, max: null },
   categories: [],
+  rounds: [],
 };

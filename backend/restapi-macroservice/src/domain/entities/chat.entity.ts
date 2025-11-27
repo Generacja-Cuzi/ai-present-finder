@@ -49,6 +49,9 @@ export class Chat {
   @Column({ name: "is_interview_completed", default: false })
   isInterviewCompleted: boolean;
 
+  @Column({ name: "current_round", type: "int", default: 0 })
+  currentRound: number;
+
   @Column({
     name: "status",
     type: "enum",

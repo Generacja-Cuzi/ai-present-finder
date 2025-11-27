@@ -32,6 +32,7 @@ export function SearchRecommendationView({
         <RecommendationView
           clientId={chatId}
           giftIdeas={listingsWithId}
+          maxRound={data.maxRound}
           backTo={backTo}
         />
       );

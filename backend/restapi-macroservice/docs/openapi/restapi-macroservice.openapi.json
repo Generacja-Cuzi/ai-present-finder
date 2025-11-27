@@ -1794,6 +1794,11 @@
             "description": "Whether this listing is favorited by the current user",
             "example": true
           },
+          "round": {
+            "type": "number",
+            "description": "Round number when this listing was generated",
+            "example": 1
+          },
           "createdAt": {
             "format": "date-time",
             "type": "string",
@@ -1810,6 +1815,7 @@
           "id",
           "chatId",
           "isFavorited",
+          "round",
           "createdAt"
         ]
       },
@@ -1824,6 +1830,11 @@
               }
             ]
           },
+          "maxRound": {
+            "type": "number",
+            "description": "Maximum round number for this chat",
+            "example": 3
+          },
           "listings": {
             "description": "List of listings for the chat",
             "type": "array",
@@ -1832,7 +1843,7 @@
             }
           }
         },
-        "required": ["chat", "listings"]
+        "required": ["chat", "maxRound", "listings"]
       },
       "StartChatRefinementDto": {
         "type": "object",

@@ -6,6 +6,7 @@ import { generateText, stepCountIs } from "ai";
 import type { Logger } from "@nestjs/common";
 
 import { giftConsultantPrompt } from "./prompt";
+import { giftRefinementPrompt } from "./refinement-prompt";
 import { tools } from "./tools";
 import type { EndConversationOutput, PotencialAnswers } from "./types";
 
@@ -14,7 +15,6 @@ export async function giftInterviewFlow({
   occasion,
   messages,
   userProfile,
-  selectedGiftsContext,
   onQuestionAsked,
   onInterviewCompleted,
   onInappropriateRequest,
@@ -23,12 +23,6 @@ export async function giftInterviewFlow({
   occasion: string;
   messages: ModelMessage[];
   userProfile?: RecipientProfile;
-  selectedGiftsContext?: {
-    title: string;
-    description: string;
-    category: string | null;
-    priceLabel: string | null;
-  }[];
   onQuestionAsked: (
     question: string,
     potentialAnswers: PotencialAnswers,
@@ -49,12 +43,7 @@ export async function giftInterviewFlow({
       results = await generateText({
         model: google("gemini-2.5-flash"),
         messages,
-        system: giftConsultantPrompt(
-          occasion,
-          userProfile,
-          questionCount,
-          selectedGiftsContext ?? [],
-        ),
+        system: giftConsultantPrompt(occasion, userProfile, questionCount),
         stopWhen: stepCountIs(1),
         tools,
         toolChoice: "required", // This forces the AI to always call a tool
@@ -142,6 +131,147 @@ export async function giftInterviewFlow({
         const _exhaustiveCheck: never = toolResult;
         throw new Error(
           `Unhandled tool result: ${JSON.stringify(_exhaustiveCheck)}`,
+        );
+      }
+    }
+  }
+}
+
+export async function giftRefinementFlow({
+  logger,
+  occasion,
+  messages,
+  userProfile,
+  selectedGiftsContext,
+  onQuestionAsked,
+  onInterviewCompleted,
+  onInappropriateRequest,
+}: {
+  logger: Logger;
+  occasion: string;
+  messages: ModelMessage[];
+  userProfile: RecipientProfile;
+  selectedGiftsContext: {
+    title: string;
+    description: string;
+    category: string | null;
+    priceLabel: string | null;
+  }[];
+  onQuestionAsked: (
+    question: string,
+    potentialAnswers: PotencialAnswers,
+  ) => void;
+  onInterviewCompleted: (output: EndConversationOutput) => void;
+  onInappropriateRequest: (reason: string) => void;
+}) {
+  // Count questions asked so far in refinement (assistant messages)
+  const questionCount = messages.filter(
+    (message) => message.role === "assistant",
+  ).length;
+  const maxRetries = 3;
+  let results: GenerateTextResult<typeof tools, never> | null = null;
+  let retryCount = 0;
+
+  while (retryCount <= maxRetries) {
+    try {
+      results = await generateText({
+        model: google("gemini-2.5-flash"),
+        messages,
+        system: giftRefinementPrompt(
+          occasion,
+          userProfile,
+          questionCount,
+          selectedGiftsContext,
+        ),
+        stopWhen: stepCountIs(1),
+        tools,
+        toolChoice: "required", // This forces the AI to always call a tool
+        onStepFinish: (step) => {
+          logger.log(`Refinement step finished: ${JSON.stringify(step)}`);
+        },
+      });
+
+      logger.log(
+        `Refinement results.toolResults.length: ${results.toolResults.length.toString()}`,
+      );
+      logger.log(
+        `Full refinement results: ${JSON.stringify(results, null, 2)}`,
+      );
+
+      // If we have tool results, break out of the retry loop
+      if (results.toolResults.length > 0) {
+        break;
+      }
+
+      // If no tool results and we haven't exceeded max retries, try again
+      if (retryCount < maxRetries) {
+        retryCount++;
+        logger.log(
+          `No tool calls found in refinement, retrying (attempt ${retryCount.toString()}/${maxRetries.toString()})`,
+        );
+      } else {
+        logger.warn(
+          `No tool calls found in refinement after ${maxRetries.toString()} retries, proceeding with empty results`,
+        );
+
+        break;
+      }
+    } catch (error) {
+      // Check if this is a schema validation error
+      if (
+        error instanceof Error &&
+        error.message.includes("Type validation failed")
+      ) {
+        if (retryCount < maxRetries) {
+          retryCount++;
+          logger.warn(
+            `Schema validation error in refinement, retrying (attempt ${retryCount.toString()}/${maxRetries.toString()}): ${error.message}`,
+          );
+          continue;
+        } else {
+          logger.error(
+            `Schema validation error in refinement after ${maxRetries.toString()} retries: ${error.message}`,
+          );
+          throw error;
+        }
+      } else {
+        // Re-throw non-schema errors immediately
+        throw error;
+      }
+    }
+  }
+
+  if (results === null || results.toolResults.length === 0) {
+    onQuestionAsked(results?.text ?? "No tool results found", {
+      type: "long_free_text",
+    });
+    return;
+  }
+
+  for (const toolResult of results.toolResults) {
+    if (toolResult.dynamic !== undefined && toolResult.dynamic) {
+      continue; // rule out dynamic tool results
+    }
+    switch (toolResult.toolName) {
+      case "ask_a_question_with_answer_suggestions": {
+        onQuestionAsked(
+          toolResult.input.question,
+          toolResult.input.potentialAnswers,
+        );
+        break;
+      }
+      case "end_conversation": {
+        onInterviewCompleted(toolResult.input.output);
+        break;
+      }
+      case "flag_inappropriate_request": {
+        onInappropriateRequest(toolResult.input.reason);
+        break;
+      }
+      default: {
+        const _exhaustiveCheck: never = toolResult;
+        throw new Error(
+          `Unhandled tool result in refinement: ${JSON.stringify(_exhaustiveCheck)}`,
         );
       }
     }

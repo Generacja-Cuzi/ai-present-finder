@@ -346,9 +346,35 @@
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/CreateFeedbackDto"
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string"
+                  },
+                  "rating": {
+                    "type": "number"
+                  },
+                  "comment": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "productId": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "isGeneralFeedback": {
+                    "type": "boolean"
+                  },
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
               }
             }
           }
@@ -412,6 +438,60 @@
           }
         },
         "summary": "Get feedbacks for a specific chat",
+        "tags": ["feedback"]
+      }
+    },
+    "/feedback/{feedbackId}/images": {
+      "get": {
+        "operationId": "FeedbackController_getFeedbackImages",
+        "parameters": [
+          {
+            "name": "feedbackId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns image metadata for the feedback",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FeedbackImageResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get image metadata for a feedback",
+        "tags": ["feedback"]
+      }
+    },
+    "/feedback/images/{imageId}": {
+      "get": {
+        "operationId": "FeedbackController_getFeedbackImage",
+        "parameters": [
+          {
+            "name": "imageId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the image file"
+          }
+        },
+        "summary": "Get a feedback image",
         "tags": ["feedback"]
       }
     },
@@ -1902,42 +1982,6 @@
         },
         "required": ["listingId"]
       },
-      "CreateFeedbackDto": {
-        "type": "object",
-        "properties": {
-          "chatId": {
-            "type": "string",
-            "description": "ID of the chat to provide feedback for",
-            "example": "550e8400-e29b-41d4-a716-446655440000"
-          },
-          "rating": {
-            "type": "number",
-            "description": "Rating from 1 to 5",
-            "minimum": 1,
-            "maximum": 5,
-            "example": 5
-          },
-          "comment": {
-            "type": "string",
-            "description": "Optional comment about the chat experience (max 300 words for general feedback, max 100 words for product feedback)",
-            "example": "Great recommendations, very helpful!",
-            "nullable": true
-          },
-          "productId": {
-            "type": "string",
-            "description": "ID of the product this feedback is for (null for general feedback)",
-            "example": "550e8400-e29b-41d4-a716-446655440003",
-            "nullable": true
-          },
-          "isGeneralFeedback": {
-            "type": "boolean",
-            "description": "Whether this is general feedback for the entire search",
-            "example": false,
-            "default": false
-          }
-        },
-        "required": ["chatId", "rating"]
-      },
       "FeedbackResponseDto": {
         "type": "object",
         "properties": {
@@ -1978,6 +2022,11 @@
             "description": "Whether this is general feedback",
             "example": false
           },
+          "imageCount": {
+            "type": "number",
+            "description": "Number of images attached to this feedback",
+            "example": 2
+          },
           "createdAt": {
             "format": "date-time",
             "type": "string",
@@ -1997,9 +2046,37 @@
           "userId",
           "rating",
           "isGeneralFeedback",
+          "imageCount",
           "createdAt",
           "updatedAt"
         ]
+      },
+      "FeedbackImageResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier of the image",
+            "example": "550e8400-e29b-41d4-a716-446655440005"
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "MIME type of the image",
+            "example": "image/jpeg"
+          },
+          "fileSize": {
+            "type": "number",
+            "description": "Size of the image in bytes",
+            "example": 102400
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "When the image was uploaded",
+            "example": "2023-12-01T10:00:00.000Z"
+          }
+        },
+        "required": ["id", "mimeType", "fileSize", "createdAt"]
       },
       "MessageRole": {
         "type": "string",

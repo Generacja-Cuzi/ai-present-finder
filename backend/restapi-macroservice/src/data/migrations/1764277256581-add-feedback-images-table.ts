@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import type { MigrationInterface, QueryRunner } from "typeorm";
 
 export class AddFeedbackImagesTable1764277256581 implements MigrationInterface {
   name = "AddFeedbackImagesTable1764277256581";

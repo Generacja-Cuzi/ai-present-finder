@@ -1,3 +1,4 @@
+import { UserRole } from "src/domain/entities/user.entity";
 import type { AuthenticatedRequest } from "src/domain/models/auth.types";
 import {
   ResourceIdLocation,
@@ -53,6 +54,14 @@ export class ResourceOwnershipGuard implements CanActivate {
     if (user === null || user === undefined) {
       this.logger.warn("ResourceOwnershipGuard used without authentication");
       throw new ForbiddenException("Authentication required");
+    }
+
+    // Admins bypass ownership checks
+    if (user.role === UserRole.ADMIN) {
+      this.logger.debug(
+        `Admin user ${user.id} bypassing ownership check for ${config.resourceType}`,
+      );
+      return true;
     }
 
     const resourceId = this.extractResourceId(request, config);

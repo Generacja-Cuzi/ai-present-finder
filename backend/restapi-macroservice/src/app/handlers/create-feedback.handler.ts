@@ -80,12 +80,12 @@ export class CreateFeedbackHandler
     // Validate images
     const maxImages = 5;
     const maxImageSize = 5 * 1024 * 1024; // 5MB
-    const allowedMimeTypes = [
+    const allowedMimeTypes = new Set([
       "image/jpeg",
       "image/png",
       "image/gif",
       "image/webp",
-    ];
+    ]);
 
     // Images are only allowed for general feedback
     if (command.images.length > 0 && !command.isGeneralFeedback) {
@@ -106,7 +106,7 @@ export class CreateFeedbackHandler
           `Image size cannot exceed ${String(maxImageSize / (1024 * 1024))}MB`,
         );
       }
-      if (!allowedMimeTypes.includes(image.mimeType)) {
+      if (!allowedMimeTypes.has(image.mimeType)) {
         throw new BadRequestException(
           `Only JPEG, PNG, GIF, and WebP images are allowed`,
         );

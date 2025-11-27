@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import type { MigrationInterface, QueryRunner } from "typeorm";
 
 export class RenameImagedataColumn1764277445671 implements MigrationInterface {
   name = "RenameImagedataColumn1764277445671";

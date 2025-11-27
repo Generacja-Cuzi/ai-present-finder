@@ -86,7 +86,7 @@ export class FeedbackController {
     @UploadedFiles() files: Express.Multer.File[],
     @Req() request: AuthenticatedRequest,
   ): Promise<{ message: string }> {
-    const images: FeedbackImageData[] = (files ?? []).map((file) => ({
+    const images: FeedbackImageData[] = files.map((file) => ({
       buffer: file.buffer,
       mimeType: file.mimetype,
       size: file.size,
@@ -154,7 +154,10 @@ export class FeedbackController {
   })
   async getFeedbackByChatId(
     @Param("chatId") chatId: string,
+    @Req() _request: AuthenticatedRequest,
   ): Promise<FeedbackResponseDto[]> {
+    // Admin może przeglądać wszystkie feedbacki
+    // Zwykły użytkownik musi być właścicielem czatu (sprawdzane przez ResourceOwnershipGuard)
     const feedbacks = await this.queryBus.execute<
       GetFeedbackByChatIdQuery,
       Feedback[]
@@ -212,7 +215,7 @@ export class FeedbackController {
   })
   async getFeedbackImage(
     @Param("imageId") imageId: string,
-    @Res() res: Response,
+    @Res() response: Response,
   ): Promise<void> {
     const image = await this.feedbackImageRepository.findById(imageId);
 
@@ -220,10 +223,10 @@ export class FeedbackController {
       throw new BadRequestException("Image not found");
     }
 
-    res.set({
+    response.set({
       "Content-Type": image.mimeType,
       "Content-Length": image.fileSize,
     });
-    res.send(image.imageData);
+    response.send(image.imageData);
   }
 }

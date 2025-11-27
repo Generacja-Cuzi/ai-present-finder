@@ -95,7 +95,13 @@ export class ChatController {
     const chat = await this.queryBus.execute<
       GetChatWithListingsByIdQuery,
       Chat
-    >(new GetChatWithListingsByIdQuery(chatId, request.user.id));
+    >(
+      new GetChatWithListingsByIdQuery(
+        chatId,
+        request.user.id,
+        request.user.role,
+      ),
+    );
     return this.mapChatToDto(chat);
   }
 

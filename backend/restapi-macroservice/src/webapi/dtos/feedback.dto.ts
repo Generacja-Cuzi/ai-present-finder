@@ -66,7 +66,7 @@ export class FeedbackResponseDto {
   })
   rating!: number;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: "Optional comment about the chat experience",
     example: "Great recommendations, very helpful!",
     nullable: true,
@@ -75,12 +75,12 @@ export class FeedbackResponseDto {
   })
   comment!: string | null;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: "ID of the product this feedback is for",
     example: "550e8400-e29b-41d4-a716-446655440003",
     nullable: true,
-    type: String,
     required: false,
+    type: String,
   })
   productId!: string | null;
 
@@ -94,12 +94,14 @@ export class FeedbackResponseDto {
   @ApiProperty({
     description: "Number of images attached to this feedback",
     example: 2,
+    type: Number,
   })
   imageCount!: number;
 
   @ApiProperty({
     description: "When the feedback was created",
     example: "2023-12-01T10:00:00.000Z",
+    type: Date,
   })
   createdAt!: Date;
 
@@ -125,7 +127,7 @@ export class FeedbackImageResponseDto {
 
   @ApiProperty({
     description: "Size of the image in bytes",
-    example: 102400,
+    example: 102_400,
   })
   fileSize!: number;
 

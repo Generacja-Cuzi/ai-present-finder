@@ -925,7 +925,7 @@ export interface components {
              */
             rating: number;
             /**
-             * @description Optional comment about the chat experience (max 50 words)
+             * @description Optional comment about the chat experience (max 300 words for general feedback, max 100 words for product feedback)
              * @example Great recommendations, very helpful!
              */
             comment?: string | null;

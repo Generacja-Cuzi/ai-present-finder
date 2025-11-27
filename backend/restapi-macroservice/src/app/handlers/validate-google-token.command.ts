@@ -1,7 +1,11 @@
 import { GoogleService } from "src/app/services/google-service";
 import { ValidateGoogleTokenCommand } from "src/domain/commands/validate-google-token.command";
 import type { User } from "src/domain/entities/user.entity";
-import type { JwtPayload } from "src/domain/models/auth.types";
+import { UserRole } from "src/domain/entities/user.entity";
+import type {
+  JwtPayload,
+  RefreshTokenPayload,
+} from "src/domain/models/auth.types";
 import { IUserRepository } from "src/domain/repositories/iuser.repository";
 
 import { Logger } from "@nestjs/common";
@@ -22,7 +26,7 @@ export class ValidateGoogleTokenHandler
 
   async execute(
     command: ValidateGoogleTokenCommand,
-  ): Promise<{ accessToken: string; user: User }> {
+  ): Promise<{ accessToken: string; refreshToken: string; user: User }> {
     const { code } = command;
 
     this.logger.log(
@@ -50,6 +54,7 @@ export class ValidateGoogleTokenHandler
         picture,
         accessToken,
         refreshToken,
+        role: UserRole.USER,
       });
       this.logger.log(`User created with id: ${user.id}`);
     } else {
@@ -65,8 +70,9 @@ export class ValidateGoogleTokenHandler
     }
 
     const jwt = this.generateJwt(user);
+    const refreshJwt = this.generateRefreshToken(user);
 
-    return { accessToken: jwt, user };
+    return { accessToken: jwt, refreshToken: refreshJwt, user };
   }
 
   private generateJwt(user: User): string {
@@ -74,6 +80,19 @@ export class ValidateGoogleTokenHandler
       sub: user.id,
       email: user.email,
     };
-    return this.jwtService.sign(payload);
+    return this.jwtService.sign(payload, { expiresIn: "15m" });
+  }
+
+  private generateRefreshToken(user: User): string {
+    const payload: RefreshTokenPayload = {
+      sub: user.id,
+      email: user.email,
+      type: "refresh",
+    };
+
+    // Use the same secret as access token for consistency
+    return this.jwtService.sign(payload, {
+      expiresIn: "7d",
+    });
   }
 }

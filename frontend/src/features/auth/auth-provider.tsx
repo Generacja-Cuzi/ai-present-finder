@@ -52,13 +52,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               picture: userData.picture,
               role: userData.role,
             });
-          } else {
+          } else if (response.response.status !== 401) {
+            // Only clear user if it's not 401 (middleware handles 401)
             console.warn("Session validation failed, clearing user");
             setUser(null);
           }
         } catch (error) {
           console.error("Failed to validate session:", error);
-          setUser(null);
+          // Don't clear user on network errors - might be temporary
         }
       }
       setIsLoading(false);
@@ -79,13 +80,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         void (async () => {
           const success = await refreshAccessToken();
           if (!success) {
-            console.warn("Failed to refresh token, logging out");
             setUser(null);
+            window.location.href = "/login";
           }
         })();
       },
-      10 * 60 * 1000,
-    ); // 10 minutes
+      12 * 60 * 1000,
+    ); // 12 minutes (refresh before 15min expiry)
 
     return () => {
       clearInterval(refreshInterval);

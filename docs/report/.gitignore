@@ -1,0 +1,23 @@
+# LaTeX auxiliary files
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+
+# Generated PDF (optional - comment out if you want to track it)
+# main.pdf
+
+# Backup files
+*.bak
+*~
+
+# macOS
+.DS_Store

@@ -1,0 +1,278 @@
+﻿Raport Badawczy: Wymogi RODO w Zakresie Przetwarzania Danych Publicznych w Systemach Rekomendacyjnych AI
+
+
+
+
+Streszczenie Wykonawcze
+
+
+Niniejszy raport stanowi kompleksową analizę prawno-techniczną dotyczącą przetwarzania danych osobowych pochodzących ze źródeł publicznych (tzw. danych "manifestly made public") na potrzeby trenowania, walidacji i operacjonalizacji systemów rekomendacyjnych opartych na sztucznej inteligencji (AI). Dokument adresuje krytyczne wyzwania stojące przed administratorami danych w dobie Generative AI i uczenia maszynowego (ML), koncentrując się na interpretacji art. 6 ust. 1 lit. f RODO (prawnie uzasadniony interes), zasadach retencji danych w cyklu życia modelu, realizacji prawa do usunięcia ("prawo do bycia zapomnianym") poprzez mechanizmy Machine Unlearning oraz obowiązkach informacyjnych realizowanych w interfejsie użytkownika (UI/UX).
+Analiza opiera się na najnowszym orzecznictwie Trybunału Sprawiedliwości Unii Europejskiej (TSUE), wytycznych Europejskiej Rady Ochrony Danych (EROD/EDPB), a także stanowiskach krajowych organów nadzorczych, w tym francuskiego CNIL, brytyjskiego ICO oraz polskiego UODO. Kluczowym wnioskiem płynącym z raportu jest stwierdzenie, że publiczna dostępność danych nie zwalnia administratorów z reżimu ochrony danych osobowych. Przeciwnie, masowe przetwarzanie danych publicznych (web scraping) w celach profilowania i rekomendacji wymaga wdrożenia zaawansowanych procedur Compliance by Design, w tym rygorystycznych testów równowagi (LIA), innowacyjnych metod zarządzania cyklem życia danych oraz transparentności wykraczającej poza standardowe klauzule prawne.
+________________
+
+
+1. Wstęp: Paradygmat Danych Publicznych w Ekosystemie AI
+
+
+Dynamiczny rozwój systemów rekomendacyjnych, napędzany postępami w dziedzinie głębokiego uczenia (Deep Learning) i przetwarzania języka naturalnego (NLP), stworzył bezprecedensowe zapotrzebowanie na wielkoskalowe zbiory danych. W praktyce inżynierskiej przyjęło się błędne, lecz powszechne założenie, że dane opublikowane w otwartym internecie – na platformach społecznościowych, forach dyskusyjnych, stronach korporacyjnych czy w rejestrach publicznych – stanowią zasób "niczyj" lub domenę publiczną, z której można swobodnie czerpać.1 Takie podejście stoi w fundamentalnej sprzeczności z europejskim dorobkiem prawnym w zakresie ochrony prywatności.
+Fakt, że osoba fizyczna udostępniła swoje dane publicznie (np. publikując post na LinkedIn lub X/Twitterze), nie oznacza automatycznej zgody na ich dalsze przetwarzanie w dowolnym celu, a w szczególności w celu trenowania zaawansowanych algorytmów profilujących.1 Organy nadzorcze, w tym holenderski AP i polski UODO, konsekwentnie wskazują, że "upublicznienie" nie jest równoznaczne z "zrzeczeniem się praw". W kontekście systemów rekomendacyjnych, które z definicji mają na celu analizę zachowań, preferencji i predykcję przyszłych działań użytkowników, przetwarzanie to wiąże się z wysokim ryzykiem ingerencji w prywatność, co nakłada na administratorów szczególne obowiązki.1
+Współczesny krajobraz regulacyjny jest dodatkowo komplikowany przez wejście w życie Aktu o Sztucznej Inteligencji (AI Act), który nakłada nowe obowiązki w zakresie zarządzania danymi (Data Governance) i jakości zbiorów treningowych. Powstaje tu specyficzne napięcie normatywne: RODO wymaga minimalizacji danych (ograniczenia ilości i czasu przechowywania), podczas gdy AI Act i wymogi techniczne budowy robustnych modeli skłaniają do maksymalizacji zbiorów danych w celu uniknięcia stronniczości (bias) i zapewnienia dokładności.4 Niniejszy raport ma na celu rozwikłanie tych sprzeczności i dostarczenie praktycznych ram operacyjnych dla organizacji budujących systemy rekomendacyjne.
+________________
+
+
+2. Podstawa Prawna: Analiza Art. 6 ust. 1 lit. f RODO w Kontekście Web Scrapingu
+
+
+Wybór właściwej podstawy prawnej jest fundamentem legalności każdego procesu przetwarzania danych. W przypadku pozyskiwania danych ze źródeł publicznych do celów trenowania systemów rekomendacyjnych, administratorzy stają przed ograniczonym wyborem.
+
+
+2.1. Eliminacja Alternatywnych Podstaw Prawnych
+
+
+Zgoda osoby, której dane dotyczą (Art. 6 ust. 1 lit. a RODO), choć teoretycznie idealna, w praktyce Big Data jest często niemożliwa do uzyskania. Pozyskiwanie zgód od milionów użytkowników, których dane są pobierane automatycznie (scraping), paraliżowałoby proces technologiczny i prowadziło do zjawiska "zmęczenia zgodami" (consent fatigue).7 Co więcej, w relacji między twórcą modelu AI a osobą, której dane publiczne są pobierane, zazwyczaj nie istnieje żaden bezpośredni stosunek prawny, co wyklucza oparcie przetwarzania na niezbędności do wykonania umowy (Art. 6 ust. 1 lit. b RODO).7
+W rezultacie, jak wskazują wytyczne brytyjskiego ICO oraz opinie EROD, jedyną realną podstawą prawną dla sektora prywatnego pozostaje prawnie uzasadniony interes administratora (Art. 6 ust. 1 lit. f RODO).7 Jest to jednak podstawa "warunkowa", wymagająca przeprowadzenia skrupulatnego testu równowagi, który musi wykazać, że interesy firmy przeważają nad prawami jednostek.
+
+
+2.2. Architektura Testu Uzasadnionego Interesu (LIA)
+
+
+Zastosowanie art. 6 ust. 1 lit. f RODO wymaga od administratora przeprowadzenia i udokumentowania tzw. Testu Uzasadnionego Interesu (Legitimate Interest Assessment - LIA). Zgodnie z orzecznictwem TSUE (w tym sprawa C-13/16 Rīgas satiksme) oraz wytycznymi EROD, test ten składa się z trzech nierozerwalnych etapów.11
+
+
+Krok 1: Test Celu (Purpose Test)
+
+
+Pierwszym krokiem jest identyfikacja konkretnego, wyraźnego i zgodnego z prawem interesu. Interes ten nie może być hipotetyczny ani ogólnikowy.
+* Interesy Komercyjne: TSUE i organy nadzorcze potwierdzają, że interes czysto gospodarczy, taki jak ulepszanie algorytmów w celu zwiększenia przychodów czy personalizacja usług, może stanowić uzasadniony interes.14 W kontekście systemów rekomendacyjnych, celem może być np. "zwiększenie trafności rekomendacji produktowych poprzez analizę publicznych recenzji i trendów zachowań".
+* Interesy Innowacyjne i Badawcze: Trenowanie modeli AI w celu rozwoju technologii, poprawy bezpieczeństwa usług czy tworzenia nowych funkcjonalności (np. asystentów głosowych) jest uznawane za ważny interes gospodarczy i społeczny.16 CNIL wymienia "poprawę wydajności produktu lub usługi" jako przykładowy uzasadniony interes.17
+
+
+Krok 2: Test Niezbędności (Necessity Test)
+
+
+Jest to filtr krytyczny. Administrator musi wykazać, że przetwarzanie danych osobowych jest absolutnie konieczne do osiągnięcia zdefiniowanego celu i nie można go zrealizować w inny, mniej inwazyjny sposób.13
+* Analiza Alternatyw: Należy zadać pytanie: czy model rekomendacyjny można wytrenować na danych syntetycznych lub zanonimizowanych? Jeśli istnieją techniki pozwalające osiągnąć podobną skuteczność bez użycia danych osobowych (np. Federated Learning lub Differential Privacy), powołanie się na uzasadniony interes będzie nieskuteczne.12
+* Minimalizacja: Niezbędność oznacza również ograniczenie zakresu danych. System rekomendujący filmy nie potrzebuje danych o poglądach politycznych użytkownika (chyba że jest to system rekomendacji treści politycznych, co wchodzi w reżim art. 9 RODO). Scraping "wszystkiego jak leci" narusza zasadę niezbędności.19
+
+
+Krok 3: Test Równowagi (Balancing Test)
+
+
+W tym etapie administrator waży swój interes z interesami, prawami i wolnościami osób, których dane dotyczą. Kluczowym kryterium są tu rozsądne oczekiwania (reasonable expectations) podmiotu danych.12
+* Kontekst Publikacji: Czy osoba publikująca komentarz na forum publicznym spodziewa się, że zostanie on użyty przez firmę technologiczną do trenowania AI? Zazwyczaj nie. To generuje ryzyko przeważenia szali na korzyść podmiotu danych. Jednakże, jeśli dane pochodzą z platformy profesjonalnej (np. LinkedIn), gdzie użytkownicy oczekują pewnej widoczności zawodowej, argumentacja o uzasadnionym interesie może być silniejsza niż w przypadku prywatnych wpisów na Facebooku.3
+* Charakter Danych: Przetwarzanie danych szczególnych kategorii (wrażliwych) lub danych dzieci drastycznie obniża szanse na pozytywny wynik testu. CNIL i EROD ostrzegają, że scraping danych małoletnich wymagałby wyjątkowo silnego uzasadnienia i zabezpieczeń, a często jest wprost uznawany za niedopuszczalny w oparciu o sam uzasadniony interes.9
+* Wdrożenie Zabezpieczeń (Safeguards): Aby zrównoważyć negatywny wpływ na prywatność, administrator musi wdrożyć środki mitygujące ryzyko. Mogą to być techniki takie jak pseudonimizacja danych natychmiast po ich pobraniu, stosowanie filtrów wykluczających dane wrażliwe, czy respektowanie protokołów technicznych typu robots.txt blokujących scrapperów.11
+
+
+2.3. Praktyczna Tabela: Elementy Oceny LIA dla Systemów AI
+
+
+Poniższa tabela prezentuje kluczowe pytania i dowody, które należy zgromadzić na każdym etapie testu LIA.
+Etap Testu LIA
+	Kluczowe Pytania Analityczne
+	Wymagane Dowody i Dokumentacja
+	1. Test Celu
+	Czy cel jest precyzyjnie zdefiniowany? Czy jest zgodny z prawem UE i krajowym? Czy cel jest rzeczywisty, a nie spekulacyjny?
+	Dokumentacja projektowa systemu AI wskazująca konkretne zastosowanie modelu (np. "rekomendacja treści wideo"). Analiza prawna potwierdzająca brak sprzeczności z innymi przepisami (np. prawa autorskiego).
+	2. Test Niezbędności
+	Czy cel można osiągnąć za pomocą danych nieosobowych? Czy zakres danych jest minimalny? Czy algorytm wymaga identyfikacji konkretnych osób?
+	Raport techniczny z badań nad danymi syntetycznymi (wykazujący ich niewystarczalność). Mapa danych wskazująca, że pobierane są tylko atrybuty niezbędne do profilowania (np. historia zakupów, a nie PESEL).
+	3. Test Równowagi
+	Jakie są oczekiwania użytkowników? Jaki jest wpływ na ich prywatność? Czy wdrożono mechanizm Opt-out? Czy dane są szyfrowane/pseudonimizowane?
+	Wyniki oceny skutków dla ochrony danych (DPIA). Opis technicznych środków bezpieczeństwa (np. Noise Injection). Protokół obsługi sprzeciwów. Analiza źródła danych (regulamin serwisu źródłowego).
+	Warto zauważyć, że w niedawnych konsultacjach ICO zasugerowano, że "uzasadniony interes" jest obecnie jedyną dostępną podstawą dla trenowania generatywnej sztucznej inteligencji na danych z web scrapingu, pod warunkiem przejścia rygorystycznego testu LIA.7
+________________
+
+
+3. Retencja Danych w Cyklu Życia Modelu AI
+
+
+Zasada ograniczenia przechowywania (Storage Limitation, Art. 5 ust. 1 lit. e RODO) stanowi jedno z największych wyzwań operacyjnych dla systemów AI, które z natury dążą do akumulacji danych. W kontekście systemów rekomendacyjnych należy precyzyjnie rozróżnić okresy retencji dla różnych kategorii danych przetworzonych w procesie uczenia.
+
+
+3.1. Kategoryzacja Danych a Okresy Retencji
+
+
+Proces budowy modelu AI generuje różne typy danych, które podlegają odmiennym reżimom retencji.
+1. Surowe Dane Treningowe (Raw Training Data): Są to dane pobrane bezpośrednio ze źródeł publicznych (np. pełne teksty recenzji, historia interakcji). Zgodnie z zasadą minimalizacji, dane te powinny być przechowywane tylko przez okres niezbędny do wytrenowania i walidacji modelu.20 Po zakończeniu procesu treningowego, surowe dane osobowe, które nie są już potrzebne (np. do audytowalności lub obrony roszczeń), powinny zostać usunięte lub trwale zanonimizowane. EROD i CNIL wskazują, że przechowywanie surowych danych "na wszelki wypadek" (np. do przyszłych re-treningów) wymagałoby osobnego uzasadnienia i podstawy prawnej.19
+2. Dane Przetworzone i Wektory (Embeddings): W procesie ML dane tekstowe lub behawioralne są konwertowane na reprezentacje wektorowe. Kluczowe jest ustalenie, czy wektory te są danymi osobowymi. Jeśli na podstawie wektora (embeddingu) można przywrócić tożsamość użytkownika lub go wyodrębnić (singling out), to wektor ten nadal jest daną osobową i podlega zasadom retencji.23 Jeśli wektory są nieodwracalne i zagregowane, mogą być traktowane jako dane zanonimizowane, co wyłącza je z reżimu RODO, pozwalając na dłuższą retencję.
+3. Parametry Modelu (Model Weights): Wytrenowany model składa się z wag i parametrów. Teoretycznie jest to abstrakcja statystyczna. Jednakże, w przypadku dużych modeli (LLM, duże systemy rekomendacyjne), istnieje ryzyko tzw. memorization (zapamiętywania), gdzie model jest w stanie odtworzyć konkretne dane treningowe (np. adres e-mail).22 EROD w opinii 2024/28 podkreśla, że jeśli model pozwala na wyekstrahowanie danych osobowych, to sam model może być traktowany jako zbiór danych osobowych. W takim przypadku okres retencji modelu musi być uzasadniony cyklem życia produktu, a administrator musi posiadać procedury jego "czyszczenia" lub usuwania.23
+
+
+3.2. Konflikt między RODO a AI Act: Retencja Dokumentacyjna
+
+
+Nowe przepisy AI Act wprowadzają wymóg przechowywania dokumentacji technicznej i logów przez okres 10 lat od momentu wprowadzenia systemu AI na rynek.20 Tworzy to pozroną sprzeczność z zasadą ograniczenia przechowywania z RODO.
+* Rozwiązanie: Należy rozróżnić retencję danych osobowych od retencji dokumentacji o danych. AI Act wymaga przechowywania opisów zbiorów danych, statystyk dotyczących ich charakterystyki (np. w celu oceny biasu) oraz logów działania systemu, ale niekoniecznie samych surowych rekordów danych osobowych.
+* Praktyka: Organizacje powinny wdrożyć systemy retencji dwutorowej: krótkoterminowej dla danych osobowych treningowych (do momentu wytrenowania i walidacji) oraz długoterminowej (10 lat) dla zanonimizowanych logów, metadanych i dokumentacji zgodności.20
+
+
+3.3. Tabela: Przykładowe Okresy Retencji w Systemach AI
+
+
+Kategoria Danych
+	Okres Retencji (Zalecany)
+	Uzasadnienie Prawne
+	Surowe Dane Osobowe (Scraped Data)
+	Do momentu zakończenia treningu i walidacji modelu (np. 6-12 miesięcy).
+	Art. 5 ust. 1 lit. e RODO (Storage Limitation). Brak uzasadnienia dla dalszego przechowywania w formie identyfikowalnej.
+	Dane Zanonimizowane / Syntetyczne
+	Bezterminowo / Zgodnie z potrzebami biznesowymi.
+	Motyw 26 RODO (Dane nieosobowe nie podlegają RODO).
+	Logi Systemowe (z identyfikatorami)
+	Krótkoterminowo (np. 30-90 dni) dla celów bezpieczeństwa; dłużej po anonimizacji.
+	Art. 32 RODO (Bezpieczeństwo przetwarzania), AI Act (Monitorowanie powdrożeniowe).
+	Dokumentacja Techniczna i Metadane
+	10 lat od wycofania modelu z rynku.
+	Wymogi AI Act (Art. 10, Art. 18) dotyczące odpowiedzialności i audytowalności.
+	________________
+
+
+4. Prawo do Usunięcia i Wyzwanie "Machine Unlearning"
+
+
+Realizacja prawa do usunięcia danych (Art. 17 RODO, "prawo do bycia zapomnianym") w kontekście wytrenowanych modeli AI stanowi jedno z najtrudniejszych wyzwań technicznych i prawnych. Tradycyjne usunięcie rekordu z bazy danych SQL nie powoduje automatycznego "zapomnienia" informacji przez sieć neuronową, która już zdążyła się na tym rekordzie nauczyć.
+
+
+4.1. Problem Trwałości Wiedzy w Modelach AI
+
+
+Gdy system rekomendacyjny uczy się preferencji użytkownika na podstawie jego historii, wiedza ta zostaje "wtopiona" w wagi modelu. Jeśli użytkownik zażąda usunięcia swoich danych, usunięcie ich z bazy źródłowej zapobiegnie ich użyciu w przyszłych treningach, ale nie usunie ich wpływu na obecny model.
+* Stanowisko Organów: Niektóre organy (np. ICO, CNIL) sugerują, że w pewnych sytuacjach (np. gdy ryzyko reidentyfikacji z modelu jest znikome), pełne usunięcie wpływu danych na model może nie być konieczne, o ile surowe dane zostaną usunięte. Jednak w przypadku modeli, które "zapamiętują" (memorization) dane, konieczne może być usunięcie tego śladu z samego modelu.25
+
+
+4.2. Techniki "Machine Unlearning" (Oduczania)
+
+
+Aby sprostać rygorystycznym interpretacjom prawa do usunięcia, inżynierowie AI wdrażają nowe metody techniczne:
+1. Pełne Retrenowanie (Retraining from Scratch): Najbardziej pewna metoda, polegająca na usunięciu danych wnioskodawcy ze zbioru treningowego i ponownym wytrenowaniu modelu od zera. Jest to jednak metoda niezwykle kosztowna obliczeniowo i czasochłonna, co może stanowić argument za "nieproporcjonalnym wysiłkiem" w niektórych przypadkach, choć organy nadzorcze są sceptyczne co do używania kosztów jako jedynego usprawiedliwienia.29
+2. SISA (Sharded, Isolated, Sliced, Aggregated): Architektura polegająca na dzieleniu zbioru danych na mniejsze fragmenty (shards) i trenowaniu niezależnych sub-modeli. Gdy wpłynie żądanie usunięcia, konieczne jest retrenowanie tylko tego małego fragmentu (shard), w którym znajdowały się dane użytkownika, co jest znacznie szybsze i tańsze.30
+3. Approximate Unlearning (Oduczanie Przybliżone): Metody matematyczne polegające na modyfikacji wag modelu w celu "odwrócenia" wpływu konkretnych danych, bez pełnego retrenowania. Metody te są obiecujące, ale niosą ryzyko niepełnego usunięcia informacji lub degradacji jakości modelu.30
+
+
+4.3. Praktyczne Podejście do Art. 17 w AI
+
+
+W świetle obecnych ograniczeń technologicznych, organizacje powinny przyjąć podejście oparte na cyklach:
+* Natychmiastowe działanie: Usunięcie danych z bazy "na żywo" i dodanie identyfikatora użytkownika do "listy blokad" (suppression list), aby zapobiec ponownemu pobraniu danych (re-scraping) w przyszłości.
+* Filtrowanie Wyjścia: Wdrożenie filtrów na poziomie inferencji, które blokują generowanie rekomendacji specyficznie powiązanych z usuniętym użytkownikiem.
+* Cykliczne Retrenowanie: Zaplanowanie regularnego (np. kwartalnego) pełnego retrenowania modelu na zaktualizowanym zbiorze danych (oczyszczonym z żądań usunięcia). W takim modelu retencja wpływu danych na model jest tymczasowa.22
+________________
+
+
+5. Przejrzystość i Obowiązek Informacyjny w Interfejsie (UI/UX)
+
+
+Zgodnie z art. 13 i 14 RODO, administrator ma obowiązek poinformować podmioty danych o przetwarzaniu. W przypadku scrapingu danych publicznych, dane nie są pozyskiwane bezpośrednio od osoby, co uruchamia art. 14. Jednakże, dotarcie z informacją do milionów osób, których dane pobrano z internetu, jest często niemożliwe.
+
+
+5.1. Zwolnienie z Obowiązku Bezpośredniego Informowania (Art. 14 ust. 5 lit. b)
+
+
+RODO przewiduje wyjątek, gdy udzielenie informacji "okazuje się niemożliwe lub wymagałoby niewspółmiernie dużego wysiłku". Administratorzy systemów rekomendacyjnych opartych na Big Data często powołują się na ten przepis.26
+* Kryteria Niewspółmiernego Wysiłku: EROD wskazuje, że przy ocenie "wysiłku" należy brać pod uwagę liczbę podmiotów danych, wiek danych oraz brak posiadania danych kontaktowych. Jeśli administrator musiałby przetwarzać dodatkowe dane (np. szukać adresów e-mail), aby poinformować o przetwarzaniu, stanowiłoby to nadmierną ingerencję.33
+* Środki Zastępcze: Zwolnienie z bezpośredniego kontaktu nie zwalnia z obowiązku transparentności. Administrator musi "podjąć właściwe środki w celu ochrony praw", co w praktyce oznacza publiczne udostępnienie informacji (np. na stronie internetowej) w sposób łatwo dostępny i zrozumiały.35
+
+
+5.2. Projektowanie Transparentności: Wzorce UI/UX
+
+
+Samo opublikowanie polityki prywatności to za mało. Wytyczne dotyczące "Design Patterns" w RODO (oraz zakaz "Dark Patterns") wymuszają proaktywne podejście do interfejsu.37
+
+
+Kluczowe Elementy Interfejsu dla Systemów AI:
+
+
+1. AI Transparency Hub / Centrum Transparentności: Dedykowana sekcja na stronie internetowej, oddzielna od ogólnej polityki prywatności, wyjaśniająca specyfikę działania modeli AI. Powinna zawierać informacje o źródłach danych (np. "Dane publiczne z platform społecznościowych X, Y, Z"), logice rekomendacji oraz celach przetwarzania.39
+2. Model Cards (Karty Modelu): Adaptacja technicznego standardu dokumentacji (promowanego m.in. przez Google i Hugging Face) do potrzeb użytkownika końcowego. Karta modelu powinna w przejrzysty sposób (np. w formie tabeli) prezentować:
+   * Przeznaczenie: Do czego model służy?
+   * Dane Treningowe: Ogólny opis kategorii danych.
+   * Ograniczenia: Znane biasy i ryzyka.
+   * Metryki: Jak oceniana jest skuteczność modelu.41
+3. Warstwowe Informowanie (Layered Approach):
+   * Warstwa 1: Krótki komunikat w momencie interakcji z rekomendacją (np. ikona "Dlaczego to widzę?").
+   * Warstwa 2: Rozwinięcie wyjaśniające kluczowe parametry, które wpłynęły na rekomendację.
+   * Warstwa 3: Pełna dokumentacja i polityka prywatności.40
+
+
+5.3. Implementacja Prawa do Sprzeciwu w UI
+
+
+Przy podstawie prawnej legitimate interest (art. 6 ust. 1 lit. f), użytkownik ma prawo wnieść sprzeciw (art. 21). Interfejs musi to umożliwiać w sposób prosty.
+* Formularz Sprzeciwu (Right to Object Form): Powinien być dostępny bezpośrednio z poziomu Centrum Transparentności.
+* Przykład Rynkowy (Meta): Meta udostępnia formularz "Right to Object to AI Training", który pozwala użytkownikom zgłosić sprzeciw wobec użycia ich danych do trenowania modeli. Formularz wymaga podania adresu e-mail i (opcjonalnie) dowodów, co bywa krytykowane, ale jest akceptowalnym standardem weryfikacji tożsamości.45
+* Brak "Dark Patterns": Opcja sprzeciwu nie może być ukryta głęboko w ustawieniach konta ani wymagać skomplikowanej nawigacji. EROD i CNIL uznają utrudnianie dostępu do praw za naruszenie RODO.38
+________________
+
+
+6. Wskazówki Praktyczne i Wnioski
+
+
+Przetwarzanie danych publicznych w systemach rekomendacyjnych AI jest procesem obarczonym wysokim ryzykiem regulacyjnym, ale możliwym do legalnego przeprowadzenia przy zachowaniu odpowiednich rygorów.
+
+
+6.1. Lista Kontrolna dla Administratorów (Compliance Checklist)
+
+
+1. Przeprowadź i Udokumentuj LIA: Nie opieraj się na domniemaniu. Przeprowadź formalny, pisemny test uzasadnionego interesu, uwzględniając test niezbędności i równowagi. Skonsultuj go z Inspektorem Ochrony Danych (IOD).48
+2. Wykonaj DPIA: Ze względu na dużą skalę przetwarzania, profilowanie i użycie nowych technologii, Ocena Skutków dla Ochrony Danych jest obligatoryjna (Art. 35 RODO).31
+3. Zminimalizuj Dane na Wejściu: Zastosuj filtry scrapingu, aby nie pobierać danych wrażliwych (Art. 9) ani danych dzieci. To kluczowy argument w teście równowagi.
+4. Wdroż Mechanizm "Opt-Out" przed "Opt-In": Ponieważ zgoda jest niemożliwa, kluczowy jest skuteczny i łatwy w obsłudze mechanizm sprzeciwu.
+5. Zastosuj "Model Cards" w UI: Zwiększ zaufanie użytkowników i spełnij wymogi transparentności poprzez publikację kart modeli wyjaśniających działanie AI.
+6. Zaplanuj Cykl Życia Danych: Ustal sztywne terminy usuwania surowych danych po treningu i wdroż procedury cyklicznego retrenowania modelu w celu realizacji prawa do zapomnienia.
+
+
+6.2. Podsumowanie
+
+
+Zgodność z RODO w obszarze AI Recommendation Systems wymaga odejścia od podejścia "zbieraj wszystko, martw się później" na rzecz strategii Data Governance by Design. Kluczem do sukcesu jest traktowanie praw podmiotów danych nie jako przeszkody, lecz jako parametru projektowego systemu. Organizacje, które skutecznie wdrożą mechanizmy transparentności (Model Cards) i kontroli (Machine Unlearning), zyskają nie tylko bezpieczeństwo prawne, ale i przewagę konkurencyjną budowaną na zaufaniu użytkowników. W obliczu nadchodzącej pełnej implementacji AI Act, standardy te staną się wkrótce rynkową koniecznością, a nie tylko dobrą praktyką.
+Cytowane prace
+1. Wytyczne dotyczące web scrapingu w kontekście ochrony danych osobowych - Odoserwis, otwierano: listopada 30, 2025, https://odoserwis.pl/a/2124/wytyczne-dotyczace-web-scrapingu-w-kontekscie-ochrony-danych-osobowych
+2. The legal basis of legitimate interests: Focus sheet on measures to implement in case of data collection by web scraping | CNIL, otwierano: listopada 30, 2025, https://www.cnil.fr/en/legal-basis-legitimate-interests-focus-sheet-measures-implement-case-data-collection-web-scraping
+3. To scrape or not to scrape: EU authorities' recent interpretations - Dentons, otwierano: listopada 30, 2025, https://www.dentons.com/en/insights/articles/2024/june/18/to-scrape-or-not-to-scrape-eu-authorities
+4. AI and GDPR: the CNIL publishes new recommendations to support responsible innovation, otwierano: listopada 30, 2025, https://www.cnil.fr/en/ai-and-gdpr-cnil-publishes-new-recommendations-support-responsible-innovation
+5. Article 10: Data and Data Governance | EU Artificial Intelligence Act, otwierano: listopada 30, 2025, https://artificialintelligenceact.eu/article/10/
+6. A legal framework for AI training data—from first principles to the Artificial Intelligence Act, otwierano: listopada 30, 2025, https://www.tandfonline.com/doi/full/10.1080/17579961.2021.1977219
+7. The lawful basis for web scraping to train generative AI models | ICO, otwierano: listopada 30, 2025, https://ico.org.uk/about-the-ico/what-we-do/our-work-on-artificial-intelligence/response-to-the-consultation-series-on-generative-ai/the-lawful-basis-for-web-scraping-to-train-generative-ai-models/
+8. Data scraping and compliance - No clearview - (yet)? - Slaughter and May, otwierano: listopada 30, 2025, https://www.slaughterandmay.com/insights/importedcontent/data-scraping-and-compliance-no-clearview-yet/
+9. Art. 6 GDPR – Lawfulness of processing - General Data Protection Regulation (GDPR), otwierano: listopada 30, 2025, https://gdpr-info.eu/art-6-gdpr/
+10. EU Privacy Regulators Confirm That Legitimate Interest Is a Valid Legal Basis for AI Model Training and Deployment | Wilson Sonsini, otwierano: listopada 30, 2025, https://www.wsgr.com/en/insights/eu-privacy-regulators-confirm-that-legitimate-interest-is-a-valid-legal-basis-for-ai-model-training-and-deployment.html
+11. EDPB weighs in on key questions on personal data in AI models | IAPP, otwierano: listopada 30, 2025, https://iapp.org/news/a/edpb-weighs-in-on-key-questions-on-personal-data-in-ai-models
+12. EU's Top Court Clarifies 'Legitimate Interest Test' for Data Processing - WILLIAM FRY, otwierano: listopada 30, 2025, https://www.williamfry.com/knowledge/eus-top-court-clarifies-legitimate-interest-test-for-data-processing/
+13. Relying on the legal basis of legitimate interests to develop an AI system | CNIL, otwierano: listopada 30, 2025, https://www.cnil.fr/en/relying-legal-basis-legitimate-interests-develop-ai-system
+14. EU: CJEU Confirms that Legitimate Interests can cover purely commercial interests, otwierano: listopada 30, 2025, https://privacymatters.dlapiper.com/2024/10/eu-cjeu-confirms-that-legitimate-interests-can-cover-purely-commercial-interests/
+15. CNIL Publishes Recommendations on Legitimate Interest as a Legal Basis for AI Training, otwierano: listopada 30, 2025, https://www.globalpolicywatch.com/2025/06/cnil-publishes-recommendations-on-legitimate-interest-as-a-legal-basis-for-ai-training/
+16. Web Scraping for AI Development: The CNIL builds on EDPB Guidance to open the door, cautiously | Clifford Chance, otwierano: listopada 30, 2025, https://www.cliffordchance.com/insights/resources/blogs/talking-tech/en/articles/2025/06/web-scraping-for-ai-development--the-cnil-builds-on-edpb-guidanc.html
+17. Processing personal data while developing an AI System: CNIL has issued guidelines regarding legitimate interest as a legal basis - Hogan Lovells, otwierano: listopada 30, 2025, https://www.hoganlovells.com/en/publications/processing-personal-data-while-developing-an-ai-system-cnil-has-issued-guidelines
+18. CJEU Rules on Scope of Legitimate Interest Basis under the GDPR, otwierano: listopada 30, 2025, https://www.hunton.com/privacy-and-information-security-law/cjeu-rules-on-scope-of-legitimate-interest-basis-under-the-gdpr
+19. Recent regulatory developments in training AI models under the GDPR, otwierano: listopada 30, 2025, https://www.dataprotectionreport.com/2024/08/recent-regulatory-developments-in-training-artificial-intelligence-ai-models-under-the-gdpr/
+20. AI Data Retention Strategy for GDPR & EU AI Act Compliance - TechGDPR, otwierano: listopada 30, 2025, https://techgdpr.com/blog/reconciling-the-regulatory-clock/
+21. AI Data Retention Explained: GDPR Rules, Best Practices & Ethical Pitfalls - Profile Bakery, otwierano: listopada 30, 2025, https://www.profilebakery.com/en/know-how/ai-data-retention-explained-rules-best-practices-pitfalls/
+22. CNIL Publishes Recommendations on AI and GDPR - Hunton Andrews Kurth LLP, otwierano: listopada 30, 2025, https://www.hunton.com/privacy-and-information-security-law/cnil-publishes-recommendations-on-ai-and-gdp
+23. EDPB Publishes Opinion on Processing of Personal Data in the Context of AI Models, otwierano: listopada 30, 2025, https://www.hunton.com/privacy-and-information-security-law/edpb-publishes-opinion-on-processing-of-personal-data-in-the-context-of-ai-models
+24. AI and GDPR: A Road Map to Compliance by Design - Episode 2: The Design Phase, otwierano: listopada 30, 2025, https://www.wilmerhale.com/en/insights/blogs/wilmerhale-privacy-and-cybersecurity-law/20250729-ai-and-gdpr-a-road-map-to-compliance-by-design--episode-2-the-design-phase
+25. AI-Complex Algorithms and effective Data Protection Supervision - Effective implementation of data subjects' rights, otwierano: listopada 30, 2025, https://www.edpb.europa.eu/system/files/2025-01/d2-ai-effective-implementation-of-data-subjects-rights_en.pdf
+26. Opinion 28/2024 on certain data protection aspects related to the processing of personal data in the context of AI models, otwierano: listopada 30, 2025, https://www.edpb.europa.eu/system/files/2024-12/edpb_opinion_202428_ai-models_en.pdf
+27. Managing Retention Ai Training Datasets | Grotabyte Blog, otwierano: listopada 30, 2025, https://www.grotabyte.com/blog/managing-retention-ai-training-datasets
+28. How to Make AI 'Forget' All the Private Data It Shouldn't Have | Working Knowledge, otwierano: listopada 30, 2025, https://www.library.hbs.edu/working-knowledge/qa-seth-neel-on-machine-unlearning-and-the-right-to-be-forgotten
+29. Machine unlearning | European Data Protection Supervisor, otwierano: listopada 30, 2025, https://www.edps.europa.eu/data-protection/technology-monitoring/techsonar/machine-unlearning_en
+30. Right to be Forgotten in the Era of Large Language Models: Implications, Challenges, and Solutions - arXiv, otwierano: listopada 30, 2025, https://arxiv.org/pdf/2307.03941
+31. Examples of processing 'likely to result in high risk' | ICO, otwierano: listopada 30, 2025, https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/accountability-and-governance/data-protection-impact-assessments-dpias/examples-of-processing-likely-to-result-in-high-risk/
+32. The impact of the General Data Protection Regulation (GDPR) on artificial intelligence - European Parliament, otwierano: listopada 30, 2025, https://www.europarl.europa.eu/RegData/etudes/STUD/2020/641530/EPRS_STU(2020)641530_EN.pdf
+33. Rethinking 'Disproportionate Effort' exemption under GDPR for web-scraping | Feature, otwierano: listopada 30, 2025, https://www.grcworldforums.com/gdpr/rethinking-disproportionate-effort-exemption-under-gdpr-for-web-scraping/344.article
+34. AI Training Datasets & Article 14 GDPR: A Risk Assessment for the Proportionality Exemption of the Obligation to Provide Information | Law, State and Telecommunications Review, otwierano: listopada 30, 2025, https://periodicos.unb.br/index.php/RDET/article/view/36253
+35. How do we ensure individual rights in our AI systems? | ICO, otwierano: listopada 30, 2025, https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/artificial-intelligence/guidance-on-ai-and-data-protection/how-do-we-ensure-individual-rights-in-our-ai-systems/
+36. Does the GDPR break the Internet? The case for a public data exception - Oxford Academic, otwierano: listopada 30, 2025, https://academic.oup.com/idpl/article/14/4/315/7853506
+37. Designing for AI Transparency and Trust: Guide (2025) - Parallel HQ, otwierano: listopada 30, 2025, https://www.parallelhq.com/blog/designing-ai-transparency-trust
+38. Beware 'dark patterns' – data protection regulators are watching - Taylor Wessing, otwierano: listopada 30, 2025, https://www.taylorwessing.com/de/global-data-hub/2020/march---data-protection-by-design-and-default/beware-dark-patterns---data-protection-regulators-are-watching
+39. Writing a GDPR-compliant privacy notice (template included) - GDPR.eu, otwierano: listopada 30, 2025, https://gdpr.eu/privacy-notice/
+40. Privacy by Design and AI - TechGDPR, otwierano: listopada 30, 2025, https://techgdpr.com/blog/how-to-build-trustworthy-ai-from-the-ground-up-with-privacy-by-design/
+41. Responsible AI: The Role of Data and Model Cards | Datatonic, otwierano: listopada 30, 2025, https://datatonic.com/insights/responsible-ai-data-model-cards/
+42. Enhancing AI Transparency and Ethical Considerations with Model Card++ | NVIDIA Technical Blog, otwierano: listopada 30, 2025, https://developer.nvidia.com/blog/enhancing-ai-transparency-and-ethical-considerations-with-model-card/
+43. Google Model Cards, otwierano: listopada 30, 2025, https://modelcards.withgoogle.com/
+44. Designing for Privacy - UXmatters, otwierano: listopada 30, 2025, https://www.uxmatters.com/mt/archives/2024/10/designing-for-privacy.php
+45. Information about objections and how you can object on Meta Products | Quest Help, otwierano: listopada 30, 2025, https://www.meta.com/help/quest/126192406164229/
+46. How to Object to Meta Using Your Data for AI Training in 6 Easy Steps, otwierano: listopada 30, 2025, https://johnmakphotography.com/how-to-object-to-meta-using-your-data-for-ai-training-in-6-easy-steps/
+47. GDPR Dark Patterns: How They Undermine Compliance & Risk Legal Penalties - Blog, otwierano: listopada 30, 2025, https://www.fairpatterns.com/post/gdpr-dark-patterns-how-they-undermine-compliance-risk-legal-penalties
+48. download lia template - Data Protection Network, otwierano: listopada 30, 2025, https://dpnetwork.org.uk/wp-content/uploads/2024/11/DPN-LIA-Template-v3_November-2024.xlsx
+49. How do we apply legitimate interests in practice? | ICO, otwierano: listopada 30, 2025, https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/lawful-basis/legitimate-interests/how-do-we-apply-legitimate-interests-in-practice/

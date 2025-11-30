@@ -1,0 +1,276 @@
+﻿Zaawansowana Ewaluacja Systemów Rerankingu i Retrieval-Augmented Generation: Analiza Baseline'ów, Progów Odcięcia i Kompromisów Metrycznych
+
+
+
+
+1. Wstęp: Paradygmat Wieloetapowego Wyszukiwania Informacji
+
+
+Współczesna architektura systemów wyszukiwania informacji (Information Retrieval, IR) oraz generowania odpowiedzi wspomaganego wyszukiwaniem (Retrieval-Augmented Generation, RAG) odeszła od monolitycznych modeli na rzecz złożonych, wieloetapowych potoków przetwarzania (pipelines). Ewolucja ta została wymuszona przez konieczność pogodzenia dwóch sprzecznych celów inżynieryjnych: minimalizacji opóźnień (latency) przy przeszukiwaniu miliardowych zbiorów dokumentów oraz maksymalizacji semantycznej trafności (relevance) odpowiedzi prezentowanej użytkownikowi końcowemu lub modelowi językowemu. W tym kontekście, moduł rerankingu (prze-szeregowania) pełni rolę krytycznego filtra, którego zadaniem jest destylacja szerokiego zbioru kandydatów do precyzyjnej, wąskiej listy kontekstowej.
+Niniejszy raport stanowi wyczerpującą analizę metodologii ewaluacji takich systemów, odpowiadając na fundamentalne pytania dotyczące doboru punktów odniesienia (baselines), takich jak BM25, klasyczne modele Learning-to-Rank (LTR) czy architektury bi-encoderów, oraz optymalizacji progów odcięcia (cutoff thresholds). Szczególny nacisk położono na analizę wpływu głębokości listy wynikowej – specyficznie w przedziale 4-7 dokumentów – na kluczowe metryki jakościowe: Mean Reciprocal Rank (MRR), Normalized Discounted Cumulative Gain (NDCG) oraz Coverage (Recall). Analiza ta opiera się na przeglądzie najnowszej literatury przedmiotu, w tym badań nad zjawiskiem "Lost in the Middle" oraz benchmarków takich jak MS MARCO i BEIR, dostarczając inżynierom i badaczom konkretnych rekomendacji implementacyjnych.
+
+
+1.1 Ewolucja od Wyszukiwania Leksykalnego do Semantycznego
+
+
+Tradycyjne systemy wyszukiwania, opierające się na dopasowaniu słów kluczowych (lexical matching), dominowały w krajobrazie technologicznym przez dekady. Jednakże, ich ograniczenia w rozumieniu kontekstu, synonimii i polisemii doprowadziły do rozwoju metod neuronowych. Wprowadzenie modeli językowych opartych na architekturze Transformer, takich jak BERT, zrewolucjonizowało sposób, w jaki maszyny interpretują zapytania użytkowników. Niemniej jednak, koszt obliczeniowy pełnej atencji (self-attention) w modelach typu Cross-Encoder uniemożliwia ich zastosowanie do całego korpusu dokumentów. Stąd też wyłonił się paradygmat "retrieve-then-rerank", gdzie szybki i "tani" obliczeniowo retriever (np. BM25 lub Dense Retrieval) generuje wstępną listę kandydatów, która następnie jest precyzyjnie sortowana przez "droższy" reranker.
+Weryfikacja skuteczności tego drugiego etapu wymaga rygorystycznego doboru baseline'ów. Czy skomplikowany model neuronowy rzeczywiście wnosi wartość dodaną w porównaniu do dobrze skalibrowanego algorytmu BM25 lub klasycznego drzewa decyzyjnego LambdaMART? Odpowiedź na to pytanie nie jest trywialna i zależy od specyfiki domeny, dostępności danych treningowych oraz ograniczeń infrastrukturalnych. Co więcej, w erze RAG, celem nie jest już tylko umieszczenie poprawnego dokumentu na szczycie listy (ranking), ale skonstruowanie optymalnego okna kontekstowego dla modelu generatywnego (LLM), co wprowadza nowe zmienne do równania optymalizacyjnego, takie jak długość kontekstu i ryzyko halucynacji.
+________________
+
+
+2. Taksonomia i Charakterystyka Baseline'ów w Ewaluacji Rerankingu
+
+
+Fundamentem każdej rzetelnej ewaluacji naukowej jest dobór odpowiednich punktów odniesienia. W literaturze przedmiotu dotyczącej rerankingu wyróżnia się trzy główne kategorie baseline'ów: leksykalne (sparse), gęste (dense) oraz oparte na cechach (feature-based LTR). Zrozumienie ich mechaniki oraz ograniczeń jest kluczowe dla właściwej interpretacji wyników eksperymentalnych.
+
+
+2.1 Baseline Leksykalny: BM25 (Best Matching 25)
+
+
+Mimo upływu lat i dynamicznego rozwoju metod głębokiego uczenia, algorytm BM25 pozostaje "złotym standardem" i obowiązkowym baseline'em w każdym badaniu IR. Reprezentuje on scenariusz "Brak Rerankingu" w domenie wyszukiwania słów kluczowych. Jego pominięcie w ewaluacji często podważa wiarygodność wyników, gdyż wiele nowoczesnych modeli neuronowych ma trudności z przewyższeniem BM25 w zadaniach wymagających dokładnego dopasowania rzadkich terminów (exact match) lub w domenach, na których nie były trenowane (zero-shot evaluation).1
+BM25 jest funkcją rankingową opartą na modelu probabilistycznym, która ocenia relewancję dokumentu względem zapytania na podstawie częstości występowania terminów, z uwzględnieniem nasycenia (term frequency saturation) oraz normalizacji długości dokumentu. W przeciwieństwie do prostego TF-IDF, BM25 zapobiega sytuacji, w której wielokrotne powtórzenie tego samego słowa w dokumencie nieproporcjonalnie zwiększa jego ocenę. W kontekście ewaluacji rerankingu, BM25 pełni dwojaką rolę. Po pierwsze, stanowi dolną granicę wydajności (lower bound) – każdy wdrażany reranker musi wykazać istotną statystycznie przewagę nad BM25, aby uzasadnić dodatkowy koszt obliczeniowy.3 Po drugie, i co ważniejsze, BM25 jest najczęściej wykorzystywany jako generator kandydatów (first-stage retriever). W standardowych benchmarkach, takich jak MS MARCO Passage Ranking, zadaniem rerankera jest zazwyczaj przesortowanie listy 1000 dokumentów zwróconych właśnie przez BM25. Oznacza to, że górna granica skuteczności rerankera (upper bound) jest zdeterminowana przez Recall@1000 algorytmu BM25 – reranker nie może "wymyślić" dokumentu, którego BM25 nie znalazł.4
+Badania nad zbiorem BEIR (Benchmarking IR) wykazały, że BM25 często przewyższa zaawansowane modele gęste (dense retrievers) w scenariuszach "out-of-domain". Przykładowo, w domenach medycznych (BioASQ, TREC-COVID), gdzie kluczowe jest precyzyjne dopasowanie specjalistycznej terminologii (np. nazw leków czy patogenów), modele oparte na embeddingach mogą gubić niuanse, podczas gdy BM25 bezbłędnie identyfikuje wystąpienia konkretnych fraz. Dlatego też, w raportach badawczych, BM25 jest często prezentowany jako "strong baseline", a jego wyniki są punktem odniesienia dla oceny generalizacji modeli neuronowych.1
+
+
+2.2 Baseline Gęsty: Bi-Encoder (DPR, Contriever)
+
+
+Wraz z popularyzacją wektorowych baz danych (vector databases), rolę baseline'u "No Reranking" coraz częściej przejmują modele typu Bi-Encoder. W tej architekturze zapytanie i dokument są przetwarzane niezależnie przez sieci neuronowe (zazwyczaj oparte na BERT), a ich reprezentacje są rzutowane do wspólnej przestrzeni wektorowej. Ocena podobieństwa odbywa się poprzez prosty iloczyn skalarny (dot product) lub podobieństwo cosinusowe, co umożliwia błyskawiczne wyszukiwanie przy użyciu algorytmów przybliżonego sąsiada (ANN), takich jak HNSW czy Faiss.1
+Bi-Encodery, takie jak Dense Passage Retriever (DPR), ANCE czy Contriever, stanowią baseline "semantyczny". Ich przewaga nad BM25 objawia się w sytuacjach, gdzie zapytanie i dokument używają różnego słownictwa do opisania tego samego konceptu (problem "lexical gap"). Na przykład, dla zapytania "auto naprawa", BM25 może pominąć dokumenty zawierające jedynie frazę "serwis pojazdów", podczas gdy Bi-Encoder, dzięki treningowi na dużych korpusach tekstu, rozpozna bliskość semantyczną tych wektorów. W ewaluacji rerankingu, Bi-Encoder jest kluczowym punktem odniesienia dla oceny efektywności kosztowej. Rerankery typu Cross-Encoder (przetwarzające parę zapytanie-dokument łącznie) oferują wyższą precyzję, ale są o rzędy wielkości wolniejsze. Jeśli w danym zadaniu Cross-Encoder poprawia wynik NDCG@10 o zaledwie 1-2 punkty procentowe względem dobrze wytrenowanego Bi-Encodera (np. bge-base lub e5-large), wdrożenie rerankera może być nieopłacalne biznesowo ze względu na opóźnienia (latency). Literatura wskazuje, że nowoczesne Bi-Encodery na zbiorze MS MARCO osiągają wyniki MRR@10 w granicach 0.33-0.35, co stanowi znaczący skok względem 0.18-0.19 dla BM25, stawiając poprzeczkę znacznie wyżej dla systemów rerankingu.2
+
+
+2.3 Klasyczne LTR: LambdaMART i Gradient Boosting
+
+
+Mimo dominacji sieci neuronowych, w zastosowaniach przemysłowych i w literaturze dotyczącej danych strukturalnych, kluczowym baseline'em pozostaje LambdaMART. Jest to algorytm z rodziny Learning-to-Rank (LTR), wykorzystujący wzmocnione drzewa decyzyjne (Gradient Boosted Decision Trees - GBDT), implementowany najczęściej w bibliotekach takich jak LightGBM czy XGBoost.8
+LambdaMART różni się fundamentalnie od modeli językowych podejściem do danych. Nie przetwarza on surowego tekstu, lecz wektory cech (features) skonstruowane przez inżynierów. Typowy wektor cech dla pary zapytanie-dokument w modelu LambdaMART zawiera:
+* Wyniki z innych modeli: surowy wynik BM25, wynik TF-IDF, wynik cosinusowy z Bi-Encodera.
+* Cechy leksykalne: liczba powtórzeń słów zapytania w tytule, w treści, w adresie URL.
+* Cechy dokumentu: PageRank, wiek dokumentu, liczba kliknięć (click-through rate), jakość domeny.
+* Cechy zapytania: długość zapytania, klasyfikacja intencji.10
+W literaturze naukowej LambdaMART jest często wykorzystywany jako baseline w dwóch scenariuszach. Po pierwsze, w badaniach nad wydajnością (efficiency), ponieważ drzewa decyzyjne są niezwykle szybkie w inferencji i łatwo interpretowalne (feature importance). Po drugie, w scenariuszach "hybrydowych", gdzie celem jest połączenie sygnałów tekstowych z sygnałami behawioralnymi użytkowników. Badania wykazują, że w rankingach e-commerce lub wyszukiwarkach webowych, gdzie dostępne są bogate dane o interakcjach (logi kliknięć), LambdaMART wytrenowany na setkach cech często przewyższa "czyste" modele neuronowe typu BERT, które widzą tylko tekst. W pracach badawczych z 2024 i 2025 roku często stosuje się tzw. Neural-Enhanced LambdaMART, gdzie wyniki z modeli neuronowych (np. "dense score") są dodawane jako dodatkowa cecha do drzewa decyzyjnego. Taka hybryda stanowi niezwykle silny baseline ("state-of-the-art baseline"), często trudniejszy do pobicia niż same modele transformatorowe.11
+________________
+
+
+3. Metryki Oceny Jakości w Funkcji Głębokości Listy (Cutoff)
+
+
+Zrozumienie wpływu progu odcięcia (cutoff threshold, oznaczanego jako $k$) na wyniki ewaluacji wymaga głębokiej analizy matematycznej definicji metryk. Użytkownik pyta specyficznie o wpływ doboru progu (np. 4, 5, 6, 7) na MRR, NDCG i Coverage. Wartości te nie są przypadkowe – odpowiadają one typowym rozmiarom okna kontekstowego w systemach RAG. Poniższa sekcja dekonstruuje zachowanie tych metryk w zależności od parametru $k$.
+
+
+3.1 Mean Reciprocal Rank (MRR) a Próg Odcięcia
+
+
+Definicja: MRR to średnia odwrotność rangi pierwszego relewantnego dokumentu. Wzór wyraża się jako:
+
+
+
+
+$$MRR = \frac{1}{|Q|} \sum_{i=1}^{|Q|} \frac{1}{rank_i}$$
+
+
+gdzie $rank_i$ to pozycja pierwszego poprawnego wyniku dla $i$-tego zapytania. Jeśli poprawny dokument nie znajduje się w liście wynikowej (do odcięcia $k$), odwrotność rangi wynosi 0.
+Wpływ Cutoff (4/5/6/7):
+MRR jest metryką silnie zorientowaną na szczyt listy ("Top-1 heavy"). Z matematycznego punktu widzenia, różnica między rangą 1 (wynik 1.0) a rangą 2 (wynik 0.5) jest ogromna, podczas gdy różnica między rangą 5 (0.20) a rangą 7 (0.14) jest marginalna.
+* Stabilność przy niskich $k$: W dobrze działającym systemie rerankingu, relewantny dokument powinien znaleźć się na pozycjach 1-3. Zwiększenie odcięcia z $k=5$ do $k=7$ rzadko wpływa na wynik MRR, chyba że system jest bardzo słaby i umieszcza poprawne odpowiedzi dopiero na pozycjach 6 lub 7.
+* Saturacja: W literaturze przyjmuje się standard raportowania MRR@10. Badania pokazują, że krzywa MRR wypłaszcza się bardzo szybko. Dla systemów klasy MS MARCO, większość "zysku" metryki jest realizowana w obrębie top-3 wyników. Dlatego też, w kontekście doboru progu dla RAG, MRR sugeruje, że jeśli odpowiedź nie znajduje się w pierwszych 3-4 dokumentach, użyteczność systemu drastycznie spada.2
+* Wniosek: Manipulacja progiem w zakresie 4-7 ma znikomy wpływ na MRR w silnych systemach. Jeśli Twój system wykazuje duże różnice w MRR między $k=4$ a $k=7$, świadczy to o słabej jakości modelu rankującego, który "gubii" najlepsze wyniki na dalszych pozycjach.
+
+
+3.2 Normalized Discounted Cumulative Gain (NDCG) a Głębokość Listy
+
+
+Definicja: NDCG mierzy jakość rankingu przy użyciu wielostopniowej skali relewancji, penalizując pojawienie się wysoko ocenianych dokumentów na niskich pozycjach. Wzór na DCG@k to:
+
+
+
+
+$$DCG@k = \sum_{i=1}^{k} \frac{rel_i}{\log_2(i+1)}$$
+
+
+NDCG jest znormalizowaną wersją tego wyniku (dzieloną przez idealny IDCG).
+Wpływ Cutoff (4/5/6/7):
+W przeciwieństwie do MRR, NDCG jest metryką kumulatywną. Każdy dodatkowy relewantny dokument w oknie $k$ zwiększa wynik.
+* Czułość na głębokość: Zwiększenie progu z $k=4$ do $k=7$ zazwyczaj prowadzi do wzrostu (lub stabilizacji) bezwzględnej wartości skumulowanej użyteczności, jeśli na pozycjach 5, 6, 7 znajdują się jakiekolwiek relewantne informacje. Jednakże, metryka NDCG@k jest znormalizowana – oznacza to, że "idealny ranking" również rośnie wraz z $k$.
+* Standardy ewaluacyjne: W literaturze (np. benchmark BEIR) standardem jest raportowanie NDCG@10. Jest to punkt, w którym metryka jest uważana za stabilną. Przy analizie mniejszych progów (np. NDCG@5), metryka staje się bardziej "ostra" i mniej wybacza błędy na szczycie listy.
+* Reranking głęboki: Kluczowym zjawiskiem opisywanym w literaturze jest wpływ głębokości kandydatów na NDCG@10. Rerankowanie jedynie top-10 kandydatów z BM25 daje słabe wyniki. Rerankowanie top-100 kandydatów znacząco podnosi NDCG@10, ponieważ model ma szansę "wyłowić" perły ukryte na pozycjach 50-80 i przesunąć je do top-10. Jednakże, dla użytkownika końcowego (lub LLM), który widzi tylko wynikowe top-5 (cutoff output), kluczowe jest to, że NDCG@5 jest zazwyczaj silnie skorelowane z jakością odpowiedzi generatywnej.6
+
+
+3.3 Coverage (Recall@k) i Krzywa Nasycenia
+
+
+Definicja: Coverage (lub Recall@k) określa procent zapytań, dla których przynajmniej jeden poprawny dokument znajduje się w zbiorze top-$k$.
+Wpływ Cutoff (4/5/6/7):
+Jest to metryka, na którą dobór progu w zakresie 4-7 ma najbardziej dramatyczny wpływ. Relacja ta jest monotonicznie rosnąca, ale podlega prawu malejących przychodów (diminishing returns).
+* Strome wznoszenie ($k=1 \to 3$): W tym przedziale przyrost pokrycia jest największy. Skok z $k=1$ do $k=3$ często podwaja szansę na znalezienie odpowiedzi (np. z 40% do 70%).
+* Punkt przegięcia ($k=4 \to 7$): To jest krytyczny obszar decyzyjny dla systemów RAG. Badania pokazują, że dla wielu zbiorów danych (jak Natural Questions czy MS MARCO), krzywa Recall zaczyna się wypłaszczać w okolicach $k=5$. Oznacza to, że dodanie szóstego i siódmego dokumentu zwiększa pokrycie o zaledwie 1-3 punkty procentowe, podczas gdy koszt przetwarzania tych dokumentów przez LLM rośnie liniowo.
+* Diagnostyka: Jeśli różnica w Recall między $k=5$ a $k=10$ jest duża (np. skok z 70% na 90%), oznacza to, że model rerankingu jest nieefektywny ("niepewny") i wymaga szerszego okna, aby "trafić" w odpowiedź. W systemach wysokiej jakości (high-precision), Recall@5 powinien być bardzo zbliżony do Recall@10.18
+________________
+
+
+4. Analiza Doboru Progu Odcięcia w Kontekście RAG
+
+
+W tradycyjnym IR, prezentacja użytkownikowi 10 linków zamiast 5 nie niesie za sobą dużego ryzyka – użytkownik po prostu zignoruje nadmiarowe wyniki. W systemach RAG, gdzie dokumenty są "karmione" do modelu językowego, dobór progu odcięcia (cutoff 4/5/6/7) jest decyzją o krytycznym znaczeniu dla poprawności generowanej odpowiedzi.
+
+
+4.1 Zjawisko "Lost in the Middle"
+
+
+Jednym z najważniejszych odkryć w badaniach nad długim kontekstem LLM (Liu et al., 2023) jest zjawisko "Lost in the Middle". Modele językowe wykazują silną tendencję do skupiania uwagi na początku (Primacy Bias) i na końcu (Recency Bias) podanego kontekstu. Informacje znajdujące się w środku długiego promptu są często ignorowane lub "zapominane" podczas generowania odpowiedzi.22
+Implikacje dla Cutoff:
+* Dla $k=4$ lub $k=5$: Przy tak małej liczbie dokumentów (chunków), zjawisko to jest minimalne. LLM jest w stanie efektywnie przetworzyć cały kontekst. Dokument na pozycji 3 (środek) jest nadal dobrze "widoczny" dla mechanizmu atencji.
+* Dla $k=10$ lub więcej: Jeśli relewantny dokument znajduje się na pozycji 5, 6 lub 7 w 10-elementowej liście, ryzyko jego pominięcia drastycznie rośnie. Mimo że metryka Recall@10 jest wyższa (system "dostarczył" dokument), metryka "Answer Accuracy" (poprawność odpowiedzi generowanej) może paradoksalnie spaść w porównaniu do ustawienia $k=5$.
+* Wniosek rekomendacyjny: Badania sugerują, że dla standardowych modeli (np. Llama 3, GPT-3.5) bezpieczny próg to $k=5$ do $k=7$. Przekraczanie tej wartości bez zastosowania specjalnych technik (jak re-sortowanie kontekstu) jest ryzykowne.
+
+
+4.2 Kompromis Precyzja-Szum (Precision-Noise Trade-off)
+
+
+Wybór progu $k$ to gra o sumie zerowej między pokryciem wiedzy a wprowadzaniem szumu.
+* Cutoff 4: Wysoka precyzja, niski szum, niższy koszt tokenów. Ryzyko: brak odpowiedzi na pytania wielowątkowe (multi-hop reasoning), gdzie odpowiedź jest rozproszona w 5-6 fragmentach tekstu.
+* Cutoff 7: Wyższe pokrycie, możliwość syntezy szerszego kontekstu. Ryzyko: wprowadzenie dokumentów irrelewantnych (distractors), które mogą spowodować halucynacje. LLM może zasugerować się błędnym, ale podobnym tematycznie fragmentem (np. opisem procedury z innego roku), który znalazł się na 7. miejscu.25
+
+
+4.3 Koszt i Latencja (Token Budget)
+
+
+Aspekt inżynieryjny jest równie istotny. Typowy "chunk" (fragment tekstu) w RAG ma 250-500 tokenów.
+* $k=4$: ok. 1000-2000 tokenów kontekstu. Czas przetwarzania (Time to First Token) jest niski.
+* $k=7$: ok. 1750-3500 tokenów. Koszt inferencji rośnie liniowo. W systemach produkcyjnych o dużym wolumenie, różnica między przetwarzaniem 5 a 7 chunków może przekładać się na tysiące dolarów miesięcznie oraz zauważalne dla użytkownika opóźnienia.28
+________________
+
+
+5. Przykłady z Literatury i Studiów Przypadku
+
+
+Analiza snippetów badawczych dostarcza konkretnych danych liczbowych potwierdzających powyższe tezy.
+
+
+5.1 MS MARCO Passage Ranking
+
+
+Jest to najpopularniejszy benchmark dla rerankingu.
+* Baseline (BM25): Osiąga MRR@10 na poziomie 0.187. Oznacza to, że średnio poprawny dokument znajduje się daleko na liście (ok. 5. pozycji lub dalej).
+* Bi-Encoder (TCT-ColBERTv2): Podnosi MRR@10 do 0.359. To niemal dwukrotna poprawa, pokazująca siłę modeli gęstych.
+* Cross-Encoder (MonoBERT/MonoT5): Osiąga MRR@10 w granicach 0.370 - 0.400.
+* Wnioski: Przeskok z Bi-Encodera na Cross-Encoder (reranking) daje relatywnie mniejszy zysk (ok. +0.04) niż przeskok z BM25 na Bi-Encoder (ok. +0.17), ale w systemach produkcyjnych ten zysk jest kluczowy dla precyzji "top-1".2
+
+
+5.2 Benchmark BEIR (Zero-Shot)
+
+
+W zbiorze BEIR (zestaw różnorodnych domen, od finansów po biomedycynę) relacje te wyglądają inaczej.
+* Na zbiorze TREC-COVID, BM25 jest niezwykle silny (NDCG@10 $\approx$ 0.69) i trudno go pobić słabym modelom gęstym. Dopiero silny reranker (Cross-Encoder) podnosi wynik do 0.86.
+* Na zbiorze Natural Questions (NQ), BM25 radzi sobie słabo (NDCG@10 $\approx$ 0.33), podczas gdy rerankery podnoszą ten wynik niemal dwukrotnie do 0.62.
+* To pokazuje, że dobór baseline'u zależy od domeny: w domenach specjalistycznych (słowa kluczowe) BM25 jest potężnym przeciwnikiem; w domenach pytań naturalnych (open domain QA), modele neuronowe deklasują podejścia leksykalne.5
+
+
+5.3 Eksperymenty z "Cutoff" w RAG
+
+
+Badania cytowane w snippetach (np. S85, S87) pokazują tabele wyników dla różnych wartości $k$.
+* Dla Recall@K: Wzrost z $k=5$ do $k=10$ często przynosi zysk rzędu 5-10 punktów procentowych (np. z 78% do 85% w 19).
+* Jednakże, eksperymenty nad jakością generacji (np. S91, S103) wskazują, że optymalny punkt pracy dla RAG to często okolice $k=5$. Ustawienie $k=10$ zwiększa Recall, ale wprowadza "noise", który obniża metrykę "Faithfulness" (wierność źródłom) i "Answer Relevance".
+________________
+
+
+6. Rekomendacje Praktyczne
+
+
+Na podstawie przeprowadzonej analizy, formułuje się następujące rekomendacje dla inżynierów i badaczy:
+
+
+6.1 Wybór Baseline'ów
+
+
+1. Zawsze uwzględniaj BM25: Jest to absolutne minimum. Używaj sprawdzonych implementacji (Anserini, Pyserini, Elasticsearch) z domyślnymi parametrami ($k_1=1.2, b=0.75$), chyba że masz powód do ich zmiany. Raportowanie wyników bez porównania do BM25 jest błędem metodologicznym.
+2. Stosuj Bi-Encodery jako Baseline Wydajności: Jeśli proponujesz reranker, musisz pokazać, że jest on lepszy od dobrze dostrojonego modelu gęstego (np. bge-m3 lub e5-large), który jest znacznie szybszy. Reranker musi uzasadnić swój koszt latencyjny.
+3. LambdaMART dla Danych Tabelarycznych: Jeśli Twój system wykorzystuje metadane (kliknięcia, popularność), baseline'em musi być LambdaMART (LightGBM). Porównywanie się tylko do modeli tekstowych w takim scenariuszu jest nieuczciwe, gdyż ignoruje silne sygnały poza-tekstowe.
+
+
+6.2 Dobór Progu Odcięcia (4/5/6/7)
+
+
+1. Strategia "Start with 5": Dla większości zastosowań RAG, próg $k=5$ jest optymalnym punktem startowym. Zapewnia on wysoki poziom pokrycia (zazwyczaj >80% dla dobrych retrieverów) przy zachowaniu czystości kontekstu i niskich kosztów.
+2. Dynamiczny Próg (Score-based Thresholding): Zamiast sztywnego $k$, rozważ podejście hybrydowe. Pobierz top-10 dokumentów, ale przekaż do LLM tylko te, których wynik rerankera przekracza ustalony próg pewności (np. score > 0.5). Jeśli tylko 3 dokumenty spełniają ten warunek – wyślij 3. Jeśli 7 – wyślij 7. To zapobiega "zapychaniu" kontekstu śmieciowymi danymi tylko po to, by spełnić wymóg $k=7$.31
+3. Reordering dla Większych $k$: Jeśli musisz użyć $k=7$ lub $k=10$ (np. dla kompletności danych prawnych), zastosuj technikę re-sortowania kontekstu, umieszczając dokumenty o najwyższym score na początku i na końcu promptu ([1, 3, 5,..., 6, 4, 2]), aby zminimalizować efekt "Lost in the Middle".
+
+
+6.3 Interpretacja Metryk
+
+
+* Używaj NDCG@10 jako głównej metryki do porównywania jakości algorytmów rankujących (standard branżowy).
+* Używaj Recall@50 lub Recall@100 jako metryki diagnostycznej dla pierwszego etapu wyszukiwania (Retrievera).
+* Używaj MRR@10 jako metryki satysfakcji użytkownika w systemach typu "wyszukiwarka" (gdzie liczy się pierwszy klik).
+
+
+7. Podsumowanie
+
+
+Ewaluacja systemów rerankingu jest procesem wielowymiarowym, wymagającym precyzyjnego doboru narzędzi pomiarowych. Analiza wykazała, że BM25, Bi-Encodery i LambdaMART stanowią triadę niezbędnych baseline'ów, z których każdy adresuje inny aspekt wydajności (leksykalny, semantyczny, cechowy). W kwestii doboru progu odcięcia, zakres 4-7 dokumentów jawi się jako "złoty środek" w architekturze RAG, balansując na krawędzi nasycenia krzywej Recall i degradacji precyzji generatywnej. Zrozumienie nieliniowych relacji między głębokością listy a metrykami MRR i NDCG pozwala na projektowanie systemów, które są nie tylko teoretycznie poprawne, ale i praktycznie użyteczne w realnych zastosowaniach biznesowych. Kluczem do sukcesu nie jest maksymalizacja jednej metryki za wszelką cenę, lecz świadome zarządzanie kompromisami (trade-offs) wynikającymi z ograniczeń modeli językowych i infrastruktury.
+________________
+Tabela 1: Zestawienie Wpływu Progu Odcięcia na Metryki
+Metryka
+	Cutoff k=4
+	Cutoff k=7
+	Cutoff k=10
+	Tendencja
+	MRR
+	Wysoki
+	Bez zmian
+	Bez zmian
+	Stabilna (Top-1 driven)
+	NDCG
+	Średni
+	Wysoki
+	Wysoki (Standard)
+	Rośnie logarytmicznie
+	Recall
+	Średni (~75%)
+	Wysoki (~85%)
+	B. Wysoki (~88%)
+	Malejące przychody
+	Precyzja
+	Wysoka
+	Średnia
+	Niska
+	Spada liniowo
+	Latencja RAG
+	Niska
+	Średnia
+	Wysoka
+	Rośnie liniowo
+	(Koniec raportu)
+Cytowane prace
+1. ModernBERT + ColBERT: Enhancing biomedical RAG through an advanced re-ranking retriever - arXiv, otwierano: listopada 30, 2025, https://arxiv.org/html/2510.04757v1
+2. A Bag of Tricks for Further Improving Cross- Encoder Effectiveness for Reranking - UvA-DARE (Digital Academic Repository), otwierano: listopada 30, 2025, https://pure.uva.nl/ws/files/118144878/978_3_030_99736_6_44.pdf
+3. Neural Rerankers 101: Boosting AI Search Accuracy - ZeroEntropy, otwierano: listopada 30, 2025, https://www.zeroentropy.dev/articles/neural-rerankers-101
+4. MS MARCO - Microsoft Open Source, otwierano: listopada 30, 2025, https://microsoft.github.io/msmarco/
+5. BEIR: A Heterogeneous Benchmark for Zero-shot Evaluation of Information Retrieval Models, otwierano: listopada 30, 2025, https://datasets-benchmarks-proceedings.neurips.cc/paper/2021/file/65b9eea6e1cc6bb9f0cd2a47751a186f-Paper-round2.pdf
+6. Introducing Elastic Rerank: Elastic's new semantic re-ranker model - Elasticsearch Labs, otwierano: listopada 30, 2025, https://www.elastic.co/search-labs/blog/elastic-semantic-reranker-part-2
+7. Jointly Comparing Multiple Candidates for Efficient and Effective Retrieval - arXiv, otwierano: listopada 30, 2025, https://arxiv.org/html/2405.12801v1
+8. LambdaMART Explained: The Workhorse of Learning-to-Rank | Shaped Blog, otwierano: listopada 30, 2025, https://www.shaped.ai/blog/lambdamart-explained-the-workhorse-of-learning-to-rank
+9. lightgbm.LGBMRanker — LightGBM 4.6.0.99 documentation - Read the Docs, otwierano: listopada 30, 2025, https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMRanker.html
+10. An Exploration of Learning-to-re-rank Using a Two-step Framework for Fair Ranking - Text REtrieval Conference, otwierano: listopada 30, 2025, https://trec.nist.gov/pubs/trec31/papers/udel_fang.F.pdf
+11. Blending Learning to Rank and Dense Representations for Efficient and Effective Cascades, otwierano: listopada 30, 2025, https://arxiv.org/html/2510.16393v1
+12. Easing Legal News Monitoring with Learning to Rank and BERT - PMC - NIH, otwierano: listopada 30, 2025, https://pmc.ncbi.nlm.nih.gov/articles/PMC7148065/
+13. A Survey on E-Commerce Learning to Rank - arXiv, otwierano: listopada 30, 2025, https://arxiv.org/html/2412.03581v1
+14. (PDF) Local Point-wise Explanations of LambdaMART - ResearchGate, otwierano: listopada 30, 2025, https://www.researchgate.net/publication/381443018_Local_Point-wise_Explanations_of_LambdaMART
+15. Ensemble of MRR and NDCG models for Visual Dialog - ACL Anthology, otwierano: listopada 30, 2025, https://aclanthology.org/2021.naacl-main.262.pdf
+16. Evaluating re-ranking methods in LLM search - Lund University Publications, otwierano: listopada 30, 2025, https://lup.lub.lu.se/student-papers/record/9205948/file/9205949.pdf
+17. Normalized Discounted Cumulative Gain (NDCG) explained - Evidently AI, otwierano: listopada 30, 2025, https://www.evidentlyai.com/ranking-metrics/ndcg-metric
+18. Long Context RAG Performance of LLMs | Databricks Blog, otwierano: listopada 30, 2025, https://www.databricks.com/blog/long-context-rag-performance-llms
+19. Retrieval Metrics Tutorial: Recall@k and MRR Explained | by rajnish khatri - Medium, otwierano: listopada 30, 2025, https://medium.com/@rajnish_khatri/retrieval-metrics-tutorial-recall-k-and-mrr-explained-d2f12afb9c89
+20. Evaluating RAG Pipelines - Neptune.ai, otwierano: listopada 30, 2025, https://neptune.ai/blog/evaluating-rag-pipelines
+21. What is an acceptable range of retriever recall for a RAG system aiming to answer questions correctly most of the time, and how might this vary by application domain? - Milvus, otwierano: listopada 30, 2025, https://milvus.io/ai-quick-reference/what-is-an-acceptable-range-of-retriever-recall-for-a-rag-system-aiming-to-answer-questions-correctly-most-of-the-time-and-how-might-this-vary-by-application-domain
+22. When Retrieval Succeeds and Fails: Rethinking Retrieval-Augmented Generation for LLMs, otwierano: listopada 30, 2025, https://arxiv.org/html/2510.09106v1
+23. Solving the 'Lost in the Middle' Problem: Advanced RAG Techniques, otwierano: listopada 30, 2025, https://www.getmaxim.ai/articles/solving-the-lost-in-the-middle-problem-advanced-rag-techniques-for-long-context-llms/
+24. Lost in the Middle: How Language Models Use Long Contexts - MIT Press Direct, otwierano: listopada 30, 2025, https://direct.mit.edu/tacl/article/doi/10.1162/tacl_a_00638/119630/Lost-in-the-Middle-How-Language-Models-Use-Long
+25. Retrieval-Augmented Generation (RAG) - Pinecone, otwierano: listopada 30, 2025, https://www.pinecone.io/learn/retrieval-augmented-generation/
+26. This Paper Reveals The Surprising Influence of Irrelevant Data on Retrieval-Augmented Generation RAG Systems' Accuracy and Future Directions in AI Information Retrieval : r/machinelearningnews - Reddit, otwierano: listopada 30, 2025, https://www.reddit.com/r/machinelearningnews/comments/1aj9mr9/this_paper_reveals_the_surprising_influence_of/
+27. Understanding the Design Decisions of Retrieval-Augmented Generation Systems - arXiv, otwierano: listopada 30, 2025, https://arxiv.org/html/2411.19463
+28. What are your RAG parameters e.g. top k, chunk size, chunk overlap? : r/LangChain - Reddit, otwierano: listopada 30, 2025, https://www.reddit.com/r/LangChain/comments/1evtu7d/what_are_your_rag_parameters_eg_top_k_chunk_size/
+29. Ultimate Guide to Choosing the Best Reranking Model in 2025 - ZeroEntropy, otwierano: listopada 30, 2025, https://www.zeroentropy.dev/articles/ultimate-guide-to-choosing-the-best-reranking-model-in-2025
+30. THE RAG REPORT - Addleshaw Goddard LLP, otwierano: listopada 30, 2025, https://www.addleshawgoddard.com/globalassets/insights/technology/llm/rag-report.pdf
+31. Adaptive RAG: A retrieval technique to reduce LLM token cost for top-k Vector Index retrieval [R] - Reddit, otwierano: listopada 30, 2025, https://www.reddit.com/r/MachineLearning/comments/1bq3hwb/adaptive_rag_a_retrieval_technique_to_reduce_llm/

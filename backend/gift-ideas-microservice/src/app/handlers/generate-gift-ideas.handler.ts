@@ -52,7 +52,7 @@ export class GenerateGiftIdeasHandler
       );
 
       this.logger.log(
-        `Generated ${giftIdeasOutput.gift_ideas.length.toString()} gift ideas and ${giftIdeasOutput.search_queries.length.toString()} search queries (6 per service: allegro, olx, ebay, amazon)`,
+        `Generated ${giftIdeasOutput.gift_ideas.length.toString()} gift ideas and ${giftIdeasOutput.search_queries.length.toString()} search queries (4 per service: allegro, olx, ebay, amazon, okazje)`,
       );
 
       // Send fetch events to specific shops based on AI decision

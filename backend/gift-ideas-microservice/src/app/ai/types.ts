@@ -8,10 +8,10 @@ export const giftIdeasOutputSchema = z.object({
         query: z
           .string()
           .refine((q) => q.split(" ").length <= 5, "Query must be max 5 words"),
-        service: z.enum(["allegro", "olx", "ebay", "amazon"]),
+        service: z.enum(["allegro", "olx", "ebay", "amazon", "okazje"]),
       }),
     )
-    .length(16) // Dokładnie 16 zapytań (4 per service)
+    .length(20) // Dokładnie 20 zapytań (4 per service)
     .refine((queries) => {
       const counts = queries.reduce<Record<string, number>>(
         (accumulator, q) => {
@@ -24,9 +24,10 @@ export const giftIdeasOutputSchema = z.object({
         counts.allegro === 4 &&
         counts.olx === 4 &&
         counts.ebay === 4 &&
-        counts.amazon === 4
+        counts.amazon === 4 &&
+        counts.okazje === 4
       );
-    }, "Must have exactly 4 queries per service (allegro, olx, ebay, amazon)"),
+    }, "Must have exactly 4 queries per service (allegro, olx, ebay, amazon, okazje)"),
 });
 
 export type GiftIdeasOutput = z.infer<typeof giftIdeasOutputSchema>;

@@ -8,6 +8,7 @@ import { FetchAllegroHandler } from "./app/handlers/fetch-allegro.handler";
 import { FetchAmazonHandler } from "./app/handlers/fetch-amazon.handler";
 import { FetchEbayHandler } from "./app/handlers/fetch-ebay.handler";
 import { FetchOlxHandler } from "./app/handlers/fetch-olx.handler";
+import { ScrapeOkazjeHandler } from "./app/handlers/scrape-okazje.handler";
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { FetchOlxHandler } from "./app/handlers/fetch-olx.handler";
     FetchAmazonHandler,
     FetchEbayHandler,
     FetchOlxHandler,
+    ScrapeOkazjeHandler,
   ],
   providers: [],
 })

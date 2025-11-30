@@ -4,9 +4,9 @@ import type { GiftIdeasOutput } from "../ai/types";
  * Services that are currently disabled and should be filtered out from search queries.
  * Amazon is disabled for now cause Dodi got banned there
  */
-export const DISABLED_SERVICES = new Set<"allegro" | "olx" | "ebay" | "amazon">(
-  ["amazon"],
-);
+export const DISABLED_SERVICES = new Set<
+  "allegro" | "olx" | "ebay" | "amazon" | "okazje"
+>(["amazon"]);
 
 /**
  * Filters out search queries for disabled services.

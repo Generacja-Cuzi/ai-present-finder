@@ -91,3 +91,79 @@ Podajcie szczegółowy opis osiągniętych wyników w projekcie. Sekcja ta powin
 3. **Korekta:** Przeczytajcie raport przed wysłaniem, aby upewnić się, że jest poprawny językowo i merytorycznie.
 
 Postępując zgodnie z tymi wskazówkami i korzystając z szablonu, stworzycie profesjonalny raport skutecznie prezentujący Wasz projekt. Powodzenia!
+
+---
+
+## Proponowany Outline Raportu (AI Present Finder)
+
+### A. Identyfikacja projektu
+
+- Tytuł: AI Present Finder
+- Autorzy: Bartosz Gotowski (DevOps, Stalking), Dawid Chudzicki (Frontend, Fetch), Szymon Kowaliński (Chat, Gift Ideas), Marcin Dolatowski (Fetch, Reranking, Testy)
+- Opiekun: [wpisać imię i nazwisko, afiliacja PWr]
+- Abstrakt (100–150 słów): cel, podejście (social-data + wywiad AI + multi-source fetch + reranking + SSE), kluczowe wyniki (czas do wyników ~7–8 min, 12 pytań, 116→70 produktów, satysfakcja 80%, TOP‑1 64%), krótka wzmianka o architekturze i wdrożeniu.
+
+### B. Treść właściwa
+
+#### 4. Wstęp
+
+- Problem: trudność doboru trafionych prezentów przy dużej liczbie ofert i braku kontekstu o odbiorcy.
+- Cel: skrócić czas i zwiększyć trafność rekomendacji łącząc publiczne dane społecznościowe i konwersacyjny wywiad.
+- Zakres MVP: stalking (Instagram/TikTok/X), chat (Gemini), gift ideas (GPT‑4o), fetch (OLX/Allegro/eBay/Amazon), reranking (Gemini‑lite), SSE, OAuth+JWT, persystencja w Postgres.
+- Kryteria sukcesu: czas do wyników, subiektywna trafność, stabilność i przejrzyste uzasadnienia AI.
+
+#### 5. Prace związane z tematem
+
+- Przegląd narzędzi konkurencyjnych: DreamGift, GiftAssistant, Giftruly, IntelliGift.
+- Nasze przewagi: social scraping (BrightData datasets) + multi‑source fetch + AI reranking z pełnym uzasadnieniem + live SSE + linki do ofert.
+- Ograniczenia i założenia: niskie koszty (VPS), brak danych prywatnych, tylko źródła publiczne; ograniczenia providerów e‑commerce.
+
+#### 6. Wyniki (najważniejsze)
+
+- Architektura (C4 v0.2.0): frontend (React+SSE), REST API, stalking, chat, gift‑ideas, fetch x4, reranking, RabbitMQ; zewnętrzne: OpenAI, Google Gemini, BrightData; każdy serwis z własną bazą Postgres.
+- Przepływ zdarzeń: stalking→keywords→chat→gift‑ideas→fetch→reranking→SSE; kluczowe eventy (StalkingCompletedEvent, ChatInterviewCompletedEvent, ProductFetchedEvent, GiftContextInitializedEvent).
+- Metryki produkcyjne (30.11.2025) – patrz `docs/report/data-collection.md`:
+  - Średni czas do pierwszych ofert: 464 s (~7.7 min).
+  - Średnia liczba pytań asystenta: 12.
+  - Produkty/sesję: 116 (przed) → ~70 (po filtracji).
+  - Rozkład providerów: OLX ~99%, Allegro ~1% (fetch działa dla 4 źródeł).
+  - Stabilność: kolejki RabbitMQ puste, PM2 9 procesów, RAM ~769 MB, koszt ~20–25 USD/mies.
+- Studium przypadku:
+  - Skrót transkrypcji wywiadu (14 pytań) z anonimizacją.
+  - Top‑10 rekomendacji (np. głośniki Bluetooth) z linkami.
+  - Pełne uzasadnienia rerankingu (oceny 10/9/1) z tabeli w `data-collection.md`.
+- Jakość rekomendacji:
+  - Subiektywnie: 80% satysfakcji, 64% TOP‑1 trafność (deklaratywne).
+  - Reranking: eliminuje niepasujące wyniki (np. samochody dla zapytania o fotele/książki), promuje trafne – z pełnym uzasadnieniem AI.
+
+### C. Wnioski i zakończenie
+
+#### 7. Wnioski
+
+- Najważniejszy rezultat: ~3–8 minut do trafionej rekomendacji dzięki połączeniu social‑data + chat + multi‑fetch + reranking + SSE.
+- Wartość: skrócenie czasu wyboru i zmniejszenie szumu (116→70), transparentność decyzji AI podnosi zaufanie.
+- Ograniczenia: dominacja OLX w danych, latencja pierwszych wyników zależna od stalkingu/fetch, brak A/B.
+
+#### 8. Kierunki rozwoju
+
+- Więcej źródeł (Ceneo/Empik/Media Expert), balansowanie providerów, caching, równoleglenie i batching fetchy.
+- Ewaluacja jakości: feedback loop użytkowników, metryki offline/online, personalizacja budżetu i preferencji.
+- Prywatność: polityka retencji, panel danych użytkownika, doprecyzowanie podstawy prawnej (RODO).
+- Modele: aktualizacje wersji i warianty kosztowo‑wydajnościowe.
+
+#### 9. Etyka i prywatność (propozycja 1‑zdaniowa)
+
+- Przetwarzamy wyłącznie publiczne dane; administratorem jest zespół projektowy; podstawą przetwarzania jest uzasadniony interes świadczenia funkcji rekomendacyjnych; dane ograniczamy do minimum i przechowujemy z retencją właściwą dla MVP.
+
+#### 10. Bibliografia (propozycje)
+
+- Vercel AI SDK (generateObject/generateText)
+- OpenAI API (GPT‑4o)
+- Google AI (Gemini 2.5‑flash / 2.5‑flash‑lite)
+- NestJS 11 + CQRS, TypeORM, RabbitMQ, PostgreSQL
+- BrightData datasets (social profiles/posts)
+- TanStack Router/Query, SSE (MDN)
+
+#### Załączniki (poza 6 stronami)
+
+- Diagramy C4 (Container/Component), fragment ERD (chats/messages/listings; gift_sessions/products), screenshoty UI, przykładowe sekwencje.

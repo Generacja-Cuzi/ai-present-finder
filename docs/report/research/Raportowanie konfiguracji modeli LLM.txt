@@ -1,0 +1,359 @@
+﻿Standardy Raportowania Eksperymentów z Wielkimi Modelami Językowymi (LLM) w Publikacjach Technicznych
+
+
+
+
+Wstęp: Kryzys Reprodukowalności w Erze Generatywnej AI
+
+
+Współczesna nauka o przetwarzaniu języka naturalnego (NLP) oraz inżynieria oprogramowania oparta na sztucznej inteligencji (AI) przechodzą fundamentalną transformację. Tradycyjne paradygmaty uczenia maszynowego, w których badacz trenował model, zamrażał jego wagi i udostępniał kod ewaluacyjny, stały się niewystarczające w obliczu dominacji Wielkich Modeli Językowych (LLM). Wprowadzenie modeli o skali miliardów parametrów, często dostępnych jedynie poprzez zamknięte interfejsy programistyczne (API), oraz stochastyczna natura procesów generatywnych, wywołały zjawisko określane mianem „kryzysu reprodukowalności”.1
+W przeciwieństwie do deterministycznych klasyfikatorów, LLM są systemami wrażliwymi na mikroskopijne zmiany w konfiguracji wnioskowania (inference). Zmienna temperatura, nieudokumentowana zmiana w systemowym „prompcie” (system prompt) przez dostawcę API, czy różnice w precyzji obliczeniowej (np. float16 vs int8) mogą prowadzić do diametralnie różnych wyników eksperymentalnych. Badania wskazują, że nawet niewielkie modyfikacje w sformułowaniu instrukcji dla modelu (prompt engineering) mogą skutkować zmianami w skuteczności rzędu kilkunastu procent, co czyni sam tekst promptu integralną częścią hiperparametrów modelu.3
+Niniejszy raport stanowi wyczerpujące kompendium standardów raportowania konfiguracji LLM, opracowane na podstawie wytycznych wiodących konferencji (ACL, NeurIPS, ICLR) oraz specjalistycznych ram ewaluacyjnych takich jak DEAL i TRIPOD-LLM. Celem dokumentu jest dostarczenie badaczom i inżynierom precyzyjnego protokołu dokumentowania eksperymentów, który gwarantuje transparentność, weryfikowalność i naukową rzetelność publikowanych wyników.
+
+
+1. Identyfikacja i Wersjonowanie Modeli: Od Nazwy do Hasha
+
+
+Podstawowym grzechem w raportowaniu badań nad LLM jest niejednoznaczna identyfikacja użytego modelu. Stwierdzenie „użyliśmy modelu Llama 3” lub „skorzystaliśmy z ChatGPT” jest w obecnym dyskursie naukowym nieakceptowalne, ponieważ nie pozwala na odtworzenie stanu faktycznego eksperymentu. Modele ewoluują w czasie, a ich warianty różnią się fundamentalnie w zależności od metody dostrojenia (fine-tuning) czy kwantyzacji.
+
+
+1.1 Modele o Otwartych Wagach (Open Weights)
+
+
+W przypadku modeli, których wagi są publicznie dostępne (np. rodzina Llama, Mistral, Qwen), standard raportowania musi obejmować znacznie więcej niż tylko nazwę architektury.
+
+
+1.1.1 Precyzyjna Nomenklatura i Warianty
+
+
+Należy rygorystycznie odróżniać modele bazowe (base models) od modeli dostrojonych na instrukcjach (instruction-tuned). Model Meta-Llama-3-8B jest modelem bazowym, który przewiduje kolejny token w ciągu tekstu i nie jest przystosowany do prowadzenia dialogu w taki sam sposób jak Meta-Llama-3-8B-Instruct. Mylenie tych wariantów prowadzi do błędnych wniosków dotyczących zdolności rozumowania modelu, gdyż model bazowy może wymagać skomplikowanego promptowania few-shot, podczas gdy model instruct reaguje na proste polecenia.4
+
+
+1.1.2 Integralność Repozytorium (Git Commit Hash)
+
+
+Platformy hostingowe, takie jak Hugging Face, umożliwiają twórcom modeli aktualizowanie plików wag (np. w celu poprawy błędów w tokenizatorze lub plikach konfiguracyjnych) bez zmiany nazwy repozytorium. Oznacza to, że pobranie modelu bert-base-uncased dzisiaj może dać inny artefakt cyfrowy niż miesiąc temu.
+Dobrą praktyką, wymaganą przez checklisty reprodukowalności, jest podawanie konkretnego hasha commitu (SHA) z systemu kontroli wersji Git, który był aktywny w momencie pobierania modelu. Zapewnia to, że niezależnie od przyszłych aktualizacji repozytorium, inni badacze będą mogli przywrócić dokładnie ten sam stan wag.6
+
+
+1.1.3 Kwantyzacja i Precyzja Obliczeniowa
+
+
+Współczesne LLM rzadko są uruchamiane w pełnej precyzji (FP32). Badacze często stosują techniki kompresji, takie jak kwantyzacja do 8-bitów lub 4-bitów, aby zmieścić model w pamięci GPU. Raport musi explicite określać format danych wag oraz aktywacji (np. bfloat16, float16, int4-GPTQ, int8-AWQ). Użycie modelu skwantyzowanego może wprowadzać subtelne błędy zaokrągleń, które wpływają na wyniki w zadaniach wymagających wysokiej precyzji, takich jak generowanie kodu czy rozumowanie matematyczne.4
+
+
+1.2 Modele Zamknięte i API (Closed-Source)
+
+
+W przypadku modeli dostępnych wyłącznie przez API (np. GPT-4, Claude 3, Gemini), badacz nie ma kontroli nad wagami, co przenosi ciężar raportowania na identyfikację wersji usługi.
+
+
+1.2.1 Datowane Migawki (Snapshots)
+
+
+Dostawcy API często oferują tzw. „statyczne” wersje modeli, które są zamrożone w czasie. Używanie ogólnych wskaźników (aliasów), takich jak gpt-4 czy claude-3-opus, jest błędem metodologicznym, ponieważ dostawcy regularnie aktualizują te aliasy, podmieniając model na nowszy, często różniący się zachowaniem (np. bardziej restrykcyjny system bezpieczeństwa).
+Należy zawsze korzystać z i raportować datowane wersje API, np. gpt-4-0613 (wersja z czerwca 2013) lub gpt-4-1106-preview. Nawet te wersje mogą zostać wycofane (deprecated), dlatego kluczowe jest również podanie daty przeprowadzenia eksperymentów.7
+
+
+1.2.2 System Fingerprint
+
+
+Nowym standardem, wprowadzonym m.in. przez OpenAI, jest pole system_fingerprint zwracane w odpowiedzi API. Identyfikator ten reprezentuje konkretną konfigurację infrastruktury i wag w momencie generowania odpowiedzi. Ponieważ modele API są niedeterministyczne (nawet przy temperaturze 0), zmiana system_fingerprint może sygnalizować aktualizację backendu, która wpłynęła na wyniki. Raportowanie najczęściej występującego fingerprintu podczas eksperymentu dodaje warstwę weryfikowalności, pozwalając stwierdzić, czy fluktuacje wyników wynikają z samej stochastyczności modelu, czy ze zmiany w infrastrukturze dostawcy.8
+
+
+1.3 Karty Modeli (Model Cards) jako Źródło Metadanych
+
+
+Integralną częścią raportowania jest odwołanie się do Karty Modelu (Model Card) lub Raportu Technicznego używanego systemu. Karty te, promowane przez Google i społeczność Hugging Face, zawierają kluczowe informacje o architekturze (np. Mixture-of-Experts vs Dense), dacie odcięcia danych treningowych (knowledge cutoff) oraz ograniczeniach etycznych.9
+Znajomość daty odcięcia wiedzy jest krytyczna dla oceny ryzyka kontaminacji danych (data leakage) – sytuacji, w której model „widział” zestaw testowy podczas treningu. Raportując eksperyment, należy skonfrontować datę publikacji zbioru testowego z datą odcięcia treningu modelu podaną w jego karcie.6
+
+
+2. Konfiguracja Wnioskowania: Hiperparametry Generacji
+
+
+Wnioskowanie (inference) w LLM to proces probabilistyczny. Model zwraca rozkład prawdopodobieństwa dla całego słownika (vocabulary), a wybór konkretnego tokena zależy od algorytmu dekodowania. Bez podania parametrów tego algorytmu, wyniki są nieodtwarzalne.
+
+
+2.1 Temperatura ($T$)
+
+
+Temperatura jest skalarem modyfikującym logity przed funkcją Softmax. Mechanizm ten można opisać wzorem:
+
+
+
+
+$$P_i = \frac{\exp(z_i / T)}{\sum_j \exp(z_j / T)}$$
+
+
+gdzie $z$ to logity, a $P$ to prawdopodobieństwo.
+* Raportowanie: Należy podać dokładną wartość numeryczną.
+* Implikacje:
+   * $T \to 0$: Rozkład staje się „szpilkowy” (peaked), faworyzując najbardziej prawdopodobny token (Greedy Decoding). Jest to zalecane dla zadań analitycznych, matematycznych i ekstrakcji danych, gdzie pożądana jest deterministyczność. Należy jednak zaznaczyć, że niektóre API (np. OpenAI) traktują $T=0$ jako $T=1e-6$, co nadal może wprowadzać minimalny szum.12
+   * $T > 1$: Rozkład się spłaszcza, zwiększając szansę wylosowania tokenów o niższym prawdopodobieństwie. Zwiększa to „kreatywność”, ale też ryzyko halucynacji.
+* Wymóg: Jeśli $T > 0$, badanie staje się stochastyczne. W takim przypadku obligatoryjne jest raportowanie liczby wygenerowanych próbek ($n$) dla każdego promptu oraz metody agregacji wyników (np. pass@k, majority voting).4
+
+
+2.2 Strategie Próbkowania: Top-k, Top-p i Min-p
+
+
+Samo ustawienie temperatury jest zazwyczaj niewystarczające. Współczesne systemy stosują dodatkowe filtry obcinające „ogon” rozkładu prawdopodobieństwa. Parametry te często wchodzą ze sobą w interakcje.
+
+
+2.2.1 Top-k
+
+
+Ogranicza losowanie do $k$ tokenów o najwyższym prawdopodobieństwie.
+* Znaczenie: Choć starsze, nadal używane. Niska wartość $k$ (np. 40-50) zapobiega wyborowi słów zupełnie niepasujących kontekstowo.
+* Raportowanie: Należy podać wartość $k$. Jeśli parametr był wyłączony (ustawiony na 0 lub nieskończoność), należy to wyraźnie zaznaczyć, ponieważ domyślne ustawienia bibliotek różnią się (np. Hugging Face vs vLLM).12
+
+
+2.2.2 Top-p (Nucleus Sampling)
+
+
+Wybiera najmniejszy zbiór tokenów, których skumulowane prawdopodobieństwo przekracza próg $p$.
+* Znaczenie: Pozwala na dynamiczne dostosowanie wielkości puli losowania w zależności od pewności modelu. Przy $p=0.9$ model rozważa więcej opcji, gdy jest „niepewny” (rozłożony rozkład), a mniej, gdy jest „pewny”.
+* Interakcja: Często stosowane łącznie z temperaturą. Raportowanie „użyliśmy domyślnych ustawień” jest błędem, gdyż domyślne $p$ może wynosić 0.9, 1.0 (wyłączone) lub 0.95 w zależności od platformy.13
+
+
+2.2.3 Min-p
+
+
+Nowszy parametr, zyskujący na popularności w modelach open-source (np. w bibliotece llama.cpp czy ExLlama). Odrzuca tokeny, których prawdopodobieństwo jest mniejsze niż $p \times P_{max}$ (gdzie $P_{max}$ to prawdopodobieństwo najlepszego tokena).
+* Kontekst badawczy: Badania wskazują, że min-p może zapewniać lepszą spójność tekstu niż top-p w wysokich temperaturach, eliminując tokeny, które są relatywnie nieprawdopodobne w danym kontekście.16 Jego użycie musi być wyraźnie odnotowane, gdyż nie jest to standard w starszych checklistach.
+
+
+2.3 Kontrola Długości i Sekwencje Zatrzymujące
+
+
+Parametr max_tokens (lub max_new_tokens) definiuje górny limit generacji. Ustawienie go zbyt nisko może sztucznie zaniżyć wyniki modelu w zadaniach wymagających wieloetapowego rozumowania (Chain-of-Thought), ucinając odpowiedź w połowie wywodu.
+* Stop Sequences: Równie ważne jest raportowanie zdefiniowanych sekwencji zatrzymujących (np. ["User:", "\n\n"]). W modelach typu Chat, brak odpowiednich stop-tokenów może powodować, że model zacznie generować dalszą część rozmowy za użytkownika, co w automatycznej ewaluacji zostanie potraktowane jako błąd (halucynacja).4
+
+
+2.4 Tabela Konfiguracji Wnioskowania
+
+
+Zalecaną dobrą praktyką jest umieszczenie w artykule lub suplemencie tabeli zbiorczej, która w sposób skondensowany prezentuje wszystkie parametry. Poniżej przedstawiono przykładowy szablon takiej tabeli, zgodny z wytycznymi z literatury.5
+Tabela 1. Przykładowa specyfikacja hiperparametrów wnioskowania.
+Parametr
+	Wartość (Eksperyment Główny)
+	Uzasadnienie
+	Model
+	meta-llama/Meta-Llama-3-70B-Instruct
+	Commit hash: 8c2b7d...
+	Precyzja
+	bfloat16
+	Natywna precyzja treningu, balans pamięć/dokładność
+	Temperatura
+	0.6
+	Balans między kreatywnością a spójnością dla zadania sumaryzacji
+	Top-p
+	0.9
+	Standardowe próbkowanie jądrowe (Nucleus Sampling)
+	Top-k
+	0 (Wyłączone)
+	Poleganie wyłącznie na top-p
+	Max New Tokens
+	2048
+	Zapewnienie miejsca na długie podsumowania
+	Repetition Penalty
+	1.1
+	Delikatna penalizacja powtórzeń, aby uniknąć pętli
+	Seed
+	42
+	Zapewnienie determinizmu w ramach torch.manual_seed
+	System Prompt
+	Patrz: Załącznik A
+	Zdefiniowanie persony asystenta
+	
+
+3. Inżynieria Promptów jako Artefakt Naukowy
+
+
+W erze LLM, prompt jest de facto częścią kodu źródłowego programu. Zmiana jednego słowa w instrukcji może wpłynąć na wynik bardziej niż zmiana architektury sieci neuronowej. Dlatego też, raportowanie promptów wymaga precyzji filologicznej i technicznej.
+
+
+3.1 Anatomia Promptu
+
+
+Raportując prompty, należy zdekomponować je na części składowe, aby czytelnik mógł zrozumieć strukturę interakcji z modelem.19
+1. System Prompt (Instrukcja Systemowa): Ukryta instrukcja definiująca zachowanie modelu (np. "Jesteś pomocnym asystentem, który odpowiada zwięźle"). Wiele badań pomija ten element, co jest błędem, ponieważ system prompt ma priorytet nad instrukcjami użytkownika i drastycznie wpływa na styl oraz odmowy odpowiedzi (refusals).21
+2. User Prompt (Instrukcja Użytkownika): Właściwe polecenie.
+3. Kontekst/Dane: Tekst wejściowy, na którym operuje model (np. dokument do streszczenia).
+4. Format Wyjściowy: Instrukcje dotyczące struktury odpowiedzi (np. "Odpowiedz w formacie JSON").
+
+
+3.2 Protokoły Few-Shot (Uczenie w Kontekście)
+
+
+Jeśli stosowana jest technika few-shot (podawanie przykładów w prompcie), raport musi zawierać szczegółowy protokół ich doboru i prezentacji:
+* Liczba przykładów ($k$): np. 3-shot, 5-shot.
+* Metoda selekcji: Czy przykłady były stałe dla wszystkich zapytań, czy dobierane dynamicznie (np. przy użyciu k-NN na podstawie podobieństwa semantycznego)?
+* Separator: Jaki ciąg znaków oddzielał przykłady (np. \n---\n, ###)? Badania pokazują, że formatowanie separatorów ma istotny wpływ na zdolność modelu do rozróżniania poszczególnych przykładów.23
+* Kolejność: Czy kolejność przykładów była losowa? LLM wykazują tendencję do "recency bias" (faworyzowania ostatniego przykładu), co należy odnotować w metodologii.
+
+
+3.3 Dokumentacja w Załącznikach
+
+
+Ze względu na objętość, pełne teksty promptów często nie mieszczą się w głównym tekście artykułu. Standardem jest umieszczanie ich w Załączniku (Appendix) lub repozytorium kodu.
+W przypadku promptów szablonowych (templates), należy użyć notacji zastępczej.
+Przykład dokumentacji szablonu promptu 25:
+"W eksperymencie użyliśmy następującego szablonu, gdzie {{TEXT}} oznacza analizowany dokument, a {{QUERY}} pytanie badawcze:"
+System: Jesteś ekspertem z dziedziny medycyny. Analizuj poniższy tekst kliniczny i odpowiedz na pytanie.
+User: Tekst: {{TEXT}}
+Pytanie: {{QUERY}}
+Odpowiedz tylko TAK lub NIE.
+Assistant:
+
+
+4. Zasoby Obliczeniowe, Budżet i Ślad Węglowy
+
+
+Etyka badań nad AI wymaga transparentności w zakresie kosztów środowiskowych i dostępności obliczeniowej. Raportowanie "budżetu obliczeniowego" pozwala również ocenić, czy proponowana metoda jest praktyczna w zastosowaniach rzeczywistych.
+
+
+4.1 Specyfikacja Sprzętowa (Hardware)
+
+
+Wydajność modelu (przepustowość, opóźnienie) jest nierozerwalnie związana ze sprzętem. Należy raportować:
+* Typ akceleratora: Konkretny model GPU/TPU (np. NVIDIA A100 80GB PCIe vs SXM4). Wersje z różną pamięcią VRAM lub interfejsem (NVLink) oferują różną wydajność trenowania i wnioskowania.
+* Liczba urządzeń: Czy wnioskowanie odbywało się na jednym GPU, czy na klastrze? (wpływ narzutu komunikacyjnego na czas).
+* Środowisko: Wersja sterowników CUDA, biblioteki (PyTorch, TensorFlow, vLLM), system operacyjny – te czynniki wpływają na reprodukowalność wydajnościową.19
+
+
+4.2 Metryki Budżetu i Czasu
+
+
+Zamiast podawać jedynie abstrakcyjną złożoność obliczeniową (FLOPs), która jest trudna do bezpośredniego zmierzenia, zaleca się raportowanie metryk praktycznych:
+* Godziny GPU (GPU-hours): Całkowity czas zajęcia akceleratora. Należy uwzględnić nie tylko finalny przebieg, ale także szacunkowy koszt poszukiwania hiperparametrów (hyperparameter search).28
+* Przepustowość (Throughput): Tokeny na sekundę (tokens/sec) – kluczowe dla oceny użyteczności modelu w systemach czasu rzeczywistego.29
+* Opóźnienie (Latency): Czas do pierwszego tokena (TTFT) oraz całkowity czas generacji.
+
+
+4.3 Ślad Węglowy (Carbon Footprint)
+
+
+Raportowanie wpływu na środowisko stało się standardem w prestiżowych konferencjach (np. sekcja "Broader Impact" w NeurIPS).
+* Narzędzia: Zaleca się korzystanie z automatycznych narzędzi szacujących emisję, takich jak CodeCarbon 30 lub LLMCarbon.32
+* Zakres: Należy odróżnić emisję operacyjną (prąd zużyty podczas eksperymentu) od ucieleśnionej (embodied carbon – koszt wyprodukowania sprzętu). LLMCarbon jest narzędziem, które próbuje modelować oba te aspekty dla LLM.
+* Kontekstualizacja: Podanie samej liczby kg $CO_2e$ (ekwiwalentu dwutlenku węgla) jest często abstrakcyjne. Dobrą praktyką jest porównanie tej wartości do znanych wielkości, np. "Emisja wyniosła 50 kg $CO_2e$, co odpowiada przejechaniu samochodem osobowym ok. 200 km".34
+Lista kontrolna dla zasobów obliczeniowych:
+1. Specyfikacja sprzętu (Model GPU, RAM, ilość).
+2. Całkowity budżet godzin GPU (trening + wnioskowanie).
+3. Użyte narzędzie do estymacji emisji (np. CodeCarbon).
+4. Geolokalizacja serwerów (wpływa na intensywność węglową sieci energetycznej – mix energetyczny).
+
+
+5. Protokoły Ewaluacji i Listy Kontrolne (Checklists)
+
+
+Aby ujednolicić standardy raportowania, społeczność naukowa opracowała szereg list kontrolnych. Ich stosowanie i cytowanie w publikacji podnosi wiarygodność pracy.
+
+
+5.1 Listy Kontrolne Konferencyjne (ACL / NeurIPS)
+
+
+Wytyczne ACL (Association for Computational Linguistics) oraz NeurIPS kładą nacisk na "odpowiedzialne NLP" (Responsible NLP).
+* Kluczowe elementy: Oprócz parametrów technicznych, wymagają one dyskusji na temat ograniczeń pracy, potencjalnych negatywnych skutków społecznych oraz licencjonowania użytych artefaktów (danych i modeli).28
+* ARR Responsible NLP Checklist: Wymaga explicitnego potwierdzenia, czy autorzy cytują twórców artefaktów, podają licencje i raportują statystyki opisowe wyników (np. odchylenie standardowe przy wielu uruchomieniach).28
+
+
+5.2 Standard DEAL (Development, Evaluation, and Assessment of LLMs)
+
+
+Framework DEAL 36 wprowadza istotne rozróżnienie na dwie ścieżki raportowania, zależne od charakteru badań:
+* DEAL-A (Advanced): Przeznaczony dla badań obejmujących tworzenie nowych modeli, zaawansowane dostrajanie (fine-tuning) lub nowe architektury. Wymaga głębokiego raportowania procesu treningu, krzywych uczenia, składu danych treningowych i szczegółów infrastruktury.
+* DEAL-B (Beginner/Applied): Dedykowany dla badań aplikacyjnych, wykorzystujących gotowe modele (pretrained). Tu nacisk kładzie się na inżynierię promptów, wersjonowanie API i ewaluację wyjść modelu pod kątem użyteczności.
+Badacz powinien w sekcji metodologicznej wyraźnie zaznaczyć: "Raportowanie w niniejszej pracy jest zgodne ze standardem DEAL-B".
+
+
+5.3 Standard TRIPOD-LLM
+
+
+Dla publikacji w dziedzinie medycyny i nauk o zdrowiu, gdzie precyzja jest krytyczna, opracowano rozszerzenie standardu TRIPOD (Transparent Reporting of a multivariable prediction model for Individual Prognosis Or Diagnosis) o specyfikę LLM.37
+   * Specyfika: TRIPOD-LLM kładzie ogromny nacisk na opis populacji docelowej i środowiska, w którym model ma działać. Wymaga również szczegółowego opisu pre-processingu danych wejściowych (np. anonimizacja notatek lekarskich przed wysłaniem do API) oraz metod oceny sprawiedliwości (fairness) i biasu modelu w kontekście grup demograficznych.
+
+
+5.4 Problem Kontaminacji Danych (Data Contamination)
+
+
+Jednym z najważniejszych aspektów ewaluacji w raportach jest udowodnienie, że model nie "znał" odpowiedzi na pytania testowe z fazy treningu.
+   * Raportowanie: Należy opisać procedurę "odkażania" (decontamination). Może to obejmować analizę n-gramów w celu wykrycia nakładania się zbioru testowego z korpusem treningowym (jeśli jest znany) lub użycie zbiorów danych z "kanarkami" (canary strings) – unikalnymi ciągami znaków, które pozwalają sprawdzić, czy model je zapamiętał.37
+   * Chronologia: Jeśli używany jest model zamknięty (np. GPT-4), należy porównać datę odcięcia wiedzy modelu z datą powstania zbioru testowego. Jeśli zbiór jest starszy niż model, należy założyć potencjalną kontaminację i odnotować to jako ograniczenie badania.
+
+
+6. Synteza i Dobre Praktyki
+
+
+Podsumowując, poprawny raport techniczny dotyczący LLM powinien traktować konfigurację modelu z taką samą rygorystycznością, z jaką w fizyce traktuje się warunki eksperymentalne. Poniżej przedstawiono syntetyczną listę dobrych praktyk integrującą wszystkie omówione aspekty.
+
+
+6.1 Lista Kontrolna dla Autora (Best Practices Checklist)
+
+
+Przed wysłaniem publikacji upewnij się, że zawiera ona następujące informacje (rekomendowane umieszczenie tabeli w Załączniku):
+   1. Identyfikacja Modelu:
+   * [ ] Dokładna nazwa i wariant (np. Instruct).
+   * [ ] Commit hash (open models) lub data snapshotu/wersja API (closed models).
+   * [ ] System Fingerprint (jeśli dostępny w API).
+   2. Konfiguracja Wnioskowania:
+   * [ ] Temperatura, Top-p, Top-k, Min-p.
+   * [ ] Maksymalna długość generacji i sekwencje zatrzymujące.
+   * [ ] Ziarno losowości (Seed) – jeśli użyte.
+   * [ ] Precyzja (np. bf16, int8).
+   3. Prompty:
+   * [ ] Pełna treść System Prompt.
+   * [ ] Szablony User Prompt z oznaczonymi zmiennymi.
+   * [ ] Protokół doboru przykładów few-shot (liczba, metoda, separator).
+   4. Infrastruktura i Zasoby:
+   * [ ] Typ i liczba GPU.
+   * [ ] Całkowity budżet obliczeniowy (godziny GPU).
+   * [ ] Ślad węglowy (narzędzie + wartość + kontekst).
+   5. Dostępność Artefaktów:
+   * [ ] Link do repozytorium z kodem eksperymentalnym.
+   * [ ] Link do surowych logów z generacji (w celu weryfikacji i analizy błędów).
+
+
+6.2 Wnioski Końcowe
+
+
+Przejście od raportowania architektury sieci do raportowania interakcji z modelem wymaga zmiany mentalności badawczej. Transparentność w zakresie promptów, wersji API i stochastycznych parametrów próbkowania nie jest biurokratycznym dodatkiem, lecz fundamentem, na którym budowana jest wiarygodność współczesnej nauki o AI. Stosowanie się do standardów takich jak DEAL czy wytyczne ACL pozwala na uniknięcie błędów interpretacyjnych, umożliwia rzetelną komparację metod i przyspiesza postęp w dziedzinie, która zmienia się z tygodnia na tydzień.
+Badacze powinni dążyć do tego, aby ich opis eksperymentu był "wykonywalny" (executable) – to znaczy, by na podstawie samego tekstu publikacji i załączników, niezależny inżynier mógł zrekonstruować potok przetwarzania i uzyskać statystycznie zbliżone wyniki. Tylko w ten sposób możemy przekształcić "sztukę promptowania" w rzetelną naukę inżynieryjną.
+Cytowane prace
+   1. Guidelines for Empirical Studies in Software Engineering involving Large Language Models, otwierano: listopada 30, 2025, https://arxiv.org/html/2508.15503v2
+   2. Awes, Laws, and Flaws From Today's LLM Research - arXiv, otwierano: listopada 30, 2025, https://arxiv.org/html/2408.15409v1
+   3. The Effect of Sampling Temperature on Problem Solving in Large Language Models - arXiv, otwierano: listopada 30, 2025, https://arxiv.org/html/2402.05201v3
+   4. Investigating Reproducibility Challenges in LLM Bugfixing on the HumanEvalFix Benchmark, otwierano: listopada 30, 2025, https://www.mdpi.com/2674-113X/4/3/17
+   5. Top-n⁢𝜎: Not All Logits Are You Need - arXiv, otwierano: listopada 30, 2025, https://arxiv.org/html/2411.07641v1
+   6. Here's how I use LLMs to help me write code - Simon Willison, otwierano: listopada 30, 2025, https://simonwillison.net/2025/Mar/11/using-llms-for-code/
+   7. How can I select the proper openai.api_version? - Stack Overflow, otwierano: listopada 30, 2025, https://stackoverflow.com/questions/76475419/how-can-i-select-the-proper-openai-api-version
+   8. Data controls in the OpenAI platform, otwierano: listopada 30, 2025, https://platform.openai.com/docs/guides/your-data
+   9. Model Cards and Datasheets - Emergent Mind, otwierano: listopada 30, 2025, https://www.emergentmind.com/topics/model-cards-and-datasheets
+   10. Model Cards - Hugging Face, otwierano: listopada 30, 2025, https://huggingface.co/docs/hub/en/model-cards
+   11. Google Model Cards, otwierano: listopada 30, 2025, https://modelcards.withgoogle.com/
+   12. Investigating the Role of LLMs Hyperparameter Tuning and Prompt Engineering to Support Domain Modeling - arXiv, otwierano: listopada 30, 2025, https://arxiv.org/html/2507.14735v1
+   13. Cheat Sheet: Mastering Temperature and Top_p in ChatGPT API, otwierano: listopada 30, 2025, https://community.openai.com/t/cheat-sheet-mastering-temperature-and-top-p-in-chatgpt-api/172683
+   14. Influence response generation with inference parameters - Amazon Bedrock, otwierano: listopada 30, 2025, https://docs.aws.amazon.com/bedrock/latest/userguide/inference-parameters.html
+   15. Setting Top-K, Top-P and Temperature in LLMs - Ruman - Medium, otwierano: listopada 30, 2025, https://rumn.medium.com/setting-top-k-top-p-and-temperature-in-llms-3da3a8f74832
+   16. Turning Up the Heat: Min-p Sampling for Creative and Coherent LLM Outputs - arXiv, otwierano: listopada 30, 2025, https://arxiv.org/html/2407.01082v8
+   17. Rethinking Table Instruction Tuning - arXiv, otwierano: listopada 30, 2025, https://arxiv.org/html/2501.14693v4
+   18. Hyperparameter Optimization for Large Language Model Instruction-Tuning - arXiv, otwierano: listopada 30, 2025, https://arxiv.org/html/2312.00949v2
+   19. The TRIPOD-LLM reporting guideline for studies using large language models - PMC - NIH, otwierano: listopada 30, 2025, https://pmc.ncbi.nlm.nih.gov/articles/PMC12104976/
+   20. Enhancing LLM Performance via Content-Format Integrated Prompt Optimization - arXiv, otwierano: listopada 30, 2025, https://arxiv.org/html/2502.04295v1
+   21. The Art of Writing Great System Prompts | by Saurabh Singh - Medium, otwierano: listopada 30, 2025, https://medium.com/towardsdev/the-art-of-writing-great-system-prompts-abb22f8b8f37
+   22. System Prompt Hijacking via Permutation Triggers in LLM Supply Chains - ACL Anthology, otwierano: listopada 30, 2025, https://aclanthology.org/2025.findings-acl.229.pdf
+   23. Include few-shot examples | Generative AI on Vertex AI - Google Cloud Documentation, otwierano: listopada 30, 2025, https://docs.cloud.google.com/vertex-ai/generative-ai/docs/learn/prompts/few-shot-examples
+   24. Few-Shot Prompting - Prompt Engineering Guide, otwierano: listopada 30, 2025, https://www.promptingguide.ai/techniques/fewshot
+   25. Automatic Prompt Generation via Adaptive Selection of Prompting Techniques - arXiv, otwierano: listopada 30, 2025, https://arxiv.org/html/2510.18162v1
+   26. Synthetic Data-Driven Prompt Tuning for Financial QA over Tables and Documents - arXiv, otwierano: listopada 30, 2025, https://arxiv.org/html/2511.06292v1
+   27. Comparative Study on Energy Consumption of Neural Networks by Scaling of Weight-Memory Energy Versus Computing Energy for Implementing Low-Power Edge Intelligence - MDPI, otwierano: listopada 30, 2025, https://www.mdpi.com/2079-9292/14/13/2718
+   28. ARR Responsible NLP Research checklist - ACL Rolling Review ..., otwierano: listopada 30, 2025, http://aclrollingreview.org/responsibleNLPresearch/
+   29. Investigating Energy Efficiency and Performance Trade-offs in LLM Inference Across Tasks and DVFS Settings - arXiv, otwierano: listopada 30, 2025, https://arxiv.org/html/2501.08219v1
+   30. CodeCarbon, otwierano: listopada 30, 2025, https://codecarbon.io/
+   31. codecarbon 2.1.4 - PyPI, otwierano: listopada 30, 2025, https://pypi.org/project/codecarbon/2.1.4/
+   32. LLMCARBON: MODELING THE END-TO-END CAR- BON FOOTPRINT OF LARGE LANGUAGE MODELS - ICLR Proceedings, otwierano: listopada 30, 2025, https://proceedings.iclr.cc/paper_files/paper/2024/file/6b4ac044095525631df38e20919b45d2-Paper-Conference.pdf
+   33. LLMCarbon: Modeling the end-to-end Carbon Footprint of Large Language Models, otwierano: listopada 30, 2025, https://www.semanticscholar.org/paper/LLMCarbon%3A-Modeling-the-end-to-end-Carbon-Footprint-Faiz-Kaneda/32479758dc9ff9820828a12aa7f3d066f187dc1c
+   34. Carbon Footprint of LLM Fine Tuning — A Case Study | by Kasper Groes Albin Ludvigsen, otwierano: listopada 30, 2025, https://medium.com/data-science/carbon-footprint-of-llm-fine-tuning-a-case-study-7703afc716a9
+   35. Usefulness of LLMs as an Author Checklist Assistant for Scientific Papers: NeurIPS'24 Experiment - arXiv, otwierano: listopada 30, 2025, https://arxiv.org/html/2411.03417v2
+   36. Development, Evaluation, and Assessment of Large Language ..., otwierano: listopada 30, 2025, https://www.equator-network.org/reporting-guidelines/development-evaluation-and-assessment-of-large-language-models-deal-checklist/
+   37. A Targeted Guideline For Reporting ... - The TRIPOD-LLM Statement, otwierano: listopada 30, 2025, https://www.tripod-statement.org/wp-content/uploads/2025/01/TRIPOD-LLM-Checklist.pdf

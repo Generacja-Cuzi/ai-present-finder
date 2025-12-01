@@ -1,0 +1,501 @@
+%% Creator: Inkscape 1.4.2 (ebf0e940, 2025-05-08), www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'C4_Context_MVP_svg-tex.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \newcommand*\fsize{\dimexpr\f@size pt\relax}%
+  \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{1157.00033569bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,0.96292432)%
+    \lineheight{1}%
+    \setlength\tabcolsep{0pt}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.30775318,0.91274428){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{User}\end{tabular}}}}%
+    \put(0.31846418,0.90178268){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.26172205,0.8910945){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Person\end{tabular}}}}%
+    \put(0.2913405,0.8910945){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.29421195,0.8910945){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}searching\end{tabular}}}}%
+    \put(0.33681395,0.8910945){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.33968539,0.8910945){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}for\end{tabular}}}}%
+    \put(0.35231001,0.8910945){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.3551815,0.8910945){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}a\end{tabular}}}}%
+    \put(0.3601932,0.8910945){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.36306465,0.8910945){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}gift\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=2]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.25945325,0.78969914){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{REST}\end{tabular}}}}%
+    \put(0.28591917,0.78969914){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.2893376,0.78969914){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{API}\end{tabular}}}}%
+    \put(0.3067739,0.78969914){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.31019227,0.78969914){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Macroservice}\end{tabular}}}}%
+    \put(0.3184623,0.77873754){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.26133908,0.76804936){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Main\end{tabular}}}}%
+    \put(0.28242295,0.76804936){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.2852944,0.76804936){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}entry\end{tabular}}}}%
+    \put(0.30783168,0.76804936){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.31070312,0.76804936){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}point\end{tabular}}}}%
+    \put(0.33363923,0.76804936){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.33651072,0.76804936){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}providing\end{tabular}}}}%
+    \put(0.28642213,0.75736117){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}HTTP\end{tabular}}}}%
+    \put(0.30958422,0.75736117){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.31245568,0.75736117){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}REST\end{tabular}}}}%
+    \put(0.33373894,0.75736117){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.33661038,0.75736117){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}API,\end{tabular}}}}%
+    \put(0.26068767,0.746673){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}authentication,\end{tabular}}}}%
+    \put(0.32681957,0.746673){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.32969103,0.746673){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}and\end{tabular}}}}%
+    \put(0.3460468,0.746673){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.34891817,0.746673){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}SSE\end{tabular}}}}%
+    \put(0.36361222,0.746673){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.36648367,0.746673){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}for\end{tabular}}}}%
+    \put(0.28028931,0.73598488){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}real-time\end{tabular}}}}%
+    \put(0.32149101,0.73598488){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.32436246,0.73598488){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}updates\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=3]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.27888401,0.5067023){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Gift}\end{tabular}}}}%
+    \put(0.29849291,0.5067023){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.30191128,0.5067023){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Ideas}\end{tabular}}}}%
+    \put(0.33026112,0.5067023){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.33367951,0.5067023){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Microservice}\end{tabular}}}}%
+    \put(0.33855899,0.49574062){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.30309125,0.48505246){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Orchestrates\end{tabular}}}}%
+    \put(0.35901354,0.48505246){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.36188503,0.48505246){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}gift\end{tabular}}}}%
+    \put(0.2788612,0.47436429){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}recommendations\end{tabular}}}}%
+    \put(0.35806086,0.47436429){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.36093231,0.47436429){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}based\end{tabular}}}}%
+    \put(0.38705007,0.47436429){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.38992152,0.47436429){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}on\end{tabular}}}}%
+    \put(0.29857142,0.46367617){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}keywords\end{tabular}}}}%
+    \put(0.34029156,0.46367617){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.34316301,0.46367617){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}and\end{tabular}}}}%
+    \put(0.3595187,0.46367617){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.36239019,0.46367617){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}user\end{tabular}}}}%
+    \put(0.3141915,0.452988){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}preferences\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=4]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.36206528,0.63831852){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Stalking}\end{tabular}}}}%
+    \put(0.40525347,0.63831852){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.40867182,0.63831852){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Microservice}\end{tabular}}}}%
+    \put(0.41764577,0.62735686){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.35826264,0.61666865){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Scrapes\end{tabular}}}}%
+    \put(0.39191791,0.61666865){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.3947894,0.61666865){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}and\end{tabular}}}}%
+    \put(0.41114513,0.61666865){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.41401662,0.61666865){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}analyzes\end{tabular}}}}%
+    \put(0.4519215,0.61666865){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.45479294,0.61666865){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}social\end{tabular}}}}%
+    \put(0.36482749,0.60598049){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}media\end{tabular}}}}%
+    \put(0.39170304,0.60598049){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.39457449,0.60598049){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}profiles\end{tabular}}}}%
+    \put(0.42783989,0.60598049){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.43071134,0.60598049){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}to\end{tabular}}}}%
+    \put(0.43968014,0.60598049){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.44255159,0.60598049){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}extract\end{tabular}}}}%
+    \put(0.36811112,0.59529232){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}interests\end{tabular}}}}%
+    \put(0.40623305,0.59529232){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.40910454,0.59529232){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}and\end{tabular}}}}%
+    \put(0.42546031,0.59529232){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.42833176,0.59529232){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}keywords\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=5]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.16332285,0.64365991){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Chat}\end{tabular}}}}%
+    \put(0.18782386,0.64365991){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.19124223,0.64365991){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Microservice}\end{tabular}}}}%
+    \put(0.2095598,0.63269825){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.16803016,0.62201009){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Conducts\end{tabular}}}}%
+    \put(0.20952874,0.62201009){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.2124002,0.62201009){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}AI-driven\end{tabular}}}}%
+    \put(0.16719926,0.61132188){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}interviews\end{tabular}}}}%
+    \put(0.21161364,0.61132188){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.21448509,0.61132188){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}to\end{tabular}}}}%
+    \put(0.22345391,0.61132188){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.22632538,0.61132188){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}gather\end{tabular}}}}%
+    \put(0.15787593,0.60063372){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}additional\end{tabular}}}}%
+    \put(0.20179402,0.60063372){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.20466548,0.60063372){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}context\end{tabular}}}}%
+    \put(0.23793079,0.60063372){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.24080224,0.60063372){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}when\end{tabular}}}}%
+    \put(0.19488345,0.58994559){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}needed\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=6]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.31946257,0.36066295){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Fetch}\end{tabular}}}}%
+    \put(0.34803018,0.36066295){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.35144853,0.36066295){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Microservice}\end{tabular}}}}%
+    \put(0.36773273,0.34970135){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.30457639,0.33901319){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Fetches\end{tabular}}}}%
+    \put(0.33785505,0.33901319){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.34072654,0.33901319){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}product\end{tabular}}}}%
+    \put(0.37511301,0.33901319){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.37798441,0.33901319){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}listings\end{tabular}}}}%
+    \put(0.4097919,0.33901319){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.41266335,0.33901319){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}from\end{tabular}}}}%
+    \put(0.32168988,0.32832498){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}multiple\end{tabular}}}}%
+    \put(0.35782672,0.32832498){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.36069808,0.32832498){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}e-commerce\end{tabular}}}}%
+    \put(0.34845463,0.31763682){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}providers\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=7]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.09908813,0.23439471){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Reranking}\end{tabular}}}}%
+    \put(0.15353423,0.23439471){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.15695259,0.23439471){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Microservice}\end{tabular}}}}%
+    \put(0.16029757,0.223433){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.09951414,0.21274483){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Reranks\end{tabular}}}}%
+    \put(0.13459631,0.21274483){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.13746777,0.21274483){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}and\end{tabular}}}}%
+    \put(0.15382352,0.21274483){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.15669498,0.21274483){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}filters\end{tabular}}}}%
+    \put(0.18206825,0.21274483){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.18493971,0.21274483){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}products\end{tabular}}}}%
+    \put(0.10344688,0.20205667){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}based\end{tabular}}}}%
+    \put(0.12956464,0.20205667){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.13243609,0.20205667){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}on\end{tabular}}}}%
+    \put(0.14364272,0.20205667){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.14651417,0.20205667){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}user\end{tabular}}}}%
+    \put(0.16554193,0.20205667){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.16841338,0.20205667){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}preferences\end{tabular}}}}%
+    \put(0.13548704,0.19136858){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}and\end{tabular}}}}%
+    \put(0.15184274,0.19136858){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.15471419,0.19136858){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}context\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=8]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.57348387,0.22370536){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Allegro}\end{tabular}}}}%
+    \put(0.59136842,0.21274373){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.52999119,0.20205556){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Polish\end{tabular}}}}%
+    \put(0.5560868,0.20205556){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.55895824,0.20205556){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}e-commerce\end{tabular}}}}%
+    \put(0.61490719,0.20205556){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.61777864,0.20205556){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}platform\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=9]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.73318233,0.22370536){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Amazon}\end{tabular}}}}%
+    \put(0.75342434,0.21274373){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.69104348,0.20205556){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Global\end{tabular}}}}%
+    \put(0.71914636,0.20205556){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.72201789,0.20205556){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}e-commerce\end{tabular}}}}%
+    \put(0.7779668,0.20205556){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.78083817,0.20205556){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}platform\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=10]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.29067132,0.22370536){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{eBay}\end{tabular}}}}%
+    \put(0.3016127,0.21274373){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.26030243,0.20205556){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Online\end{tabular}}}}%
+    \put(0.28891944,0.20205556){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.29179088,0.20205556){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}marketplace\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=11]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.42713714,0.22904683){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{OLX}\end{tabular}}}}%
+    \put(0.43644529,0.21808512){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.38165072,0.20739695){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Classified\end{tabular}}}}%
+    \put(0.42416852,0.20739695){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.42703997,0.20739695){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}advertisements\end{tabular}}}}%
+    \put(0.41896181,0.19670879){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}platform\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=12]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.51413049,0.35532164){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{OpenAI}\end{tabular}}}}%
+    \put(0.53238212,0.34435996){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.46924577,0.3336718){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}LLM\end{tabular}}}}%
+    \put(0.48674033,0.3336718){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.48961177,0.3336718){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}for\end{tabular}}}}%
+    \put(0.50223643,0.3336718){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.5051078,0.3336718){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}analysis\end{tabular}}}}%
+    \put(0.54000394,0.3336718){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.54287531,0.3336718){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}and\end{tabular}}}}%
+    \put(0.55923108,0.3336718){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.56210253,0.3336718){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}gift\end{tabular}}}}%
+    \put(0.57711555,0.3336718){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.57998704,0.3336718){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}idea\end{tabular}}}}%
+    \put(0.51014174,0.32298359){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}generation\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=13]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.03710781,0.0990446){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Google}\end{tabular}}}}%
+    \put(0.07438092,0.0990446){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.07779929,0.0990446){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Gemini}\end{tabular}}}}%
+    \put(0.07473038,0.08808304){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.01563526,0.07739488){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}LLM\end{tabular}}}}%
+    \put(0.03312983,0.07739488){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.03600128,0.07739488){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}for\end{tabular}}}}%
+    \put(0.04862592,0.07739488){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.05149731,0.07739488){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}chat\end{tabular}}}}%
+    \put(0.0701839,0.07739488){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.07305536,0.07739488){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}interviews\end{tabular}}}}%
+    \put(0.11746974,0.07739488){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.12034119,0.07739488){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}and\end{tabular}}}}%
+    \put(0.0412988,0.06670663){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}product\end{tabular}}}}%
+    \put(0.07568529,0.06670663){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.07855674,0.06670663){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}scoring\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=14]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.73214882,0.50135442){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{BrightData}\end{tabular}}}}%
+    \put(0.75926299,0.49039274){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.70044927,0.47970458){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Web\end{tabular}}}}%
+    \put(0.71898074,0.47970458){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.72185219,0.47970458){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}scraping\end{tabular}}}}%
+    \put(0.75947782,0.47970458){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.76234927,0.47970458){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}proxy\end{tabular}}}}%
+    \put(0.78765619,0.47970458){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.79052756,0.47970458){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}service\end{tabular}}}}%
+    \put(0.71452283,0.46901641){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}for\end{tabular}}}}%
+    \put(0.72714745,0.46901641){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.7300189,0.46901641){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}social\end{tabular}}}}%
+    \put(0.75512634,0.46901641){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.75799779,0.46901641){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}media\end{tabular}}}}%
+    \put(0.78487337,0.46901641){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.78774482,0.46901641){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}data\end{tabular}}}}%
+    \put(0.73949963,0.45832829){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}collection\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=15]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.54379147,0.63297058){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Google}\end{tabular}}}}%
+    \put(0.58106458,0.63297058){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.58448301,0.63297058){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{OAuth}\end{tabular}}}}%
+    \put(0.57970233,0.62200898){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.52129847,0.61132077){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Authentication\end{tabular}}}}%
+    \put(0.58580855,0.61132077){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.58868003,0.61132077){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}provider\end{tabular}}}}%
+    \put(0.62548149,0.61132077){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.62835294,0.61132077){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}for\end{tabular}}}}%
+    \put(0.55913241,0.60063261){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}user\end{tabular}}}}%
+    \put(0.57816026,0.60063261){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.58103162,0.60063261){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}login\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=16]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.9183793,0.34997376){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Instagram}\end{tabular}}}}%
+    \put(0.94400709,0.33901208){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.89752997,0.32832392){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Social\end{tabular}}}}%
+    \put(0.92289885,0.32832392){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.9257703,0.32832392){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}media\end{tabular}}}}%
+    \put(0.95264581,0.32832392){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.95551725,0.32832392){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}platform\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=17]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.66354467,0.34997376){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{TikTok}\end{tabular}}}}%
+    \put(0.68082653,0.33901208){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.63434944,0.32832392){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Social\end{tabular}}}}%
+    \put(0.65971829,0.32832392){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.66258974,0.32832392){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}media\end{tabular}}}}%
+    \put(0.68946524,0.32832392){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.69233669,0.32832392){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}platform\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=18]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.78550269,0.34997376){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{X}\end{tabular}}}}%
+    \put(0.7924205,0.34997376){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.79583889,0.34997376){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{(Twitter)}\end{tabular}}}}%
+    \put(0.81241681,0.33901208){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.76593969,0.32832392){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Social\end{tabular}}}}%
+    \put(0.79130857,0.32832392){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.79418002,0.32832392){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}media\end{tabular}}}}%
+    \put(0.82105552,0.32832392){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.82392697,0.32832392){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}platform\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=19]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.27331548,0.85508407){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Authenticates}\end{tabular}}}}%
+    \put(0.32858318,0.85508407){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.33114701,0.85508407){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{\&}\end{tabular}}}}%
+    \put(0.25961531,0.8459228){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{provides}\end{tabular}}}}%
+    \put(0.29452848,0.8459228){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.2970923,0.8459228){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{social}\end{tabular}}}}%
+    \put(0.32023098,0.8459228){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.32279473,0.8459228){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{links}\end{tabular}}}}%
+    \put(0.34228337,0.8459228){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.34484716,0.8459228){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{\&}\end{tabular}}}}%
+    \put(0.2814626,0.83676152){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{preferences}\end{tabular}}}}%
+    \put(0.28223937,0.82760025){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[HTTPS/SSE]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=20]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.35749774,0.85054648){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Sends}\end{tabular}}}}%
+    \put(0.38116059,0.85054648){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.38372438,0.85054648){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{real-time}\end{tabular}}}}%
+    \put(0.37353568,0.8413852){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{updates}\end{tabular}}}}%
+    \put(0.38075798,0.83222393){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[SSE]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=21]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.474827,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Validates}\end{tabular}}}}%
+    \put(0.51173042,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.51429425,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{OAuth}\end{tabular}}}}%
+    \put(0.5397954,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.54235919,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{tokens}\end{tabular}}}}%
+    \put(0.50759611,0.68627073){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[HTTPS]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=22]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.58518782,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Returns}\end{tabular}}}}%
+    \put(0.61641671,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.61898054,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{user}\end{tabular}}}}%
+    \put(0.63658141,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.6391452,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{info}\end{tabular}}}}%
+    \put(0.60553103,0.68627073){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[HTTPS]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=23]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.37901891,0.69996959){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Initiates}\end{tabular}}}}%
+    \put(0.41159993,0.69996959){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.41416376,0.69996959){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{stalking}\end{tabular}}}}%
+    \put(0.39644135,0.69080833){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{analysis}\end{tabular}}}}%
+    \put(0.3917809,0.68164704){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[RabbitMQ]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=24]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.15784352,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Initiates}\end{tabular}}}}%
+    \put(0.19042455,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.19298836,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{interview}\end{tabular}}}}%
+    \put(0.17308194,0.68627073){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[RabbitMQ]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=25]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.25896708,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Sends}\end{tabular}}}}%
+    \put(0.28262994,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.28519375,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{questions}\end{tabular}}}}%
+    \put(0.32456976,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.32713357,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{to}\end{tabular}}}}%
+    \put(0.33525411,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.33781794,0.69543199){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{user}\end{tabular}}}}%
+    \put(0.28620977,0.68627073){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[RabbitMQ]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=26]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.59532611,0.55393681){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Requests}\end{tabular}}}}%
+    \put(0.63202059,0.55393681){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.63458442,0.55393681){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{scraping}\end{tabular}}}}%
+    \put(0.61768998,0.54477553){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[HTTPS]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=27]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.87569769,0.4124351){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Scrapes}\end{tabular}}}}%
+    \put(0.87654849,0.40327385){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[HTTPS]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=28]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.72681914,0.4124351){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Scrapes}\end{tabular}}}}%
+    \put(0.72766994,0.40327385){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[HTTPS]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=29]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.79424783,0.4124351){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Scrapes}\end{tabular}}}}%
+    \put(0.79509863,0.40327385){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[HTTPS]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=30]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.51264464,0.4899891){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Analyzes}\end{tabular}}}}%
+    \put(0.54867067,0.4899891){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.55123446,0.4899891){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{content}\end{tabular}}}}%
+    \put(0.58142264,0.4899891){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.58398639,0.4899891){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{for}\end{tabular}}}}%
+    \put(0.53478821,0.48082782){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{keywords}\end{tabular}}}}%
+    \put(0.53962899,0.47166653){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[HTTPS]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=31]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.38491777,0.55393681){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Sends}\end{tabular}}}}%
+    \put(0.40858063,0.55393681){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.41114442,0.55393681){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{keywords}\end{tabular}}}}%
+    \put(0.39643964,0.54477553){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[RabbitMQ]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=32]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.08394552,0.34929771){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Generates}\end{tabular}}}}%
+    \put(0.12418758,0.34929771){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.12675139,0.34929771){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{interview}\end{tabular}}}}%
+    \put(0.1043096,0.34013643){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{questions}\end{tabular}}}}%
+    \put(0.10944668,0.33097515){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[HTTPS]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=33]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.27582101,0.55393681){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Sends}\end{tabular}}}}%
+    \put(0.29948386,0.55393681){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.30204767,0.55393681){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{interview}\end{tabular}}}}%
+    \put(0.33934605,0.55393681){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.34190988,0.55393681){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{results}\end{tabular}}}}%
+    \put(0.30172291,0.54477553){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[RabbitMQ]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=34]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.43593332,0.4124351){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Generates}\end{tabular}}}}%
+    \put(0.47617537,0.4124351){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.4787392,0.4124351){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{gift}\end{tabular}}}}%
+    \put(0.49277735,0.4124351){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.49534114,0.4124351){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ideas}\end{tabular}}}}%
+    \put(0.46169279,0.40327385){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[HTTPS]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=35]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.33869912,0.41697269){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Requests}\end{tabular}}}}%
+    \put(0.37539364,0.41697269){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.37795743,0.41697269){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{product}\end{tabular}}}}%
+    \put(0.35904614,0.40781145){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{listings}\end{tabular}}}}%
+    \put(0.35295191,0.39865016){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[RabbitMQ]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=36]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.52479243,0.28162919){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Fetches}\end{tabular}}}}%
+    \put(0.55517427,0.28162919){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.55773807,0.28162919){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{products}\end{tabular}}}}%
+    \put(0.53652696,0.2724679){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[HTTPS/API]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=37]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.65251277,0.28162919){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Fetches}\end{tabular}}}}%
+    \put(0.68289465,0.28162919){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.68545845,0.28162919){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{products}\end{tabular}}}}%
+    \put(0.66424734,0.2724679){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[HTTPS/API]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=38]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.34129204,0.28162919){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Fetches}\end{tabular}}}}%
+    \put(0.37167388,0.28162919){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.37423772,0.28162919){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{products}\end{tabular}}}}%
+    \put(0.35302657,0.2724679){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[HTTPS/API]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=39]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.42228164,0.28162919){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Fetches}\end{tabular}}}}%
+    \put(0.45266349,0.28162919){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.45522732,0.28162919){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{products}\end{tabular}}}}%
+    \put(0.43401618,0.2724679){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[HTTPS/API]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=40]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.23174151,0.28162919){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Sends}\end{tabular}}}}%
+    \put(0.25540436,0.28162919){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.25796817,0.28162919){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{fetched}\end{tabular}}}}%
+    \put(0.28786385,0.28162919){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.29042766,0.28162919){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{products}\end{tabular}}}}%
+    \put(0.25790736,0.2724679){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[RabbitMQ]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=41]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.12726012,0.15535434){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Scores}\end{tabular}}}}%
+    \put(0.15330443,0.15535434){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.15586824,0.15535434){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{products}\end{tabular}}}}%
+    \put(0.19148025,0.15535434){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.19404407,0.15535434){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{for}\end{tabular}}}}%
+    \put(0.14742863,0.14619306){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{relevance}\end{tabular}}}}%
+    \put(0.15196558,0.13703185){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[HTTPS]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=42]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.19608897,0.35837291){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Requests}\end{tabular}}}}%
+    \put(0.23278346,0.35837291){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.23534727,0.35837291){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{regeneration}\end{tabular}}}}%
+    \put(0.20760136,0.34921162){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{with}\end{tabular}}}}%
+    \put(0.22510352,0.34921162){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.22766727,0.34921162){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{feedback}\end{tabular}}}}%
+    \put(0.26395164,0.34921162){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.26651537,0.34921162){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{(if}\end{tabular}}}}%
+    \put(0.20717782,0.34005034){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{insufficient}\end{tabular}}}}%
+    \put(0.25279058,0.34005034){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.25535437,0.34005034){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{good}\end{tabular}}}}%
+    \put(0.22212952,0.33088905){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{products)}\end{tabular}}}}%
+    \put(0.2203937,0.32172781){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[RabbitMQ]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=43]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.00649492,0.4899891){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Sends}\end{tabular}}}}%
+    \put(0.03015777,0.4899891){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.03272158,0.4899891){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{final}\end{tabular}}}}%
+    \put(0.05068715,0.4899891){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{ }\end{tabular}}}}%
+    \put(0.05325089,0.4899891){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{gift}\end{tabular}}}}%
+    \put(0.00097234,0.48082782){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{recommendations}\end{tabular}}}}%
+    \put(0.01590881,0.47166653){\color[rgb]{0.4,0.4,0.4}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textit{[RabbitMQ]}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=44]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.89397041,0.03397872){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{Legend}\end{tabular}}}}%
+    \put(0.93083403,0.03397872){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=45]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.89684186,0.02329063){\color[rgb]{0.02745098,0.23137255,0.43529412}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}▯\end{tabular}}}}%
+    \put(0.90230559,0.02329063){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=46]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.91929704,0.02329063){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}person\end{tabular}}}}%
+    \put(0.95248264,0.02329063){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=47]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.89684186,0.01260246){\color[rgb]{0.23529412,0.49803922,0.75294118}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}▯\end{tabular}}}}%
+    \put(0.90230559,0.01260246){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.90804856,0.01260246){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}system\end{tabular}}}}%
+    \put(0.94183673,0.01260246){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=48]{C4_Context_MVP_svg-tex.pdf}}%
+    \put(0.89684186,0.0019143){\color[rgb]{0.54117647,0.54117647,0.54117647}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}▯\end{tabular}}}}%
+    \put(0.90230559,0.0019143){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0.90804856,0.0019143){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}external system\end{tabular}}}}%
+    \put(0.98076088,0.0019143){\color[rgb]{1,1,1}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l} \end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=49]{C4_Context_MVP_svg-tex.pdf}}%
+  \end{picture}%
+\endgroup%

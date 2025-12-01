@@ -1,0 +1,21 @@
+# LaTeX build artifacts
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.bbl
+*.blg
+*.dvi
+*.nav
+*.snm
+*.vrb
+
+# PDF output (optional, uncomment if you want to ignore generated PDFs)
+# *.pdf
+
+# Editor temporary files
+*.swp
+*~

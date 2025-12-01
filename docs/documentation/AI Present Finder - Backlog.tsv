@@ -1,0 +1,87 @@
+Title	URL	Assignees	Status	Priority	Estimate	Size	Iteration
+feat(searching): make this progress actually represend the state of processing and not mock it for some duration	https://github.com/Generacja-Cuzi/ai-present-finder/issues/123		Backlog				
+docs: update BPMN	https://github.com/Generacja-Cuzi/ai-present-finder/issues/64		Todo			S	MVP Iteration
+feat(searching): make this glow/animate	https://github.com/Generacja-Cuzi/ai-present-finder/issues/121	Rei-x	Todo			XS	Deploy Iteration
+feat: add google products			Todo				
+feat: add chosen preset to feeback			Todo				
+feat: better UI (especially on desktop)	https://github.com/Generacja-Cuzi/ai-present-finder/issues/154		Todo				
+feat: better auth UI			Todo				
+feat: add history tracking	https://github.com/Generacja-Cuzi/ai-present-finder/issues/177	unewMe	Done			M	Deploy Iteration
+feat: add multi reviews	https://github.com/Generacja-Cuzi/ai-present-finder/issues/180	unewMe	Done			M	Deploy Iteration
+fix(recommendations): change dollars to PLN	https://github.com/Generacja-Cuzi/ai-present-finder/issues/143	D0dii	Done			XS	Deploy Iteration
+feat: ask for budget before starting		unewMe	Done				
+fix: translate app to polish	https://github.com/Generacja-Cuzi/ai-present-finder/issues/148	D0dii	Done			S	Deploy Iteration
+feat: add nice landing page	https://github.com/Generacja-Cuzi/ai-present-finder/issues/122	D0dii	Done				
+feat(chat): prompt engineering	https://github.com/Generacja-Cuzi/ai-present-finder/issues/30	simon-the-shark	Done			L	Deploy Iteration
+feat: seo	https://github.com/Generacja-Cuzi/ai-present-finder/issues/160	Rei-x	Done				
+UI designs	https://github.com/Generacja-Cuzi/ai-present-finder/issues/46	Rei-x	Done				POC iteration
+feat: add auth on frontend	https://github.com/Generacja-Cuzi/ai-present-finder/issues/110	D0dii	Done			M	MVP Iteration
+POC scrapera Facebooka, Instagrama i Tiktoka	https://github.com/Generacja-Cuzi/ai-present-finder/issues/8	Rei-x	Done			XL	POC iteration
+refactor: move gift search to new services	https://github.com/Generacja-Cuzi/ai-present-finder/issues/42	unewMe	Done			L	MVP Iteration
+add solvro config	https://github.com/Generacja-Cuzi/ai-present-finder/issues/16	Rei-x	Done			S	POC iteration
+Diagram C4	https://github.com/Generacja-Cuzi/ai-present-finder/issues/4	unewMe	Done			S	Design Iteration
+Diagram C4 - wersja jako mikroserwisy	https://github.com/Generacja-Cuzi/ai-present-finder/issues/5	simon-the-shark	Done			XS	Design Iteration
+Diagram klas	https://github.com/Generacja-Cuzi/ai-present-finder/issues/6	D0dii	Done			S	Design Iteration
+Diagram BPMN	https://github.com/Generacja-Cuzi/ai-present-finder/issues/7	Rei-x	Done			S	Design Iteration
+Gift Search POC	https://github.com/Generacja-Cuzi/ai-present-finder/issues/9	D0dii, unewMe	Done			S	POC iteration
+NestJS boilerplate z zmockowanymi eventami	https://github.com/Generacja-Cuzi/ai-present-finder/issues/10	unewMe	Done			L	POC iteration
+development env fixes	https://github.com/Generacja-Cuzi/ai-present-finder/issues/19	simon-the-shark	Done			XS	POC iteration
+set up basic frontend project	https://github.com/Generacja-Cuzi/ai-present-finder/issues/21	simon-the-shark	Done			XS	POC iteration
+Chat Service POC	https://github.com/Generacja-Cuzi/ai-present-finder/issues/11	simon-the-shark	Done			M	POC iteration
+add basic SSE setup	https://github.com/Generacja-Cuzi/ai-present-finder/issues/23	simon-the-shark	Done			S	POC iteration
+actually integrate chatbot POC into microservices and refactor event flow	https://github.com/Generacja-Cuzi/ai-present-finder/issues/24	simon-the-shark	Done			M	POC iteration
+EPIC: integrate chat POC with microservices setup	https://github.com/Generacja-Cuzi/ai-present-finder/issues/20	simon-the-shark	Done				POC iteration
+feat: add full chatid/session persistance across site visits	https://github.com/Generacja-Cuzi/ai-present-finder/issues/63		Done			L	MVP Iteration
+add swagger + open API	https://github.com/Generacja-Cuzi/ai-present-finder/issues/26	unewMe	Done			S	POC iteration
+Project Premise	https://github.com/Generacja-Cuzi/ai-present-finder/issues/47	simon-the-shark	Done			S	POC iteration
+feat(gift): extract and implement gift ideas microservice	https://github.com/Generacja-Cuzi/ai-present-finder/issues/53	simon-the-shark	Done			M	MVP Iteration
+feat: parrarelize stalking and interview in the event flow	https://github.com/Generacja-Cuzi/ai-present-finder/issues/62	simon-the-shark	Done			M	MVP Iteration
+feat: update sequence diagram with new architecture	https://github.com/Generacja-Cuzi/ai-present-finder/issues/54	simon-the-shark	Done			S	MVP Iteration
+docs: update async api	https://github.com/Generacja-Cuzi/ai-present-finder/issues/60	simon-the-shark	Done			S	MVP Iteration
+refactor: extract reranking microservice, set initial contracts and refactor events tracking	https://github.com/Generacja-Cuzi/ai-present-finder/issues/55	simon-the-shark	Done			L	MVP Iteration
+refactor: extract common domain models to some common package/folder	https://github.com/Generacja-Cuzi/ai-present-finder/issues/27	simon-the-shark	Done			M	MVP Iteration
+docs: update C4 diagrams	https://github.com/Generacja-Cuzi/ai-present-finder/issues/65	Copilot	Done			M	MVP Iteration
+feat: add fetch-microservice with gifts api tests	https://github.com/Generacja-Cuzi/ai-present-finder/issues/75	unewMe	Done				MVP Iteration
+refactor(events): move SSE to shared abstraction	https://github.com/Generacja-Cuzi/ai-present-finder/issues/73	unewMe	Done			S	MVP Iteration
+feat(frontend): add home view	https://github.com/Generacja-Cuzi/ai-present-finder/issues/77	unewMe	Done			S	MVP Iteration
+ci: add deployment	https://github.com/Generacja-Cuzi/ai-present-finder/issues/83	Rei-x	Done			L	MVP Iteration
+feat: implement first version of reranking system	https://github.com/Generacja-Cuzi/ai-present-finder/issues/59	D0dii	Done			L	MVP Iteration
+ci: working deployment	https://github.com/Generacja-Cuzi/ai-present-finder/issues/107	Rei-x	Done				
+feat(gift): improve reranking logic	https://github.com/Generacja-Cuzi/ai-present-finder/issues/113	simon-the-shark	Done				MVP Iteration
+feat(reranking): pararelize scoring	https://github.com/Generacja-Cuzi/ai-present-finder/issues/140	simon-the-shark	Done				Deploy Iteration
+feat(reranking): add regeneration loop	https://github.com/Generacja-Cuzi/ai-present-finder/issues/139	simon-the-shark	Done				Deploy Iteration
+fix(history): gift cards show 0 products even if there are some	https://github.com/Generacja-Cuzi/ai-present-finder/issues/120	simon-the-shark	Done			XS	MVP Iteration
+fix(history): Price not available in history (always)	https://github.com/Generacja-Cuzi/ai-present-finder/issues/135	simon-the-shark	Done			XS	Deploy Iteration
+docs: fill in project premise form	https://github.com/Generacja-Cuzi/ai-present-finder/issues/117	simon-the-shark	Done			XS	MVP Iteration
+fix(gifts): improve query prompting for allegro (solve allegro fetching issue)	https://github.com/Generacja-Cuzi/ai-present-finder/issues/124	unewMe	Done				MVP Iteration
+feat(chat): add messages history	https://github.com/Generacja-Cuzi/ai-present-finder/issues/112	simon-the-shark	Done			M	MVP Iteration
+feat(chat): add interview ready to use answers suggestion	https://github.com/Generacja-Cuzi/ai-present-finder/issues/69	simon-the-shark	Done			M	MVP Iteration
+feat: add favorite products	https://github.com/Generacja-Cuzi/ai-present-finder/issues/99	unewMe	Done			L	MVP Iteration
+feat: evals	https://github.com/Generacja-Cuzi/ai-present-finder/issues/86		Done				
+feat(frontend): add chat view	https://github.com/Generacja-Cuzi/ai-present-finder/issues/88	unewMe	Done			M	MVP Iteration
+feat(frontend): add stalking view	https://github.com/Generacja-Cuzi/ai-present-finder/issues/78	unewMe	Done			M	MVP Iteration
+feat(frontend): add recommendation view	https://github.com/Generacja-Cuzi/ai-present-finder/issues/91	unewMe	Done			M	MVP Iteration
+feat: add frontend	https://github.com/Generacja-Cuzi/ai-present-finder/issues/74	unewMe	Done			XL	MVP Iteration
+feat: add typesafe frontend openapi client	https://github.com/Generacja-Cuzi/ai-present-finder/issues/93	simon-the-shark	Done			S	MVP Iteration
+feat(chat): include occasion in the chat context	https://github.com/Generacja-Cuzi/ai-present-finder/issues/94	simon-the-shark	Done			S	MVP Iteration
+feat: add login	https://github.com/Generacja-Cuzi/ai-present-finder/issues/98	unewMe	Done			L	MVP Iteration
+feat: add chat history	https://github.com/Generacja-Cuzi/ai-present-finder/issues/100	unewMe	Done			L	MVP Iteration
+feat: add whole restapi database with repos and handlers	https://github.com/Generacja-Cuzi/ai-present-finder/issues/101	unewMe	Done			L	MVP Iteration
+feat(chat): scroll down on new message	https://github.com/Generacja-Cuzi/ai-present-finder/issues/104	simon-the-shark	Done			XS	MVP Iteration
+fix(chat): messages progress	https://github.com/Generacja-Cuzi/ai-present-finder/issues/105	simon-the-shark	Done			XS	MVP Iteration
+feat(chat): mock first question	https://github.com/Generacja-Cuzi/ai-present-finder/issues/106	simon-the-shark	Done			XS	MVP Iteration
+Design logotype	https://github.com/Generacja-Cuzi/ai-present-finder/issues/116	simon-the-shark	Done			M	MVP Iteration
+fix(history): show actual shop here as well	https://github.com/Generacja-Cuzi/ai-present-finder/issues/145		Done			XS	Deploy Iteration
+fix(history): filters do not work at all there	https://github.com/Generacja-Cuzi/ai-present-finder/issues/144		Done			XS	Deploy Iteration
+feat: add filters	https://github.com/Generacja-Cuzi/ai-present-finder/pull/119	unewMe	Done				MVP Iteration
+feat: add protected endpoints	https://github.com/Generacja-Cuzi/ai-present-finder/issues/128	unewMe	Done				MVP Iteration
+feat: add user profile	https://github.com/Generacja-Cuzi/ai-present-finder/issues/130	unewMe	Done				Deploy Iteration
+feat: add refresh token	https://github.com/Generacja-Cuzi/ai-present-finder/issues/176	unewMe	Done			XS	Deploy Iteration
+feat: add price range	https://github.com/Generacja-Cuzi/ai-present-finder/issues/178	unewMe	Done			S	Deploy Iteration
+feat: add refinement prompt	https://github.com/Generacja-Cuzi/ai-present-finder/issues/179	unewMe	Done			M	Deploy Iteration
+feat(auth): add permissions	https://github.com/Generacja-Cuzi/ai-present-finder/issues/131	unewMe	Done				Deploy Iteration
+feat(admin-panel): add admin panel with user forms	https://github.com/Generacja-Cuzi/ai-present-finder/issues/132	unewMe	Done				Deploy Iteration
+fix(recomendations): "leave review" button on frontend	https://github.com/Generacja-Cuzi/ai-present-finder/issues/149	D0dii	Done				Deploy Iteration
+fix(reranking): remove duplicates	https://github.com/Generacja-Cuzi/ai-present-finder/issues/152	simon-the-shark	Done			S	Deploy Iteration
+fix: add/remove favorites bug	https://github.com/Generacja-Cuzi/ai-present-finder/issues/156	D0dii	Done				
+feat: add refresh token	https://github.com/Generacja-Cuzi/ai-present-finder/issues/165	unewMe	Done				

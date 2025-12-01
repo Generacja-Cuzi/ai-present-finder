@@ -1,66 +1,79 @@
-# TODO – dopieszczenie dokumentacji `docs/documentation/main.tex`
+# Krytyczny przegląd dokumentacji `docs/documentation/main.tex`
 
-1. **Dodać krótkie mostki między dużymi sekcjami**
+## 1. Sekcja: Wykaz symboli, oznaczeń i akronimów
 
-- Po `\section{Analiza wymagań i sposób pracy}` dodać 1–2 zdania podsumowania typu:
-  „Na podstawie tak zebranych i iteracyjnie doprecyzowywanych wymagań przygotowano poniższą specyfikację produktu programowego.”
-- Przed `\section{Specyfikacja wymagań na produkt programowy}` dodać zdanie łączące analizę z SRS:
-  „Poniższa specyfikacja formalizuje wymagania zidentyfikowane w trakcie kolejnych iteracji i pracy z backlogiem.”
-- Przed `\section{Projekt produktu programowego}` dodać zdanie łączące SRS z architekturą:
-  „Zdefiniowane wymagania funkcjonalne i niefunkcjonalne zostały odwzorowane w poniższej architekturze mikroserwisowej.”
-- Przed `\section{Model danych i baza danych}` dopisać:
-  „Aby wesprzeć zdefiniowane przypadki użycia i architekturę, zaprojektowano model danych odzwierciedlający kluczowe byty domenowe.”
-- Przed `\section{Modelowanie behawioralne}` dopisać:
-  „Po ustaleniu struktury systemu kluczowe było opisanie jego zachowania w czasie w postaci sekwencji, stanów i procesów biznesowych.”
-- Przed `\section{Prototypowanie interfejsu}` dopisać:
-  „Na podstawie powyższych modeli zaprojektowano interfejs użytkownika, który prowadzi przez najważniejsze przepływy w możliwie naturalny sposób.”
+- **Braki:** Brakuje definicji dla akronimów używanych w dalszej części tekstu: **MVP**, **POC**, **SPA**, **DTO**, **XAI**.
+- **Definicje:** Definicja "VPS" ("Wirtualny serwer prywatny") jest bardzo ogólna, warto dodać kontekst (np. hosting).
+- **Wniosek:** Dodać brakujące akronimy do tabeli.
 
-2. **Rozważyć zmianę kolejności „Implementacja” i „Testy”**
+## 2. Sekcja: Cel i zakres przedsięwzięcia
 
-- Obecnie: `Prototypowanie` → `Testy` → `Implementacja` → `Wyniki i analiza badań`.
-- Propozycja: `Prototypowanie` → `Implementacja` → `Testy` → `Wyniki i analiza badań`.
-- Dzięki temu czytelnik najpierw widzi, _jak to zbudowaliśmy_, potem _jak to przetestowaliśmy_, a na końcu _jakie są efekty_.
+- **Terminologia:** W sekcji 2.4 pojawia się termin "Agentic Commerce", który nie jest zdefiniowany ani w słowniku, ani w akronimach.
+- **Spójność:** Zakres projektu (2.3) jasno definiuje "co nie wchodzi w zakres", co jest dobrą praktyką.
 
-3. **Dopisać 2–3 „mikro-historie” / mini–case study**
+## 3. Sekcja: Słownik pojęć
 
-- W `\section{Analiza wymagań i sposób pracy}` (np. przy MVP) dodać krótką anegdotę typu:
-  „W trakcie implementacji MVP okazało się, że standardowe wyszukiwanie produktów generuje dużo szumu (duplikaty, części zamienne), co doprowadziło do powstania modułu rerankingu z XAI.”
-- W `\section{Wyniki i analiza badań}` dodać 1–2 zdania z konkretnego scenariusza użytkownika, np.:
-  „Przykładowo, w jednej z sesji użytkownik szukał prezentu dla fotografa–amatora, a system zaproponował m.in. analogowy aparat z OLX oraz kurs fotografii, co zostało ocenione na 5/5 gwiazdek.”
-- W `\section{Testy}` krótko wspomnieć o jednym konkretnym ryzyku, które testy miały wychwycić (np. awaria jednego z fetch-microservices i wpływ na wyniki).
+- **Definicje:** Definicja "AI Present Finder" jest nieco rekurencyjna.
+- **Wniosek:** Jest OK, ale warto sprawdzić czy wszystkie kluczowe pojęcia z "Implementacji" (np. Reranking) są tu ujęte.
 
-4. **Ujednolicić ton i czas gramatyczny**
+## 4. Sekcja: Stan wiedzy w obszarze przedsięwzięcia
 
-- Przejrzeć sekcje pod kątem mieszania czasu teraźniejszego i przeszłego.
-- Ustalić konwencję:
-- opis architektury, implementacji i prac projektowych: czas przeszły dokonany („zaprojektowano”, „zaimplementowano”, „przeprowadzono testy”),
-- opis zachowania systemu z perspektywy użytkownika: czas teraźniejszy („użytkownik wchodzi na stronę, system analizuje profil, wyświetlane są propozycje”).
+- **Tabela:** Tabela porównawcza jest czytelna.
+- **Wniosek:** Sekcja jest solidna.
 
-5. **Drobne wygładzenie językowe pod płynność**
+## 5. Sekcja: Założenia wstępne
 
-- Ograniczyć powtórzenia konstrukcji typu „Kluczowym elementem systemu jest…” – w 1–2 miejscach zastąpić innymi wstępami (np. „Sercem modułu rekomendacji jest…”, „Istotnym wyróżnikiem rozwiązania jest…”).
-- Podzielić najdłuższe zdania (szczególnie w `Analiza wymagań…` i `Wyniki…`) na 2–3 krótsze, bardziej „reportażowe” i łatwiejsze do czytania.
+- **Niejasność (Allegro):** W 5.1 wymienione jest "Allegro Sandbox", podczas gdy w wynikach (sekcja 14) mowa o braku wyników z Allegro lub małej ich liczbie w produkcji. Warto ujednolicić (czy to Sandbox czy Prod w MVP?).
+- **Prywatność:** W 5.2 punkt "Dane osobowe nie są trwale przechowywane po zakończeniu sesji" stoi w sprzeczności z funkcją "Historii czatu" i "Zapisanych produktów" (oraz dowodami z bazy danych).
+- **Wniosek:** Zmienić punkt o danych na "Dane nie są wykorzystywane marketingowo" lub doprecyzować, że historia jest na życzenie użytkownika (logowanie).
 
-6. **Dopieścić odwołania do rysunków i listingów**
+## 6. Sekcja: Analiza wymagań i sposób pracy
 
-- Upewnić się, że każdy ważny diagram ma jawne odwołanie w tekście:
-- np. „Jak pokazano na Rysunku~\ref{fig:c4-component-restapi}, RestAPI dzieli się na…”.
-- Dodać po jednym zdaniu komentarza do każdego listingu kodu:
-- przed `lst:reranking`: wytłumaczyć, że ten fragment pokazuje, jak systemowe kryteria są zakodowane w promptach i wymuszają XAI;
-- przed `lst:orchestration`: podkreślić, że handler zapewnia, iż chat jest najpierw utrwalony w bazie, a dopiero potem emitowane są zdarzenia;
-- przed `lst:tools`: wskazać, że tool calling + Zod zapewniają typowaną, przewidywalną współpracę z LLM.
+- **Brakujące mostki:** Brakuje zdań łączących sekcje (zgodnie z wcześniejszymi uwagami). Przejście do "Specyfikacji wymagań" jest nagłe.
+- **Wniosek:** Dodać zdania łączące (bridge sentences) na końcach podsekcji.
 
-7. **Sprawdzić spójność nazewnictwa**
+## 7. Sekcja: Specyfikacja wymagań
 
-- Ujednolicić nazwy serwisów i komponentów w całym tekście:
-- `RestAPI Macroservice` vs `RestAPI` vs `restapi-macroservice` – wybrać jedną główną formę i ewentualnie dodać w nawiasie pozostałe przy pierwszym użyciu;
-- `Chat Microservice` vs `Chat Service` – zdecydować się na jedną formę;
-- `Gift Ideas Microservice` / `gift-ideas-microservice` itp.
-- Przy pierwszym pojawieniu się angielskiej nazwy dodać krótkie polskie objaśnienie (jeśli jeszcze go nie ma).
+- **Wydajność:** Wymaganie "Czas generowania wstępnych propozycji < 10s" może być niespójne z wynikiem "7 min 44s na sesję". Warto doprecyzować, czy chodzi o odpowiedź chata, czy o pełne wyniki.
+- **Wniosek:** Doprecyzować metrykę wydajności w wymaganiach niefunkcjonalnych.
 
-8. **Lekko rozbić „ściany tekstu” w kluczowych miejscach**
+## 8. Sekcja: Projekt produktu programowego
 
-- W `\section{Analiza wymagań i sposób pracy}`:
-- dodać krótkie wypunktowania wewnątrz opisów iteracji (np. „Najważniejsze ryzyka tej iteracji:” / „Najważniejsze artefakty tej iteracji:”), aby ułatwić skanowanie.
-- W `\section{Wyniki i analiza badań}`:
-- rozważyć dodanie małej tabelki lub dodatkowego wypunktowania, które zbierze główne metryki (czas, trafność, satysfakcja, stabilność) w jednym miejscu.
+- **Nazewnictwo:** "restapi-macroservice" vs "RestAPI Macroservice". Termin "Macroservice" brzmi nieco egzotycznie (zwykle Monolith/Gateway). Jeśli to nazwa własna, OK, ale warto być konsekwentnym.
+- **Wniosek:** Ujednolicić pisownię nazw serwisów (np. zawsze _kursywą_ lub Monospace dla nazw technicznych).
+
+## 9. Sekcja: Model danych
+
+- **Wniosek:** Sekcja poprawna, dobrze opisuje migracje.
+
+## 10. Sekcja: Modelowanie behawioralne
+
+- **Wniosek:** Sekcja poprawna.
+
+## 11. Sekcja: Prototypowanie interfejsu
+
+- **Wniosek:** Bardzo dobry opis flow.
+
+## 12. Sekcja: Testy
+
+- **Kolejność:** Sekcja "Testy" znajduje się **przed** "Implementacją". Logiczniej byłoby: Prototypowanie -> Implementacja -> Testy -> Wyniki.
+- **Wniosek:** Przesunąć całą sekcję "Testy" za sekcję "Implementacja".
+
+## 13. Sekcja: Implementacja
+
+- **Bogactwo treści:** Bardzo dobra sekcja, szczególnie o Prompt Engineeringu.
+- **Wniosek:** Brak uwag krytycznych.
+
+## 14. Sekcja: Wyniki i analiza badań
+
+- **Spójność:** Sekcja została niedawno rozbudowana i wygląda bardzo dobrze (tabele, cytaty).
+- **Wniosek:** Jest kompletna.
+
+## Podsumowanie działań naprawczych (Action Plan):
+
+1. **Dodać brakujące akronimy** (MVP, POC, SPA, DTO, XAI).
+2. **Skorygować założenie o "braku trwałego przechowywania danych"** (bo mamy historię).
+3. **Dodać zdania łączące (mostki)** między głównymi rozdziałami.
+4. **Zmienić kolejność rozdziałów:** Implementacja przed Testami.
+5. **Ujednolicić nazewnictwo serwisów** (np. `restapi-macroservice`).
+6. **Doprecyzować status Allegro** (Sandbox vs Prod).

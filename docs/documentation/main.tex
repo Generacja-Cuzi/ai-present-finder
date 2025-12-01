@@ -71,7 +71,7 @@ WROCŁAW 2025
 \section*{DOKUMENTACJA PROJEKTOWA}
 \addcontentsline{toc}{section}{DOKUMENTACJA PROJEKTOWA}
 
-\section{Wykaz symboli, oznaczeń i akronimów (opcja)}
+\section{Wykaz symboli, oznaczeń i akronimów}
 
 \begin{tabular}{|p{0.15\textwidth}|p{0.3\textwidth}|p{0.45\textwidth}|}
 \hline
@@ -94,6 +94,16 @@ LLM & Large Language Model & Duży model językowy (np. GPT-4, Gemini). \\
 SSE & Server-Sent Events & Technologia przesyłania aktualizacji z serwera do klienta. \\
 \hline
 CQRS & Command Query Responsibility Segregation & Wzorzec architektoniczny rozdzielający odczyt od zapisu. \\
+\hline
+MVP & Minimum Viable Product & Wersja produktu z minimalną liczbą funkcji wystarczającą do wdrożenia. \\
+\hline
+POC & Proof of Concept & Dowód koncepcji, prototyp mający na celu weryfikację wykonalności. \\
+\hline
+SPA & Single Page Application & Aplikacja internetowa działająca w obrębie jednej strony HTML. \\
+\hline
+DTO & Data Transfer Object & Obiekt służący do przesyłania danych między podsystemami. \\
+\hline
+XAI & Explainable Artificial Intelligence & Wyjaśnialna sztuczna inteligencja, której decyzje są zrozumiałe dla ludzi. \\
 \hline
 \end{tabular}
 
@@ -132,7 +142,7 @@ Stworzenie użytecznego, szybkiego i bezpiecznego narzędzia wspierającego proc
 \subsection{Cele biznesowe i techniczne}
 Z biznesowego punktu widzenia projekt ma na celu skrócenie czasu potrzebnego na znalezienie prezentu z kilkunastu godzin do kilku minut oraz zwiększenie trafności upominków. Z technicznego punktu widzenia celem jest weryfikacja możliwości wykorzystania modeli LLM do sterowania procesem wyszukiwania i selekcji ofert (Agentic Commerce) oraz integracja wielu źródeł danych w czasie rzeczywistym.
 
-\section{Słownik pojęć (opcja)}
+\section{Słownik pojęć}
 
 \begin{tabular}{|p{0.25\textwidth}|p{0.7\textwidth}|}
 \hline
@@ -160,7 +170,7 @@ Dane publiczne & Ogólnodostępne informacje w Internecie, niewymagające logowa
 \hline
 \end{tabular}
 
-\section{Stan wiedzy w obszarze przedsięwzięcia (opcja)}
+\section{Stan wiedzy w obszarze przedsięwzięcia}
 
 Rynek cyfrowego wsparcia w obdarowywaniu można podzielić na dwa główne segmenty: rozwiązania B2B (Corporate Gifting) oraz B2C (Consumer Chatbots). Rozwiązania B2B (np. Giftpack.ai) oferują wysoką jakość dzięki analizie danych, ale są niedostępne dla klienta indywidualnego. Rozwiązania B2C (np. DreamGift) są łatwo dostępne, ale często opierają się na prostych chatbotach bez kontekstu, co prowadzi do niskiej trafności rekomendacji.
 
@@ -199,7 +209,7 @@ Głównym wyróżnikiem AI Present Finder jest połączenie analizy OSINT (rozwi
     \item \textbf{Integracje zewnętrzne:}
     \begin{itemize}
         \item API mediów społecznościowych (poprzez proxy/scraping)
-        \item API e-commerce: OLX, Amazon, eBay, Allegro Sandbox
+        \item API e-commerce: OLX, Amazon, eBay, Allegro (Sandbox)
         \item OpenAI API / Google Gemini API (modele językowe)
     \end{itemize}
     \item \textbf{Hosting:} VPS, obsługa HTTPS
@@ -209,7 +219,7 @@ Głównym wyróżnikiem AI Present Finder jest połączenie analizy OSINT (rozwi
 \begin{itemize}
     \item Przetwarzane są wyłącznie dane publicznie dostępne (OSINT).
     \item System nie obsługuje płatności ani finalizacji transakcji (przekierowanie do sklepu).
-    \item Dane osobowe nie są trwale przechowywane po zakończeniu sesji użytkownika.
+    \item Dane osobowe nie są wykorzystywane w celach marketingowych. Historia wyszukiwań i zapisane produkty są przechowywane wyłącznie dla zalogowanych użytkowników w celu zapewnienia ciągłości sesji.
     \item Projekt ma charakter edukacyjno-prototypowy (MVP).
 \end{itemize}
 
@@ -248,7 +258,7 @@ Na koniec iteracji Design powstał spójny model architektoniczny, który zosta�
 \subsection{Iteracja 3: MVP}
 Trzecia iteracja miała na celu dostarczenie \textbf{działającego MVP} aplikacji:
 \begin{itemize}
-    \item wyodrębnienie mikroserwisów: \textit{gift-ideas-microservice}, \textit{reranking-microservice}, \textit{fetch-microservice},
+    \item wyodrębnienie mikroserwisów: \texttt{gift-ideas-microservice}, \texttt{reranking-microservice}, \texttt{fetch-microservice},
     \item integracja chatu z architekturą zdarzeniową ("EPIC: integrate chat POC with microservices setup"),
     \item dodanie widoków \textbf{frontendowych}: home, stalking, chat, rekomendacje,
     \item implementacja \textbf{historii czatu} oraz \textbf{historii rekomendacji prezentów},
@@ -303,6 +313,8 @@ Graficzna reprezentacja tych przypadków została przygotowana w postaci diagram
     \label{fig:use-case}
 \end{figure}
 
+Zidentyfikowane przypadki użycia oraz wymagania zebrane w trakcie iteracji stanowią fundament dla formalnej specyfikacji wymagań, którą przedstawiono w kolejnym rozdziale.
+
 \section{Specyfikacja wymagań na produkt programowy}
 
 Poniższa specyfikacja formalizuje wymagania zidentyfikowane w trakcie kolejnych iteracji i pracy z backlogiem, tak aby można je było jednoznacznie odwzorować w architekturze i implementacji.
@@ -327,6 +339,8 @@ Poniższa specyfikacja formalizuje wymagania zidentyfikowane w trakcie kolejnych
     \item \textbf{Obsługa błędów:} Odporność na limity API zewnętrznych serwisów (mechanizmy ponawiania).
 \end{itemize}
 
+Powyższy zestaw wymagań funkcjonalnych i niefunkcjonalnych stał się podstawą do opracowania architektury systemu, opisanej szczegółowo w następnej sekcji.
+
 \section{Projekt produktu programowego}
 
 Zdefiniowane wymagania funkcjonalne i niefunkcjonalne zostały odwzorowane w poniższej architekturze mikroserwisowej, obejmującej zarówno warstwę frontendową, jak i zestaw współpracujących usług backendowych.
@@ -337,12 +351,12 @@ System został zaprojektowany w architekturze mikroserwisowej, co zapewnia skalo
 Główne komponenty systemu:
 \begin{itemize}
     \item \textbf{Frontend (React):} Interfejs użytkownika komunikujący się z backendem przez REST API oraz odbierający aktualizacje w czasie rzeczywistym przez SSE (Server-Sent Events).
-    \item \textbf{restapi-macroservice (RestAPI Macroservice):} Brama wejściowa (API Gateway), obsługująca żądania HTTP i przekierowująca je do odpowiednich kolejek.
-    \item \textbf{chat-microservice (Chat Microservice):} Odpowiada za prowadzenie wywiadu z użytkownikiem.
-    \item \textbf{stalking-microservice (Stalking Microservice):} Realizuje proces OSINT (analiza profili społecznościowych).
-    \item \textbf{gift-ideas-microservice (Gift Ideas Microservice):} Generuje abstrakcyjne pomysły na prezenty na podstawie zebranych danych.
-    \item \textbf{fetch-microservice (Fetch Microservice):} Agreguje oferty z zewnętrznych platform (OLX, Allegro, Amazon, eBay). Działa w wielu instancjach równolegle.
-    \item \textbf{reranking-microservice (Reranking Microservice):} Ocenia i filtruje znalezione oferty przy użyciu AI.
+    \item \textbf{RestAPI Macroservice} (\texttt{restapi-macroservice}): Brama wejściowa (API Gateway), obsługująca żądania HTTP i przekierowująca je do odpowiednich kolejek.
+    \item \textbf{Chat Microservice} (\texttt{chat-microservice}): Odpowiada za prowadzenie wywiadu z użytkownikiem.
+    \item \textbf{Stalking Microservice} (\texttt{stalking-microservice}): Realizuje proces OSINT (analiza profili społecznościowych).
+    \item \textbf{Gift Ideas Microservice} (\texttt{gift-ideas-microservice}): Generuje abstrakcyjne pomysły na prezenty na podstawie zebranych danych.
+    \item \textbf{Fetch Microservice} (\texttt{fetch-microservice}): Agreguje oferty z zewnętrznych platform (OLX, Allegro, Amazon, eBay). Działa w wielu instancjach równolegle.
+    \item \textbf{Reranking Microservice} (\texttt{reranking-microservice}): Ocenia i filtruje znalezione oferty przy użyciu AI.
 \end{itemize}
 
 \subsection{Poziom 1: Kontekst systemu}
@@ -358,7 +372,7 @@ Na najwyższym poziomie abstrakcji (C4 Context) system AI Present Finder jest po
 
 \subsection{Poziom 2: Kontenery}
 
-Po zejściu o jeden poziom niżej (C4 Container) widać podział systemu na odrębne jednostki wdrożeniowe: aplikację frontendową (React SPA), bramę API (restapi-macroservice), zestaw mikroserwisów backendowych, bazę danych PostgreSQL oraz broker wiadomości RabbitMQ. Każdy kontener może być niezależnie skalowany i wdrażany w środowisku Docker/Coolify. Architekturę kontenerów przedstawiono na Rysunku~\ref{fig:c4-container}.
+Po zejściu o jeden poziom niżej (C4 Container) widać podział systemu na odrębne jednostki wdrożeniowe: aplikację frontendową (React SPA), bramę API (RestAPI Macroservice), zestaw mikroserwisów backendowych, bazę danych PostgreSQL oraz broker wiadomości RabbitMQ. Każdy kontener może być niezależnie skalowany i wdrażany w środowisku Docker/Coolify. Architekturę kontenerów przedstawiono na Rysunku~\ref{fig:c4-container}.
 
 \clearpage
 \includepdf[pages=1,landscape=true,pagecommand={\thispagestyle{plain}\refstepcounter{figure}\addcontentsline{lof}{figure}{\protect\numberline{\thefigure}Diagram kontenerów systemu AI Present Finder (C4 Container)}},fitpaper=true]{../C4_v0.2.0/C4_Container.pdf}
@@ -419,6 +433,8 @@ Architektura systemu została zaprojektowana zgodnie z podejściem C4 i odwzorow
 \end{itemize}
 Diagramy C4 (context, container, component) zostały przygotowane w narzędziu PlantUML i są spójne z opisem wymagań oraz podziałem na mikroserwisy przedstawionym w tej sekcji.
 
+Uzupełnieniem projektu architektonicznego jest model danych, który definiuje strukturę przechowywanych informacji i relacje między nimi.
+
 \section{Model danych i baza danych}
 
 Aby wesprzeć zdefiniowane przypadki użycia i przyjętą architekturę mikroserwisową, zaprojektowano model danych odzwierciedlający kluczowe byty domenowe oraz ich relacje.
@@ -459,6 +475,8 @@ Początkowo używano trybu \texttt{synchronize: true}, jednak na etapie wdrożen
 
 W dokumentacji bazy danych wyróżniono widok całościowy (diagram wszystkich tabel) oraz zbliżenia na kluczowe fragmenty, takie jak model sesji i historii wyszukiwań czy model przechowywania feedbacku użytkowników.
 
+Zdefiniowany model danych stanowi statyczny obraz systemu. Aby w pełni zrozumieć jego działanie, w kolejnym rozdziale przedstawiono modelowanie behawioralne, opisujące dynamikę interakcji i przepływów.
+
 \section{Modelowanie behawioralne}
 
 Po ustaleniu struktury systemu kluczowe było opisanie jego zachowania w czasie w postaci sekwencji interakcji, stanów oraz procesów biznesowych, które prowadzą użytkownika od podania linku aż do listy konkretnych ofert prezentów.
@@ -484,6 +502,9 @@ Proces biznesowy od momentu wejścia użytkownika na stronę (landing page) do z
 \label{fig:bpmn}
 \addtocounter{figure}{-1}
 \refstepcounter{figure}
+
+Sformalizowane procesy biznesowe i diagramy aktywności stały się bezpośrednim wsadem do etapu projektowania interfejsu użytkownika.
+
 \clearpage
 
 \section{Prototypowanie interfejsu}
@@ -622,26 +643,11 @@ Użytkownicy z rolą administratora mają dostęp do panelu feedbacków (Rysunek
     \label{fig:ui-admin-profile}
 \end{figure}
 
-\section{Testy}
+Zatwierdzone projekty interfejsu oraz architektura systemu pozwoliły na przejście do fazy implementacji, w której zrealizowano kluczowe mechanizmy, w tym algorytmy AI.
 
-\subsection{Planowanie testów}
-Strategia testowania zakładała kilka poziomów:
-\begin{itemize}
-    \item testy jednostkowe wybranych fragmentów logiki (np. parserów danych, prostych serwisów domenowych),
-    \item testy integracyjne mikroserwisów (sprawdzenie poprawności kontraktów zdarzeń i komunikacji przez RabbitMQ),
-    \item testy end-to-end podstawowego flow użytkownika (logowanie, wywiad, otrzymanie rekomendacji),
-    \item testy wydajnościowe i odporności na błędy API (limity zapytań, czas odpowiedzi).
-\end{itemize}
-Do testów jednostkowych i integracyjnych wykorzystano ekosystem NestJS (Jest), natomiast testy E2E przeprowadzono z użyciem narzędzi takich jak Playwright lub Cypress (uruchamianych ręcznie dla kluczowych scenariuszy).
 
-\subsection{Testy z użytkownikami}
-Kluczowym elementem weryfikacji jakości systemu były beta-testy z udziałem rzeczywistych użytkowników. Zebrano opinie dotyczące trafności rekomendacji (oceny gwiazdkowe, komentarze tekstowe) oraz wrażeń z korzystania z interfejsu (czas oczekiwania, przejrzystość, intuicyjność). Dane te zostały wykorzystane zarówno w sekcji wyników, jak i przy planowaniu dalszego rozwoju (np. dodanie pamięci negatywnej, lepsze dopytywanie o budżet).
 
-Jednym z głównych ryzyk, które miały wychwycić testy z użytkownikami, była odporność systemu na częściowe awarie integracji z serwisami e-commerce. W kilku sesjach celowo wyłączono jedną z instancji \texttt{Fetch Microservice} (np. odpowiedzialną za Allegro), aby sprawdzić, czy użytkownik nadal otrzyma sensowny zestaw propozycji z pozostałych źródeł i czy interfejs poprawnie komunikuje ograniczoną dostępność wyników.
-
-W ramach testów szczególną uwagę zwrócono na scenariusz użytkownika szukającego prezentu dla fotografa–amatora. System zaproponował m.in. analogowy aparat z OLX, zestaw akcesoriów do aparatu oraz kurs fotografii online, a użytkownik ocenił całą sesję na 5/5 gwiazdek, podkreślając, że sam nie wpadłby na część tych pomysłów.
-
-\section{Implementacja (opcja)}
+\section{Implementacja}
 
 \subsection{Algorytm Rerankingu z Weryfikacją (XAI)}
 Kluczowym elementem systemu jest moduł rerankingu, który rozwiązuje problem "halucynacji" wyszukiwarek. Tradycyjne wyszukiwanie oparte na słowach kluczowych często zwraca wyniki nieadekwatne (np. akcesoria do konsoli zamiast konsoli). Zaimplementowany algorytm wykorzystuje model LLM (Gemini 2.5) do oceny semantycznej każdego produktu.
@@ -841,6 +847,29 @@ Kluczowym wnioskiem z procesu prompt engineeringu jest znaczenie \textbf{konkret
 \subsection{Równoległa Agregacja Ofert}
 Ze względu na limity API i czas odpowiedzi serwisów e-commerce, zaimplementowano mechanizm równoległego pobierania danych. \texttt{Fetch Microservice} może być uruchamiany w wielu instancjach, z których każda obsługuje innego dostawcę (OLX, Allegro, Amazon). Wyniki są asynchronicznie przesyłane do głównego strumienia zdarzeń, co pozwala na prezentowanie pierwszych ofert użytkownikowi bez czekania na zakończenie przeszukiwania wszystkich źródeł.
 
+Zaimplementowany system został poddany weryfikacji poprzez szereg testów, których przebieg i wyniki opisano poniżej.
+
+\section{Testy}
+
+\subsection{Planowanie testów}
+Strategia testowania zakładała kilka poziomów:
+\begin{itemize}
+    \item testy jednostkowe wybranych fragmentów logiki (np. parserów danych, prostych serwisów domenowych),
+    \item testy integracyjne mikroserwisów (sprawdzenie poprawności kontraktów zdarzeń i komunikacji przez RabbitMQ),
+    \item testy end-to-end podstawowego flow użytkownika (logowanie, wywiad, otrzymanie rekomendacji),
+    \item testy wydajnościowe i odporności na błędy API (limity zapytań, czas odpowiedzi).
+\end{itemize}
+Do testów jednostkowych i integracyjnych wykorzystano ekosystem NestJS (Jest), natomiast testy E2E przeprowadzono z użyciem narzędzi takich jak Playwright lub Cypress (uruchamianych ręcznie dla kluczowych scenariuszy).
+
+\subsection{Testy z użytkownikami}
+Kluczowym elementem weryfikacji jakości systemu były beta-testy z udziałem rzeczywistych użytkowników. Zebrano opinie dotyczące trafności rekomendacji (oceny gwiazdkowe, komentarze tekstowe) oraz wrażeń z korzystania z interfejsu (czas oczekiwania, przejrzystość, intuicyjność). Dane te zostały wykorzystane zarówno w sekcji wyników, jak i przy planowaniu dalszego rozwoju (np. dodanie pamięci negatywnej, lepsze dopytywanie o budżet).
+
+Jednym z głównych ryzyk, które miały wychwycić testy z użytkownikami, była odporność systemu na częściowe awarie integracji z serwisami e-commerce. W kilku sesjach celowo wyłączono jedną z instancji \texttt{Fetch Microservice} (np. odpowiedzialną za Allegro), aby sprawdzić, czy użytkownik nadal otrzyma sensowny zestaw propozycji z pozostałych źródeł i czy interfejs poprawnie komunikuje ograniczoną dostępność wyników.
+
+W ramach testów szczególną uwagę zwrócono na scenariusz użytkownika szukającego prezentu dla fotografa–amatora. System zaproponował m.in. analogowy aparat z OLX, zestaw akcesoriów do aparatu oraz kurs fotografii online, a użytkownik ocenił całą sesję na 5/5 gwiazdek, podkreślając, że sam nie wpadłby na część tych pomysłów.
+
+Pozytywne wyniki testów pozwoliły na przeprowadzenie badań z użytkownikami końcowymi, których rezultaty przedstawiono w ostatniej sekcji.
+
 \section{Wyniki i analiza badań}
 
 System został poddany testom w środowisku produkcyjnym (pilotaż, listopad 2025). W analizie wzięto pod uwagę 36 pełnych sesji zakupowych.
@@ -928,7 +957,7 @@ W ramach testów pilotażowych zebrano 11 opinii od użytkowników. Poniżej prz
 \subsubsection*{Opinie krytyczne i sugestie}
 \begin{itemize}
     \item \textit{"Większość prezentów miała wspólne cechy z prezentami które były kupione w przeszłości — system polecał rzeczy, które osoba już ma."} (Ocena: 3/5) — wskazuje na potrzebę "pamięci negatywnej".
-    \item \textit{"OLX przytłaczające, brak wyników z Allegro. Rozmowa była zbyt długa."} (Ocena: 2/5) — sugestia balansowania źródeł i skrócenia wywiadu.
+    \item \textit{"OLX przytłaczające, brak wyników z Allegro. Rozmowa była zbyt długa."} (Ocena: 2/5) — sugestia balansowania źródeł (brak wyników wynikał z użycia środowiska Allegro Sandbox) i skrócenia wywiadu.
 \end{itemize}
 
 \noindent Główne wnioski z feedbacku:

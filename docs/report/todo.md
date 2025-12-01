@@ -1,3 +1,8 @@
+# nowe todo
+
+1. [x] przepisz wstęp żeby brzmiał mniej jak AI
+2. [ ] Analiza konkurencji, Prace związane z tematem - zrobić rzeczywiście sensowne porównanie
+
 # TODO: Jak przekształcić raport w „state of the art” paper
 
 ## 1) Reframe i nowość

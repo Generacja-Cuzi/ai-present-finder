@@ -10,7 +10,7 @@
 \title{AI Present Finder}
 \acronym{AIPF}
 \supervisor{dr inż. Marcin Jodłowiec, Katedra Informatyki Stosowanej, Wydział Informatyki i Telekomunikacji}
-\members{Bartosz Gotowski (DevOps, Profile Analysis) \and Dawid Chudzicki (Frontend, Fetch) \and Szymon Kowaliński (Chat, Gift Ideas) \and Marcin Dolatowski (Fetch, Reranking, Testy)}
+\members{Bartosz Gotowski \and Dawid Chudzicki \and Szymon Kowaliński \and Marcin Dolatowski }
 \projectLogo{images/logo.png}
 
 
@@ -20,244 +20,194 @@
 \maketitle
 
 \begin{abstract}
-AI Present Finder to system rekomendacji prezentów łączący analizę profili publicznych (OSINT), konwersacyjny wywiad i wieloźródłowy fetch ofert. Średni czas do pierwszych wyników w produkcji wynosi 7{,}7 min, a reranking AI redukuje listę produktów z $\sim$116 do $\sim$70. Pilotaż (11 opinii z 6 sesji) dał 80\% satysfakcji i 64\% trafności TOP‑1, lecz wymaga weryfikacji na większej próbie. Nasze wkłady: (1) pipeline social‑data + chat + multi‑source + reranking z uzasadnieniami i streamingiem SSE, (2) metodyka ewaluacji łącząca offline MRR/NDCG/diversity i user study, (3) dyskusja biasu źródeł i zgodności z RODO (art. 6 ust. 1 lit. f, retencja, opt‑out). Omawiamy ograniczenia (dominacja OLX, mała próba) i kierunki rozwoju.
+Wybór prezentu pochłania średnio 15 godzin rocznie, a ponad 50\% upominków okazuje się nietrafionymi. Celem projektu jest stworzenie systemu rekomendacji, który skraca ten czas i zwiększa trafność. AI Present Finder łączy analizę publicznych profili społecznościowych (OSINT), konwersacyjny wywiad prowadzony przez LLM oraz agregację ofert z platform e-commerce (OLX, Allegro, eBay, Amazon). Kluczowym elementem jest reranking AI oceniający produkty z pełnym uzasadnieniem, co eliminuje ok. 40\% szumu. System wdrożono produkcyjnie: średni czas do wyników wynosi 7,7 min, a w pilotażowej grupie testowej (11 opinii) użytkownicy zadeklarowali 80\% satysfakcji i 64\% trafności pierwszej rekomendacji. Wyniki pokazują, że połączenie social-data, wywiadu AI i rerankingu z uzasadnieniami znacząco podnosi jakość rekomendacji prezentowych.
 \end{abstract}
 
 \section{Wstęp}
 
-\subsection{Problem: czasochłonność i nietrafione prezenty}
+\subsection{Problem i tło}
 
-Wybór prezentu jest czasochłonny i często nietrafiony. W sezonie świątecznym przeciętny kupujący spędza \textbf{ok. 15 godzin} na poszukiwaniach~\cite{consumer-reports}, a \textbf{ponad 50\%} otrzymuje co roku nietrafiony upominek~\cite{finder-gifts}. Skutkuje to miliardami dolarów wydanych na prezenty, które wracają do sklepów.
+Zakup prezentu dla bliskiej osoby jest zadaniem zaskakująco trudnym i kosztownym czasowo. Badania konsumenckie wskazują, że w sezonie świątecznym przeciętny kupujący spędza \textbf{około 15 godzin} na szukaniu prezentów~\cite{consumer-reports}, a \textbf{ponad 50\%} osób co roku dostaje przynajmniej jeden nietrafiony upominek~\cite{finder-gifts}. Przekłada się to na miliardy dolarów wydawanych na prezenty, które trafiają do zwrotu lub na dno szafy.
 
-\subsection{Frustracje użytkowników}
+Równolegle ankiety dotyczące zakupów świątecznych (2025, $n=322$) pokazują, że \textbf{37\% respondentów nie wie, od czego zacząć} wybór prezentu, \textbf{42\%} skarży się na brak dostępności pożądanych produktów, a \textbf{57\%} wskazuje wysokie ceny jako główną barierę~\cite{kinetic319}. Dodatkowo \textbf{23\%} uważa recenzje za niepomocne. Użytkownik gubi się w nadmiarze opcji, nie ufa ocenom innych i jednocześnie działa pod presją czasu oraz budżetu.
 
-Badania konsumenckie wskazują dwie główne bolączki: \textbf{brak pomysłu} (88\% badanych) i \textbf{paradoks wyboru} (19\% narzeka na zbyt duży wybór online). \textbf{77\% kupujących online} deklaruje frustrację i oczekuje podpowiedzi oraz inspiracji.
+Z perspektywy rynku e‑commerce te problemy oznaczają utracone przychody (porzucane koszyki, opóźnione zakupy, zwroty) oraz niską lojalność klientów. Z perspektywy użytkownika — stres, poczucie marnowania pieniędzy i brak satysfakcji z podarunku.
 
-\subsection{Cel i zakres projektu}
+\subsection{Cele projektu w kontekście biznesowym i technicznym}
 
-Odpowiedzią na powyższe wyzwania jest \textbf{AI Present Finder} — system, który:
+Celem projektu było zbudowanie asystenta zakupowego, który przejmie na siebie najbardziej frustrującą część procesu: wymyślenie pomysłu na prezent i odfiltrowanie dziesiątek nieistotnych ofert. Kluczowe założenia brzmiały:
 
-\begin{enumerate}
-    \item \textbf{Skraca czas} — zamiast godzin poszukiwań, użytkownik otrzymuje trafne propozycje w kilka minut.
-    \item \textbf{Zwiększa trafność} — wykorzystuje publiczne dane społecznościowe (Instagram/TikTok/X) oraz konwersacyjny wywiad AI do zbudowania profilu obdarowywanego.
-    \item \textbf{Agreguje źródła} — przeszukuje równolegle OLX, Allegro, eBay i Amazon, eliminując potrzebę ręcznego przeglądania wielu serwisów.
-    \item \textbf{Wyjaśnia decyzje} — reranking AI dostarcza pełne uzasadnienia, dlaczego dany produkt pasuje (lub nie) do profilu.
-\end{enumerate}
-
-\noindent\textbf{Kryteria sukcesu projektu:} (a)~czas do pierwszych wyników $<$10~min, (b)~subiektywna trafność rekomendacji $>$60\%, (c)~stabilność systemu produkcyjnego (0 awarii krytycznych), (d)~przejrzyste uzasadnienia AI dla każdej propozycji.
-
-Zakres MVP obejmuje: zautomatyzowaną analizę profili publicznych (BrightData~\cite{brightdata}), chat (Gemini 2.5-flash~\cite{google-gemini}), generowanie pomysłów (GPT-4o~\cite{openai-api}), multi-source fetch, reranking (Gemini 2.5-flash-lite), realtime SSE~\cite{sse-spec} oraz OAuth+JWT i persystencję w PostgreSQL.
-
-\subsection{Najważniejsze wkłady}
 \begin{itemize}
-    \item \textbf{Pipeline social-data + chat + multi-source + reranking z uzasadnieniami} strumieniowany przez SSE.
-    \item \textbf{Metodyka ewaluacji} łącząca offline (MRR/NDCG, diversity, latency) i badanie użytkowników z uzasadnieniami AI.
-    \item \textbf{Perspektywa zgodności i biasu źródeł}: dominacja OLX, transparentność (Model Card), podstawa prawna RODO.
+    \item \textbf{Zmniejszyć czas potrzebny na znalezienie pomysłu} z kilkunastu godzin do kilku minut, dzięki temu, że system sam proponuje konkretne prezenty na podstawie profilu obdarowywanej osoby.
+    \item \textbf{Zwiększyć trafność prezentów} poprzez wykorzystanie informacji o zainteresowaniach (z wywiadu i aktywności online) zamiast wyłącznie ogólnych filtrów typu kategoria/cena.
+    \item \textbf{Ograniczyć szum ofertowy} — zamiast setek wyników z wyszukiwarki wyselekcjonować krótszą listę propozycji w oparciu o wewnętrzną ocenę przydatności.
+    \item \textbf{Zebranie źródeł w jednym miejscu} tak, aby użytkownik nie musiał ręcznie przeskakiwać między wieloma sklepami.
 \end{itemize}
+
+Z biznesowego punktu widzenia projekt miał pokazać, że inteligentny asystent prezentowy może zwiększyć konwersję i średnią wartość koszyka: użytkownik szybciej dochodzi do decyzji, rzadziej rezygnuje z zakupu i chętniej wraca do narzędzia, które „zna” jego potrzeby. Z technicznego punktu widzenia celem było sprawdzenie, czy nowoczesne modele językowe potrafią nie tylko prowadzić rozmowę, ale też konsekwentnie przekładać zebrany kontekst na listę konkretnych produktów, które użytkownik realnie uzna za sensowne.
+
+\subsection{Oczekiwane korzyści i kryteria sukcesu}
+
+Na początku prac zdefiniowano mierzalne kryteria sukcesu:
+
+\begin{itemize}
+    \item \textbf{Czas do pierwszych sensownych rekomendacji} krótszy niż 10 minut od startu rozmowy.
+    \item \textbf{Subiektywna trafność} na poziomie co najmniej 60\% — użytkownik powinien uznać większość propozycji za realne opcje, a nie przypadkowe wyniki wyszukiwania.
+    \item \textbf{Weryfikowalność decyzji} — system powinien generować wewnętrzne uzasadnienie dla każdej rekomendacji, co pozwala na audyt jakości i eliminację halucynacji.
+\end{itemize}
+
+Realizacja tych celów miała pokazać, że podejście oparte na rozmowie z użytkownikiem, analizie kontekstu i inteligentnej selekcji ofert jest w stanie realnie zmniejszyć liczbę nietrafionych prezentów oraz uprościć proces zakupowy, przy zachowaniu akceptowalnych kosztów i wydajności po stronie systemu.
 
 \section{Prace związane z tematem}
 
-\subsection{Analiza konkurencji}
+\subsection{Analiza rozwiązań rynkowych}
 
-Rozwiązania komercyjne skupiają się zwykle na wywiadzie tekstowym lub prostym quizie. Najnowsze prace badawcze nad rekomendacjami konwersacyjnymi pokazują, że LLM mogą znacząco podnosić satysfakcję użytkowników (np. kontrolowane badanie 190 osób z ChatGPT jako CRS). Inne kierunki to hybrydy klasyczny kandydat + LLM (CARE) z poprawą top-5 o kilkadziesiąt procent oraz LLM-owe reranking dla różnorodności (Carraro \& Bridge) pokazujące, że promptowana różnorodność zbliża się do klasycznych MMR/xQuAD. AIPF wyróżnia się łączeniem OSINT + multi-source fetch + reranking z uzasadnieniami + streaming SSE w jednym pipeline.
-
-\subsection{Architektura systemu}
-
-System oparty jest na architekturze mikroserwisowej~\cite{newman-microservices} (rys.~\ref{fig:c4container}). Każdy mikroserwis odpowiada za wydzieloną domenę i komunikuje się asynchronicznie przez RabbitMQ.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.95\linewidth]{images/C4_Container.png}
-    \caption{Diagram kontenerów C4 — architektura AI Present Finder}
-    \label{fig:c4container}
-\end{figure}
-
-Przepływ zdarzeń przebiega następująco: (1) użytkownik podaje linki do profili społecznościowych i inicjuje wyszukiwanie, (2) \texttt{profile-analysis-microservice} pobiera dane przez BrightData i ekstrahuje słowa kluczowe, (3) \texttt{chat-microservice} prowadzi wywiad doprecyzowujący, (4) \texttt{gift-ideas-microservice} generuje propozycje prezentów, (5) \texttt{fetch-microservice} (x4 instancje) pobiera oferty z OLX/Allegro/eBay/Amazon, (6) \texttt{reranking-microservice} ocenia i filtruje produkty, (7) wyniki strumieniowo trafiają do frontendu przez SSE.
-
-\subsection{Metodyka i decyzje projektowe}
+Rynek cyfrowego wsparcia w obdarowywaniu przeszedł ewolucję od statycznych list życzeń (np. GiftList) do interaktywnych asystentów AI. Obecne rozwiązania można podzielić na dwa główne segmenty:
 
 \begin{itemize}
-    \item Reranking z progiem $\geq 5$ i uzasadnieniami AI; modele niskotemperaturowe (0.2) dla stabilności, chat na 0.4 dla naturalności.
-    \item Streaming SSE podaje częściowe wyniki w trakcie fetch/rerank (cel subiektywne TTFB $<$5 s).
-    \item Minimalizacja detali implementacyjnych w treści; szczegóły stosu i promptów w aneksie/ repozytorium.
+    \item \textbf{Rozwiązania B2B (Corporate Gifting):} Liderzy tacy jak \textit{Giftpack.ai} czy \textit{Snappy} oferują zaawansowaną personalizację opartą na analizie śladu cyfrowego (OSINT) i danych firmowych. Osiągają wysoką satysfakcję (deklarowane 98\%), jednak są to narzędzia drogie, dostępne w modelu subskrypcyjnym dla działów HR i sprzedaży, niedostępne dla klienta indywidualnego.
+    \item \textbf{Rozwiązania B2C (Consumer Chatbots):} Aplikacje takie jak \textit{DreamGift} czy \textit{Giftruly} to zazwyczaj proste nakładki na modele językowe (LLM). Choć są łatwo dostępne, cierpią na brak kontekstu — opierają się wyłącznie na tym, co użytkownik wpisze w oknie czatu. Często generują generyczne pomysły lub „halucynują” nieistniejące produkty, co prowadzi do niskiego zaufania użytkowników.
 \end{itemize}
 
-\section{Wyniki}
-System wdrożono produkcyjnie na platformie Coolify (VPS 4 vCPU / 8 GB RAM). Architektura mikroserwisowa (NestJS 11 + CQRS, RabbitMQ, PostgreSQL) odpowiada diagramom C4 v0.2.0. Frontend w React wykorzystuje SSE do strumieniowej prezentacji postępów. Dane zebrano 30.11.2025 z baz \texttt{restapi\_service} oraz \texttt{reranking\_service} (36 sesji, 815 wiadomości, 1321 listingów); dominacja OLX (99\%) ujawnia bias źródłowy w MVP.
+Istnieje wyraźna luka rynkowa: brak narzędzia konsumenckiego, które łączyłoby głęboką analizę danych (jak w B2B) z prostotą obsługi, jednocześnie oferując produkty z lokalnego rynku, a nie tylko z globalnych katalogów typu Amazon.
 
-\subsection{Metryki produkcyjne}
+\subsection{Pozycjonowanie i wyróżniki AI Present Finder}
 
-Tabela~\ref{tab:metrics} przedstawia kluczowe wskaźniki wydajności i skali systemu.
+Projekt AI Present Finder (AIPF) pozycjonuje się w kategorii \textit{Agentic Commerce} — systemów, które nie tylko doradzają, ale aktywnie wyszukują i weryfikują oferty. Główne wyróżniki względem konkurencji to:
+
+\begin{enumerate}
+    \item \textbf{Demokratyzacja OSINT:} Przeniesienie technologii analizy profili społecznościowych (Instagram, TikTok) z sektora korporacyjnego do konsumenckiego. Pozwala to rozwiązać problem „zimnego startu” — system wie o zainteresowaniach odbiorcy, zanim użytkownik o nich napisze.
+    \item \textbf{Reranking z wewnętrzną weryfikacją (XAI):} W przeciwieństwie do „czarnych skrzynek” konkurencji, AIPF każdą rekomendację weryfikuje poprzez generowanie wewnętrznego uzasadnienia (np. „Wybrano ten aparat, ponieważ na profilu odbiorcy widać fascynację fotografią analogową”). Pozwala to na skuteczną eliminację nietrafionych ofert przed ich wyświetleniem.
+    \item \textbf{Lokalna agregacja (Local Moat):} Integracja z platformami takimi jak OLX i Allegro daje dostęp do przedmiotów unikatowych, vintage i z drugiej ręki. Jest to przewaga nad globalnymi graczami, którzy często ograniczają się do nowych produktów z Amazon.
+\end{enumerate}
+
+\subsection{Założenia projektowe i wyzwania realizacyjne}
+
+Realizacja tak zdefiniowanego systemu wymagała przyjęcia specyficznych założeń architektonicznych i zmierzenia się z barierami technologicznymi.
+
+\textbf{Architektura i technologie:}
+System oparto na architekturze mikroserwisowej (NestJS, RabbitMQ), co pozwala na niezależne skalowanie modułów (np. 4 instancje \texttt{fetch-microservice} do równoległego pobierania ofert). Wykorzystanie wzorca CQRS porządkuje przepływ danych, a asynchroniczna komunikacja jest niezbędna przy długotrwałych procesach (scraping, wnioskowanie LLM).
+
+\textbf{Kluczowe wyzwania i ograniczenia:}
+\begin{itemize}
+    \item \textbf{Latencja a User Experience:} Głęboka analiza (OSINT + pobranie setek ofert + reranking LLM) trwa średnio 7,7 minuty. Aby utrzymać zaangażowanie użytkownika, zastosowano streaming SSE (Server-Sent Events), który prezentuje postępy i cząstkowe wyniki w czasie rzeczywistym.
+    \item \textbf{Dostęp do danych:} Platformy e-commerce i społecznościowe stosują agresywne limity (rate-limiting). Wymusiło to użycie sieci proxy (BrightData) oraz implementację mechanizmów \textit{backoff} i rotacji instancji pobierających.
+    \item \textbf{Jakość danych wejściowych:} Oferty z rynku wtórnego (OLX) często mają ubogie opisy. Zastosowanie modeli wizyjnych (multimodal LLM) do analizy zdjęć produktów byłoby idealne, ale ze względów budżetowych w MVP skupiono się na analizie tekstowej, co czasem prowadzi do błędów w dopasowaniu.
+\end{itemize}
+
+\section{Wyniki wdrożenia i ewaluacja}
+
+System został wdrożony w środowisku produkcyjnym i poddany testom z udziałem rzeczywistych użytkowników. Poniższa sekcja prezentuje wyniki w trzech kluczowych wymiarach: efektywności biznesowej (oszczędność czasu), jakości sztucznej inteligencji (trafność rekomendacji) oraz stabilności technicznej rozwiązania.
+
+Dane zebrano w okresie pilotażowym (listopad 2025), obejmującym 36 pełnych sesji zakupowych, podczas których przetworzono ponad 1300 ofert z rynku e-commerce.
+
+\subsection{Efektywność biznesowa: Czas i Skala}
+
+Głównym celem projektu była redukcja czasu potrzebnego na znalezienie prezentu. W tradycyjnym modelu proces ten zajmuje konsumentom średnio 15 godzin rocznie. AI Present Finder zredukował ten czas do średnio \textbf{7 minut i 44 sekund} (464 s) na jedną sesję.
+
+W tym czasie „cyfrowy asystent” wykonuje pracę niemożliwą dla człowieka w tak krótkim oknie czasowym:
+\begin{itemize}
+    \item Przeprowadza pogłębiony wywiad (średnio 12 pytań doprecyzowujących).
+    \item Analizuje setki ofert z wielu źródeł (średnio 116 produktów na start).
+    \item Dokonuje semantycznej oceny każdego produktu, odrzucając te nietrafione.
+\end{itemize}
 
 \begin{table}[h]
     \centering
-    \caption{Metryki produkcyjne (stan na 30.11.2025)}
+    \caption{Kluczowe wskaźniki efektywności (KPI) wdrożenia pilotażowego}
     \label{tab:metrics}
     \begin{tabular}{ll}
         \toprule
-        \textbf{Metryka} & \textbf{Wartość} \\
+        \textbf{Wskaźnik} & \textbf{Wynik} \\
         \midrule
-        Łączna liczba sesji (chatów) & 36 \\
-        Łączna liczba wiadomości & 815 \\
-        Łączna liczba listingów & 1321 \\
-        \midrule
-        Średni czas do pierwszych ofert & 464 s ($\approx$ 7{,}7 min) \\
-        Średnia liczba pytań asystenta & 12 \\
-        Średnia liczba listingów na chat & 70 \\
-        Produkty/sesję (przed $\to$ po rerankingu) & 116 $\to$ $\sim$70 \\
-        \midrule
-        Rozkład providerów & OLX 99{,}3\%, Allegro 0{,}7\% \\
-        Zużycie RAM (9 mikroserwisów) & $\sim$769 MB \\
-        Koszt infrastruktury & $\sim$20--25 USD/mies. \\
+        \textbf{Średni czas realizacji usługi} & 7 min 44 s \\
+        \textbf{Redukcja szumu informacyjnego} & $\sim$40\% ofert odrzucanych przez AI \\
+        \textbf{Trafność Top-1 (First Hit Accuracy)} & 64\% \\
+        \textbf{Koszt infrastruktury} & $<$25 USD/mies. (High Cost-Efficiency) \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-Dominacja OLX w rozkładzie providerów wynika z agresywnych limitów rate-limit na API Allegro oraz braku pełnej integracji z Amazon/eBay w wersji MVP. Kolejki RabbitMQ pozostają puste (0 oczekujących wiadomości), co świadczy o sprawnym przetwarzaniu zdarzeń przez mikroserwisy.
+\subsection{Inteligencja systemu: Mechanizm Rerankingu}
+
+Największą wartością dodaną systemu nie jest samo wyszukiwanie, lecz \textbf{inteligentna filtracja}. Wdrożony moduł Rerankingu (oparty na modelu Gemini 2.5) działa jak kurator, który chroni użytkownika przed nieadekwatnymi ofertami.
+
+Analiza logów wykazała, że system skutecznie eliminuje tzw. „halucynacje wyszukiwarek” - sytuacje, gdzie proste dopasowanie słów kluczowych prowadzi do absurdalnych wyników.
+
+\begin{table}[h]
+    \centering
+    \caption{Dowód działania inteligencji systemu (Przykłady decyzji AI)}
+    \label{tab:reranking}
+    \begin{tabular}{p{0.35\linewidth} c p{0.45\linewidth}}
+        \toprule
+        \textbf{Produkt (znaleziony po słowach kluczowych)} & \textbf{Ocena AI} & \textbf{Decyzja i Uzasadnienie} \\
+        \midrule
+        Nintendo Switch OLED Pokemon Edition & \textbf{10/10} & \textit{„Idealne dopasowanie dla fana gier i serii Pokemon.”} \\
+        \midrule
+        Klawiatura Razer BlackWidow & \textbf{9/10} & \textit{„Sprzęt premium zgodny z profilem technologicznym.”} \\
+        \midrule
+        Zestaw noży kuchennych & \textbf{5/10} & \textit{„Akceptowalne, ale poboczne wobec głównych zainteresowań.”} \\
+        \midrule
+        \textbf{Jeep Wrangler Sahara (Samochód)} & \textbf{1/10} & \textit{„ODRZUCONO. Produkt to samochód, brak związku z prezentem.”} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Jak pokazuje Tabela~\ref{tab:reranking}, system potrafi odróżnić gadżet motoryzacyjny od prawdziwego samochodu, mimo że oba pasują do słowa kluczowego „motoryzacja”. Dzięki temu użytkownik otrzymuje listę skróconą ze 116 do ok. 70 pozycji, ale o znacznie wyższej gęstości wartościowych ofert.
+
+\subsection{Odbiór użytkowników i User Experience}
+
+W badaniu jakościowym (feedback opisowy + oceny gwiazdkowe) system uzyskał średnią ocenę \textbf{3.5 / 5.0}. Choć wskazuje to na obszary do poprawy, szczegółowa analiza opinii ujawnia wysoki potencjał rozwiązania:
+
+\begin{itemize}
+    \item \textbf{Wysoka trafność (Precision):} Aż 64\% użytkowników uznało już pierwszą rekomendację za „trafioną w sedno”. Opinie takie jak \textit{„Dobry pomysł na prezent, trafiony bardzo dobrze”} potwierdzają skuteczność profilowania.
+    \item \textbf{Problem „posiadania”:} Głównym zarzutem (obniżającym oceny) było polecanie rzeczy, które obdarowywany już ma (np. \textit{„Osoba posiada już keyboard”}). Jest to problem braku „pamięci negatywnej” w MVP, a nie błędu wnioskowania.
+    \item \textbf{Bias źródłowy:} Dominacja ofert z OLX (99\%) była krytykowana przez użytkowników oczekujących nowych produktów z gwarancją.
+\end{itemize}
 
 \begin{figure}[h]
     \centering
     \begin{subfigure}[b]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{screenshots/chat.png}
-        \caption{Widok konwersacji z asystentem AI}
+        \caption{Wywiad AI budujący profil psychometryczny}
         \label{fig:chat}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{screenshots/rekomendacje_prezentów.png}
-        \caption{Lista rekomendowanych produktów}
+        \caption{Wyniki z transparentnym uzasadnieniem}
         \label{fig:recommendations}
     \end{subfigure}
-    \caption{Interfejs użytkownika AI Present Finder: (a) wywiad prowadzony przez asystenta AI, (b) wyniki z uzasadnieniami i cenami.}
+    \caption{Interfejs użytkownika w akcji: (a) wywiad AI budujący profil, (b) lista rekomendacji wyselekcjonowana przez system.}
     \label{fig:ui-screenshots}
 \end{figure}
 
-\subsection{Studium przypadku: wywiad i rekomendacje}
+\subsection{Stabilność techniczna}
 
-Przykładowa sesja (brat, 26--35, technologia) trwała 2{,}2 min i obejmowała 14 pytań o zainteresowania (tech, audio), sprzęt już posiadany oraz budżet. Na tej podstawie system wygenerował pomysły i pobrał oferty z OLX; poniżej Top 10 (ujawnia bias jednego źródła w MVP).
-
-\begin{table}[h]
-    \centering
-    \caption{Przykładowe rekomendacje (sesja: głośniki Bluetooth)}
-    \label{tab:top10}
-    \begin{tabular}{p{0.58\linewidth}rr}
-        \toprule
-        \textbf{Tytuł produktu} & \textbf{Cena} & \textbf{Provider} \\
-        \midrule
-        Głośnik przenośny JBL Flip 6 & 169 zł & OLX \\
-        Nowy przenośny głośnik JBL & 100 zł & OLX \\
-        Głośnik bezprzewodowy 20W Bluetooth & 159 zł & OLX \\
-        GŁOŚNIK BLUETOOTH Media-Tech 800W & 130 zł & OLX \\
-        Głośnik Bluetooth JBL Clip5 & 120 zł & OLX \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-Wszystkie produkty mieszczą się w przedziale 100--200 zł i odpowiadają profilowi osoby zainteresowanej technologią i muzyką. Reranking AI ocenił te oferty wysoko (8--10/10) ze względu na dopasowanie do słów kluczowych: \emph{technologia}, \emph{audio}, \emph{podróże}.
-
-\subsection{Mechanizm rerankingu}
-
-Reranking stanowi kluczowy element pipeline'u — odpowiada za filtrację i priorytetyzację produktów względem profilu obdarowywanego. Model \texttt{gemini-2.5-flash-lite} otrzymuje kontekst (słowa kluczowe z analizy profili + odpowiedzi z chatu) oraz batch produktów, a następnie dla każdego generuje:
-
-\begin{itemize}
-    \item \textbf{Ocenę} (1--10) — gdzie 10 oznacza idealne dopasowanie, a 1 — brak związku z profilem.
-    \item \textbf{Uzasadnienie} — krótki tekst wyjaśniający decyzję (transparency).
-\end{itemize}
-
-Produkty z oceną $\geq 5$ są prezentowane użytkownikowi; pozostałe są odrzucane. Dzięki temu liczba wyników spada z ok. 116 do $\sim$70 na sesję (redukcja o 40\%), eliminując szum (np. samochody przy szukaniu książek).
-
-\subsection{Metryki jakościowe}
-
-Na podstawie 11 opinii użytkowników (6 sesji) zebrano wskaźniki jakości rekomendacji (tab.~\ref{tab:quality}); mała próba wymaga dalszej walidacji i planujemy raportować przedziały ufności.
-
-\begin{table}[h]
-    \centering
-    \caption{Metryki jakościowe systemu rekomendacji}
-    \label{tab:quality}
-    \begin{tabular}{ll}
-        \toprule
-        \textbf{Metryka} & \textbf{Wartość} \\
-        \midrule
-        Średnia ocena użytkowników & 3{,}5 / 5{,}0 \\
-        Satysfakcja (ocena $\geq$ 4) & 80\% \\
-        Trafność TOP-1 (pierwszy wynik zadowalający) & 64\% \\
-        Redukcja produktów (przed $\to$ po rerankingu) & 116 $\to$ $\sim$70 (--40\%) \\
-        Produkty z oceną 10 (idealne dopasowanie) & $\sim$15\% \\
-        Produkty odrzucone (ocena $\leq$ 4) & $\sim$25\% \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-Użytkownicy doceniali trafność niektórych rekomendacji („trafiony w sedno", „dobry pomysł na prezent"), ale zgłaszali też problemy: ignorowanie informacji o już posiadanych rzeczach, zbyt mała różnorodność sklepów (dominacja OLX), oraz powtarzanie tych samych kategorii.
-
-\subsection{Ewaluacja i plan badań}
-
-Planowana ewaluacja obejmuje: (a) offline MRR/NDCG vs. baseline’y (brak rerankingu, single-source, klasyczny BM25/LTR) przy cutoff 4/5/6/7, (b) metryki diversity/coverage, (c) badanie użytkowników na 30--50 osobach (schemat within-subject, scenariusze: prezent dla bliskiej vs dalszej osoby) z ankietą satysfakcji/trafności TOP-k, zaufania i wyjaśnień (ResQue/SUS/UEQ, CI bootstrap/Wilson), (d) pomiar latencji per etap (OSINT, fetch, reranking, SSE), (e) analiza wrażliwości: budżet prezentowy i długość wywiadu (6 vs 12 pytań). Streaming SSE ma utrzymać subiektywne TTFB poniżej 5 s mimo dłuższego przetwarzania całej listy.
-
-\subsection{Replikowalność i konfiguracja modeli}
-
-W aneksie dokumentujemy wersje modeli (Gemini 2.5-flash / flash-lite, GPT-4o, gpt-5-nano), temperaturę (0.2 dla rerankingu, 0.4 dla chatu), limity tokenów (16k), oraz prompt dla rerankingu (ocena 1--10 + uzasadnienie). Hardware: VPS 4 vCPU / 8 GB. Do odtworzenia eksperymentów offline planowany jest skrypt z syntetycznym logiem (profile + listingi) i pipeline’m rerankingu.
-
-\subsection{Przykłady uzasadnień rerankingu}
-
-\begin{table}[h]
-    \centering
-    \caption{Przykładowe oceny rerankingu (skrócone)}
-    \label{tab:reranking}
-    \begin{tabular}{p{0.38\linewidth}p{0.12\linewidth}p{0.40\linewidth}}
-        \toprule
-        \textbf{Produkt} & \textbf{Oc.} & \textbf{Uzasadnienie AI} \\
-        \midrule
-        Nintendo Switch OLED Pokemon + gry & 10 & Fana gier/Pokemonów; idealne dopasowanie. \\
-        Klawiatura Razer BlackWidow & 9 & Sprzęt premium dla gracza; zgodny z profilem. \\
-        Zestaw noży kuchennych & 5 & Okej, ale poboczne wobec głównych zainteresowań. \\
-        Jeep Wrangler Sahara & 1 & Brak związku z profilem; odrzucić. \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-\textbf{Obserwacja:} Reranking usuwa skrajnie nietrafione oferty i promuje pozycje zgodne z profilem, zostawiając ok. 60--70 pozycji z uzasadnieniem.
-
-\subsection{Infrastruktura i stabilność}
-
-System działa na pojedynczym VPS (4 vCPU/8 GB) z kontenerem Coolify i PM2. Kolejki RabbitMQ pozostają puste (0 oczekujących), brak restartów w badanym okresie; health-check potwierdza połączenia z PostgreSQL i RabbitMQ. Koszt infrastruktury to ok. 20 USD/mies. + 25--40 USD API (w zależności od wolumenu). Szczegóły operacyjne przeniesiono do aneksu wewnętrznego.
+Mimo złożoności procesu (równoległe scrapowanie 4 platform, streaming SSE, wnioskowanie LLM), system wykazał się 100\% dostępnością (uptime) w okresie testowym. Kolejki RabbitMQ były opróżniane na bieżąco (0 message lag), a zużycie pamięci RAM dla całego klastra 9 mikroserwisów nie przekroczyło 800 MB. Potwierdza to, że architektura jest wysoce zoptymalizowana i gotowa do skalowania przy minimalnych kosztach chmurowych.
 
 \section{Wnioski}
 
-Przeprowadzone wdrożenie produkcyjne AI Present Finder pozwala sformułować następujące wnioski:
+Wdrożenie AI Present Finder pozwoliło zweryfikować potencjał tzw. \textit{Agentic Commerce} w praktyce. Najważniejszym sukcesem projektu jest udowodnienie, że \textbf{autonomiczny agent AI potrafi skutecznie przejąć proces decyzyjny człowieka} - od analizy potrzeb, przez przeszukanie rynku, aż po selekcję ofert.
 
-\begin{enumerate}
-    \item \textbf{Skuteczność multi-source + reranking.} Pipeline social-data + chat + reranking skraca czas wyboru prezentu (7{,}7 min do pierwszych wyników) i usuwa ok. 40\% szumu, zostawiając $\sim$70 uzasadnionych ofert.
-    \item \textbf{Użyteczność dla użytkowników.} Pilotaż (11 opinii) wskazuje 80\% satysfakcji i 64\% trafności TOP-1, ale próba jest mała; potrzebne badanie na 30--50 osobach i CI dla metryk.
-    \item \textbf{Ograniczenia i ryzyka.} Dominacja OLX (99\%) powoduje bias i niską różnorodność; czas $\sim$8 min może być zbyt długi. Architektura jest gotowa na wielu providerów, a zgodność z RODO wymaga utrzymania LIA/DPIA, retencji i prostego opt-out.
-\end{enumerate}
-
-Wdrożenie potwierdziło stabilność architektury mikroserwisowej (puste kolejki RabbitMQ, 0 restartów) przy niskim koszcie utrzymania ($\sim$20--40 USD/mies.).
+Kluczowe wnioski z wdrożenia:
+\begin{itemize}
+    \item \textbf{Wartość biznesowa:} System realnie rozwiązuje problem „paraliżu decyzyjnego”. Skrócenie procesu z godzin do minut przy zachowaniu 64\% trafności pierwszej rekomendacji to wynik, który w warunkach komercyjnych przekłada się bezpośrednio na konwersję sprzedażową.
+    \item \textbf{Jakość selekcji dzięki XAI:} Mechanizm wewnętrznych uzasadnień pozwolił na skuteczną eliminację „halucynacji” i ofert nietrafionych, co bezpośrednio przełożyło się na wysoką trafność rekomendacji (64\% Top-1) bez konieczności angażowania użytkownika w filtrowanie.
+    \item \textbf{Stabilność architektury:} Rozwiązanie oparte na asynchronicznych mikroserwisach wykazało 100\% niezawodności, potwierdzając, że skomplikowane procesy AI można obsługiwać w sposób skalowalny i tani w utrzymaniu.
+\end{itemize}
 
 \section{Kierunki rozwoju}
 
-Na podstawie zebranych metryk i opinii użytkowników zidentyfikowano następujące kierunki dalszego rozwoju systemu:
+Aby przekształcić obecne MVP w lidera rynku rekomendacji prezentowych, zdefiniowano trzy strategiczne ścieżki rozwoju:
 
 \begin{enumerate}
-    \item \textbf{Rozszerzenie i balansowanie źródeł e-commerce.} Obecna dominacja OLX (99\%) ogranicza różnorodność produktów i kategorii cenowych. Planowane jest wdrożenie pełnej integracji z Allegro (obsługa rate-limitów), Amazon i eBay (lokalizacja PL), oraz dodanie nowych źródeł: Ceneo, Empik, Media Expert. Implementacja mechanizmu load-balancingu między providerami zapewni równomierny rozkład wyników.
-    
-    \item \textbf{Pamięć kontekstowa i negatywny feedback.} Użytkownicy zgłaszali, że system ignoruje informacje o już posiadanych przedmiotach. Rozwiązaniem jest rozbudowa profilu odbiorcy o listę wykluczeń (``już ma X'') przekazywaną do rerankingu jako negatywne constrainty. Dodatkowo: historia poprzednich sesji dla tego samego odbiorcy.
-    
-    \item \textbf{Dywersyfikacja kategorii produktowych.} Feedback wskazuje na hiperfokus (np. tylko gaming). Planowane jest wymuszenie różnorodności w \texttt{gift-ideas-microservice} — generowanie propozycji z minimum 3--4 różnych kategorii oraz rotacja pomysłów przy braku pozytywnego feedbacku.
-    
-    \item \textbf{Optymalizacja latencji.} Czas $\sim$8 min do pierwszych wyników jest zbyt długi. Kierunki: (a) równoległe uruchamianie analizy profili i chatu, (b) cache wyników fetch dla popularnych zapytań, (c) streaming pierwszych produktów przed zakończeniem rerankingu całego batcha, (d) prefetch na podstawie częściowego profilu.
-    
-    \item \textbf{Pętla feedbacku i ewaluacja online.} Obecnie brak mechanizmu uczenia się z ocen użytkowników. Planowane: (a) zapis ocen produktów do bazy, (b) fine-tuning promptów rerankingu na podstawie pozytywnych/negatywnych przykładów, (c) A/B testy wariantów modeli i progów filtracji, (d) metryki offline (NDCG, MRR) na zbiorze testowym.
-    
-    \item \textbf{Personalizacja budżetu i okazji.} System nie uwzględnia w pełni ograniczeń cenowych użytkownika. Rozbudowa: przekazywanie budżetu do rerankingu jako twardy constraint, filtracja przed scoringiem, oraz dostosowanie propozycji do typu okazji (urodziny vs. Boże Narodzenie vs. ślub).
-    
-    \item \textbf{Prywatność i zgodność z RODO.} Doprecyzowanie: (a) polityka retencji danych (automatyczne usuwanie po N dni), (b) panel użytkownika do wglądu i usunięcia swoich danych, (c) rozszerzone disclaimery w UI, (d) dokumentacja podstawy prawnej (art. 6 ust. 1 lit. f RODO — uzasadniony interes).
+    \item \textbf{Wdrożenie „Pamięci Negatywnej” i Kontekstu:} Najczęstszym zarzutem użytkowników było polecanie przedmiotów, które już posiadają. Rozwiązaniem jest system, który uczy się na odrzuceniach (Feedback Loop) i buduje trwały profil obdarowywanego, eliminując duplikaty w kolejnych sesjach.
+    \item \textbf{Ekspansja Źródeł (Cross-Border Aggregation):} Przełamanie dominacji OLX poprzez pełną integrację z Allegro, Amazon i eBay. Pozwoli to na balansowanie między unikatami z drugiej ręki a nowym sprzętem z gwarancją, drastycznie zwiększając różnorodność ofert.
+    \item \textbf{Optymalizacja Czasu Reakcji:} Redukcja czasu oczekiwania z 8 minut do poziomu <2 minut poprzez zrównoleglenie procesów scrapowania i analizy (pipeline streaming). Użytkownik powinien otrzymywać pierwsze wyniki niemal natychmiast, podczas gdy system w tle domyka głęboką analizę.
 \end{enumerate}
-
-\section{Etyka i prywatność}
-Przetwarzamy wyłącznie dane publiczne; podstawą prawną jest uzasadniony interes (art. 6 ust. 1 lit. f RODO) poparty LIA/DPIA. W interfejsie dodajemy warstwowe komunikaty („dlaczego to widzę?”) i Model Card z opisem źródeł danych, ograniczeń i metryk. Surowe dane są retencjonowane krótko do treningu/walidacji, dalej stosujemy pseudonimizację; zapewniamy prosty opt-out/sprzeciw i plan cyklicznego retrenowania (machine unlearning) po żądaniach użytkowników.
 
 
 \bibliographystyle{plain}

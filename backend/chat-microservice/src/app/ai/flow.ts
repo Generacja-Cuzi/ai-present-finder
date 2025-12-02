@@ -1,7 +1,14 @@
 import { google } from "@ai-sdk/google";
+import { openai } from "@ai-sdk/openai";
 import type { RecipientProfile } from "@core/types";
 import type { GenerateTextResult, ModelMessage } from "ai";
-import { generateText, stepCountIs } from "ai";
+import {
+  generateObject,
+  generateText,
+  hasToolCall,
+  modelMessageSchema,
+  stepCountIs,
+} from "ai";
 
 import type { Logger } from "@nestjs/common";
 
@@ -35,18 +42,83 @@ export async function giftInterviewFlow({
     (message) => message.role === "assistant",
   ).length;
   const maxRetries = 3;
+  const validatedMessages = modelMessageSchema.array().parse(messages);
   let results: GenerateTextResult<typeof tools, never> | null = null;
   let retryCount = 0;
 
+  const buildSystemPrompt = (missingToolCallHint?: string) =>
+    giftConsultantPrompt(
+      occasion,
+      userProfile,
+      questionCount,
+      missingToolCallHint,
+    );
+
+  const stopConditions = [
+    hasToolCall("ask_a_question_with_answer_suggestions"),
+    hasToolCall("end_conversation"),
+    hasToolCall("flag_inappropriate_request"),
+    stepCountIs(1),
+  ];
+
+  const repairToolCall = async ({
+    toolCall,
+    error: repairError,
+    system,
+    messages: stepMessages,
+  }: Parameters<
+    NonNullable<
+      Parameters<typeof generateText>[0]["experimental_repairToolCall"]
+    >
+  >[0]) => {
+    const errorMessage =
+      repairError instanceof Error ? repairError.message : String(repairError);
+    logger.warn(
+      `Attempting tool call repair for ${toolCall.toolName} (${toolCall.toolCallId}): ${errorMessage}`,
+    );
+
+    if (!(toolCall.toolName in tools)) {
+      logger.error(
+        `Cannot repair tool call for unknown tool: ${toolCall.toolName}`,
+      );
+      return null;
+    }
+
+    const toolDefinition = tools[toolCall.toolName as keyof typeof tools];
+
+    const repairResult = await generateObject({
+      model: openai("gpt-4o-mini"),
+      system: `${system ?? ""}\n\nNapraw wywołanie narzędzia "${toolCall.toolName}". Poprzednie dane były niepoprawne (${errorMessage}). Zweryfikuj i zwróć tylko poprawne JSON argumentów bez dodatkowego tekstu.`,
+      messages: stepMessages,
+      schema: toolDefinition.inputSchema,
+      schemaName: `${toolCall.toolName}-repair`,
+      schemaDescription:
+        "Corrected arguments for a failed tool call. Only include valid fields.",
+      mode: "json",
+      maxRetries: 1,
+    });
+
+    return {
+      ...toolCall,
+      input: JSON.stringify(repairResult.object),
+    };
+  };
+
   while (retryCount <= maxRetries) {
     try {
+      const missingToolCallReminder =
+        retryCount === 0
+          ? undefined
+          : "Poprzednia próba nie wywołała żadnego narzędzia - pamiętaj, że narzędzia są obowiązkowe i musisz użyć właściwego narzędzia zamiast samodzielnie odpowiadać.";
+
       results = await generateText({
         model: google("gemini-2.5-flash"),
-        messages,
-        system: giftConsultantPrompt(occasion, userProfile, questionCount),
-        stopWhen: stepCountIs(1),
+        messages: validatedMessages,
+        system: buildSystemPrompt(missingToolCallReminder),
+        stopWhen: stopConditions,
         tools,
         toolChoice: "required", // This forces the AI to always call a tool
+        experimental_repairToolCall: repairToolCall,
         onStepFinish: (step) => {
           logger.log(`Step finished: ${JSON.stringify(step)}`);
         },
@@ -68,11 +140,11 @@ export async function giftInterviewFlow({
         logger.log(
           `No tool calls found, retrying (attempt ${retryCount.toString()}/${maxRetries.toString()})`,
         );
+        continue;
       } else {
         logger.warn(
-          `No tool calls found after ${maxRetries.toString()} retries, proceeding with empty results`,
+          `No tool calls produced after ${maxRetries.toString()} retries; proceeding without tool calls`,
         );
-
         break;
       }
     } catch (error) {
@@ -100,11 +172,8 @@ export async function giftInterviewFlow({
     }
   }
 
-  if (results === null || results.toolResults.length === 0) {
-    onQuestionAsked(results?.text ?? "No tool results found", {
-      type: "long_free_text",
-    });
-    return;
+  if (results === null) {
+    throw new Error("No results returned from text generation");
   }
 
   for (const toolResult of results.toolResults) {
@@ -169,23 +238,84 @@ export async function giftRefinementFlow({
     (message) => message.role === "assistant",
   ).length;
   const maxRetries = 3;
+  const validatedMessages = modelMessageSchema.array().parse(messages);
   let results: GenerateTextResult<typeof tools, never> | null = null;
   let retryCount = 0;
 
+  const buildSystemPrompt = (missingToolCallHint?: string) =>
+    giftRefinementPrompt(
+      occasion,
+      userProfile,
+      questionCount,
+      selectedGiftsContext,
+      missingToolCallHint,
+    );
+
+  const stopConditions = [
+    hasToolCall("ask_a_question_with_answer_suggestions"),
+    hasToolCall("end_conversation"),
+    hasToolCall("flag_inappropriate_request"),
+    stepCountIs(1),
+  ];
+
+  const repairToolCall = async ({
+    toolCall,
+    error: repairError,
+    system,
+    messages: stepMessages,
+  }: Parameters<
+    NonNullable<
+      Parameters<typeof generateText>[0]["experimental_repairToolCall"]
+    >
+  >[0]) => {
+    const errorMessage =
+      repairError instanceof Error ? repairError.message : String(repairError);
+    logger.warn(
+      `Attempting tool call repair for ${toolCall.toolName} (${toolCall.toolCallId}): ${errorMessage}`,
+    );
+
+    if (!(toolCall.toolName in tools)) {
+      logger.error(
+        `Cannot repair tool call for unknown tool: ${toolCall.toolName}`,
+      );
+      return null;
+    }
+
+    const toolDefinition = tools[toolCall.toolName as keyof typeof tools];
+
+    const repairResult = await generateObject({
+      model: openai("gpt-4o-mini"),
+      system: `${system ?? ""}\n\nNapraw wywołanie narzędzia "${toolCall.toolName}". Poprzednie dane były niepoprawne (${errorMessage}). Zweryfikuj i zwróć tylko poprawne JSON argumentów bez dodatkowego tekstu.`,
+      messages: stepMessages,
+      schema: toolDefinition.inputSchema,
+      schemaName: `${toolCall.toolName}-repair`,
+      schemaDescription:
+        "Corrected arguments for a failed tool call. Only include valid fields.",
+      mode: "json",
+      maxRetries: 1,
+    });
+
+    return {
+      ...toolCall,
+      input: JSON.stringify(repairResult.object),
+    };
+  };
+
   while (retryCount <= maxRetries) {
     try {
+      const missingToolCallReminder =
+        retryCount === 0
+          ? undefined
+          : "Poprzednia próba nie wywołała żadnego narzędzia - pamiętaj, że narzędzia są obowiązkowe i musisz użyć właściwego narzędzia zamiast samodzielnie odpowiadać.";
+
       results = await generateText({
         model: google("gemini-2.5-flash"),
-        messages,
-        system: giftRefinementPrompt(
-          occasion,
-          userProfile,
-          questionCount,
-          selectedGiftsContext,
-        ),
-        stopWhen: stepCountIs(1),
+        messages: validatedMessages,
+        system: buildSystemPrompt(missingToolCallReminder),
+        stopWhen: stopConditions,
         tools,
         toolChoice: "required", // This forces the AI to always call a tool
+        experimental_repairToolCall: repairToolCall,
         onStepFinish: (step) => {
           logger.log(`Refinement step finished: ${JSON.stringify(step)}`);
         },
@@ -209,9 +339,10 @@ export async function giftRefinementFlow({
         logger.log(
           `No tool calls found in refinement, retrying (attempt ${retryCount.toString()}/${maxRetries.toString()})`,
         );
+        continue;
       } else {
         logger.warn(
-          `No tool calls found in refinement after ${maxRetries.toString()} retries, proceeding with empty results`,
+          `No tool calls produced in refinement after ${maxRetries.toString()} retries; proceeding without tool calls`,
         );
 
         break;
@@ -241,11 +372,8 @@ export async function giftRefinementFlow({
     }
   }
 
-  if (results === null || results.toolResults.length === 0) {
-    onQuestionAsked(results?.text ?? "No tool results found", {
-      type: "long_free_text",
-    });
-    return;
+  if (results === null) {
+    throw new Error("No results returned from refinement text generation");
   }
 
   for (const toolResult of results.toolResults) {

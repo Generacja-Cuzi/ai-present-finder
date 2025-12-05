@@ -27,11 +27,11 @@ Wybór prezentu pochłania średnio 15 godzin rocznie, a ponad 50\% upominków o
 
 \subsection{Problem i tło}
 
-Zakup prezentu dla bliskiej osoby jest zadaniem zaskakująco trudnym i kosztownym czasowo. Badania konsumenckie wskazują, że w sezonie świątecznym przeciętny kupujący spędza \textbf{około 15 godzin} na szukaniu prezentów~\cite{consumer-reports}, a \textbf{ponad 50\%} osób co roku dostaje przynajmniej jeden nietrafiony upominek~\cite{finder-gifts}. Przekłada się to na miliardy dolarów wydawanych na prezenty, które trafiają do zwrotu lub na dno szafy.
+Zakup prezentu dla bliskiej osoby jest zadaniem zaskakująco trudnym i kosztownym czasowo. Badania konsumenckie wskazują, że w sezonie świątecznym przeciętny kupujący spędza \textbf{około 15 godzin} na szukaniu prezentów~\cite{consumer-reports}, a \textbf{ponad 50\%} osób co roku dostaje przynajmniej jeden nietrafiony upominek~\cite{finder-gifts}. Przekłada się to na miliardy dolarów wydawanych na prezenty~\cite{nrf-holiday-2025}, które trafiają do zwrotu lub na dno szafy.
 
-Równolegle ankiety dotyczące zakupów świątecznych (2025, $n=322$) pokazują, że \textbf{37\% respondentów nie wie, od czego zacząć} wybór prezentu, \textbf{42\%} skarży się na brak dostępności pożądanych produktów, a \textbf{57\%} wskazuje wysokie ceny jako główną barierę~\cite{kinetic319}. Dodatkowo \textbf{23\%} uważa recenzje za niepomocne. Użytkownik gubi się w nadmiarze opcji, nie ufa ocenom innych i jednocześnie działa pod presją czasu oraz budżetu.
+Równolegle ankiety dotyczące zakupów świątecznych (2025, $n=322$) pokazują, że 37\% respondentów nie wie, od czego zacząć wybór prezentu, 42\% skarży się na brak dostępności pożądanych produktów, a 57\% wskazuje wysokie ceny jako główną barierę~\cite{kinetic319}. Dodatkowo 23\% uważa recenzje za niepomocne. Użytkownik gubi się w nadmiarze opcji, nie ufa ocenom innych i jednocześnie działa pod presją czasu oraz budżetu.
 
-Z perspektywy rynku e‑commerce te problemy oznaczają utracone przychody (porzucane koszyki, opóźnione zakupy, zwroty) oraz niską lojalność klientów. Z perspektywy użytkownika — stres, poczucie marnowania pieniędzy i brak satysfakcji z podarunku.
+Z perspektywy rynku e-commerce te problemy oznaczają utracone przychody (porzucane koszyki, opóźnione zakupy, zwroty) oraz niską lojalność klientów. Z perspektywy użytkownika — stres, poczucie marnowania pieniędzy i brak satysfakcji z podarunku.
 
 \subsection{Cele projektu w kontekście biznesowym i technicznym}
 
@@ -56,8 +56,6 @@ Na początku prac zdefiniowano mierzalne kryteria sukcesu:
     \item \textbf{Weryfikowalność decyzji} — system powinien generować wewnętrzne uzasadnienie dla każdej rekomendacji, co pozwala na audyt jakości i eliminację halucynacji.
 \end{itemize}
 
-Realizacja tych celów miała pokazać, że podejście oparte na rozmowie z użytkownikiem, analizie kontekstu i inteligentnej selekcji ofert jest w stanie realnie zmniejszyć liczbę nietrafionych prezentów oraz uprościć proces zakupowy, przy zachowaniu akceptowalnych kosztów i wydajności po stronie systemu.
-
 \section{Prace związane z tematem}
 
 \subsection{Analiza rozwiązań rynkowych}
@@ -65,7 +63,7 @@ Realizacja tych celów miała pokazać, że podejście oparte na rozmowie z uży
 Rynek cyfrowego wsparcia w obdarowywaniu przeszedł ewolucję od statycznych list życzeń (np. GiftList) do interaktywnych asystentów AI. Obecne rozwiązania można podzielić na dwa główne segmenty:
 
 \begin{itemize}
-    \item \textbf{Rozwiązania B2B (Corporate Gifting):} Liderzy tacy jak \textit{Giftpack.ai} czy \textit{Snappy} oferują zaawansowaną personalizację opartą na analizie śladu cyfrowego (OSINT) i danych firmowych. Osiągają wysoką satysfakcję (deklarowane 98\%), jednak są to narzędzia drogie, dostępne w modelu subskrypcyjnym dla działów HR i sprzedaży, niedostępne dla klienta indywidualnego.
+    \item \textbf{Rozwiązania B2B (Corporate Gifting):} Liderzy tacy jak \textit{Giftpack.ai}~\cite{giftpack-ai} czy \textit{Snappy}~\cite{snappy-report} oferują zaawansowaną personalizację opartą na analizie śladu cyfrowego (OSINT) i danych firmowych. Osiągają wysoką satysfakcję (deklarowane 98\%~\cite{giftpack-ai}), jednak są to narzędzia drogie, dostępne w modelu subskrypcyjnym dla działów HR i sprzedaży, niedostępne dla klienta indywidualnego.
     \item \textbf{Rozwiązania B2C (Consumer Chatbots):} Aplikacje takie jak \textit{DreamGift} czy \textit{Giftruly} to zazwyczaj proste nakładki na modele językowe (LLM). Choć są łatwo dostępne, cierpią na brak kontekstu — opierają się wyłącznie na tym, co użytkownik wpisze w oknie czatu. Często generują generyczne pomysły lub „halucynują” nieistniejące produkty, co prowadzi do niskiego zaufania użytkowników.
 \end{itemize}
 
@@ -73,7 +71,7 @@ Istnieje wyraźna luka rynkowa: brak narzędzia konsumenckiego, które łączył
 
 \subsection{Pozycjonowanie i wyróżniki AI Present Finder}
 
-Projekt AI Present Finder (AIPF) pozycjonuje się w kategorii \textit{Agentic Commerce} — systemów, które nie tylko doradzają, ale aktywnie wyszukują i weryfikują oferty. Główne wyróżniki względem konkurencji to:
+Projekt AI Present Finder (AIPF) pozycjonuje się w kategorii \textit{Agentic Commerce}~\cite{mckinsey-agentic-2025} — systemów, które nie tylko doradzają, ale aktywnie wyszukują i weryfikują oferty. Główne wyróżniki względem konkurencji to:
 
 \begin{enumerate}
     \item \textbf{Demokratyzacja OSINT:} Przeniesienie technologii analizy profili społecznościowych (Instagram, TikTok) z sektora korporacyjnego do konsumenckiego. Pozwala to rozwiązać problem „zimnego startu” — system wie o zainteresowaniach odbiorcy, zanim użytkownik o nich napisze.
@@ -86,7 +84,27 @@ Projekt AI Present Finder (AIPF) pozycjonuje się w kategorii \textit{Agentic Co
 Realizacja tak zdefiniowanego systemu wymagała przyjęcia specyficznych założeń architektonicznych i zmierzenia się z barierami technologicznymi.
 
 \textbf{Architektura i technologie:}
-System oparto na architekturze mikroserwisowej (NestJS, RabbitMQ), co pozwala na niezależne skalowanie modułów (np. 4 instancje \texttt{fetch-microservice} do równoległego pobierania ofert). Wykorzystanie wzorca CQRS porządkuje przepływ danych, a asynchroniczna komunikacja jest niezbędna przy długotrwałych procesach (scraping, wnioskowanie LLM).
+System oparto na architekturze mikroserwisowej, gdzie każdy komponent odpowiada za wydzieloną funkcjonalność (Tabela~\ref{tab:microservices}).
+
+\begin{table}[h]
+    \centering
+    \caption{Komponenty architektury mikroserwisowej}
+    \label{tab:microservices}
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Komponent} & \textbf{Odpowiedzialność} \\
+        \midrule
+        REST API & Punkt wejścia HTTP, streaming wyników przez SSE \\
+        Stalking & Analiza profili społecznościowych (BrightData + OpenAI) \\
+        Chat & Prowadzenie wywiadu AI (Google Gemini) \\
+        Gift Ideas & Generowanie pomysłów na prezenty \\
+        Fetch (×4) & Równoległe pobieranie ofert z platform e-commerce \\
+        Reranking & Ocena i filtracja produktów przez LLM \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Komunikacja między komponentami odbywa się asynchronicznie przez broker RabbitMQ (wzorzec CQRS~\cite{cqrs-pattern}), co pozwala na niezależne skalowanie modułów i obsługę długotrwałych procesów (scraping, wnioskowanie LLM).
 
 \textbf{Kluczowe wyzwania i ograniczenia:}
 \begin{itemize}
@@ -123,16 +141,15 @@ W tym czasie „cyfrowy asystent” wykonuje pracę niemożliwą dla człowieka 
         \textbf{Średni czas realizacji usługi} & 7 min 44 s \\
         \textbf{Redukcja szumu informacyjnego} & $\sim$40\% ofert odrzucanych przez AI \\
         \textbf{Trafność Top-1 (First Hit Accuracy)} & 64\% \\
-        \textbf{Koszt infrastruktury} & $<$25 USD/mies. (High Cost-Efficiency) \\
         \bottomrule
     \end{tabular}
 \end{table}
 
 \subsection{Inteligencja systemu: Mechanizm Rerankingu}
 
-Największą wartością dodaną systemu nie jest samo wyszukiwanie, lecz \textbf{inteligentna filtracja}. Wdrożony moduł Rerankingu (oparty na modelu Gemini 2.5) działa jak kurator, który chroni użytkownika przed nieadekwatnymi ofertami.
+Największą wartością dodaną systemu nie jest samo wyszukiwanie, lecz \textbf{inteligentna filtracja}. Wdrożony moduł Rerankingu (oparty na modelu Gemini 2.5~\cite{gemini-technical-report}) działa jak doradca, który chroni użytkownika przed nieadekwatnymi ofertami.
 
-Analiza logów wykazała, że system skutecznie eliminuje tzw. „halucynacje wyszukiwarek” - sytuacje, gdzie proste dopasowanie słów kluczowych prowadzi do absurdalnych wyników.
+Analiza logów wykazała, że system skutecznie eliminuje sytuacje, gdzie proste dopasowanie słów kluczowych prowadzi do skrajnie nieprawidłowych wyników.
 
 \begin{table}[h]
     \centering
@@ -201,13 +218,26 @@ Kluczowe wnioski z wdrożenia:
 
 \section{Kierunki rozwoju}
 
-Aby przekształcić obecne MVP w lidera rynku rekomendacji prezentowych, zdefiniowano trzy strategiczne ścieżki rozwoju:
+Zdefiniowano cztery strategiczne ścieżki rozwoju systemu:
 
 \begin{enumerate}
-    \item \textbf{Optymalizacja Czasu Reakcji:} Redukcja czasu oczekiwania z obecnych kilku minut do poziomu poniżej 2 minut poprzez zrównoleglenie procesów scrapowania i analizy (pipeline streaming). Celem jest dostarczanie pierwszych wyników niemal natychmiastowo, podczas gdy system w tle domyka głęboką analizę ofert ze wszystkich zintegrowanych platform (Allegro, Amazon, eBay, OLX).
-    \item \textbf{Wyszukiwanie Wektorowe (Embeddings):} Wdrożenie mechanizmów wyszukiwania semantycznego opartego na embeddingach. Pozwoli to na rekomendowanie produktów koncepcyjnie zbliżonych do tych, które użytkownik ocenił pozytywnie, nawet jeśli nie zawierają one identycznych słów kluczowych, co znacząco zwiększy trafność i różnorodność wyników.
-    \item \textbf{Zaawansowany Wywiad Adaptacyjny:} Rozbudowa modułu konwersacyjnego o lepsze rozumienie niuansów i kontekstu. System będzie dążył do zadawania mniejszej liczby, ale bardziej precyzyjnych pytań, dynamicznie dostosowując strategię rozmowy, aby szybciej zbudować dokładny profil psychometryczny odbiorcy.
+    \item \textbf{Optymalizacja czasu reakcji} — redukcja czasu oczekiwania poniżej 2 minut poprzez pipeline streaming i równoległe przetwarzanie.
+    \item \textbf{Wyszukiwanie wektorowe} — rekomendowanie produktów semantycznie zbliżonych dzięki embeddingom, nawet bez dopasowania słów kluczowych.
+    \item \textbf{Wywiad adaptacyjny} — mniej, ale bardziej precyzyjnych pytań, dynamicznie dostosowanych do kontekstu rozmowy.
+    \item \textbf{System rekomendacji oparty na feedbacku} — uczenie się z ocen użytkowników (wzorem platform streamingowych).
 \end{enumerate}
+
+\section{Potencjalny model biznesowy}
+
+Niskie koszty operacyjne systemu otwierają możliwość komercjalizacji w przyszłości. W przypadku podjęcia decyzji o monetyzacji, rozważane byłyby trzy strumienie przychodów:
+
+\begin{enumerate}
+    \item \textbf{Marketing afiliacyjny} — prowizje od przekierowań do sklepów partnerskich (Allegro, Amazon, eBay). Darmowe dla użytkownika, motywowałoby system do trafnych rekomendacji.
+    \item \textbf{Promowane produkty} — wyróżnianie ofert sponsorowanych w wynikach (oznaczonych jako „Promowane").
+    \item \textbf{Subskrypcja Pro} — więcej rekomendacji, dostęp do dodatkowych platform, priorytetowe przetwarzanie, historia wyszukiwań i powiadomienia o promocjach.
+\end{enumerate}
+
+Model freemium (darmowa wersja podstawowa + płatne rozszerzenia) zapewniałby niski próg wejścia przy jednoczesnej możliwości skalowania przychodów.
 
 
 \bibliographystyle{plain}

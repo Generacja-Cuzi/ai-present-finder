@@ -1,3 +1,4 @@
 node_modules
 dist
 private_key
+**/.DS_Store

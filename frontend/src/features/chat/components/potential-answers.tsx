@@ -35,7 +35,7 @@ export function PotentialAnswers({
   };
 
   return (
-    <div className="mx-2 flex h-[200px] flex-col gap-1.5 rounded-t-2xl px-4 py-2">
+    <div className="mx-2 flex h-[200px] flex-col gap-1.5 rounded-t-2xl py-2 lg:mx-4">
       {answers.map((answer) => (
         <Button
           variant="outline"
@@ -84,7 +84,7 @@ export function PotentialAnswers({
       ) : (
         <Button
           variant="outline"
-          size="sm"
+          size="lg"
           onClick={() => {
             setShowOtherInput(true);
           }}

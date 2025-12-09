@@ -38,7 +38,7 @@ export function PageHeader({
   return (
     <header
       className={cn(
-        "border-b border-gray-200 bg-white",
+        "border-b border-gray-200 bg-white pt-2",
         sticky && "sticky top-0 z-20",
         className,
       )}

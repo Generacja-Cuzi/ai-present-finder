@@ -688,6 +688,7 @@ Model danych został zaprojektowany w sposób domenowy, z wykorzystaniem diagram
     \item \textbf{Favorite} – relacja użytkownika do wybranych produktów (lista ulubionych).
 \end{itemize}
 Relacje między tymi bytami zostały odwzorowane na diagramie konceptualnym (User posiada wiele Session; Session posiada wiele ChatMessage i GiftIdea; GiftIdea powiązana jest z wieloma Product; User może dodawać Product do Favorites oraz pozostawiać Feedback dla Session). Na Rysunku~\ref{fig:class-diagram} przedstawiono diagram klas UML modelu domenowego, natomiast diagram E/R pokazano na Rysunku~\ref{fig:er-diagram}.
+W dalszej części rozdziału umieszczono również fizyczny diagram bazy RestAPI (Rysunek~\ref{fig:db-restapi}) oraz schematy baz mikroserwisów Chat, Gift Ideas i Reranking (Rysunki~\ref{fig:er-chat}, \ref{fig:er-gift-ideas}, \ref{fig:er-reranking}).
 
 \clearpage
 \begin{figure}[p]
@@ -704,6 +705,15 @@ Relacje między tymi bytami zostały odwzorowane na diagramie konceptualnym (Use
     \caption{Diagram E/R modelu danych głównej bazy (RestAPI).}
     \label{fig:er-diagram}
 \end{figure}
+
+\begin{landscape}
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\linewidth,height=0.9\textheight,keepaspectratio]{../databases/restapi.pdf}
+    \caption{Diagram fizyczny bazy danych mikroserwisu RestAPI.}
+    \label{fig:db-restapi}
+\end{figure}
+\end{landscape}
 
 \begin{landscape}
 \begin{figure}[p]

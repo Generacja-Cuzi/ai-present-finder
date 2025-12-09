@@ -27,8 +27,9 @@ function createHandler(scrapeProfilesImplementation: ScrapeProfilesMock) {
   } as unknown as BrightDataService;
 
   const emit = jest.fn();
+  const progressEmit = jest.fn();
   const eventBus = { emit } as unknown as ClientProxy;
-  const progressEventBus = { emit } as unknown as ClientProxy;
+  const progressEventBus = { emit: progressEmit } as unknown as ClientProxy;
 
   const handler = new StalkingAnalyzeHandler(
     brightDataService,
@@ -36,7 +37,7 @@ function createHandler(scrapeProfilesImplementation: ScrapeProfilesMock) {
     progressEventBus,
   );
 
-  return { handler, emit };
+  return { handler, emit, progressEmit };
 }
 
 describe("StalkingAnalyzeHandler", () => {
@@ -68,7 +69,7 @@ describe("StalkingAnalyzeHandler", () => {
         },
       ] as AnyProfileScrapeResult[]);
 
-    const { handler, emit } = createHandler(
+    const { handler, emit, progressEmit } = createHandler(
       scrapeProfiles as ScrapeProfilesMock,
     );
 
@@ -83,6 +84,10 @@ describe("StalkingAnalyzeHandler", () => {
       { url: "https://instagram.com/runner" },
     ]);
 
+    // Check that ProgressUpdateEvent was emitted
+    expect(progressEmit).toHaveBeenCalledTimes(1);
+
+    // Check that StalkingCompletedEvent was emitted
     expect(emit).toHaveBeenCalledTimes(1);
     const [eventName, event] = emit.mock.calls[0] as [
       string,

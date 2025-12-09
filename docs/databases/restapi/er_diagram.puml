@@ -1,6 +1,6 @@
 @startuml restapi_er_diagram
 
-title REST API Database - Entity Relationship Diagram
+title Baza danych REST API - diagram związków encji
 
 entity "users" as users {
   *id : UUID
@@ -56,50 +56,50 @@ entity "user_favorite_listings" as favorites {
   created_at : TIMESTAMP
 }
 
-users ||--o{ chats : "owns (1:M)"
-chats ||--o{ messages : "contains (1:M)"
-chats ||--o{ listings : "has (1:M)\nvia chat_id"
-users }o--o{ listings : "favorites (M:M)"
+users ||--o{ chats : "posiada (1:N)"
+chats ||--o{ messages : "zawiera (1:N)"
+chats ||--o{ listings : "ma (1:N)\npo chat_id"
+users }o--o{ listings : "ulubione (N:M)"
 favorites }o--|| users
 favorites }o--|| listings
 
 note right of users
-  **User Accounts**
-  - Google OAuth authentication
-  - Stores tokens for API access
-  - One user can have many chats
-  - Can favorite multiple listings
+  **Konta użytkowników**
+  - Uwierzytelnianie przez Google OAuth
+  - Przechowywanie tokenów dostępu do API
+  - Jeden użytkownik może mieć wiele czatów
+  - Może oznaczać wiele ofert jako ulubione
 end note
 
 note right of chats
-  **Chat Sessions**
-  - Each chat is a gift search session
-  - chat_id is business identifier
-  - id is database UUID
-  - CASCADE DELETE from users
+  **Sesje czatu**
+  - Każdy czat to sesja wyszukiwania prezentu
+  - chat_id jest identyfikatorem biznesowym
+  - id to techniczne UUID w bazie
+  - Usunięcie użytkownika usuwa jego czaty (CASCADE DELETE)
 end note
 
 note bottom of messages
-  **Chat Messages**
+  **Wiadomości czatu**
   - role: user | assistant | system
-  - CASCADE DELETE from chats
-  - Ordered by created_at
+  - Usuwane razem z czatem (CASCADE DELETE)
+  - Porządkowane według created_at
 end note
 
 note bottom of listings
-  **Product Recommendations**
-  - From multiple e-commerce providers
-  - References chats.chat_id (not id!)
-  - SET NULL if chat deleted
-  - Can be favorited by users
+  **Rekomendacje produktów**
+  - Z wielu platform e-commerce
+  - Odwołanie do chats.chat_id (nie id!)
+  - Przy usunięciu czatu ustawiany NULL (SET NULL)
+  - Mogą być dodawane do ulubionych przez użytkowników
 end note
 
 note left of favorites
-  **Junction Table**
-  - Many-to-Many relationship
-  - Composite PK (user_id, listing_id)
-  - CASCADE DELETE from both sides
-  - Tracks when favorited
+  **Tabela łącząca**
+  - Relacja wiele-do-wielu
+  - Złożony klucz główny (user_id, listing_id)
+  - Usunięcie użytkownika lub oferty usuwa wpis (CASCADE DELETE)
+  - Przechowuje datę dodania do ulubionych
 end note
 
 @enduml

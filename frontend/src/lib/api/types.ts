@@ -1288,6 +1288,29 @@ export interface components {
              */
             data: components["schemas"]["ListingWithIdDto"][];
         };
+        SseProgressUpdateDto: {
+            /**
+             * @example progress-update
+             * @enum {string}
+             */
+            type: "progress-update";
+            /**
+             * @description Current progress stage
+             * @example stalking
+             * @enum {string}
+             */
+            stage: "stalking" | "interview" | "ideas" | "fetching" | "reranking";
+            /**
+             * @description Progress percentage (0-100)
+             * @example 20
+             */
+            percentage: number;
+            /**
+             * @description Human-readable progress message
+             * @example Analiza profili społecznościowych zakończona
+             */
+            message: string;
+        };
     };
     responses: never;
     parameters: never;

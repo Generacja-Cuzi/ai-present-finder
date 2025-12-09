@@ -1,4 +1,4 @@
-import { StalkingCompletedEvent } from "@core/events";
+import { ProgressUpdateEvent, StalkingCompletedEvent } from "@core/events";
 import { StalkingAnalyzeRequestHandler } from "src/app/handlers/stalking-analyze-request.handler";
 import { StalkingAnalyzeHandler } from "src/app/handlers/stalking-analyze.handler";
 import { BrightDataService } from "src/app/services/brightdata.service";
@@ -25,6 +25,19 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
             process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
           ],
           queue: StalkingCompletedEvent.name,
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
+      {
+        name: "PROGRESS_UPDATE_EVENT",
+        transport: Transport.RMQ,
+        options: {
+          urls: [
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
+          ],
+          queue: ProgressUpdateEvent.name,
           queueOptions: {
             durable: false,
           },

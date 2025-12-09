@@ -1,3 +1,5 @@
+import { ProgressUpdateEvent } from "@core/events";
+
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
@@ -72,6 +74,17 @@ const QueryHandlers = [GetSessionProductsHandler, ScoreProductsHandler];
             process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
           ],
           queue: "RegenerateIdeasLoopEvent",
+          queueOptions: { durable: false },
+        },
+      },
+      {
+        name: "PROGRESS_UPDATE_EVENT",
+        transport: Transport.RMQ,
+        options: {
+          urls: [
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
+          ],
+          queue: ProgressUpdateEvent.name,
           queueOptions: { durable: false },
         },
       },

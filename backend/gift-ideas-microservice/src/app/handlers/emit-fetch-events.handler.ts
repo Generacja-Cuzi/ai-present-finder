@@ -3,6 +3,7 @@ import {
   FetchAmazonEvent,
   FetchEbayEvent,
   FetchOlxEvent,
+  ProgressUpdateEvent,
   ScrapeOkazjeEvent,
 } from "@core/events";
 
@@ -27,6 +28,8 @@ export class EmitFetchEventsHandler
     @Inject("FETCH_EBAY_EVENT") private readonly ebayEventBus: ClientProxy,
     @Inject("SCRAPE_OKAZJE_EVENT")
     private readonly okazjeEventBus: ClientProxy,
+    @Inject("PROGRESS_UPDATE_EVENT")
+    private readonly progressEventBus: ClientProxy,
   ) {}
 
   // Event emission is synchronous (fire-and-forget)
@@ -117,6 +120,19 @@ export class EmitFetchEventsHandler
     this.logger.log(
       `Sent ${String(filteredSearchQueries.length)} fetch events to targeted services`,
     );
+
+    // Emit progress update: gift ideas generated and fetch started (60%)
+    // This is 60% because:
+    // - If stalking happened: 20% (stalking) + 20% (interview) + 20% (ideas) = 60%
+    // - If no stalking: 0% + 20% (interview) + 40% (ideas) = 60%
+    const progressEvent = new ProgressUpdateEvent(
+      chatId,
+      "ideas",
+      60,
+      "Pomysły na prezenty wygenerowane, szukam produktów",
+    );
+    this.progressEventBus.emit(ProgressUpdateEvent.name, progressEvent);
+    this.logger.log("Published ProgressUpdateEvent: ideas (60%)");
 
     return filteredSearchQueries.length;
   }

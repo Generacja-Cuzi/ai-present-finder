@@ -22,6 +22,7 @@ import { GetUserProfileByIdHandler } from "src/app/handlers/get-user-profile-by-
 import { GetUserProfilesHandler } from "src/app/handlers/get-user-profiles.handler";
 import { GiftReadyHandler } from "src/app/handlers/gift-ready.handler";
 import { NotifyUserSseHandler } from "src/app/handlers/notify-user-sse.handler";
+import { ProgressUpdateHandler } from "src/app/handlers/progress-update.handler";
 import { RemoveFromFavoritesHandler } from "src/app/handlers/remove-from-favorites.handler";
 import { SaveListingsHandler } from "src/app/handlers/save-listings.handler";
 import { SaveMessageHandler } from "src/app/handlers/save-message.handler";
@@ -161,6 +162,7 @@ import { UserProfileController } from "../controllers/user-profile.controller";
     ChatInappropriateRequestHandler,
     ChatCompletedNotifyUserHandler,
     GiftReadyHandler,
+    ProgressUpdateHandler,
     SseController,
   ],
   providers: [

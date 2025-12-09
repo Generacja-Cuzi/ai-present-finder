@@ -1,4 +1,4 @@
-import { StalkingCompletedEvent } from "@core/events";
+import { ProgressUpdateEvent, StalkingCompletedEvent } from "@core/events";
 import type { UserContent } from "ai";
 import { extractFacts } from "src/app/ai/flow";
 import { BrightDataService } from "src/app/services/brightdata.service";
@@ -18,6 +18,8 @@ export class StalkingAnalyzeHandler
   constructor(
     private readonly brightDataService: BrightDataService,
     @Inject("STALKING_COMPLETED_EVENT") private readonly eventBus: ClientProxy,
+    @Inject("PROGRESS_UPDATE_EVENT")
+    private readonly progressEventBus: ClientProxy,
   ) {}
 
   async execute(command: StalkingAnalyzeCommand) {
@@ -49,6 +51,23 @@ export class StalkingAnalyzeHandler
     this.logger.log(
       `Published StalkingCompletedEvent with ${keywords.length.toString()} keywords.`,
     );
+
+    // Only emit progress update if there were actually URLs to stalk
+    // This way frontend knows if stalking happened or not
+    if (scrapeRequests.length > 0) {
+      const progressEvent = new ProgressUpdateEvent(
+        command.stalkingAnalyzeRequestDto.chatId,
+        "stalking",
+        20,
+        "Analiza profili społecznościowych zakończona",
+      );
+      this.progressEventBus.emit(ProgressUpdateEvent.name, progressEvent);
+      this.logger.log("Published ProgressUpdateEvent: stalking (20%)");
+    } else {
+      this.logger.log(
+        "Skipping stalking progress update - no URLs were provided",
+      );
+    }
   }
 
   private buildScrapeRequests(

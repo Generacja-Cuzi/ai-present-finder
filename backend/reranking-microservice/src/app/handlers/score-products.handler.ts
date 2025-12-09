@@ -1,8 +1,10 @@
+import { ProgressUpdateEvent } from "@core/events";
 import { ListingWithId } from "@core/types";
 import { chunk } from "lodash";
 
-import { Logger } from "@nestjs/common";
+import { Inject, Logger } from "@nestjs/common";
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
+import { ClientProxy } from "@nestjs/microservices";
 
 import { ScoreProductsQuery } from "../../domain/queries/score-products.query";
 import { scoreProductsFlow } from "../ai/score-products-flow";
@@ -14,8 +16,13 @@ export class ScoreProductsHandler
 {
   private readonly logger = new Logger(ScoreProductsHandler.name);
 
+  constructor(
+    @Inject("PROGRESS_UPDATE_EVENT")
+    private readonly progressEventBus: ClientProxy,
+  ) {}
+
   async execute(query: ScoreProductsQuery): Promise<ProductScore[]> {
-    const { products, recipientProfile, keywords, eventId } = query;
+    const { products, recipientProfile, keywords, eventId, chatId } = query;
 
     if (products.length === 0) {
       this.logger.warn(`No products to score for session ${eventId}`);
@@ -24,7 +31,7 @@ export class ScoreProductsHandler
 
     const BATCH_SIZE = 50;
     this.logger.log(
-      `Starting parallel AI ranking of ${String(products.length)} products for session ${eventId} (processing in batches of ${BATCH_SIZE.toString()})`,
+      `Starting parallel AI ranking of ${String(products.length)} products for session ${eventId} (processing in batches of ${String(BATCH_SIZE)})`,
     );
 
     // Transform products and create batches using lodash chunk
@@ -53,8 +60,9 @@ export class ScoreProductsHandler
       `Processing ${String(batches.length)} batches in parallel for session ${eventId}`,
     );
 
-    // Process all batches in parallel
+    // Process all batches in parallel with progress tracking
     const startTime = performance.now();
+    let completedBatches = 0;
     const batchResults = await Promise.all(
       batches.map(async (batch, index) =>
         scoreProductsFlow({
@@ -62,8 +70,23 @@ export class ScoreProductsHandler
           recipientProfile,
           keywords,
         }).then((result) => {
+          completedBatches++;
+
+          // Calculate progress: 91% + (completedBatches / totalBatches) * 4%
+          // This gives us 91-95% range for scoring
+          const scoreProgress =
+            91 + Math.floor((completedBatches / batches.length) * 4);
+
+          const progressEvent = new ProgressUpdateEvent(
+            chatId,
+            "reranking",
+            scoreProgress,
+            `Oceniam produkty (${String(completedBatches)}/${String(batches.length)} parti)`,
+          );
+          this.progressEventBus.emit(ProgressUpdateEvent.name, progressEvent);
+
           this.logger.log(
-            `Batch ${String(index + 1)}/${String(batches.length)} completed for session ${eventId}`,
+            `Batch ${String(index + 1)}/${String(batches.length)} completed for session ${eventId} - Progress: ${String(scoreProgress)}%`,
           );
           return result;
         }),

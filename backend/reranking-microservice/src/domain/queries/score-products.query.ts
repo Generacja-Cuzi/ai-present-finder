@@ -11,6 +11,7 @@ export class ScoreProductsQuery extends Query<ProductScore[]> {
     public readonly recipientProfile: RecipientProfile | null,
     public readonly keywords: string[],
     public readonly eventId: string,
+    public readonly chatId: string,
   ) {
     super();
   }

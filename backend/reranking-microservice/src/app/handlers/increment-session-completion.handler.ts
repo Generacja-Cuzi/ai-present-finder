@@ -25,9 +25,7 @@ export class IncrementSessionCompletionHandler
     private readonly giftSessionRepository: Repository<GiftSession>,
   ) {}
 
-  async execute(
-    command: IncrementSessionCompletionCommand,
-  ): Promise<{
+  async execute(command: IncrementSessionCompletionCommand): Promise<{
     completed: boolean;
     completedEvents: number;
     totalEvents: number;
@@ -42,12 +40,12 @@ export class IncrementSessionCompletionHandler
         where: { eventId },
       });
 
-      if (!session) {
+      if (session === null) {
         throw new Error(`Session ${eventId} not found`);
       }
 
       this.logger.log(
-        `Session ${eventId} completedEvents: ${session.completedEvents.toString()}/${session.totalEvents.toString()}`,
+        `Session ${eventId} completedEvents: ${String(session.completedEvents)}/${String(session.totalEvents)}`,
       );
 
       if (session.completedEvents >= session.totalEvents) {

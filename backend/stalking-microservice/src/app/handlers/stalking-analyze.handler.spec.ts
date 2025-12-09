@@ -28,8 +28,13 @@ function createHandler(scrapeProfilesImplementation: ScrapeProfilesMock) {
 
   const emit = jest.fn();
   const eventBus = { emit } as unknown as ClientProxy;
+  const progressEventBus = { emit } as unknown as ClientProxy;
 
-  const handler = new StalkingAnalyzeHandler(brightDataService, eventBus);
+  const handler = new StalkingAnalyzeHandler(
+    brightDataService,
+    eventBus,
+    progressEventBus,
+  );
 
   return { handler, emit };
 }

@@ -14,7 +14,7 @@ export class ProgressUpdateHandler {
   @EventPattern(ProgressUpdateEvent.name)
   async handle(event: ProgressUpdateEvent) {
     this.logger.log(
-      `Handling ProgressUpdateEvent for chat ${event.chatId}: ${event.stage} - ${event.percentage}%`,
+      `Handling ProgressUpdateEvent for chat ${event.chatId}: ${event.stage} - ${String(event.percentage)}%`,
     );
 
     await this.commandBus.execute(

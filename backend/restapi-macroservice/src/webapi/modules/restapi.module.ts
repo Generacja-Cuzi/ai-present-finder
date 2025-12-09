@@ -2,7 +2,6 @@ import {
   ChatRefinementStartedEvent,
   ChatStartInterviewEvent,
   ChatUserAnsweredEvent,
-  ProgressUpdateEvent,
   StalkingAnalyzeRequestedEvent,
 } from "@core/events";
 import { JwtAuthGuard } from "src/app/guards/jwt-auth.guard";

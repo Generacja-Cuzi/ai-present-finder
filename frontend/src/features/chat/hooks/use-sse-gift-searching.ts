@@ -17,7 +17,7 @@ function getStorageKey(clientId: string): string {
 function loadPersistedState(clientId: string): GiftSearchingState {
   try {
     const stored = sessionStorage.getItem(getStorageKey(clientId));
-    if (stored) {
+    if (stored !== null && stored !== "") {
       const parsed = JSON.parse(stored) as GiftSearchingState;
       // Only restore searching state, not ready state
       // (ready state should trigger navigation)
@@ -62,7 +62,7 @@ export const useSseGiftSearching = ({ clientId }: { clientId: string }) => {
       if (action.data.type === "progress-update") {
         const hasStalkingCompleted =
           previousState.type === "searching"
-            ? previousState.hasStalkingCompleted ||
+            ? (previousState.hasStalkingCompleted ?? false) ||
               action.data.stage === "stalking"
             : false;
 
@@ -82,22 +82,19 @@ export const useSseGiftSearching = ({ clientId }: { clientId: string }) => {
         return newState;
       }
 
-      // Handle gift ready
-      if (action.data.type === "gift-ready") {
-        const newState: GiftSearchingState = {
-          type: "ready",
-          data: {
-            giftIdeas: action.data.data,
-          },
-        };
+      // Handle gift ready - we know it's gift-ready at this point
+      // since we already handled progress-update above
+      const newState: GiftSearchingState = {
+        type: "ready",
+        data: {
+          giftIdeas: action.data.data,
+        },
+      };
 
-        // Clear persisted state when search is complete
-        clearPersistedState(clientId);
+      // Clear persisted state when search is complete
+      clearPersistedState(clientId);
 
-        return newState;
-      }
-
-      return previousState;
+      return newState;
     },
   });
 

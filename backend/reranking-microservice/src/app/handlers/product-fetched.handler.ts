@@ -2,8 +2,7 @@ import { ProductFetchedEvent, ProgressUpdateEvent } from "@core/events";
 
 import { Controller, Inject, Logger } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
-import { EventPattern } from "@nestjs/microservices";
-import { ClientProxy } from "@nestjs/microservices";
+import { ClientProxy, EventPattern } from "@nestjs/microservices";
 
 import { AddProductsToSessionCommand } from "../../domain/commands/add-products-to-session.command";
 import { CreateSessionCommand } from "../../domain/commands/create-session.command";
@@ -53,11 +52,11 @@ export class ProductFetchedHandler {
       event.chatId,
       "fetching",
       fetchProgress,
-      `Pobrano ${completedEvents}/${totalEvents} źródeł`,
+      `Pobrano ${String(completedEvents)}/${String(totalEvents)} źródeł`,
     );
     this.progressEventBus.emit(ProgressUpdateEvent.name, progressEvent);
     this.logger.log(
-      `Published ProgressUpdateEvent: fetching (${fetchProgress}%) - ${completedEvents}/${totalEvents}`,
+      `Published ProgressUpdateEvent: fetching (${String(fetchProgress)}%) - ${String(completedEvents)}/${String(totalEvents)}`,
     );
 
     if (completed) {

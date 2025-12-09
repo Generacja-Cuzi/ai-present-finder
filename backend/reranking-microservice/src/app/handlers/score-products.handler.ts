@@ -31,7 +31,7 @@ export class ScoreProductsHandler
 
     const BATCH_SIZE = 50;
     this.logger.log(
-      `Starting parallel AI ranking of ${String(products.length)} products for session ${eventId} (processing in batches of ${BATCH_SIZE.toString()})`,
+      `Starting parallel AI ranking of ${String(products.length)} products for session ${eventId} (processing in batches of ${String(BATCH_SIZE)})`,
     );
 
     // Transform products and create batches using lodash chunk
@@ -81,12 +81,12 @@ export class ScoreProductsHandler
             chatId,
             "reranking",
             scoreProgress,
-            `Oceniam produkty (${completedBatches}/${batches.length} parti)`,
+            `Oceniam produkty (${String(completedBatches)}/${String(batches.length)} parti)`,
           );
           this.progressEventBus.emit(ProgressUpdateEvent.name, progressEvent);
 
           this.logger.log(
-            `Batch ${String(index + 1)}/${String(batches.length)} completed for session ${eventId} - Progress: ${scoreProgress}%`,
+            `Batch ${String(index + 1)}/${String(batches.length)} completed for session ${eventId} - Progress: ${String(scoreProgress)}%`,
           );
           return result;
         }),

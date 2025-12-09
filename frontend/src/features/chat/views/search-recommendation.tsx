@@ -39,14 +39,20 @@ export function SearchRecommendationView({
     }
   }
 
-  if (state.type === "searching") {
-    return <GiftSearching />;
+  if (state.type === "ready") {
+    return (
+      <RecommendationView
+        clientId={chatId}
+        giftIdeas={state.data.giftIdeas}
+        backTo={backTo}
+      />
+    );
   }
-  return (
-    <RecommendationView
-      clientId={chatId}
-      giftIdeas={state.data.giftIdeas}
-      backTo={backTo}
-    />
-  );
+
+  const progress = state.progress === undefined ? 0 : state.progress.percentage;
+  const message =
+    state.progress === undefined
+      ? "Szukam prezentów..."
+      : state.progress.message;
+  return <GiftSearching progress={progress} message={message} />;
 }

@@ -175,7 +175,9 @@ export class StalkingAnalyzeHandler
     switch (profile.type) {
       case "instagram": {
         // Instagram response is an array, take first account
-        const account = profile.raw.at(0);
+        const account = Array.isArray(profile.raw)
+          ? profile.raw.at(0)
+          : profile.raw;
 
         if (account === undefined) {
           return {

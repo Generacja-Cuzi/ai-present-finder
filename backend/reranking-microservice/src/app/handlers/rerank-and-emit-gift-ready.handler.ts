@@ -1,4 +1,8 @@
-import { GiftReadyEvent, RegenerateIdeasLoopEvent } from "@core/events";
+import {
+  GiftReadyEvent,
+  ProgressUpdateEvent,
+  RegenerateIdeasLoopEvent,
+} from "@core/events";
 import type { ListingPayload } from "@core/types";
 import { Product } from "src/domain/entities/product.entity";
 
@@ -57,6 +61,8 @@ export class RerankAndEmitGiftReadyHandler
     @Inject("GIFT_READY_EVENT") private readonly giftReadyEventBus: ClientProxy,
     @Inject("REGENERATE_IDEAS_LOOP_EVENT")
     private readonly regenerateIdeasLoopEventBus: ClientProxy,
+    @Inject("PROGRESS_UPDATE_EVENT")
+    private readonly progressEventBus: ClientProxy,
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
     private readonly configService: ConfigService,
@@ -111,6 +117,7 @@ export class RerankAndEmitGiftReadyHandler
             recipientProfile,
             keywords,
             eventId,
+            chatId,
           ),
         );
       }
@@ -235,6 +242,16 @@ export class RerankAndEmitGiftReadyHandler
       this.logger.log(
         `Emitted GiftReadyEvent with ${String(productsToSend.length)} ranked products (score >= ${String(minimalScore)}) for session ${eventId}`,
       );
+
+      // Emit progress update: reranking completed (100%)
+      const progressEvent = new ProgressUpdateEvent(
+        chatId,
+        "reranking",
+        100,
+        "Prezenty gotowe!",
+      );
+      this.progressEventBus.emit(ProgressUpdateEvent.name, progressEvent);
+      this.logger.log("Published ProgressUpdateEvent: reranking (100%)");
     }
   }
 }

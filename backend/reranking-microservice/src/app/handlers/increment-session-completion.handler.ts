@@ -13,7 +13,10 @@ import {
 @CommandHandler(IncrementSessionCompletionCommand)
 export class IncrementSessionCompletionHandler
   implements
-    ICommandHandler<IncrementSessionCompletionCommand, { completed: boolean }>
+    ICommandHandler<
+      IncrementSessionCompletionCommand,
+      { completed: boolean; completedEvents: number; totalEvents: number }
+    >
 {
   private readonly logger = new Logger(IncrementSessionCompletionHandler.name);
 
@@ -24,7 +27,11 @@ export class IncrementSessionCompletionHandler
 
   async execute(
     command: IncrementSessionCompletionCommand,
-  ): Promise<{ completed: boolean }> {
+  ): Promise<{
+    completed: boolean;
+    completedEvents: number;
+    totalEvents: number;
+  }> {
     const { eventId } = command;
 
     return this.giftSessionRepository.manager.transaction(async (manager) => {
@@ -35,21 +42,33 @@ export class IncrementSessionCompletionHandler
         where: { eventId },
       });
 
+      if (!session) {
+        throw new Error(`Session ${eventId} not found`);
+      }
+
       this.logger.log(
-        `Session ${eventId} completedEvents: ${session?.completedEvents.toString() ?? "---"}/${session?.totalEvents.toString() ?? "---"}`,
+        `Session ${eventId} completedEvents: ${session.completedEvents.toString()}/${session.totalEvents.toString()}`,
       );
 
-      if (session !== null && session.completedEvents >= session.totalEvents) {
+      if (session.completedEvents >= session.totalEvents) {
         await manager.update(
           GiftSession,
           { eventId },
           { status: SessionStatus.COMPLETED, updatedAt: now },
         );
         this.logger.log(`Session ${eventId} marked as completed`);
-        return { completed: true };
+        return {
+          completed: true,
+          completedEvents: session.completedEvents,
+          totalEvents: session.totalEvents,
+        };
       }
 
-      return { completed: false };
+      return {
+        completed: false,
+        completedEvents: session.completedEvents,
+        totalEvents: session.totalEvents,
+      };
     });
   }
 }

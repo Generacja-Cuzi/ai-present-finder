@@ -26,6 +26,12 @@ export type ChatSseMessage =
 export type GiftSearchingState =
   | {
       type: "searching";
+      progress?: {
+        stage: "stalking" | "interview" | "ideas" | "fetching" | "reranking";
+        percentage: number;
+        message: string;
+      };
+      hasStalkingCompleted?: boolean;
     }
   | {
       type: "ready";
@@ -35,3 +41,5 @@ export type GiftSearchingState =
     };
 
 export type SseGiftReadyDto = components["schemas"]["SseGiftReadyDto"];
+export type SseProgressUpdateDto =
+  components["schemas"]["SseProgressUpdateDto"];

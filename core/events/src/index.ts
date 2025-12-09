@@ -23,3 +23,6 @@ export * from "./fetch/fetch-ebay.event";
 export * from "./fetch/fetch-olx.event";
 export * from "./fetch/scrape-okazje.event";
 export * from "./fetch/product-fetched.event";
+
+// Progress events
+export * from "./progress/progress-update.event";

@@ -4,6 +4,7 @@ import {
   ChatInappropriateRequestEvent,
   ChatQuestionAskedEvent,
   GiftReadyEvent,
+  ProgressUpdateEvent,
 } from "@core/events";
 import * as cookieParser from "cookie-parser";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
@@ -105,10 +106,20 @@ async function bootstrap() {
     },
   };
 
+  const progressUpdateMicroserviceOptions = {
+    transport: Transport.RMQ,
+    options: {
+      urls: [cloudAmqpUrl],
+      queue: ProgressUpdateEvent.name,
+      queueOptions: { durable: false },
+    },
+  };
+
   app.connectMicroservice(chatQuestionAskedMicroserviceOptions);
   app.connectMicroservice(giftReadyMicroserviceOptions);
   app.connectMicroservice(chatInappropriateRequestMicroserviceOptions);
   app.connectMicroservice(chatCompletedNotifyUserMicroserviceOptions);
+  app.connectMicroservice(progressUpdateMicroserviceOptions);
 
   await app.startAllMicroservices();
   await app.listen(port);

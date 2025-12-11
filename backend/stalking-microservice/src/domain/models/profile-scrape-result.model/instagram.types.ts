@@ -1,4 +1,4 @@
-export type InstagramProfileResponse = InstagramAccount[];
+export type InstagramProfileResponse = InstagramAccount[] | InstagramAccount;
 
 export interface InstagramAccount {
   account: string;

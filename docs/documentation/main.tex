@@ -12,6 +12,11 @@
 \usepackage{xcolor}
 \usepackage{float}
 \usepackage{subcaption}
+\usepackage{caption}
+\usepackage{pdflscape}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue]{hyperref}
+% Wspólna bibliografia z głównym raportem projektu
+\usepackage{cite}
 
 \lstdefinelanguage{TypeScript}{
   keywords={import, export, from, async, await, function, return, const, let, type, if, else, for, of, in, new, null, true, false, class, interface, extends, implements},
@@ -31,13 +36,17 @@
 
 \lstset{
   language=TypeScript,
-  basicstyle=\ttfamily\footnotesize,
+  basicstyle=\ttfamily\small,
+  columns=fullflexible,
   breaklines=true,
   frame=single,
+  frameround=tttt,
   numbers=left,
   numberstyle=\tiny\color{gray},
   tabsize=2,
-  showstringspaces=false
+  showstringspaces=false,
+  backgroundcolor=\color{gray!5},
+  rulecolor=\color{gray!60}
 }
 
 \begin{document}
@@ -73,6 +82,8 @@ WROCŁAW 2025
 
 \section{Wykaz symboli, oznaczeń i akronimów}
 
+\begin{table}[h]
+\centering
 \begin{tabular}{|p{0.15\textwidth}|p{0.3\textwidth}|p{0.45\textwidth}|}
 \hline
 \textbf{Skrót} & \textbf{Pełna nazwa} & \textbf{Opis} \\
@@ -106,11 +117,14 @@ DTO & Data Transfer Object & Obiekt służący do przesyłania danych między po
 XAI & Explainable Artificial Intelligence & Wyjaśnialna sztuczna inteligencja, której decyzje są zrozumiałe dla ludzi. \\
 \hline
 \end{tabular}
+\caption{Wykaz symboli, oznaczeń i akronimów.}
+\label{tab:acronyms}
+\end{table}
 
 \section{Cel i zakres przedsięwzięcia}
 
 \subsection{Wstęp}
-Celem projektu jest opracowanie aplikacji webowej do proponowania spersonalizowanych prezentów dla osób na podstawie podanych linków do ich mediów społecznościowych, a także podanych zainteresowań i cech podczas wywiadu z chatbotem. Na podstawie danych system generuje przykładowe propozycje prezentów, aby następnie wyszukać je w zintegrowanych serwisach sklepowych i zwrócić linki do ofert użytkownikowi.
+Celem projektu jest opracowanie aplikacji webowej do proponowania spersonalizowanych prezentów dla osób na podstawie podanych linków do ich mediów społecznościowych, a także podanych zainteresowań podczas wywiadu z chatbotem. Na podstawie danych system generuje przykładowe propozycje prezentów, aby następnie wyszukać je w zintegrowanych serwisach sklepowych i zwrócić linki do ofert użytkownikowi.
 
 \subsection{Cel główny}
 Stworzenie użytecznego, szybkiego i bezpiecznego narzędzia wspierającego proces znajdowania prezentu poprzez:
@@ -135,7 +149,6 @@ Stworzenie użytecznego, szybkiego i bezpiecznego narzędzia wspierającego proc
 \begin{itemize}
     \item automatyczne dokonywanie zakupów ani płatności,
     \item zbieranie prywatnych danych wymagających logowania,
-    \item integracja OAuth z zewnętrznymi kontami użytkownika,
     \item generowanie treści graficznych produktów (korzystamy z gotowych zdjęć ofert).
 \end{itemize}
 
@@ -174,29 +187,30 @@ Dane publiczne & Ogólnodostępne informacje w Internecie, niewymagające logowa
 
 Rynek cyfrowego wsparcia w obdarowywaniu można podzielić na dwa główne segmenty: rozwiązania B2B (Corporate Gifting) oraz B2C (Consumer Chatbots). Rozwiązania B2B (np. Giftpack.ai) oferują wysoką jakość dzięki analizie danych, ale są niedostępne dla klienta indywidualnego. Rozwiązania B2C (np. DreamGift) są łatwo dostępne, ale często opierają się na prostych chatbotach bez kontekstu, co prowadzi do niskiej trafności rekomendacji.
 
-Poniższa tabela przedstawia porównanie AI Present Finder z istniejącymi rozwiązaniami konsumenckimi:
+Poniższa tabela (Tabela~\ref{tab:market-comparison}) przedstawia porównanie AI Present Finder z istniejącymi rozwiązaniami konsumenckimi:
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|p{0.2\textwidth}|p{0.2\textwidth}|p{0.2\textwidth}|p{0.15\textwidth}|p{0.15\textwidth}|}
+\begin{tabular}{|p{0.25\textwidth}|p{0.25\textwidth}|p{0.25\textwidth}|p{0.15\textwidth}|}
 \hline
-\textbf{Rozwiązanie} & \textbf{Źródła danych} & \textbf{Interakcja} & \textbf{Dokładność} & \textbf{Integracja e-commerce} \\
+\textbf{Rozwiązanie} & \textbf{Źródła danych} & \textbf{Interakcja} & \textbf{Integracja e-commerce} \\
 \hline
-\textbf{AI Present Finder} & \textbf{Media społecznościowe + chatbot} & \textbf{Szczegółowy wywiad (ok. 20 pytań)} & \textbf{Wysoka} & \textbf{OLX, Amazon, eBay, Allegro} \\
+\textbf{AI Present Finder} & \textbf{Media społecznościowe + chatbot} & \textbf{Szczegółowy wywiad (ok. 20 pytań)} & \textbf{OLX, Amazon, eBay, Allegro} \\
 \hline
-DreamGift & Tylko rozmowa & Krótka (ok. 6 pytań) & Niska/ogólna & Amazon \\
+DreamGift & Tylko rozmowa & Krótka (ok. 6 pytań) & Amazon \\
 \hline
-GiftAssistant & 3 pola tekstowe & Brak konwersacji & Niska (4 propozycje) & Amazon \\
+GiftAssistant & 3 pola tekstowe & Brak konwersacji & Amazon \\
 \hline
-Giftruly & Formularz & Kilka pól wyboru & Podstawowa & Amazon \\
+Giftruly & Formularz & Kilka pól wyboru & Amazon \\
 \hline
-IntelliGift & Pola tekstowe & Szerokie dane & Średnia & Amazon \\
+IntelliGift & Pola tekstowe & Szerokie dane & Amazon \\
 \hline
 \end{tabular}
 \caption{Porównanie rozwiązań rynkowych}
+\label{tab:market-comparison}
 \end{table}
 
-Głównym wyróżnikiem AI Present Finder jest połączenie analizy OSINT (rozwiązującej problem "zimnego startu") z lokalną agregacją ofert (OLX, Allegro), co pozwala na znajdowanie unikatowych prezentów niedostępnych w globalnych katalogach typu Amazon.
+Głównym wyróżnikiem AI Present Finder jest połączenie analizy OSINT (rozwiązującej problem "zimnego startu") z lokalną agregacją ofert (OLX, Allegro), co pozwala na znajdowanie unikatowych prezentów niedostępnych w globalnych katalogach typu Amazon. Charakterystyka konkurencyjnych rozwiązań w Tabeli~\ref{tab:market-comparison} pochodzi z własnej eksploracji interfejsów tych produktów (stan na listopad 2025 roku).
 
 \section{Założenia wstępne}
 
@@ -209,7 +223,7 @@ Głównym wyróżnikiem AI Present Finder jest połączenie analizy OSINT (rozwi
     \item \textbf{Integracje zewnętrzne:}
     \begin{itemize}
         \item API mediów społecznościowych (poprzez proxy/scraping)
-        \item API e-commerce: OLX, Amazon, eBay, Allegro (Sandbox)
+        \item API e-commerce: OLX, Amazon, eBay, Allegro, Okazje (Sandbox / scraping)
         \item OpenAI API / Google Gemini API (modele językowe)
     \end{itemize}
     \item \textbf{Hosting:} VPS, obsługa HTTPS
@@ -235,7 +249,7 @@ Projekt był realizowany iteracyjnie w podejściu zbliżonym do Agile. Zespół 
 \end{figure}
 
 \subsection{Iteracja 1: POC (Proof of Concept)}
-Celem pierwszej iteracji było sprawdzenie, czy kluczowe ryzyka technologiczne są rozwiązywalne:
+Celem pierwszej iteracji było sprawdzenie, czy najważniejsze ryzyka technologiczne są rozwiązywalne:
 \begin{itemize}
     \item przygotowanie \textbf{NestJS boilerplate} z obsługą zdarzeń (issue: \textit{"NestJS boilerplate z zmockowanymi eventami"}),
     \item \textbf{Gift Search POC} – przetestowanie możliwości wyszukiwania prezentów w zewnętrznych serwisach,
@@ -284,17 +298,17 @@ W tej iteracji skoncentrowano się również na przygotowaniu aplikacji do test�
 Na podstawie tak zebranych i iteracyjnie doprecyzowywanych wymagań przygotowano poniższą specyfikację produktu programowego.
 
 \subsection{Organizacja pracy zespołu}
-Zespół pracował w składzie czteroosobowym, z wyraźnym podziałem ról:
+Zespół pracował w składzie czteroosobowym, gdzie każdy członek zespołu miał umiejętności pozwalające mu na pracę na dowolnym poziomie stacku technologicznego (tkz. generaliści):
 \begin{itemize}
-    \item Dawid Chudzicki – lider backendu i Project Manager, odpowiedzialny za architekturę (C4, diagramy sekwencji), logikę rdzeniową oraz moduł autentykacji (Google OAuth).
-    \item Marcin Dolatowski – odpowiedzialny za integracje zewnętrzne (fetch-microservice, sklepy), Reranking Microservice oraz refaktoryzację i dopracowanie interfejsu użytkownika (landing page, UI).
-    \item Bartosz Gotowski – DevOps i infrastruktura (Coolify, Docker, CI/CD, migracje bazy danych), monitoring oraz dokumentacja techniczna (LaTeX, diagramy C4/BPMN).
-    \item Szymon Kowaliński – architektura mikroserwisów, implementacja SSE, logika chatu (gotowe odpowiedzi), poprawki i optymalizacje na styku frontend–backend.
+    \item Dawid Chudzicki – Project Manager i Fullstack developer, odpowiedzialny za większość makroserwisu REST API, większość widoków frontendowych, moduł autentykacji (Google OAuth), doskonalenie flow AI i beta testy.
+    \item Marcin Dolatowski – Fullstack developer, odpowiedzialny za integracje zewnętrzne (fetch-microservice, sklepy), pierwszą wersję scoringu oraz refaktoryzację i dopracowanie interfejsu użytkownika (landing page, część UI).
+    \item Bartosz Gotowski – DevOps i infrastruktura (Coolify, Docker, CI/CD, migracje bazy danych), monitoring oraz dokumentacja techniczna (LaTeX, diagramy C4/BPMN). Oraz fullstack developer odpowiedzialny za stalking mincroservice. Twórca mockupów UI w figmie.
+    \item Szymon Kowaliński – Fullstack developer, odpowiedzialny za zmiany architektoniczne, implementację SSE oraz główny odpowiedzialny za wywiad z użytkownikiem i reranking microservice. Poprawki i optymalizacje na styku frontend–backend, doskonalenie flow AI. Twórca plakatu i fiszki.
 \end{itemize}
 Postęp prac był regularnie raportowany prowadzącemu w formie statusów (co kto aktualnie robi, jaki jest plan na sprint i jakie pojawiły się ryzyka), co ułatwiało korygowanie zakresu MVP oraz planowanie kolejnych iteracji (m.in. sprint poświęcony testom i optymalizacji aplikacji).
 
 \subsection{Przypadki użycia}
-Na podstawie zebranych wymagań zdefiniowano kluczowe przypadki użycia (Use Case), m.in.:
+Na podstawie zebranych wymagań zdefiniowano najistotniejsze przypadki użycia (Use Case), m.in.:
 \begin{itemize}
     \item U1: Użytkownik podaje linki do profili społecznościowych osoby obdarowywanej.
     \item U2: Użytkownik przeprowadza wywiad z chatbotem (okazja, budżet, preferencje).
@@ -308,35 +322,227 @@ Graficzna reprezentacja tych przypadków została przygotowana w postaci diagram
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.85\textwidth]{../use_case_diagram/use_case_diagram.pdf}
+    \includegraphics[width=0.85\textwidth]{../use_case_diagram/AI_Present_Finder_Use_Cases.pdf}
     \caption{Diagram przypadków użycia systemu AI Present Finder.}
     \label{fig:use-case}
 \end{figure}
 
 Zidentyfikowane przypadki użycia oraz wymagania zebrane w trakcie iteracji stanowią fundament dla formalnej specyfikacji wymagań, którą przedstawiono w kolejnym rozdziale.
 
+\subsubsection*{Szczegółowy opis przypadków użycia}
+Powyższa lista U1--U6 przedstawia skrótowo najważniejsze funkcje systemu z perspektywy biznesowej. Poniższy opis rozwija je w postaci scenariuszy U1--U7 (np. U1--U4 składają się na jeden główny przepływ ,,Szukanie prezentu'', a U5 został rozbity na osobne przypadki: ulubione, filtrowanie i korzystanie z historii). Opis ma charakter biznesowy i koncentruje się na intencjach użytkownika, danych wejściowych/wyjściowych oraz alternatywnych ścieżkach; diagram pozostaje bez zmian.
+
+\textbf{U1. Szukanie prezentu (główny przepływ).}
+\begin{itemize}
+    \item \textbf{Warunki wstępne:} Użytkownik jest zalogowany. Ma opcjonalnie linki do profili społecznościowych oraz budżet.
+    \item \textbf{Scenariusz główny:} Użytkownik podaje linki i budżet, następnie przechodzi krótki wywiad z chatbotem. Na podstawie profili i odpowiedzi system buduje profil odbiorcy, generuje pomysły na prezenty i zwraca listę realnych ofert z wielu sklepów. Oferty pojawiają się stopniowo, bez czekania na wszystkie źródła.
+    \item \textbf{Przebiegi alternatywne:} Brak linków — system opiera się wyłącznie na wywiadzie. Część sklepów niedostępna — lista jest niepełna, ale nadal rośnie w miarę dostępności. Użytkownik pomija część pytań — system działa na mniejszym kontekście, później można doprecyzować. Użytkownik nie jest zalogowany — przed rozpoczęciem wyszukiwania zostaje przekierowany do przypadku U3 (logowanie przez Google).
+    \item \textbf{Warunki końcowe:} Użytkownik widzi listę ofert dopasowanych do odbiorcy oraz ma zapisaną sesję do wglądu w historii.
+\end{itemize}
+
+\textbf{U2. Dodanie produktu do ulubionych / historii.}
+\begin{itemize}
+    \item \textbf{Warunki wstępne:} Użytkownik jest zalogowany i ogląda wygenerowane oferty.
+    \item \textbf{Scenariusz główny:} Użytkownik oznacza wybrane oferty jako ulubione; może je później zobaczyć w zakładce „Zapisane” lub w historii danej sesji.
+    \item \textbf{Przebiegi alternatywne:} Próba zapisania oferty spoza własnej sesji jest blokowana; powtórne zapisanie tej samej oferty nie zmienia wyniku.
+    \item \textbf{Warunki końcowe:} Lista ulubionych jest dostępna do ponownego otwarcia oferty lub kontynuacji rozmowy.
+\end{itemize}
+
+\textbf{U3. Logowanie przez Google.}
+\begin{itemize}
+    \item \textbf{Warunki wstępne:} Użytkownik posiada konto Google.
+    \item \textbf{Scenariusz główny:} Użytkownik przechodzi proces logowania Google, po którym uzyskuje dostęp do funkcji wymagających konta (historia, ulubione, feedback).
+    \item \textbf{Przebiegi alternatywne:} Rezygnacja w trakcie logowania lub błąd uwierzytelnienia — brak dostępu do funkcji konta; użytkownik może spróbować ponownie.
+    \item \textbf{Warunki końcowe:} Sesja użytkownika jest aktywna i pozwala korzystać z funkcji powiązanych z kontem.
+\end{itemize}
+
+\textbf{U4. Wystaw opinię (feedback).}
+\begin{itemize}
+    \item \textbf{Warunki wstępne:} Użytkownik jest zalogowany i ma zakończoną sesję wyszukiwania.
+    \item \textbf{Scenariusz główny:} Użytkownik ocenia jakość rekomendacji (gwiazdki, komentarz), może załączyć zdjęcia lub wskazać konkretną ofertę. Opinie są widoczne w panelu administratora i mogą wspierać dalsze ulepszenia.
+    \item \textbf{Przebiegi alternatywne:} Brak wskazania konkretnej oferty — feedback traktowany jako ogólny. Brak komentarza — zapisywana jest sama ocena.
+    \item \textbf{Warunki końcowe:} Opinia zostaje zapisana i może być analizowana przez zespół/administratora.
+\end{itemize}
+
+\textbf{U5. Doprecyzuj wyszukiwanie (refinement).}
+\begin{itemize}
+    \item \textbf{Warunki wstępne:} Użytkownik ma wygenerowaną listę ofert w danej sesji.
+    \item \textbf{Scenariusz główny:} Użytkownik wybiera kilka propozycji, które mu się podobają lub nie, i uruchamia kolejną rundę wyszukiwania. System proponuje nowy zestaw ofert na bazie preferencji z poprzedniej rundy.
+    \item \textbf{Przebiegi alternatywne:} Brak zaznaczonych ofert — doprecyzowanie nie startuje. Niedostępne źródła — kolejna runda zawiera wyniki z dostępnych sklepów.
+    \item \textbf{Warunki końcowe:} Użytkownik otrzymuje dodatkowe, lepiej dopasowane oferty w tej samej sesji.
+\end{itemize}
+
+\textbf{U6. Filtruj / sortuj wyniki.}
+\begin{itemize}
+    \item \textbf{Warunki wstępne:} Są dostępne oferty dla danej sesji.
+    \item \textbf{Scenariusz główny:} Użytkownik zawęża listę po cenie, dostawcy, ulubionych lub rundzie wyszukiwania i sortuje wyniki, by szybciej znaleźć właściwy prezent.
+    \item \textbf{Przebiegi alternatywne:} Jeśli część źródeł nie zwróciła wyników, filtry działają na dostępnych ofertach; system może sygnalizować ograniczoną liczbę wyników.
+    \item \textbf{Warunki końcowe:} Użytkownik widzi zawężoną, posortowaną listę i może podjąć decyzję.
+\end{itemize}
+
+\textbf{U7. Panel administracyjny (feedbacki i statystyki).}
+\begin{itemize}
+    \item \textbf{Warunki wstępne:} Użytkownik posiada rolę administratora.
+    \item \textbf{Scenariusz główny:} Administrator przegląda zgromadzone opinie oraz podstawowe statystyki (liczbę opinii, liczbę sesji z opiniami, średnią ocenę), aby monitorować jakość rekomendacji oczami użytkowników.
+    \item \textbf{Przebiegi alternatywne:} Brak danych (np. brak feedbacków) — panel wyświetla puste zestawienia, ale pozostaje dostępny.
+    \item \textbf{Warunki końcowe:} Administrator ma wgląd w kondycję produktu z perspektywy użytkowników; w ramach MVP panel pełni wyłącznie funkcję raportową (bez bezpośrednich zmian w danych użytkowników).
+\end{itemize}
+
 \section{Specyfikacja wymagań na produkt programowy}
 
 Poniższa specyfikacja formalizuje wymagania zidentyfikowane w trakcie kolejnych iteracji i pracy z backlogiem, tak aby można je było jednoznacznie odwzorować w architekturze i implementacji.
 
 \subsection{Wymagania funkcjonalne}
+Poniższe wymagania opisują \emph{co} system ma robić z perspektywy użytkownika. Dla każdego ujęto skrócony opis oraz kryteria akceptacji, które pozwalają weryfikować spełnienie wymagania podczas testów.
+
+% Wymagania funkcjonalne zostały zdefiniowane na początku projektu jako oczekiwane możliwości biznesowe systemu.
+\paragraph{F1. Zebranie kontekstu o osobie obdarowywanej.}
 \begin{itemize}
-    \item \textbf{Wprowadzanie danych:} Możliwość podania linków do profili społecznościowych (Instagram, TikTok).
-    \item \textbf{Ekstrakcja danych:} Automatyczne pobranie i analiza publicznych danych z podanych profili.
-    \item \textbf{Konwersacja:} Interaktywny chat z botem dopytującym o szczegóły (okazja, budżet, relacja).
-    \item \textbf{Analiza:} Łączenie danych z wywiadu i OSINT w spójny profil psychometryczny.
-    \item \textbf{Generowanie pomysłów:} Stworzenie listy 5–10 abstrakcyjnych pomysłów na prezent.
-    \item \textbf{Wyszukiwanie ofert:} Pobieranie konkretnych ofert z platform e-commerce (OLX, Allegro, Amazon, eBay).
-    \item \textbf{Filtrowanie:} Możliwość sortowania i filtrowania wyników (np. po cenie).
+    \item \textbf{Opis:} System powinien umożliwiać użytkownikowi szybkie przekazanie podstawowych informacji o osobie obdarowywanej (linki do profili społecznościowych, okazja, przybliżony budżet), tak aby dalsze etapy mogły być maksymalnie zautomatyzowane.
+    \item \textbf{Kryteria akceptacji:}
+    \begin{itemize}
+        \item Przeciętny użytkownik jest w stanie wypełnić formularz startowy w ciągu jednej wizyty, bez potrzeby sięgania po dokumentację techniczną.
+        \item System akceptuje zarówno scenariusz z podaniem linków do profili, jak i scenariusz, w którym użytkownik opiera się wyłącznie na odpowiedziach w wywiadzie.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{F2. Wykorzystanie danych publicznych (OSINT).}
+\begin{itemize}
+    \item \textbf{Opis:} System powinien wykorzystywać publicznie dostępne informacje z profili społecznościowych do lepszego zrozumienia zainteresowań i stylu życia obdarowywanej osoby, bez sięgania po dane prywatne.
+    \item \textbf{Kryteria akceptacji:}
+    \begin{itemize}
+        \item Dla osób, dla których dostępne są publiczne profile, użytkownicy subiektywnie oceniają rekomendacje jako lepiej dopasowane niż w scenariuszu bez linków (na podstawie zebranych opinii).
+        \item Brak dostępu do profilu lub brak linków nie blokuje procesu znajdowania prezentu — użytkownik może nadal przejść pełny flow oparty wyłącznie na wywiadzie.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{F3. Wywiad z użytkownikiem.}
+\begin{itemize}
+    \item \textbf{Opis:} System powinien przeprowadzić użytkownika przez krótki, zrozumiały wywiad dotyczący relacji z obdarowywanym, okazji i jego preferencji, tak aby nie wymagać od użytkownika formułowania technicznych zapytań.
+    \item \textbf{Kryteria akceptacji:}
+    \begin{itemize}
+        \item Użytkownik otrzymuje serię pytań w naturalnym języku, z możliwością udzielania odpowiedzi tekstowych lub wybierania z sugerowanych opcji.
+        \item Po zakończeniu wywiadu użytkownik nie musi ręcznie konfigurować dodatkowych parametrów — system przechodzi do wyszukiwania prezentów automatycznie.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{F4. Ukryta analiza profilu odbiorcy.}
+\begin{itemize}
+    \item \textbf{Opis:} System powinien łączyć odpowiedzi z wywiadu i dane publiczne w wewnętrzny profil odbiorcy, używany do podejmowania decyzji przez moduły AI, bez konieczności prezentowania tego profilu użytkownikowi w formie technicznej.
+    \item \textbf{Kryteria akceptacji:}
+    \begin{itemize}
+        \item Dla wyraźnie różnych typów odbiorców (np. osoba techniczna vs. artystyczna) generowane listy prezentów różnią się zauważalnie co do charakteru propozycji.
+        \item Użytkownicy w badaniach jakościowych potrafią wskazać, które elementy profilu obdarowywanego zostały dobrze uchwycone przez system (na podstawie opisu rekomendacji), mimo że profil jako taki nie jest im wyświetlany.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{F5. Generowanie listy potencjalnych prezentów.}
+\begin{itemize}
+    \item \textbf{Opis:} System powinien na podstawie zbudowanego profilu wewnętrznie wygenerować listę możliwych typów prezentów i wykorzystać ją wyłącznie jako etap pośredni przed pokazaniem gotowych ofert.
+    \item \textbf{Kryteria akceptacji:}
+    \begin{itemize}
+        \item Użytkownik końcowy widzi jedynie gotowe propozycje produktów; szczegóły wewnętrznej listy pomysłów nie są eksponowane w interfejsie.
+        \item Dla tego samego zestawu danych wejściowych lista produktów pozostaje spójna tematycznie (np. wszystkie dotyczą fotografii, gier, gotowania itp.).
+    \end{itemize}
+\end{itemize}
+
+\paragraph{F6. Znalezienie realnych ofert w sklepach.}
+\begin{itemize}
+    \item \textbf{Opis:} System powinien przekuć wygenerowane pomysły na konkretne, realne oferty z wielu niezależnych platform sprzedażowych, tak aby użytkownik mógł od razu przejść do zakupu.
+    \item \textbf{Kryteria akceptacji:}
+    \begin{itemize}
+        \item Dla typowego scenariusza (z wypełnionym formularzem i wywiadem) użytkownik otrzymuje co najmniej kilkadziesiąt propozycji produktów, pochodzących z co najmniej trzech różnych platform sprzedażowych.
+        \item Każda propozycja zawiera minimalny zestaw informacji biznesowych: nazwę, cenę, miniaturę/zdjęcie (jeśli dostępne) oraz link prowadzący do miejsca zakupu.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{F7. Zawężanie listy i oznaczanie ulubionych.}
+\begin{itemize}
+    \item \textbf{Opis:} System powinien umożliwiać użytkownikowi zawężenie długiej listy prezentów do kilku najbardziej interesujących pozycji oraz ich oznaczanie jako ulubione, tak aby łatwo wrócić do nich później.
+    \item \textbf{Kryteria akceptacji:}
+    \begin{itemize}
+        \item Użytkownik może w intuicyjny sposób ograniczyć listę widocznych prezentów według kilku prostych kryteriów (np. poziomu ceny czy źródła) bez konieczności znajomości składni zapytań.
+        \item Użytkownik może oznaczyć wybrane produkty jako ulubione i znaleźć je później w jednym, dedykowanym miejscu w aplikacji.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{F8. Historia sesji i możliwość powrotu.}
+\begin{itemize}
+    \item \textbf{Opis:} System powinien zapamiętywać sesje wyszukiwania, aby użytkownik mógł wrócić do poprzednich wyników, przemyśleć je na spokojnie lub kontynuować rozpoczęty wcześniej proces.
+    \item \textbf{Kryteria akceptacji:}
+    \begin{itemize}
+        \item Użytkownik widzi listę swoich sesji wyszukiwania z podstawowymi informacjami (nazwa, data, liczba znalezionych prezentów).
+        \item Użytkownik może otworzyć ponownie wybraną sesję i zobaczyć te same wyniki, bez konieczności ponownego wprowadzania danych.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{F9. Opinie użytkowników i wgląd administracyjny.}
+\begin{itemize}
+    \item \textbf{Opis:} System powinien umożliwiać użytkownikom przekazywanie prostych opinii o jakości rekomendacji, a administratorowi — przeglądanie zanonimizowanych statystyk tych opinii.
+    \item \textbf{Kryteria akceptacji:}
+    \begin{itemize}
+        \item Użytkownik może po zakończonej sesji ocenić rekomendacje w prosty sposób (np. skala gwiazdkowa, krótki komentarz).
+        \item Administrator ma dostęp do zagregowanych danych (liczba opinii, liczba sesji z opiniami, średnia ocena), pozwalających ocenić jakość rozwiązania na poziomie całego systemu.
+    \end{itemize}
 \end{itemize}
 
 \subsection{Wymagania niefunkcjonalne}
+Wymagania niefunkcjonalne określają \emph{jak dobrze} system powinien realizować funkcje zdefiniowane powyżej. Dla każdego z nich zdefiniowano mierzalne kryteria akceptacji.
+
+\paragraph{NF1. Dostępność i obsługiwane platformy.}
 \begin{itemize}
-    \item \textbf{Dostępność:} Aplikacja działa w przeglądarce internetowej bez konieczności instalacji.
-    \item \textbf{Wydajność:} Czas generowania wstępnych propozycji nie powinien przekraczać 10 sekund (dla chatu), a pełne wyszukiwanie ofert powinno odbywać się w tle z podglądem postępu.
-    \item \textbf{Bezpieczeństwo:} Komunikacja szyfrowana protokołem HTTPS.
-    \item \textbf{Skalowalność:} Architektura mikroserwisowa umożliwiająca łatwe dodawanie nowych źródeł danych.
-    \item \textbf{Obsługa błędów:} Odporność na limity API zewnętrznych serwisów (mechanizmy ponawiania).
+    \item \textbf{Opis:} Aplikacja działa w przeglądarce bez konieczności instalacji dodatkowego oprogramowania, z responsywnym interfejsem dopasowanym do urządzeń desktopowych i mobilnych.
+    \item \textbf{Kryteria akceptacji:}
+    \begin{itemize}
+        \item System jest dostępny w najnowszej stabilnej wersji co najmniej jednej popularnej przeglądarki (np. Chrome) bez zauważalnych błędów blokujących; wsparcie pozostałych przeglądarek jest celem dalszego rozwoju.
+        \item Kluczowe scenariusze (U1--U2) są wykonalne zarówno na desktopie, jak i na typowym urządzeniu mobilnym (potwierdzone testami ręcznymi na przynajmniej jednym reprezentatywnym urządzeniu).
+        \item Wejście na stronę nie wymaga instalacji pluginów ani rozszerzeń poza standardowo dostępną przeglądarką.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{NF2. Wydajność i czas odpowiedzi.}
+\begin{itemize}
+    \item \textbf{Opis:} System powinien w akceptowalnym dla użytkownika czasie reagować na działania, w szczególności podczas wywiadu i wyszukiwania prezentów, przy czym dopuszcza się, że pełne wyniki mogą być dostępne dopiero po kilku minutach.
+    \item \textbf{Kryteria akceptacji:}
+    \begin{itemize}
+        \item Po rozpoczęciu wywiadu lub wyszukiwania użytkownik w krótkim czasie widzi wyraźny sygnał, że system pracuje (zmiana widoku, komunikat, pasek postępu) — brak wrażenia, że aplikacja „zawiesiła się”.
+        \item W sytuacjach, gdy generowanie pierwszych sensownych rekomendacji może zająć kilka minut, interfejs informuje o tym użytkownika (np. komunikatem typu ,,to może potrwać kilka minut'') oraz prezentuje pasek postępu lub inny wskaźnik.
+        \item Pełne wyniki mogą pojawiać się stopniowo, ale użytkownik ma przez cały czas wgląd w postęp (procent, etapy) i może przerwać proces bez utraty już wyświetlonych propozycji.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{NF3. Bezpieczeństwo i poufność danych.}
+\begin{itemize}
+    \item \textbf{Opis:} System musi chronić dane użytkowników oraz osoby obdarowywanej, ograniczając się do publicznych danych i zapewniając bezpieczną komunikację.
+    \item \textbf{Kryteria akceptacji:}
+    \begin{itemize}
+        \item Cała komunikacja pomiędzy przeglądarką a backendem odbywa się z użyciem protokołu HTTPS (brak mieszanej treści HTTP na stronach aplikacji).
+        \item System nie prosi o dane logowania do serwisów społecznościowych obdarowywanej osoby ani nie wykorzystuje prywatnych informacji wymagających logowania.
+        \item Użytkownik może w każdej chwili wylogować się; po wylogowaniu dostęp do historii, ulubionych i panelu admina jest zablokowany.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{NF4. Skalowalność i odporność na obciążenie.}
+\begin{itemize}
+    \item \textbf{Opis:} Architektura ma umożliwiać skalowanie obciążonych komponentów (np. wyszukiwania ofert, rerankingu) bez wpływu na resztę systemu.
+    \item \textbf{Kryteria akceptacji:}
+    \begin{itemize}
+        \item Architektura oraz konfiguracja uruchomieniowa pozwalają na uruchomienie dodatkowych instancji mikroserwisów odpowiedzialnych za wyszukiwanie i reranking bez konieczności modyfikacji interfejsu użytkownika (skalowanie poziome jest możliwe na poziomie infrastruktury).
+        \item Awaria pojedynczej instancji serwisu odpowiedzialnego za pobieranie ofert nie blokuje pozostałych funkcji systemu (chat, historia, ulubione nadal działają, choć lista ofert może być niepełna).
+        \item System poprawnie obsługuje sytuację, w której jeden z dostawców ofert (np. konkretny sklep) przestaje odpowiadać — użytkownik nadal otrzymuje częściowe wyniki i czytelną informację o ograniczeniu (np. brak ofert z danego źródła).
+    \end{itemize}
+\end{itemize}
+
+\paragraph{NF5. Obsługa błędów i komunikaty dla użytkownika.}
+\begin{itemize}
+  
+    \item \textbf{Opis:} W przypadku błędów zewnętrznych serwisów, problemów z siecią lub nietypowych danych wejściowych system powinien zachowywać się przewidywalnie i komunikować problem językiem zrozumiałym dla użytkownika.
+    \item \textbf{Kryteria akceptacji:}
+    \begin{itemize}
+        \item Dla typowych błędów (brak wyników, brak odpowiedzi z jednego źródła, niepoprawny link) użytkownik widzi czytelny komunikat w UI, a aplikacja nie zawiesza się.
+        \item W przypadku braku jakichkolwiek ofert system sugeruje możliwe działania (np. zmianę budżetu, inny profil, odświeżenie wyszukiwania), zamiast prezentować pustą stronę.
+        \item Błędy techniczne (np. wewnętrzne komunikaty serwera) nie są ujawniane bezpośrednio użytkownikowi końcowemu.
+    \end{itemize}
 \end{itemize}
 
 Powyższy zestaw wymagań funkcjonalnych i niefunkcjonalnych stał się podstawą do opracowania architektury systemu, opisanej szczegółowo w następnej sekcji.
@@ -355,13 +561,13 @@ Główne komponenty systemu:
     \item \textbf{Chat Microservice} (\texttt{chat-microservice}): Odpowiada za prowadzenie wywiadu z użytkownikiem.
     \item \textbf{Stalking Microservice} (\texttt{stalking-microservice}): Realizuje proces OSINT (analiza profili społecznościowych).
     \item \textbf{Gift Ideas Microservice} (\texttt{gift-ideas-microservice}): Generuje abstrakcyjne pomysły na prezenty na podstawie zebranych danych.
-    \item \textbf{Fetch Microservice} (\texttt{fetch-microservice}): Agreguje oferty z zewnętrznych platform (OLX, Allegro, Amazon, eBay). Działa w wielu instancjach równolegle.
+    \item \textbf{Fetch Microservice} (\texttt{fetch-microservice}): Agreguje oferty z zewnętrznych platform (OLX, Allegro, Amazon, eBay, Okazje) przy użyciu dedykowanych handlerów per źródło. Działa w wielu instancjach równolegle.
     \item \textbf{Reranking Microservice} (\texttt{reranking-microservice}): Ocenia i filtruje znalezione oferty przy użyciu AI.
 \end{itemize}
 
 \subsection{Poziom 1: Kontekst systemu}
 
-Na najwyższym poziomie abstrakcji (C4 Context) system AI Present Finder jest postrzegany jako pojedynczy blok współpracujący z aktorami zewnętrznymi: użytkownikiem szukającym prezentu, platformami e-commerce (OLX, Allegro, Amazon, eBay), mediami społecznościowymi (Instagram, TikTok) oraz dostawcami modeli LLM (OpenAI, Google). Zależności te przedstawiono na Rysunku~\ref{fig:c4-context}.
+Na najwyższym poziomie abstrakcji (C4 Context) system AI Present Finder jest postrzegany jako pojedynczy blok współpracujący z aktorami zewnętrznymi: użytkownikiem szukającym prezentu, platformami e-commerce (OLX, Allegro, Amazon, eBay), mediami społecznościowymi (Instagram, TikTok, X) oraz dostawcami modeli LLM (OpenAI, Google). Zależności te przedstawiono na Rysunku~\ref{fig:c4-context}.
 
 \begin{figure}[ht]
     \centering
@@ -375,25 +581,31 @@ Na najwyższym poziomie abstrakcji (C4 Context) system AI Present Finder jest po
 Po zejściu o jeden poziom niżej (C4 Container) widać podział systemu na odrębne jednostki wdrożeniowe: aplikację frontendową (React SPA), bramę API (RestAPI Macroservice), zestaw mikroserwisów backendowych, bazę danych PostgreSQL oraz broker wiadomości RabbitMQ. Każdy kontener może być niezależnie skalowany i wdrażany w środowisku Docker/Coolify. Architekturę kontenerów przedstawiono na Rysunku~\ref{fig:c4-container}.
 
 \clearpage
-\includepdf[pages=1,landscape=true,pagecommand={\thispagestyle{plain}\refstepcounter{figure}\addcontentsline{lof}{figure}{\protect\numberline{\thefigure}Diagram kontenerów systemu AI Present Finder (C4 Container)}},fitpaper=true]{../C4_v0.2.0/C4_Container.pdf}
-\label{fig:c4-container}
-\addtocounter{figure}{-1}
-\refstepcounter{figure}
-\clearpage
+\begin{landscape}
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\linewidth,height=0.9\textheight,keepaspectratio]{../C4_v0.2.0/C4_Container.pdf}
+    \caption{Diagram kontenerów systemu AI Present Finder (C4 Container).}
+    \label{fig:c4-container}
+\end{figure}
+\end{landscape}
 
 \subsection{Poziom 3: Komponenty wybranych mikroserwisów}
 
-Na najniższym prezentowanym poziomie (C4 Component) każdy mikroserwis jest rozbity na wewnętrzne moduły. Poniżej przedstawiono trzy kluczowe serwisy.
+Na najniższym prezentowanym poziomie (C4 Component) każdy mikroserwis jest rozbity na wewnętrzne moduły. Poniżej przedstawiono trzy najważniejsze serwisy.
 
 \paragraph{RestAPI Macroservice.}
 Brama wejściowa systemu (Rysunek~\ref{fig:c4-component-restapi}) składa się z warstwy kontrolerów HTTP, handlerów komend CQRS oraz adapterów publikujących zdarzenia do kolejek RabbitMQ. Odpowiada również za obsługę SSE i autoryzację (Google OAuth).
 
 \clearpage
-\includepdf[pages=1,landscape=true,pagecommand={\thispagestyle{plain}\refstepcounter{figure}\addcontentsline{lof}{figure}{\protect\numberline{\thefigure}Diagram komponentów RestAPI Macroservice (C4 Component)}},fitpaper=true]{../C4_v0.2.0/C4_Component_RestAPI.pdf}
-\label{fig:c4-component-restapi}
-\addtocounter{figure}{-1}
-\refstepcounter{figure}
-\clearpage
+\begin{landscape}
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\linewidth,height=0.9\textheight,keepaspectratio]{../C4_v0.2.0/C4_Component_RestAPI.pdf}
+    \caption{Diagram komponentów RestAPI Macroservice (C4 Component).}
+    \label{fig:c4-component-restapi}
+\end{figure}
+\end{landscape}
 
 \paragraph{Chat Microservice.}
 Serwis prowadzący wywiad z użytkownikiem (Rysunek~\ref{fig:c4-component-chat}) wykorzystuje mechanizm \textit{tool calling}, aby wymusić strukturyzowane odpowiedzi od modelu LLM. Wewnętrznie dzieli się na handler zdarzeń, flow AI oraz repozytorium sesji.
@@ -409,11 +621,46 @@ Serwis prowadzący wywiad z użytkownikiem (Rysunek~\ref{fig:c4-component-chat})
 Moduł odpowiedzialny za ocenę i filtrowanie ofert (Rysunek~\ref{fig:c4-component-reranking}) korzysta z modelu Gemini 2.5 do semantycznej analizy każdego produktu. Generuje ocenę punktową oraz tekstowe uzasadnienie, co zapewnia wyjaśnialność decyzji (XAI).
 
 \clearpage
-\includepdf[pages=1,landscape=true,pagecommand={\thispagestyle{plain}\refstepcounter{figure}\addcontentsline{lof}{figure}{\protect\numberline{\thefigure}Diagram komponentów Reranking Microservice (C4 Component)}},fitpaper=true]{../C4_v0.2.0/C4_Component_Reranking.pdf}
-\label{fig:c4-component-reranking}
-\addtocounter{figure}{-1}
-\refstepcounter{figure}
-\clearpage
+\begin{landscape}
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\linewidth,height=0.9\textheight,keepaspectratio]{../C4_v0.2.0/C4_Component_Reranking.pdf}
+    \caption{Diagram komponentów Reranking Microservice (C4 Component).}
+    \label{fig:c4-component-reranking}
+\end{figure}
+\end{landscape}
+
+\paragraph{Gift Ideas Microservice.}
+Serwis generujący abstrakcyjne pomysły na prezenty na podstawie profilu odbiorcy oraz danych OSINT (Rysunek~\ref{fig:c4-component-giftideas}). Odpowiada za tworzenie zapytań dla zintegrowanych platform e-commerce i normalizację wyników przed przekazaniem ich do modułu Fetch.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth,height=0.9\textheight,keepaspectratio]{../C4_v0.2.0/C4_Component_GiftIdeas.pdf}
+    \caption{Diagram komponentów Gift Ideas Microservice (C4 Component).}
+    \label{fig:c4-component-giftideas}
+\end{figure}
+
+\paragraph{Fetch Microservice.}
+Moduł odpowiedzialny za agregację ofert z wielu platform (OLX, Allegro, Amazon, eBay, Okazje) na podstawie zapytań wygenerowanych przez serwis Gift Ideas (Rysunek~\ref{fig:c4-component-fetch}). Każde źródło ma dedykowany handler (\texttt{FetchOlxHandler}, \texttt{FetchAmazonHandler}, \texttt{FetchEbayHandler}, \texttt{FetchAllegroHandler}) oraz scraper \texttt{ScrapeOkazjeHandler} uruchamiany zdarzeniem \texttt{ScrapeOkazjeEvent}; wszystkie emitują zunifikowany \texttt{ProductFetchedEvent}.
+
+\begin{landscape}
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\linewidth,height=0.9\textheight,keepaspectratio]{../C4_v0.2.0/C4_Component_Fetch.pdf}
+    \caption{Diagram komponentów Fetch Microservice (C4 Component).}
+    \label{fig:c4-component-fetch}
+\end{figure}
+\end{landscape}
+
+\paragraph{Stalking Microservice.}
+Serwis realizujący OSINT na profilach społecznościowych użytkownika obdarowywanego (Rysunek~\ref{fig:c4-component-stalking}). Ekstrahuje publiczne fakty i preferencje z trzech źródeł: Instagram, TikTok i X (Twitter), które wzbogacają profil używany przez Gift Ideas i Reranking.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth,height=0.9\textheight,keepaspectratio]{../C4_v0.2.0/C4_Component_Stalking.pdf}
+    \caption{Diagram komponentów Stalking Microservice (C4 Component).}
+    \label{fig:c4-component-stalking}
+\end{figure}
 
 \subsection{Zastosowane wzorce projektowe}
 \begin{itemize}
@@ -424,20 +671,10 @@ Moduł odpowiedzialny za ocenę i filtrowanie ofert (Rysunek~\ref{fig:c4-compone
     \item \textbf{DTO (Data Transfer Object):} Ustrukturyzowane obiekty do przesyłania danych między warstwami.
 \end{itemize}
 
-\subsection{Powiązanie z modelami C4}
-Architektura systemu została zaprojektowana zgodnie z podejściem C4 i odwzorowana na trzech pierwszych poziomach:
-\begin{itemize}
-    \item \textbf{Poziom 1 – Context:} AI Present Finder jako system wspierający proces wyboru prezentu, współpracujący z użytkownikiem, promotorem (w roli interesariusza) oraz zewnętrznymi dostawcami (sklepy, media społecznościowe, dostawcy LLM).
-    \item \textbf{Poziom 2 – Container:} Podział systemu na frontend (przeglądarka), backend (RestAPI, mikroserwisy), bazę danych oraz RabbitMQ. Każdy z mikroserwisów jest osobnym kontenerem uruchamianym w środowisku Docker/Coolify.
-    \item \textbf{Poziom 3 – Component:} W ramach każdego mikroserwisu wyróżniono komponenty takie jak kontrolery HTTP, handlery zdarzeń, serwisy domenowe oraz warstwę dostępu do danych (repozytoria TypeORM).
-\end{itemize}
-Diagramy C4 (context, container, component) zostały przygotowane w narzędziu PlantUML i są spójne z opisem wymagań oraz podziałem na mikroserwisy przedstawionym w tej sekcji.
-
-Uzupełnieniem projektu architektonicznego jest model danych, który definiuje strukturę przechowywanych informacji i relacje między nimi.
 
 \section{Model danych i baza danych}
 
-Aby wesprzeć zdefiniowane przypadki użycia i przyjętą architekturę mikroserwisową, zaprojektowano model danych odzwierciedlający kluczowe byty domenowe oraz ich relacje.
+Aby wesprzeć zdefiniowane przypadki użycia i przyjętą architekturę mikroserwisową, zaprojektowano model danych odzwierciedlający główne byty domenowe oraz ich relacje.
 
 \subsection{Model konceptualny}
 Model danych został zaprojektowany w sposób domenowy, z wykorzystaniem diagramów E/R oraz UML (diagram klas). Główne byty to m.in.:
@@ -450,7 +687,8 @@ Model danych został zaprojektowany w sposób domenowy, z wykorzystaniem diagram
     \item \textbf{Feedback} – ocena użytkownika dotycząca trafności rekomendacji,
     \item \textbf{Favorite} – relacja użytkownika do wybranych produktów (lista ulubionych).
 \end{itemize}
-Relacje między tymi bytami zostały odwzorowane na diagramie konceptualnym (User posiada wiele Session; Session posiada wiele ChatMessage i GiftIdea; GiftIdea powiązana jest z wieloma Product; User może dodawać Product do Favorites oraz pozostawiać Feedback dla Session). Na Rysunku~\ref{fig:class-diagram} przedstawiono diagram klas UML modelu domenowego, natomiast fizyczną strukturę tabel w bazie PostgreSQL pokazuje diagram E/R na Rysunku~\ref{fig:er-diagram}.
+Relacje między tymi bytami zostały odwzorowane na diagramie konceptualnym (User posiada wiele Session; Session posiada wiele ChatMessage i GiftIdea; GiftIdea powiązana jest z wieloma Product; User może dodawać Product do Favorites oraz pozostawiać Feedback dla Session). Na Rysunku~\ref{fig:class-diagram} przedstawiono diagram klas UML modelu domenowego, natomiast diagram E/R pokazano na Rysunku~\ref{fig:er-diagram}.
+W dalszej części rozdziału umieszczono również fizyczny diagram bazy RestAPI (Rysunek~\ref{fig:db-restapi}) oraz schematy baz mikroserwisów Chat, Gift Ideas i Reranking (Rysunki~\ref{fig:er-chat}, \ref{fig:er-gift-ideas}, \ref{fig:er-reranking}).
 
 \clearpage
 \begin{figure}[p]
@@ -468,40 +706,78 @@ Relacje między tymi bytami zostały odwzorowane na diagramie konceptualnym (Use
     \label{fig:er-diagram}
 \end{figure}
 
+\begin{landscape}
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\linewidth,height=0.9\textheight,keepaspectratio]{../databases/restapi.pdf}
+    \caption{Diagram fizyczny bazy danych mikroserwisu RestAPI.}
+    \label{fig:db-restapi}
+\end{figure}
+\end{landscape}
+
+\begin{landscape}
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\linewidth,height=0.9\textheight,keepaspectratio]{../databases/chat.pdf}
+    \caption{Schemat bazy danych mikroserwisu \textit{Chat}.}
+    \label{fig:er-chat}
+\end{figure}
+\end{landscape}
+
+\begin{landscape}
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\linewidth,height=0.9\textheight,keepaspectratio]{../databases/gift-ideas.pdf}
+    \caption{Schemat bazy danych mikroserwisu \textit{Gift Ideas}.}
+    \label{fig:er-gift-ideas}
+\end{figure}
+\end{landscape}
+
+\begin{landscape}
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\linewidth,height=0.9\textheight,keepaspectratio]{../databases/reranking.pdf}
+    \caption{Schemat bazy danych mikroserwisu \textit{Reranking}.}
+    \label{fig:er-reranking}
+\end{figure}
+\end{landscape}
+
+
 \subsection{Implementacja w DBMS}
 Implementację modelu danych wykonano w PostgreSQL z wykorzystaniem TypeORM. Dla każdej encji domenowej przygotowano odpowiadającą jej tabelę, z kluczami głównymi typu UUID oraz indeksami przyspieszającymi wyszukiwanie po polach takich jak \texttt{userId}, \texttt{sessionId} czy \texttt{provider} (OLX, Allegro, eBay, Amazon).
 
 Początkowo używano trybu \texttt{synchronize: true}, jednak na etapie wdrożenia produkcyjnego przełączono się na migracje bazodanowe, aby zapewnić kontrolę nad zmianami schematu. Migracje generowano narzędziem CLI TypeORM i uruchamiano w pipeline CI/CD oraz na serwerze produkcyjnym.
 
-W dokumentacji bazy danych wyróżniono widok całościowy (diagram wszystkich tabel) oraz zbliżenia na kluczowe fragmenty, takie jak model sesji i historii wyszukiwań czy model przechowywania feedbacku użytkowników.
+W dokumentacji bazy danych wyróżniono widok całościowy (diagram wszystkich tabel) oraz zbliżenia na ważniejsze fragmenty, takie jak model sesji i historii wyszukiwań czy model przechowywania feedbacku użytkowników.
 
 Zdefiniowany model danych stanowi statyczny obraz systemu. Aby w pełni zrozumieć jego działanie, w kolejnym rozdziale przedstawiono modelowanie behawioralne, opisujące dynamikę interakcji i przepływów.
 
 \section{Modelowanie behawioralne}
 
-Po ustaleniu struktury systemu kluczowe było opisanie jego zachowania w czasie w postaci sekwencji interakcji, stanów oraz procesów biznesowych, które prowadzą użytkownika od podania linku aż do listy konkretnych ofert prezentów.
+Po ustaleniu struktury systemu istotne było opisanie jego zachowania w czasie w postaci sekwencji interakcji, stanów oraz procesów biznesowych, które prowadzą użytkownika od podania linku aż do listy konkretnych ofert prezentów.
 
 \subsection{Diagram sekwencji}
 Dla głównego scenariusza użycia (wyszukiwanie prezentu) przygotowano diagram sekwencji UML (Rysunek~\ref{fig:sequence-main}) przedstawiający przepływ wiadomości pomiędzy: Użytkownikiem, Frontendem, RestAPI Macroservice, Chat Microservice, Stalking Microservice, Gift Ideas Microservice, Fetch Microservice oraz Reranking Microservice. Diagram pokazuje m.in. moment, w którym Chat Microservice decyduje o rozpoczęciu wyszukiwania oraz sposób, w jaki wyniki są strumieniowane do użytkownika przez SSE.
 
-\clearpage
-\includepdf[pages=1,landscape=true,pagecommand={\thispagestyle{plain}\refstepcounter{figure}\addcontentsline{lof}{figure}{\protect\numberline{\thefigure}Diagram sekwencji głównego przepływu wyszukiwania prezentu}},fitpaper=true]{../sequence_diagram/main_flow/main_flow.pdf}
-\label{fig:sequence-main}
-\addtocounter{figure}{-1}
-\refstepcounter{figure}
-\clearpage
-
-\subsection{Diagramy stanów i aktywności}
-Stan aplikacji z perspektywy sesji użytkownika został opisany za pomocą diagramu stanów (stany: \textit{Nowa}, \textit{Wywiad}, \textit{Wyszukiwanie}, \textit{Prezentacja wyników}, \textit{Refinement}, \textit{Zakończona}). Dla wybranych operacji (np. flow rerankingu oraz przetwarzania profilu społecznościowego) przygotowano także diagramy aktywności, które obrazują równoległe gałęzie przetwarzania (scraping wielu sklepów jednocześnie).
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth,height=0.9\textheight,keepaspectratio]{../sequence_diagram/main_flow/main_flow.pdf}
+    \caption{Diagram sekwencji głównego przepływu wyszukiwania prezentu.}
+    \label{fig:sequence-main}
+\end{figure}
 
 \subsection{BPMN}
 Proces biznesowy od momentu wejścia użytkownika na stronę (landing page) do zakończenia sesji wyszukiwania został odwzorowany w notacji BPMN (Rysunek~\ref{fig:bpmn}). Diagram przedstawia m.in. decyzje użytkownika (kontynuować wywiad vs. przejść od razu do wyników), punkty integracji z zewnętrznymi API oraz miejsca potencjalnych błędów (np. brak odpowiedzi od dostawcy), wraz z obsługą wyjątków.
 
 \clearpage
-\includepdf[pages=1,landscape=true,pagecommand={\thispagestyle{plain}\refstepcounter{figure}\addcontentsline{lof}{figure}{\protect\numberline{\thefigure}Diagram BPMN procesu wyszukiwania prezentu w systemie}},fitpaper=true]{../BPMN/diagram.pdf}
-\label{fig:bpmn}
-\addtocounter{figure}{-1}
-\refstepcounter{figure}
+\begin{landscape}
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\linewidth,height=0.9\textheight,keepaspectratio]{../BPMN/diagram.pdf}
+    \caption{Diagram BPMN procesu wyszukiwania prezentu w systemie.}
+    \label{fig:bpmn}
+\end{figure}
+\end{landscape}
 
 Sformalizowane procesy biznesowe i diagramy aktywności stały się bezpośrednim wsadem do etapu projektowania interfejsu użytkownika.
 
@@ -643,14 +919,14 @@ Użytkownicy z rolą administratora mają dostęp do panelu feedbacków (Rysunek
     \label{fig:ui-admin-profile}
 \end{figure}
 
-Zatwierdzone projekty interfejsu oraz architektura systemu pozwoliły na przejście do fazy implementacji, w której zrealizowano kluczowe mechanizmy, w tym algorytmy AI.
+Zatwierdzone projekty interfejsu oraz architektura systemu pozwoliły na przejście do fazy implementacji, w której zrealizowano najważniejsze mechanizmy, w tym algorytmy AI.
 
 
 
 \section{Implementacja}
 
 \subsection{Algorytm Rerankingu z Weryfikacją (XAI)}
-Kluczowym elementem systemu jest moduł rerankingu, który rozwiązuje problem "halucynacji" wyszukiwarek. Tradycyjne wyszukiwanie oparte na słowach kluczowych często zwraca wyniki nieadekwatne (np. akcesoria do konsoli zamiast konsoli). Zaimplementowany algorytm wykorzystuje model LLM (Gemini 2.5) do oceny semantycznej każdego produktu.
+Najważniejszym elementem systemu jest moduł rerankingu, który filtruje oferty niedopasowane do profilu odbiorcy. Tradycyjne wyszukiwanie oparte na prostych frazach tekstowych często zwraca wyniki nieadekwatne (np. akcesoria do konsoli zamiast konsoli). Zaimplementowany algorytm wykorzystuje model LLM (Gemini 2.5) do oceny semantycznej każdego produktu.
 Dla każdej oferty model generuje:
 \begin{itemize}
     \item Ocenę punktową (0-10) zgodności z profilem odbiorcy.
@@ -758,7 +1034,7 @@ Dzięki temu podejściu każda odpowiedź AI jest typowana i walidowana schemate
 
 \subsection{Inżynieria promptów (Prompt Engineering)}
 
-Jednym z najważniejszych aspektów implementacji systemu AI Present Finder była iteracyjna optymalizacja promptów -- instrukcji przekazywanych modelom językowym. W ciągu 80 dni rozwoju projektu (wrzesień--listopad 2025) przeprowadzono ponad 25 iteracji promptów, co przełożyło się na znaczącą poprawę jakości generowanych rekomendacji.
+Jednym z najważniejszych aspektów implementacji systemu AI Present Finder była iteracyjna optymalizacja promptów -- instrukcji przekazywanych modelom językowym. W ciągu 80 dni rozwoju projektu (wrzesień--listopad 2025) przeprowadzono ponad 25 iteracji promptów, co przełożyło się na znaczącą poprawę jakości generowanych rekomendacji. Podsumowanie zmian znajduje się w Tabeli~\ref{tab:prompt-iterations}.
 
 \paragraph{Ewolucja promptów.}
 System wykorzystuje 5 specjalizowanych promptów, z których każdy przeszedł własną ścieżkę optymalizacji:
@@ -781,6 +1057,7 @@ Reranking & 4 & Scoring 1--10, filtrowanie $\geq$5, batching \\
 \hline
 \end{tabular}
 \caption{Przegląd promptów i liczba iteracji w projekcie}
+\label{tab:prompt-iterations}
 \end{table}
 
 \paragraph{Kluczowe problemy i rozwiązania.}
@@ -845,24 +1122,41 @@ Iteracyjne doskonalenie promptów przyniosło wymierne rezultaty:
 Kluczowym wnioskiem z procesu prompt engineeringu jest znaczenie \textbf{konkretnych przykładów} i \textbf{explicite zakazów} w instrukcjach. Model lepiej rozumie ,,NIE pytaj o budżet'' niż ,,skup się na zainteresowaniach''. Podobnie, podanie 2--3 przykładowych rozmów w prompcie drastycznie poprawia jakość generowanych pytań.
 
 \subsection{Równoległa Agregacja Ofert}
-Ze względu na limity API i czas odpowiedzi serwisów e-commerce, zaimplementowano mechanizm równoległego pobierania danych. \texttt{Fetch Microservice} może być uruchamiany w wielu instancjach, z których każda obsługuje innego dostawcę (OLX, Allegro, Amazon). Wyniki są asynchronicznie przesyłane do głównego strumienia zdarzeń, co pozwala na prezentowanie pierwszych ofert użytkownikowi bez czekania na zakończenie przeszukiwania wszystkich źródeł.
+Ze względu na limity API i czas odpowiedzi serwisów e-commerce, zaimplementowano mechanizm równoległego pobierania danych. \texttt{Fetch Microservice} może być uruchamiany w wielu instancjach, z których każda obsługuje innego dostawcę (OLX, Allegro, Amazon, eBay, Okazje). Wyniki są asynchronicznie przesyłane do głównego strumienia zdarzeń, co pozwala na prezentowanie pierwszych ofert użytkownikowi bez czekania na zakończenie przeszukiwania wszystkich źródeł.
 
 Zaimplementowany system został poddany weryfikacji poprzez szereg testów, których przebieg i wyniki opisano poniżej.
 
 \section{Testy}
 
 \subsection{Planowanie testów}
-Strategia testowania zakładała kilka poziomów:
+Strategia testowania opierała się głównie na testach manualnych pełnego przepływu użytkownika, uzupełnionych o wybrane testy jednostkowe w obszarach najbardziej wrażliwych. Plan obejmował:
 \begin{itemize}
-    \item testy jednostkowe wybranych fragmentów logiki (np. parserów danych, prostych serwisów domenowych),
-    \item testy integracyjne mikroserwisów (sprawdzenie poprawności kontraktów zdarzeń i komunikacji przez RabbitMQ),
-    \item testy end-to-end podstawowego flow użytkownika (logowanie, wywiad, otrzymanie rekomendacji),
-    \item testy wydajnościowe i odporności na błędy API (limity zapytań, czas odpowiedzi).
+    \item \textbf{Testy automatyczne (zakres celowo wąski):} kilka testów jednostkowych w Stalking Microservice (np. \texttt{StalkingAnalyzeHandler}, \texttt{BrightDataService}) oraz podstawowe szkielety e2e/kontrolerów generowane przez NestJS w pozostałych mikroserwisach. Celem było wychwycenie regresji w logice OSINT i poprawności konfiguracji datasetów; reszta pokrywana manualnie.
+    \item \textbf{Testy manualne end-to-end (główny ciężar):}
+    \begin{itemize}
+        \item Pełny scenariusz wyszukiwania: logowanie, formularz (okazja, budżet, linki), wywiad z chatbotem, oczekiwanie na wyniki (SSE), przegląd i oznaczanie ulubionych, zapis historii.
+        \item Scenariusze alternatywne: brak linków społecznościowych, częściowa dostępność źródeł ofert (świadome wyłączanie jednego fetchera), przerwanie/ponowienie rozmowy, brak wyników z jednego sklepu.
+        \item Refinement: wybór kilku produktów, uruchomienie kolejnej rundy, weryfikacja, że nowe oferty dochodzą z poprawnym oznaczeniem rundy.
+        \item Panel admina i feedback: dodanie opinii (ocena, komentarz, opcjonalne zdjęcia), podgląd agregatów w panelu admina, przegląd opinii dla sesji.
+        \item UI/UX: responsywność (desktop/mobile), poprawność komunikatów o postępie („to może potrwać kilka minut”), zachowanie przy dłuższym oczekiwaniu na wyniki.
+    \end{itemize}
+    \item \textbf{Testy danych i odporności:} ręczne sprawdzenie, jak system reaguje na „trudne” dane wejściowe (np. nietypowe linki, brak profili, długie odpowiedzi w czacie) oraz celowe wyłączanie pojedynczych usług (fetch Allegro) w pilotażu, aby ocenić odporność na częściowe awarie.
 \end{itemize}
-Do testów jednostkowych i integracyjnych wykorzystano ekosystem NestJS (Jest), natomiast testy E2E przeprowadzono z użyciem narzędzi takich jak Playwright lub Cypress (uruchamianych ręcznie dla kluczowych scenariuszy).
+Testy manualne wykonywano iteracyjnie przy każdej większej zmianie (flow użytkownika, integracje fetch/reranking, UI), a zebrane uwagi wprost zasilały backlog poprawek (np. skrócenie wywiadu, dopisanie komunikatów o długim czasie wyszukiwania, balans źródeł ofert). Automatyzacja została ograniczona do najważniejszych fragmentów logiki, a główny nacisk położono na ręczną weryfikację doświadczenia użytkownika i komunikatów w sytuacjach brzegowych.
 
 \subsection{Testy z użytkownikami}
-Kluczowym elementem weryfikacji jakości systemu były beta-testy z udziałem rzeczywistych użytkowników. Zebrano opinie dotyczące trafności rekomendacji (oceny gwiazdkowe, komentarze tekstowe) oraz wrażeń z korzystania z interfejsu (czas oczekiwania, przejrzystość, intuicyjność). Dane te zostały wykorzystane zarówno w sekcji wyników, jak i przy planowaniu dalszego rozwoju (np. dodanie pamięci negatywnej, lepsze dopytywanie o budżet).
+Ważnym elementem weryfikacji jakości systemu były beta-testy z udziałem rzeczywistych użytkowników. Zebrano opinie dotyczące trafności rekomendacji (oceny gwiazdkowe, komentarze tekstowe) oraz wrażeń z korzystania z interfejsu (czas oczekiwania, przejrzystość, intuicyjność). Dane te zostały wykorzystane zarówno w sekcji wyników, jak i przy planowaniu dalszego rozwoju (np. dodanie pamięci negatywnej, lepsze dopytywanie o budżet).
+
+\subsubsection*{Scenariusz testu z użytkownikami}
+Każdy uczestnik badania przechodził przez ten sam, ustandaryzowany scenariusz testowy:
+\begin{enumerate}
+    \item \textbf{Wybór kontekstu:} Uczestnik wybierał realną osobę, dla której w najbliższym czasie planował kupić prezent (np. partner, przyjaciel, członek rodziny), określał okazję (urodziny, święta, rocznica itp.) oraz przybliżony budżet.
+    \item \textbf{Konfiguracja wyszukiwania:} Uczestnik wypełniał formularz startowy w aplikacji, podając — jeśli posiadał — linki do profili społecznościowych tej osoby oraz ustawiając budżet zgodnie z założeniami testu.
+    \item \textbf{Wywiad z chatbotem:} Uczestnik odpowiadał na kolejne pytania chatu, starając się udzielać pełnych odpowiedzi. Celem było doprowadzenie wywiadu do naturalnego zakończenia (bez świadomego przerywania konwersacji).
+    \item \textbf{Analiza rekomendacji:} Po zakończeniu wywiadu uczestnik przeglądał listę zaproponowanych produktów, porównując je z własną wiedzą o obdarowywanym (styl, zainteresowania, posiadane już przedmioty).
+    \item \textbf{Ocena całego procesu:} Uczestnik oceniał ogólne doświadczenie z systemem (czas oczekiwania, przejrzystość, intuicyjność, trafność rekomendacji) w formie oceny gwiazdkowej oraz krótkiego komentarza.
+    \item \textbf{Ocena pojedynczych produktów (opcjonalnie):} Uczestnik mógł wskazać wybrane produkty i wystawić im osobne oceny (np. które propozycje były szczególnie trafione, a które całkowicie nietrafione), co pozwalało lepiej zrozumieć jakość selekcji.
+\end{enumerate}
 
 Jednym z głównych ryzyk, które miały wychwycić testy z użytkownikami, była odporność systemu na częściowe awarie integracji z serwisami e-commerce. W kilku sesjach celowo wyłączono jedną z instancji \texttt{Fetch Microservice} (np. odpowiedzialną za Allegro), aby sprawdzić, czy użytkownik nadal otrzyma sensowny zestaw propozycji z pozostałych źródeł i czy interfejs poprawnie komunikuje ograniczoną dostępność wyników.
 
@@ -875,7 +1169,7 @@ Pozytywne wyniki testów pozwoliły na przeprowadzenie badań z użytkownikami k
 System został poddany testom w środowisku produkcyjnym (pilotaż, listopad 2025). W analizie wzięto pod uwagę 36 pełnych sesji zakupowych.
 
 \subsection{Efektywność czasowa}
-Średni czas potrzebny na znalezienie prezentu został zredukowany z rynkowej średniej 15 godzin (rocznie) do \textbf{7 minut i 44 sekund} na sesję. W tym czasie system przeprowadza wywiad z użytkownikiem, analizuje profil społecznościowy i przeszukuje cztery platformy e-commerce.
+Średni czas potrzebny na znalezienie prezentu został zredukowany z rynkowej średniej 15 godzin (rocznie)\footnote{Por. badania konsumenckie opisane w raporcie projektu AI Present Finder, oparte na danych z Consumer Reports~\cite{consumer-reports}.} do \textbf{7 minut i 44 sekund} na sesję w AI Present Finder. W tym czasie system przeprowadza wywiad z użytkownikiem, analizuje profil społecznościowy i przeszukuje kilka platform e-commerce.
 
 \subsection{Jakość rekomendacji}
 \begin{itemize}
@@ -886,7 +1180,7 @@ System został poddany testom w środowisku produkcyjnym (pilotaż, listopad 202
 
 \subsection{Przykłady rerankingu AI (Explainable AI)}
 
-Moduł rerankingu wykorzystuje model Gemini 2.5 Flash Lite do oceny każdego produktu w skali 1--10 wraz z uzasadnieniem. Na podstawie danych z produkcji (2512 produktów, 2380 z oceną) przeanalizowano rozkład ocen:
+Moduł rerankingu wykorzystuje model Gemini 2.5 Flash Lite do oceny każdego produktu w skali 1--10 wraz z uzasadnieniem. Na podstawie danych z produkcji (2512 produktów, 2380 z oceną) przeanalizowano rozkład ocen (Tabela~\ref{tab:reranking-distribution}):
 
 \begin{table}[H]
 \centering
@@ -905,9 +1199,10 @@ Ocena 10 (idealne) & 44 & 2\% \\
 \hline
 \end{tabular}
 \caption{Rozkład ocen rerankingu AI (dane produkcyjne, grudzień 2025)}
+\label{tab:reranking-distribution}
 \end{table}
 
-\subsubsection*{Produkty z oceną 10 (idealne dopasowanie)}
+\subsubsection*{Produkty z oceną 10 (idealne dopasowanie, Tabela~\ref{tab:reranking-10})}
 \begin{table}[H]
 \centering
 \small
@@ -922,9 +1217,11 @@ Fotel gamingowy Diablo X-Horn & 500 zł & 10 & Wygodny i stylowy fotel gamingowy
 Fotel Secret Lab jak NOWY + akcesoria & 1 599 zł & 10 & Fotel gamingowy Secret Lab jak nowy, z dodatkowymi akcesoriami i w świetnej cenie, jest idealnym prezentem. \\
 \hline
 \end{tabular}
+\caption{Przykłady produktów z oceną 10 (idealne dopasowanie)}
+\label{tab:reranking-10}
 \end{table}
 
-\subsubsection*{Produkty z oceną 1 (odfiltrowane jako niepasujące)}
+\subsubsection*{Produkty z oceną 1 (odfiltrowane jako niepasujące, Tabela~\ref{tab:reranking-1})}
 \begin{table}[H]
 \centering
 \small
@@ -939,6 +1236,8 @@ Koci Domek Gabi z figurkami & 249 zł & 1 & Produkt jest zabawką przeznaczoną 
 Kuchnia drewniana IKEA dla dzieci & 120 zł & 1 & Zabawka przeznaczona dla dzieci 1--3 lata, całkowicie nieodpowiednia dla dorosłego odbiorcy. \\
 \hline
 \end{tabular}
+\caption{Przykłady produktów z oceną 1 (odfiltrowane jako niepasujące)}
+\label{tab:reranking-1}
 \end{table}
 
 Reranking skutecznie eliminuje produkty nietrafione kontekstowo (zabawki dla dzieci przy szukaniu prezentów dla dorosłych) i przyznaje wysokie oceny produktom dokładnie odpowiadającym profilowi odbiorcy. System odfiltrował 27\% produktów (oceny 1--3) jako niepasujące.
@@ -969,5 +1268,44 @@ W ramach testów pilotażowych zebrano 11 opinii od użytkowników. Poniżej prz
 
 \subsection{Stabilność}
 System osiągnął 100\% dostępności (uptime) podczas testów, przy minimalnym zużyciu zasobów (<800MB RAM dla całego klastra), co potwierdza poprawność założeń architektonicznych.
+
+\section{Podsumowanie projektu}
+
+AI Present Finder zrealizował cel postawiony na początku przedsięwzięcia: połączył analizę publicznych danych (OSINT), konwersacyjny wywiad z użytkownikiem oraz agregację ofert z wielu platform e-commerce w spójny, działający system rekomendacji prezentów. Z perspektywy użytkownika końcowego aplikacja sprowadza się do prostego procesu: podaj kontekst (okazja, osoba, budżet), porozmawiaj chwilę z AI, a następnie przejrzyj konkretną listę propozycji, które „mają sens” dla danej osoby.
+
+Z perspektywy architektury udało się zrealizować pełny, produkcyjny układ mikroserwisów: od bramy RestAPI (NestJS, JWT, Google OAuth), przez Stalking Microservice (BrightData, OSINT), Chat Microservice (LLM + tool calling), Gift Ideas i Fetch (równoległe pobieranie ofert z wielu źródeł), aż po Reranking Microservice oparty na modelu Gemini 2.5 z wyjaśnialnym scoringiem. Komunikacja asynchroniczna (RabbitMQ) i streaming SSE pozwoliły utrzymać dobrą ergonomię pracy użytkownika mimo wieloetapowego procesu „pod spodem”.
+
+Z punktu widzenia wyników pilotażu system spełnił najważniejsze założenia: średni czas znalezienia prezentu skrócono z rzędu kilkunastu godzin rocznie do pojedynczej sesji trwającej około 7 minut i 44 sekund, przy zachowaniu wysokiej trafności pierwszej rekomendacji (64\%) oraz skutecznym odfiltrowaniu około 40\% szumu ofertowego przez moduł rerankingu. Jednocześnie utrzymano wysoką stabilność techniczną — w trakcie testów nie odnotowano przerw w dostępności aplikacji, a zużycie zasobów pozostało na poziomie akceptowalnym dla środowiska chmurowego.
+
+Zespół przeszedł pełny cykl życia projektu: od POC i weryfikacji ryzyk technologicznych, przez fazę projektowania (diagramy C4, BPMN, model danych), implementację i testy, aż po pilotaż produkcyjny z rzeczywistymi użytkownikami. Ostateczna dokumentacja (niniejszy dokument, raport, diagramy i opisy flow użytkownika) odzwierciedla nie tylko stan końcowy systemu, ale też przyjętą filozofię projektowania: łączenie pragmatycznej inżynierii z czytelną komunikacją „co” i „dlaczego” zostało zrobione.
+
+\section{Wnioski i kierunki dalszego rozwoju}
+
+Wdrożenie AI Present Finder pozwoliło w praktyce zweryfikować założenia tzw. \textit{Agentic Commerce}: dużą część procesu decyzyjnego przy wyborze prezentu można przekazać autonomicznemu agentowi AI, który sam zbiera kontekst, przeszukuje rynek i selekcjonuje oferty. Analiza wyników, feedbacku użytkowników i doświadczeń zespołu prowadzi do kilku nadrzędnych wniosków:
+\begin{itemize}
+    \item \textbf{Połączenie OSINT + wywiad AI działa.} Użytkownicy docenili fakt, że system „zna kontekst” — łączenie publicznych profili z rozmową pozwala generować rekomendacje bliższe realnym zainteresowaniom obdarowywanej osoby niż klasyczne filtry typu kategoria/cena.
+    \item \textbf{Reranking z uzasadnieniami ma dużą wartość dodaną.} Moduł oceniający produkty z komentarzem AI skutecznie usuwa oferty przypadkowe, skracając listę do propozycji, które faktycznie da się rozważyć. Jednocześnie taki sposób działania jest łatwy do audytu i dalszego strojenia.
+    \item \textbf{Streaming i asynchroniczność są konieczne przy długich procesach.} Pełne wyszukiwanie (OSINT, kilkaset produktów z wielu sklepów, reranking) może trwać kilka minut, ale dzięki SSE użytkownik na każdym etapie widzi, że system pracuje i stopniowo dostaje wyniki. To podejście okazało się niezbędne dla utrzymania zaangażowania.
+    \item \textbf{Największe ograniczenia leżą po stronie danych.} Główne problemy zgłaszane w badaniu (polecanie rzeczy, które dana osoba już posiada, oraz bias w stronę jednego źródła ofert) wynikają z brakującej „pamięci negatywnej” i nierównomiernej dostępności danych z poszczególnych platform.
+\end{itemize}
+
+Na tej podstawie można wskazać naturalne kierunki dalszego rozwoju systemu:
+\begin{itemize}
+    \item \textbf{Pamięć negatywna i lepsze modelowanie historii.} Dodanie mechanizmów zapamiętywania produktów już posiadanych oraz prezentów odrzuconych przez użytkownika pozwoli ograniczyć polecanie „tych samych rzeczy” i jeszcze lepiej wykorzystać zebrany feedback.
+    \item \textbf{Balansowanie i rozszerzanie źródeł ofert.} Z punktu widzenia użytkownika ważne jest, aby lista prezentów była różnorodna zarówno pod względem rodzaju produktów, jak i źródeł (nowe vs. używane, różne platformy). W praktyce oznacza to dalszą pracę nad integracjami oraz logiką ważenia źródeł.
+    \item \textbf{Optymalizacja czasu reakcji i kosztów.} Choć obecny czas do wyników jest akceptowalny w kontekście pilotażu, celem kolejnego etapu jest dalsze skrócenie opóźnień (docelowo do kilku minut lub mniej) przy utrzymaniu lub obniżeniu kosztów operacyjnych, m.in. poprzez lepsze wykorzystanie streamingu, cache i odpowiednio dobrane modele.
+    \item \textbf{Wyszukiwanie wektorowe i rekomendacje oparte na feedbacku.} Dodanie wyszukiwania semantycznego (embeddingi) oraz mechanizmów uczących się z ocen użytkowników pozwoliłoby wychodzić poza prostą filtrację ofert i stopniowo „dostrajać” system do preferencji społeczności używającej aplikacji.
+    \item \textbf{Wywiad adaptacyjny i personalizacja interfejsu.} Zebrane opinie pokazują, że część użytkowników chciałaby krótszych lub bardziej „na temat” rozmów. Naturalnym kierunkiem jest dalsze upraszczanie dialogu oraz dopasowanie interfejsu do mniej technicznych użytkowników.
+    \item \textbf{Eksploracja modelu biznesowego.} Przy zachowanych parametrach jakości i stabilności AI Present Finder może stanowić bazę pod komercyjne rozwiązanie (np. model afiliacyjny, integracje dla sklepów, wersja Pro dla agencji marketingowych). Obecne MVP pokazuje, że technicznie jest to wykonalne.
+\end{itemize}
+
+Podsumowując, projekt AI Present Finder potwierdził, że połączenie OSINT, konwersacyjnego AI i świadomie zaprojektowanej architektury mikroserwisowej pozwala realnie poprawić doświadczenie kupowania prezentów. Jednocześnie wskazał, że kluczem do dalszego wzrostu jakości nie są już tylko „mocniejsze modele”, lecz przede wszystkim bogatsze dane, lepsze wykorzystanie feedbacku użytkowników i dopracowanie doświadczenia końcowego odbiorcy.
+
+\begin{thebibliography}{9}
+\bibitem{consumer-reports}
+Consumer Reports.
+\newblock \textit{Holiday Shopping Survey: Time Spent and Gift Returns}, 2010.
+\newblock Dostępne w raporcie głównym projektu AI Present Finder.
+\end{thebibliography}
 
 \end{document}

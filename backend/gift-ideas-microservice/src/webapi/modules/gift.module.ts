@@ -1,4 +1,4 @@
-import { GiftContextInitializedEvent } from "@core/events";
+import { GiftContextInitializedEvent, ProgressUpdateEvent } from "@core/events";
 import { ChatInterviewCompletedHandler } from "src/app/handlers/chat-interview-completed.handler";
 import { EmitFetchEventsHandler } from "src/app/handlers/emit-fetch-events.handler";
 import { GenerateGiftIdeasHandler } from "src/app/handlers/generate-gift-ideas.handler";
@@ -104,6 +104,19 @@ import { TypeOrmModule } from "@nestjs/typeorm";
             process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
           ],
           queue: GiftContextInitializedEvent.name,
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
+      {
+        name: "PROGRESS_UPDATE_EVENT",
+        transport: Transport.RMQ,
+        options: {
+          urls: [
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
+          ],
+          queue: ProgressUpdateEvent.name,
           queueOptions: {
             durable: false,
           },

@@ -1,79 +1,52 @@
-# Krytyczny przegląd dokumentacji `docs/documentation/main.tex`
+# Dokumentacja
 
-## 1. Sekcja: Wykaz symboli, oznaczeń i akronimów
+### 2.1
 
-- **Braki:** Brakuje definicji dla akronimów używanych w dalszej części tekstu: **MVP**, **POC**, **SPA**, **DTO**, **XAI**.
-- **Definicje:** Definicja "VPS" ("Wirtualny serwer prywatny") jest bardzo ogólna, warto dodać kontekst (np. hosting).
-- **Wniosek:** Dodać brakujące akronimy do tabeli.
+[x] Czyich "cech" - napisać
 
-## 2. Sekcja: Cel i zakres przedsięwzięcia
+### 4
 
-- **Terminologia:** W sekcji 2.4 pojawia się termin "Agentic Commerce", który nie jest zdefiniowany ani w słowniku, ani w akronimach.
-- **Spójność:** Zakres projektu (2.3) jasno definiuje "co nie wchodzi w zakres", co jest dobrą praktyką.
+[x] kilkalne odnośniki do rysunków
+[x] dodać linki do tabel jak o nich mówie
+[x] sprawdź czy wszystko ma podpisy takie na dole
+[x] wyrzucić dokładnośc z tabeli porównan rozwiązań rynkowych
+[x] napisy na przebiegu projektu powiększyć
 
-## 3. Sekcja: Słownik pojęć
+[x] Wyrzucić oauth że nie wchodzi do wymagań projektu
 
-- **Definicje:** Definicja "AI Present Finder" jest nieco rekurencyjna.
-- **Wniosek:** Jest OK, ale warto sprawdzić czy wszystkie kluczowe pojęcia z "Implementacji" (np. Reranking) są tu ujęte.
+[x] kto co robił - aktualnie jest xd, jak chcecice to mogę to przepisać/dopisać - dla szymka do zrobienia
 
-## 4. Sekcja: Stan wiedzy w obszarze przedsięwzięcia
+[x] Przypadki użycia - warunki wstępne, scenariusz, przebiegi alternatywne . Dopisać w tekście te farmazony
+[x] 7.1 dodać Twitter i scraper (okazje)
 
-- **Tabela:** Tabela porównawcza jest czytelna.
-- **Wniosek:** Sekcja jest solidna.
+[x] W wymaganiach func brakuje głębszego opisu, kryteria akceptacji żeby zweryfikować czy wymaganie jest spełnione szczególnie w przypadku wymaganiach niefunc. Rozpisać się po prostu
 
-## 5. Sekcja: Założenia wstępne
+[x] Nie zmieniać rozmiaru strony - te wykresy dać w poziomie ale na A4
 
-- **Niejasność (Allegro):** W 5.1 wymienione jest "Allegro Sandbox", podczas gdy w wynikach (sekcja 14) mowa o braku wyników z Allegro lub małej ich liczbie w produkcji. Warto ujednolicić (czy to Sandbox czy Prod w MVP?).
-- **Prywatność:** W 5.2 punkt "Dane osobowe nie są trwale przechowywane po zakończeniu sesji" stoi w sprzeczności z funkcją "Historii czatu" i "Zapisanych produktów" (oraz dowodami z bazy danych).
-- **Wniosek:** Zmienić punkt o danych na "Dane nie są wykorzystywane marketingowo" lub doprecyzować, że historia jest na życzenie użytkownika (logowanie).
+[x] Brak fetch, gift ideas i stalking serwisów w kontenerach - po prostu brakujące diagramy które trza wkleić. dodać reszte serwisow
 
-## 6. Sekcja: Analiza wymagań i sposób pracy
+[x] 8.6 raczej do wywalenia
 
-- **Brakujące mostki:** Brakuje zdań łączących sekcje (zgodnie z wcześniejszymi uwagami). Przejście do "Specyfikacji wymagań" jest nagłe.
-- **Wniosek:** Dodać zdania łączące (bridge sentences) na końcach podsekcji.
+[x] Er jest konceptualny nie baza danych, nie ten poziom ostateczny
 
-## 7. Sekcja: Specyfikacja wymagań
+[ ] Rysunek 9 to jest e/r, brakuje fizycznego diagramu np z pg admina czy czegoś
 
-- **Wydajność:** Wymaganie "Czas generowania wstępnych propozycji < 10s" może być niespójne z wynikiem "7 min 44s na sesję". Warto doprecyzować, czy chodzi o odpowiedź chata, czy o pełne wyniki.
-- **Wniosek:** Doprecyzować metrykę wydajności w wymaganiach niefunkcjonalnych.
+[x] Te komentarze może na polski zmienić - na diagramie er
 
-## 8. Sekcja: Projekt produktu programowego
+[x] Alt wywalić jak jest zarówno stalking jak i wywiad zakończony - to jest wykres sekwencji - szymek
 
-- **Nazewnictwo:** "restapi-macroservice" vs "RestAPI Macroservice". Termin "Macroservice" brzmi nieco egzotycznie (zwykle Monolith/Gateway). Jeśli to nazwa własna, OK, ale warto być konsekwentnym.
-- **Wniosek:** Ujednolicić pisownię nazw serwisów (np. zawsze _kursywą_ lub Monospace dla nazw technicznych).
+[ ] Bpmn zaktualizować, każdy serwis jako osobny basen - chodzi o osobny basen a nie tor pływacki + tera jest jeszcze stara wersja 3 mikroserwisowa - dodi
 
-## 9. Sekcja: Model danych
+[x] Diagramy stanow i aktywności się nie załączyły - Diagram aktywności nie musi być, ale stanów spoko (Stanow z perspektywy rozmowy)
 
-- **Wniosek:** Sekcja poprawna, dobrze opisuje migracje.
+[x] Zmiana czcionki w listingu - odległość między znakami mniejsza, pakiet listings
 
-## 10. Sekcja: Modelowanie behawioralne
+napisać testy:
+[x] Uzupełnić rozdział o testach automatycznych, przykłady dać, pokrycie testami
 
-- **Wniosek:** Sekcja poprawna.
+napisać jak użytkownik testuje aplikacje:
+[x] Testy z użytkownikami dodać scenariusz testu, może być w załączniku (jak się nie zmieści)
 
-## 11. Sekcja: Prototypowanie interfejsu
+[x] 14.1 potrzebne źródło dać skąd te liczby i wgl
 
-- **Wniosek:** Bardzo dobry opis flow.
-
-## 12. Sekcja: Testy
-
-- **Kolejność:** Sekcja "Testy" znajduje się **przed** "Implementacją". Logiczniej byłoby: Prototypowanie -> Implementacja -> Testy -> Wyniki.
-- **Wniosek:** Przesunąć całą sekcję "Testy" za sekcję "Implementacja".
-
-## 13. Sekcja: Implementacja
-
-- **Bogactwo treści:** Bardzo dobra sekcja, szczególnie o Prompt Engineeringu.
-- **Wniosek:** Brak uwag krytycznych.
-
-## 14. Sekcja: Wyniki i analiza badań
-
-- **Spójność:** Sekcja została niedawno rozbudowana i wygląda bardzo dobrze (tabele, cytaty).
-- **Wniosek:** Jest kompletna.
-
-## Podsumowanie działań naprawczych (Action Plan):
-
-1. **Dodać brakujące akronimy** (MVP, POC, SPA, DTO, XAI).
-2. **Skorygować założenie o "braku trwałego przechowywania danych"** (bo mamy historię).
-3. **Dodać zdania łączące (mostki)** między głównymi rozdziałami.
-4. **Zmienić kolejność rozdziałów:** Implementacja przed Testami.
-5. **Ujednolicić nazewnictwo serwisów** (np. `restapi-macroservice`).
-6. **Doprecyzować status Allegro** (Sandbox vs Prod).
+[x] Podsumowanie dodać, wnioski z projektu

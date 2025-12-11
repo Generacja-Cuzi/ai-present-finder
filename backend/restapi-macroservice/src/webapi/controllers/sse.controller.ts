@@ -8,6 +8,7 @@ import {
   SseChatbotMessageDto,
   SseGiftReadyDto,
   SseMessageDto,
+  SseProgressUpdateDto,
 } from "src/domain/models/sse-message.dto";
 
 import { Controller, Logger, Query, Res, Sse } from "@nestjs/common";
@@ -24,6 +25,7 @@ import {
   SseChatInterviewCompletedDto,
   SseChatInappropriateRequestDto,
   SseGiftReadyDto,
+  SseProgressUpdateDto,
 )
 @ApiTags("sse")
 @Controller()

@@ -96,10 +96,35 @@ export class SseGiftReadyDto {
   data!: ListingWithIdDto[];
 }
 
+export class SseProgressUpdateDto {
+  @ApiProperty({ enum: ["progress-update"], example: "progress-update" })
+  type!: "progress-update";
+
+  @ApiProperty({
+    description: "Current progress stage",
+    enum: ["stalking", "interview", "ideas", "fetching", "reranking"],
+    example: "stalking",
+  })
+  stage!: "stalking" | "interview" | "ideas" | "fetching" | "reranking";
+
+  @ApiProperty({
+    description: "Progress percentage (0-100)",
+    example: 20,
+  })
+  percentage!: number;
+
+  @ApiProperty({
+    description: "Human-readable progress message",
+    example: "Analiza profili społecznościowych zakończona",
+  })
+  message!: string;
+}
+
 export type SseMessageDto =
   | SseChatbotMessageDto
   | SseChatInterviewCompletedDto
   | SseChatInappropriateRequestDto
-  | SseGiftReadyDto;
+  | SseGiftReadyDto
+  | SseProgressUpdateDto;
 
 export type SseMessageType = SseMessageDto["type"];

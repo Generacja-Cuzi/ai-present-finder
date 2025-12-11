@@ -113,5 +113,18 @@ module.exports = {
         DATABASE_URL: process.env.FETCH_DATABASE_URL,
       },
     },
+    {
+      name: "fetch-microservice-okazje",
+      cwd: "./backend/fetch-microservice",
+      script: "dist/backend/fetch-microservice/src/main.js",
+      instances: 1,
+      exec_mode: "cluster",
+      env: {
+        NODE_ENV: "production",
+        PORT: process.env.FETCH_OKAZJE_PORT || 8015,
+        FETCH_PROVIDER: "okazje",
+        DATABASE_URL: process.env.FETCH_DATABASE_URL,
+      },
+    },
   ],
 };

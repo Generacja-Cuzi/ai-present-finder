@@ -2457,6 +2457,33 @@
           }
         },
         "required": ["type", "data"]
+      },
+      "SseProgressUpdateDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["progress-update"],
+            "example": "progress-update"
+          },
+          "stage": {
+            "type": "string",
+            "description": "Current progress stage",
+            "enum": ["stalking", "interview", "ideas", "fetching", "reranking"],
+            "example": "stalking"
+          },
+          "percentage": {
+            "type": "number",
+            "description": "Progress percentage (0-100)",
+            "example": 20
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable progress message",
+            "example": "Analiza profili społecznościowych zakończona"
+          }
+        },
+        "required": ["type", "stage", "percentage", "message"]
       }
     }
   }

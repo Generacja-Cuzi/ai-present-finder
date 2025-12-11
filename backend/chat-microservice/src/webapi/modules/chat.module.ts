@@ -3,6 +3,7 @@ import {
   ChatInappropriateRequestEvent,
   ChatInterviewCompletedEvent,
   ChatQuestionAskedEvent,
+  ProgressUpdateEvent,
 } from "@core/events";
 import { ChatRefinementStartedHandler } from "src/app/handlers/chat-refinement-started.handler";
 import { ChatStartInterviewHandler } from "src/app/handlers/chat-start-interview.handler";
@@ -82,6 +83,19 @@ import { TypeOrmModule } from "@nestjs/typeorm";
             process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
           ],
           queue: ChatCompletedNotifyUserEvent.name,
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
+      {
+        name: "PROGRESS_UPDATE_EVENT",
+        transport: Transport.RMQ,
+        options: {
+          urls: [
+            process.env.CLOUDAMQP_URL ?? "amqp://admin:admin@localhost:5672",
+          ],
+          queue: ProgressUpdateEvent.name,
           queueOptions: {
             durable: false,
           },

@@ -3,6 +3,7 @@ import {
   ChatInterviewCompletedEvent,
   ChatQuestionAskedEvent,
   ChatUserAnsweredEvent,
+  ProgressUpdateEvent,
 } from "@core/events";
 import type { RecipientProfile } from "@core/types";
 import type { EndConversationOutput } from "src/app/ai/types";
@@ -29,6 +30,8 @@ export class ChatUserAnsweredHandler {
     private readonly interviewCompletedEventBus: ClientProxy,
     @Inject("CHAT_COMPLETED_NOTIFY_USER_EVENT")
     private readonly chatCompletedNotifyUserEventBus: ClientProxy,
+    @Inject("PROGRESS_UPDATE_EVENT")
+    private readonly progressEventBus: ClientProxy,
   ) {}
 
   private readonly logger = new Logger(ChatUserAnsweredHandler.name);
@@ -213,6 +216,16 @@ export class ChatUserAnsweredHandler {
         ChatCompletedNotifyUserEvent.name,
         notifyEvent,
       );
+
+      // Emit progress update: interview completed (40%)
+      const progressEvent = new ProgressUpdateEvent(
+        event.chatId,
+        "interview",
+        40,
+        "Wywiad zakończony, zaczynam generować pomysły",
+      );
+      this.progressEventBus.emit(ProgressUpdateEvent.name, progressEvent);
+      this.logger.log("Published ProgressUpdateEvent: interview (40%)");
 
       this.logger.log(
         `Completed handling profile name for chat ${event.chatId}`,
